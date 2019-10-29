@@ -1,0 +1,503 @@
+package com.zistone.bluetoothtest.fragment;
+
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.zistone.bluetoothtest.R;
+import com.zistone.bluetoothtest.control.BluetoothListAdapter;
+
+import java.util.ArrayList;
+import java.util.UUID;
+
+public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener
+{
+    private static final String TAG = "BluetoothFragment_List";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    private String m_param1;
+    private String m_param2;
+    private Context m_context;
+    private View m_view;
+    private OnFragmentInteractionListener m_listener;
+    //已知服务
+    public static final String SERVICE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+    //已知特征,发送数据用
+    public static final String CHARACTERISTIC_UUID_SEND = "0000ff03-0000-1000-8000-00805f9b34fb";
+    //已知特征,接收数据用
+    public static final String CHARACTERISTIC_UUID_RECEIVE = "0000ff02-0000-1000-8000" + "-00805f9b34fb";
+    public CheckBox m_checkBox;
+    public TextView m_textView1;
+    public ListView m_listView;
+    //蓝牙适配器
+    public BluetoothAdapter m_bluetoothAdapter;
+    //蓝牙列表
+    public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
+    public BluetoothReceiver m_bluetoothReceiver;
+    public BluetoothDevice m_bluetoothDevice;
+    public BluetoothGattService m_bluetoothGattService;
+    public BluetoothGatt m_bluetoothGatt;
+    public BluetoothGattCharacteristic m_bluetoothGattCharacteristic_Send;
+    public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
+
+    public static BluetoothFragment_List newInstance(String param1, String param2)
+    {
+        BluetoothFragment_List fragment = new BluetoothFragment_List();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public class BluetoothReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            // 获得已经搜索到的蓝牙设备
+            if(action.equals(BluetoothDevice.ACTION_FOUND))
+            {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                m_deviceList.add(device);
+                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                m_listView.setAdapter(adapter);
+                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
+            }
+            else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
+            {
+                handler.removeCallbacks(runnable);
+                m_textView1.setText("蓝牙设备搜索完成");
+            }
+            else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
+            {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(device.getBondState() == BluetoothDevice.BOND_BONDING)
+                {
+                    m_textView1.setText("正在配对" + device.getName());
+                }
+                else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
+                {
+                    m_textView1.setText("完成配对" + device.getName());
+                    handler.postDelayed(runnable, 50);
+                }
+                else if(device.getBondState() == BluetoothDevice.BOND_NONE)
+                {
+                    m_textView1.setText("取消配对" + device.getName());
+                }
+            }
+        }
+    }
+
+    public Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if(msg.what == 0)
+            {
+                byte[] readBuf = (byte[]) msg.obj;
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                Log.i(TAG, "handleMessage readMessage=" + readMessage);
+                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+                builder.setTitle("我收到消息啦").setMessage(readMessage).setPositiveButton("确定", null);
+                builder.create().show();
+            }
+        }
+    };
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        handler.postDelayed(runnable, 50);
+        m_bluetoothReceiver = new BluetoothReceiver();
+        //需要过滤多个动作，则调用IntentFilter对象的addAction添加新动作
+        IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        foundFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        foundFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        m_context.registerReceiver(m_bluetoothReceiver, foundFilter);
+    }
+
+    /**
+     * 重写onRequestPermissionsResult方法
+     * 获取动态权限请求的结果,再开启蓝牙
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        if(requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {
+            switch(m_bluetoothAdapter.getState())
+            {
+                case BluetoothAdapter.STATE_ON:
+                case BluetoothAdapter.STATE_TURNING_ON:
+                    m_checkBox.setChecked(true);
+                    break;
+                case BluetoothAdapter.STATE_OFF:
+                case BluetoothAdapter.STATE_TURNING_OFF:
+                default:
+                    m_checkBox.setChecked(false);
+                    break;
+            }
+            m_checkBox.setOnCheckedChangeListener(this);
+            m_textView1.setOnClickListener(this);
+            m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if(m_bluetoothAdapter == null)
+            {
+                Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+        {
+            Toast.makeText(m_context, "用户拒绝了权限", Toast.LENGTH_SHORT).show();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+    @Override
+    public void onClick(View v)
+    {
+        if(v.getId() == R.id.tv_discovery)
+        {
+            BeginDiscovery();
+        }
+    }
+
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+    {
+        if(buttonView.getId() == R.id.ck_bluetooth)
+        {
+            if(isChecked == true)
+            {
+                BeginDiscovery();
+                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                startActivityForResult(intent, 1);
+            }
+            else
+            {
+                CancelDiscovery();
+                m_bluetoothAdapter.disable();
+                m_deviceList.clear();
+                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                m_listView.setAdapter(adapter);
+            }
+        }
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        CancelDiscovery();
+        m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
+        try
+        {
+            if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
+            {
+                m_textView1.setText("开始连接");
+                m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
+                {
+                    /**
+                     * 连接状态改变时回调
+                     * @param gatt
+                     * @param status
+                     * @param newState
+                     */
+                    @Override
+                    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
+                    {
+                        super.onConnectionStateChange(gatt, status, newState);
+                        if(newState == BluetoothProfile.STATE_CONNECTED)
+                        {
+                            Log.i(TAG, ">>>成功建立连接!");
+
+                        }
+                        else if(newState == BluetoothGatt.STATE_DISCONNECTED)
+                        {
+                            Log.i(TAG, ">>>连接已断开!");
+                        }
+                        gatt.discoverServices();
+                    }
+
+                    /**
+                     *
+                     * @param gatt
+                     * @param status
+                     */
+                    @Override
+                    public void onServicesDiscovered(BluetoothGatt gatt, int status)
+                    {
+                        super.onServicesDiscovered(gatt, status);
+                        //通过UUID找到服务
+                        m_bluetoothGattService = gatt.getService(UUID.fromString(SERVICE_UUID));
+                        //找到服务后在通过UUID找到特征
+                        m_bluetoothGattCharacteristic_Send = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_SEND));
+                        if(m_bluetoothGattCharacteristic_Send != null)
+                        {
+                            //启用onCharacteristicChanged(),用于接收数据
+                            gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_Send, true);
+                            Log.i(TAG, ">>>已找到特征!");
+
+                            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance("", "");
+                            getFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment_readWrite, "bluetoothFragment").commitNow();
+
+                            byte[] senddatas = new byte[]{8, 8, 8, 8, 8, 8, 8, 8};
+                            m_bluetoothGattCharacteristic_Send.setValue(senddatas);
+                            m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_Send);
+                        }
+                        else
+                        {
+                            Log.i(TAG, ">>>该UUID无特征!");
+                        }
+                    }
+
+                    /**
+                     * 读取成功后回调
+                     * @param gatt
+                     * @param characteristic
+                     * @param status
+                     */
+                    @Override
+                    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
+                    {
+                        super.onCharacteristicRead(gatt, characteristic, status);
+                        Log.i(TAG, ">>>数据读取成功!");
+
+                        byte[] bytesreceive = characteristic.getValue();
+                        Log.i(TAG, ">>>接收数据:" + bytesreceive[0] + "" + bytesreceive[1] + "" + bytesreceive[2] + "" + bytesreceive[4]);
+                    }
+
+                    /**
+                     * 写入成功后回调
+                     * @param gatt
+                     * @param characteristic
+                     * @param status
+                     */
+                    @Override
+                    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
+                    {
+                        super.onCharacteristicWrite(gatt, characteristic, status);
+                        Log.i(TAG, ">>>数据发送成功!");
+                    }
+
+                    /**
+                     * 接收数据
+                     * @param gatt
+                     * @param characteristic
+                     */
+                    @Override
+                    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
+                    {
+                        super.onCharacteristicChanged(gatt, characteristic);
+
+                        byte[] bytesreceive = characteristic.getValue();
+                        Log.i(TAG, ">>>接收数据:" + bytesreceive[0] + "" + bytesreceive[1] + "" + bytesreceive[2] + "" + bytesreceive[4]);
+                    }
+                });
+            }
+            else if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED && m_bluetoothDevice.getBondState() == BluetoothListAdapter.CONNECTED)
+            {
+                m_textView1.setText("正在发送消息");
+                //TODO:发送信息
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            m_textView1.setText("配对异常：" + e.getMessage());
+        }
+    }
+
+    /**
+     * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
+     */
+    public interface OnFragmentInteractionListener
+    {
+        void onFragmentInteraction(Uri uri);
+    }
+
+    public void onButtonPressed(Uri uri)
+    {
+        if(m_listener != null)
+        {
+            m_listener.onFragmentInteraction(uri);
+        }
+    }
+
+    /**
+     * 异步搜索蓝牙设备
+     */
+    public Runnable runnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            BeginDiscovery();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
+    /**
+     * 开始搜索蓝牙
+     */
+    public void BeginDiscovery()
+    {
+        if(m_bluetoothAdapter.isDiscovering() != true)
+        {
+            m_deviceList.clear();
+            BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+            m_listView.setAdapter(adapter);
+            m_textView1.setText("正在搜索蓝牙设备");
+            //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
+            m_bluetoothAdapter.startDiscovery();
+        }
+    }
+
+    /**
+     * 取消搜索蓝牙
+     */
+    public void CancelDiscovery()
+    {
+        handler.removeCallbacks(runnable);
+        m_textView1.setText("取消搜索蓝牙设备");
+        if(m_bluetoothAdapter.isDiscovering() == true)
+        {
+            m_bluetoothAdapter.cancelDiscovery();
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+        {
+            m_param1 = getArguments().getString(ARG_PARAM1);
+            m_param2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        m_view = inflater.inflate(R.layout.fragment_bluetooth_list, container, false);
+        m_context = getContext();
+
+        if(ContextCompat.checkSelfPermission(m_context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+            }, 1);
+        }
+        //动态注册注册广播接收器,接收蓝牙发现讯息
+        IntentFilter btFilter = new IntentFilter();
+        btFilter.setPriority(1000);
+        btFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        btFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+
+        //获取蓝牙适配器
+        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        m_checkBox = m_view.findViewById(R.id.ck_bluetooth);
+        m_textView1 = m_view.findViewById(R.id.tv_discovery);
+        m_listView = m_view.findViewById(R.id.lv_bluetooth);
+        switch(m_bluetoothAdapter.getState())
+        {
+            case BluetoothAdapter.STATE_ON:
+            case BluetoothAdapter.STATE_TURNING_ON:
+                m_checkBox.setChecked(true);
+                break;
+            case BluetoothAdapter.STATE_OFF:
+            case BluetoothAdapter.STATE_TURNING_OFF:
+            default:
+                m_checkBox.setChecked(false);
+                break;
+        }
+        m_checkBox.setOnCheckedChangeListener(this);
+        m_textView1.setOnClickListener(this);
+        if(m_bluetoothAdapter == null)
+        {
+            Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+        }
+        return m_view;
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+        if(context instanceof OnFragmentInteractionListener)
+        {
+            m_listener = (OnFragmentInteractionListener) context;
+        }
+        else
+        {
+            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        m_listener = null;
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        CancelDiscovery();
+        m_context.unregisterReceiver(m_bluetoothReceiver);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        CancelDiscovery();
+        m_bluetoothAdapter.disable();
+        m_deviceList.clear();
+        BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+        m_listView.setAdapter(adapter);
+    }
+}

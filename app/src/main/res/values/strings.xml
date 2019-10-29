@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">蓝牙测试</string>
+
+    <string name="text_phone">手机</string>
+    <string name="text_userName">用户名</string>
+    <string name="text_realName">姓名</string>
+    <string name="text_confirmPwd">确认密码</string>
+    <string name="text_password">密码</string>
+
+    <string name="title_register">用户注册</string>
+    <string name="title_forget">找回密码</string>
+    <string name="title_login">用户登录</string>
+    <string name="title_userInfo">用户信息</string>
+
+    <string name="btn_confirm">确认</string>
+    <string name="btn_register">注册</string>
+    <string name="btn_logout">退出登录</string>
+    <string name="btn_getCode">验证码(120)</string>
+    <string name="btn_forget">忘记密码</string>
+    <string name="btn_map">位置</string>
+    <string name="btn_device">设备</string>
+    <string name="btn_user">用户</string>
+    <string name="btn_login">登录</string>
+    <string name="btn_update">更新信息</string>
+    <string name="title_canuse">可用设备列表</string>
+    <string name="title_device_manager">终端管理</string>
+    <string name="text_add_device">添加设备</string>
+    <string name="text_can_not_use">停用设备</string>
+    <string name="text_canuse">可用设备</string>
+    <string name="title_device_add">添加设备</string>
+    <string name="btn_save">保存</string>
+    <string name="title_trackQuery">轨迹查询</string>
+    <string name="btn_trackQuery">查询</string>
+    <string name="font_type">微软雅黑</string>
+    <string name="title_choose">设备选择</string>
+    <string name="title_bind">设备绑定</string>
+    <string name="title_device_info">设备详情</string>
+    <string name="title_device_setting">终端设置</string>
+    <string name="btn_receive">接收</string>
+    <string name="btn_send">发送</string>
+    <string name="title_read_write">数据传输</string>
+</resources>
