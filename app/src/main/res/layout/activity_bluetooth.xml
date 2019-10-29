@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tabRow"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="zistone.com.bluetoothtest.MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="蓝牙测试"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorAccent"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="00000000"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            android:layout_marginTop="36dp" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="写入" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:text="11111111"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            android:layout_marginTop="36dp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="读取" />
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
