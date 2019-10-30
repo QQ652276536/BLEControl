@@ -224,7 +224,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
             m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, "");
-            getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
+            //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+            getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
+            getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
         }
         else
         {

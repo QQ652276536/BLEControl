@@ -39,4 +39,9 @@
     <string name="btn_receive">接收</string>
     <string name="btn_send">发送</string>
     <string name="title_read_write">数据传输</string>
+    <string name="btn_openDoor">开门</string>
+    <string name="btn_readCar">读卡</string>
+    <string name="btn_doorState">测量门状态</string>
+    <string name="btn_magStr">测量磁场强度</string>
+    <string name="btn_batteryVol">测量电池电压</string>
 </resources>

@@ -8,11 +8,13 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,23 +36,24 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private static final String TAG = "BluetoothFragment_ReadWrite";
     //已知服务
     private static final String SERVICE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
-    //已知特征,发送数据用
-    private static final String CHARACTERISTIC_UUID_SEND = "0000ff02-0000-1000-8000-00805f9b34fb";
-    //已知特征,接收数据用
-    private static final String CHARACTERISTIC_UUID_NOFITY = "0000ff03-0000-1000-8000-00805f9b34fb";
+    //已知特征
+    private static final String CHARACTERISTIC_UUID = "0000ff02-0000-1000-8000-00805f9b34fb";
+    //已知特征,写数据用
+    private static final String CHARACTERISTIC_UUID_NOTIFY = "0000ff03-0000-1000-8000-00805f9b34fb";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
-    private static final int MESSAGE_3 = 3;
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
     private ImageButton m_btnReturn;
-    private EditText m_editText;
     private TextView m_textView;
     private Button m_button1;
     private Button m_button2;
+    private Button m_button3;
+    private Button m_button4;
+    private Button m_button5;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
     private BluetoothGattService m_bluetoothGattService;
@@ -80,18 +83,21 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     m_button1.setEnabled(true);
                     m_button2.setEnabled(true);
-                    m_button1.invalidate();
-                    m_button2.invalidate();
+                    m_button3.setEnabled(true);
+                    m_button4.setEnabled(true);
+                    m_button5.setEnabled(true);
+                    m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     break;
                 }
                 case MESSAGE_2:
                 {
-                    Toast.makeText(m_context, "数据发送成功!", Toast.LENGTH_SHORT);
-                    break;
-                }
-                case MESSAGE_3:
-                {
-                    m_textView.setText(result);
+                    String str = m_textView.getText().toString();
+                    str += "\r\n" + result;
+                    m_textView.setText(str);
                     break;
                 }
                 default:
@@ -121,16 +127,22 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_context = getContext();
         m_btnReturn = m_view.findViewById(R.id.btn_return);
         m_btnReturn.setOnClickListener(this);
-        m_editText = m_view.findViewById(R.id.editText);
         m_textView = m_view.findViewById(R.id.textView);
+        m_textView.setMovementMethod(ScrollingMovementMethod.getInstance());
         m_button1 = m_view.findViewById(R.id.btn1);
         m_button1.setOnClickListener(this);
         m_button2 = m_view.findViewById(R.id.btn2);
         m_button2.setOnClickListener(this);
+        m_button3 = m_view.findViewById(R.id.btn3);
+        m_button3.setOnClickListener(this);
+        m_button4 = m_view.findViewById(R.id.btn4);
+        m_button4.setOnClickListener(this);
+        m_button5 = m_view.findViewById(R.id.btn5);
+        m_button5.setOnClickListener(this);
         if(m_bluetoothDevice != null)
         {
             Log.i(TAG, ">>>开始连接...");
-            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
+            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
             {
                 /**
                  * 连接状态改变时回调
@@ -171,7 +183,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     if(m_bluetoothGattService != null)
                     {
                         //写数据的服务和特征
-                        m_bluetoothGattCharacteristic = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_SEND));
+                        m_bluetoothGattCharacteristic = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_NOTIFY));
                         if(m_bluetoothGattCharacteristic != null)
                         {
                             //订阅写入通知
@@ -186,11 +198,12 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                             Log.e(TAG, ">>>该UUID无写入数据的特征值!");
                         }
                         //读取数据的服务和特征
-                        m_bluetoothGattCharacteristic_notify = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_NOFITY));
+                        m_bluetoothGattCharacteristic_notify = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID));
                         if(m_bluetoothGattCharacteristic_notify != null)
                         {
                             //订阅读取通知
-                            m_bluetoothGatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_notify, true);
+                            //m_bluetoothGatt.setCharacteristicNotification
+                            // (m_bluetoothGattCharacteristic_notify, true);
                             Log.i(TAG, ">>>已找到读取数据的特征值!");
                         }
                         else
@@ -201,7 +214,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 }
 
                 /**
-                 * 读取成功后回调
+                 * 读取成功后回调,用于读取Read通道返回的数据
+                 * 比如:在onCharacteristicWrite里面调用gatt.readCharacteristic(readCharact)后会回调该方法
                  * @param gatt
                  * @param characteristic
                  * @param status
@@ -221,13 +235,15 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     }
                     Log.i(TAG, ">>>收到设备的数据:" + result);
                     Message message = new Message();
-                    message.what = MESSAGE_3;
-                    message.obj = result;
+                    message.what = MESSAGE_2;
+                    message.obj = "收到设备的数据:" + result;
                     handler.sendMessage(message);
                 }
 
                 /**
-                 * 写入成功后回调
+                 * 写入成功后回调,主动去蓝牙获取数据,自己主动去READ通道获取蓝牙数据
+                 * 如果用的是Notify的话不用理会该方法,写出到蓝牙之后等待Notify的监听,即onCharacteristicChanged方法回调
+                 *
                  * @param gatt
                  * @param characteristic
                  * @param status
@@ -239,6 +255,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     Log.i(TAG, ">>>数据发送成功!");
                     Message message = new Message();
                     message.what = MESSAGE_2;
+                    message.obj = "数据发送成功!";
                     handler.sendMessage(message);
                 }
 
@@ -262,8 +279,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     }
                     Log.i(TAG, ">>>收到设备的数据2:" + result);
                     Message message = new Message();
-                    message.what = MESSAGE_3;
-                    message.obj = result;
+                    message.what = MESSAGE_2;
+                    message.obj = "收到设备的数据:" + result;
                     handler.sendMessage(message);
                 }
             });
@@ -306,17 +323,71 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         switch(v.getId())
         {
             case R.id.btn_return:
+            {
                 BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
                 getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
                 break;
+            }
+            //开门
             case R.id.btn1:
-                String str = m_editText.getText().toString();
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(str);
+            {
+                String hexStr = "6800000000000068100100E116";
+                String str = m_textView.getText().toString();
+                str += "\r\n发送数据:" + hexStr;
+                m_textView.setText(str);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic);
                 break;
+            }
+            //读卡
             case R.id.btn2:
+            {
+                String hexStr = "680000000000006810000101E216";
+                String str = m_textView.getText().toString();
+                str += "\r\n发送数据:" + hexStr;
+                m_textView.setText(str);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic);
                 break;
+            }
+            //测量电池电压
+            case R.id.btn3:
+            {
+                String hexStr = "680000000000006810000102E316";
+                String str = m_textView.getText().toString();
+                str += "\r\n发送数据:" + hexStr;
+                m_textView.setText(str);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic);
+                break;
+            }
+            //测量磁场强度
+            case R.id.btn4:
+            {
+                String hexStr = "680000000000006810000103E416";
+                String str = m_textView.getText().toString();
+                str += "\r\n发送数据:" + hexStr;
+                m_textView.setText(str);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic);
+                break;
+            }
+            //测量门状态
+            case R.id.btn5:
+            {
+                String hexStr = "680000000000006810000104E516";
+                String str = m_textView.getText().toString();
+                str += "\r\n发送数据:" + hexStr;
+                m_textView.setText(str);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic);
+                break;
+            }
         }
     }
 

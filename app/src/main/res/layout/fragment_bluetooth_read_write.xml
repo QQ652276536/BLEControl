@@ -29,41 +29,73 @@
             android:textSize="28sp" />
     </android.support.v7.widget.Toolbar>
 
-    <EditText
-        android:id="@+id/editText"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:ems="10"
-        android:inputType="number" />
+        android:layout_height="200dp"
+        android:layout_marginTop="36dp"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical"
+        android:text=""
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/btn1"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@color/cardview_dark_background"
         android:enabled="false"
-        android:text="@string/btn_send"
+        android:text="@string/btn_openDoor"
         android:textColor="@color/white"
         android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="36dp"
-        android:text="00000000"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp" />
 
     <Button
         android:id="@+id/btn2"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
+        android:layout_marginTop="16dp"
+        android:background="@color/cardview_dark_background"
         android:enabled="false"
-        android:text="@string/btn_receive"
+        android:text="@string/btn_readCar"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/cardview_dark_background"
+        android:enabled="false"
+        android:text="@string/btn_batteryVol"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn4"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/cardview_dark_background"
+        android:enabled="false"
+        android:text="@string/btn_magStr"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn5"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@color/cardview_dark_background"
+        android:enabled="false"
+        android:text="@string/btn_doorState"
         android:textColor="@color/white"
         android:textSize="16sp" />
 </LinearLayout>
