@@ -331,7 +331,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //开门
             case R.id.btn1:
             {
-                String hexStr = "6800000000000068100100E116";
+                String hexStr = "680000000000006810000100E116";
                 String str = m_textView.getText().toString();
                 str += "\r\n发送数据:" + hexStr;
                 m_textView.setText(str);
