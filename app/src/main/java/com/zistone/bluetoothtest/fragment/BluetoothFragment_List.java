@@ -139,7 +139,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onStart()
     {
         super.onStart();
-        handler.postDelayed(runnable, 50);
+        handler.postDelayed(runnable, 100);
         m_bluetoothReceiver = new BluetoothReceiver();
         //需要过滤多个动作，则调用IntentFilter对象的addAction添加新动作
         IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -184,7 +184,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-
     @Override
     public void onClick(View v)
     {
@@ -193,7 +192,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             BeginDiscovery();
         }
     }
-
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
@@ -217,7 +215,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
     }
 
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
@@ -226,8 +223,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
         if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
-            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance("", "");
-            getFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment_readWrite, "bluetoothFragment").commitNow();
+            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, "");
+            getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
         }
         else
         {

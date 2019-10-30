@@ -12,14 +12,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
+import com.zistone.bluetoothtest.fragment.BluetoothFragment;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_List;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_ReadWrite;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener
 {
-    //当前页,用来切换
-    public Fragment m_currentFragment;
-    public BluetoothFragment_List m_bluetoothFragment_list;
+    public BluetoothFragment m_bluetoothFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,9 +30,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
 
     private void InitData()
     {
-        m_bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-        m_currentFragment = m_bluetoothFragment_list;
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_currentFragment, "bluetoothFragment_list").show(m_currentFragment).commitNow();
+        m_bluetoothFragment = BluetoothFragment.newInstance("", "");
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment, "bluetoothFragment").show(m_bluetoothFragment).commitNow();
     }
 
     @Override

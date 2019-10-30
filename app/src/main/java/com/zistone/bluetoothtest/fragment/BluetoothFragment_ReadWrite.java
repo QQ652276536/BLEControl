@@ -41,8 +41,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
-    private static final int MESSAGE_RESPONSE_FAIL = 2;
-    private static final int MESSAGE_RESPONSE_SUCCESS = 3;
+    private static final int MESSAGE_2 = 2;
+    private static final int MESSAGE_3 = 3;
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
@@ -51,18 +51,17 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private TextView m_textView;
     private Button m_button1;
     private Button m_button2;
-    private BluetoothFragment_List m_bluetoothFragment_list;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
     private BluetoothGattService m_bluetoothGattService;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_notify;
 
-    public static BluetoothFragment_ReadWrite newInstance(String param1, String param2)
+    public static BluetoothFragment_ReadWrite newInstance(BluetoothDevice bluetoothDevice, String param2)
     {
         BluetoothFragment_ReadWrite fragment = new BluetoothFragment_ReadWrite();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putParcelable(ARG_PARAM1, bluetoothDevice);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -81,14 +80,18 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     m_button1.setEnabled(true);
                     m_button2.setEnabled(true);
+                    m_button1.invalidate();
+                    m_button2.invalidate();
                     break;
                 }
-                case MESSAGE_RESPONSE_SUCCESS:
+                case MESSAGE_2:
                 {
+                    Toast.makeText(m_context, "数据发送成功!", Toast.LENGTH_SHORT);
                     break;
                 }
-                case MESSAGE_RESPONSE_FAIL:
+                case MESSAGE_3:
                 {
+                    m_textView.setText(result);
                     break;
                 }
                 default:
@@ -124,10 +127,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button1.setOnClickListener(this);
         m_button2 = m_view.findViewById(R.id.btn2);
         m_button2.setOnClickListener(this);
-        m_bluetoothFragment_list = (BluetoothFragment_List) getActivity().getSupportFragmentManager().findFragmentByTag("bluetoothFragment_list");
-        if(m_bluetoothFragment_list != null)
+        if(m_bluetoothDevice != null)
         {
-            m_bluetoothDevice = m_bluetoothFragment_list.m_bluetoothDevice;
             Log.i(TAG, ">>>开始连接...");
             m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
             {
@@ -151,6 +152,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     {
                         Log.i(TAG, ">>>连接已断开!");
                         m_bluetoothGatt.close();
+                        ShowWarning(1);
                     }
                 }
 
@@ -168,9 +170,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_bluetoothGattService = gatt.getService(UUID.fromString(SERVICE_UUID));
                     if(m_bluetoothGattService != null)
                     {
-                        Message message = new Message();
-                        message.what = MESSAGE_1;
-                        handler.sendMessage(message);
                         //写数据的服务和特征
                         m_bluetoothGattCharacteristic = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_SEND));
                         if(m_bluetoothGattCharacteristic != null)
@@ -178,6 +177,9 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                             //订阅写入通知
                             m_bluetoothGatt.setCharacteristicNotification(m_bluetoothGattCharacteristic, true);
                             Log.i(TAG, ">>>已找到写入数据的特征值!");
+                            Message message = new Message();
+                            message.what = MESSAGE_1;
+                            handler.sendMessage(message);
                         }
                         else
                         {
@@ -209,17 +211,19 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     super.onCharacteristicRead(gatt, characteristic, status);
                     byte[] byteArray = characteristic.getValue();
-                    String str = "";
+                    String result = "";
                     for(int i = 0; i < byteArray.length; i++)
                     {
                         if(i != byteArray.length - 1)
                         {
-                            str += byteArray[i] + "";
+                            result += byteArray[i] + "";
                         }
                     }
-                    Log.i(TAG, ">>>接收到硬件的数据:" + str);
-                    String finalStr = str;
-                    getActivity().runOnUiThread(() -> m_textView.setText(finalStr));
+                    Log.i(TAG, ">>>收到设备的数据:" + result);
+                    Message message = new Message();
+                    message.what = MESSAGE_3;
+                    message.obj = result;
+                    handler.sendMessage(message);
                 }
 
                 /**
@@ -233,7 +237,9 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     super.onCharacteristicWrite(gatt, characteristic, status);
                     Log.i(TAG, ">>>数据发送成功!");
-                    getActivity().runOnUiThread(() -> Toast.makeText(m_context, "数据发送成功!", Toast.LENGTH_SHORT));
+                    Message message = new Message();
+                    message.what = MESSAGE_2;
+                    handler.sendMessage(message);
                 }
 
                 /**
@@ -245,15 +251,26 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
                 {
                     super.onCharacteristicChanged(gatt, characteristic);
-
-                    byte[] bytesreceive = characteristic.getValue();
-                    Log.i(TAG, ">>>接收数据:" + bytesreceive[0] + "" + bytesreceive[1] + "" + bytesreceive[2] + "" + bytesreceive[4]);
+                    byte[] byteArray = characteristic.getValue();
+                    String result = "";
+                    for(int i = 0; i < byteArray.length; i++)
+                    {
+                        if(i != byteArray.length - 1)
+                        {
+                            result += byteArray[i] + " ";
+                        }
+                    }
+                    Log.i(TAG, ">>>收到设备的数据2:" + result);
+                    Message message = new Message();
+                    message.what = MESSAGE_3;
+                    message.obj = result;
+                    handler.sendMessage(message);
                 }
             });
         }
         else
         {
-            ShowWarning(1);
+            ShowWarning(2);
         }
     }
 
@@ -264,14 +281,20 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         switch(param)
         {
             case 1:
-                builder.setMessage("该设备未连接成功,请重试!");
+                builder.setMessage("该设备的连接已断开!,请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
                     BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_current_device, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
                 });
                 break;
             case 2:
+                builder.setMessage("未获取到蓝牙,请重试!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                });
                 break;
         }
         builder.show();
@@ -284,7 +307,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         {
             case R.id.btn_return:
                 BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                getFragmentManager().beginTransaction().replace(R.id.fragment_current_device, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
                 break;
             case R.id.btn1:
                 String str = m_editText.getText().toString();
@@ -309,6 +332,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
         {
+            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
         }
     }
 
