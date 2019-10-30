@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -40,20 +41,20 @@ import java.util.UUID;
 
 public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener
 {
-    private static final String TAG = "BluetoothFragment_List";
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String m_param1;
-    private String m_param2;
-    private Context m_context;
-    private View m_view;
-    private OnFragmentInteractionListener m_listener;
+    public static final String TAG = "BluetoothFragment_List";
+    public static final String ARG_PARAM1 = "param1";
+    public static final String ARG_PARAM2 = "param2";
+    public String m_param1;
+    public String m_param2;
+    public Context m_context;
+    public View m_view;
+    public OnFragmentInteractionListener m_listener;
     //已知服务
     public static final String SERVICE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
     //已知特征,发送数据用
     public static final String CHARACTERISTIC_UUID_SEND = "0000ff03-0000-1000-8000-00805f9b34fb";
     //已知特征,接收数据用
-    public static final String CHARACTERISTIC_UUID_RECEIVE = "0000ff02-0000-1000-8000" + "-00805f9b34fb";
+    public static final String CHARACTERISTIC_UUID_RECEIVE = "0000ff02-0000-1000-8000-00805f9b34fb";
     public CheckBox m_checkBox;
     public TextView m_textView1;
     public ListView m_listView;
@@ -65,7 +66,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public BluetoothDevice m_bluetoothDevice;
     public BluetoothGattService m_bluetoothGattService;
     public BluetoothGatt m_bluetoothGatt;
-    public BluetoothGattCharacteristic m_bluetoothGattCharacteristic_Send;
     public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
 
     public static BluetoothFragment_List newInstance(String param1, String param2)
@@ -221,123 +221,17 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
+        //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
-        try
+        if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
-            if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
-            {
-                m_textView1.setText("开始连接");
-                m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
-                {
-                    /**
-                     * 连接状态改变时回调
-                     * @param gatt
-                     * @param status
-                     * @param newState
-                     */
-                    @Override
-                    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
-                    {
-                        super.onConnectionStateChange(gatt, status, newState);
-                        if(newState == BluetoothProfile.STATE_CONNECTED)
-                        {
-                            Log.i(TAG, ">>>成功建立连接!");
-
-                        }
-                        else if(newState == BluetoothGatt.STATE_DISCONNECTED)
-                        {
-                            Log.i(TAG, ">>>连接已断开!");
-                        }
-                        gatt.discoverServices();
-                    }
-
-                    /**
-                     *
-                     * @param gatt
-                     * @param status
-                     */
-                    @Override
-                    public void onServicesDiscovered(BluetoothGatt gatt, int status)
-                    {
-                        super.onServicesDiscovered(gatt, status);
-                        //通过UUID找到服务
-                        m_bluetoothGattService = gatt.getService(UUID.fromString(SERVICE_UUID));
-                        //找到服务后在通过UUID找到特征
-                        m_bluetoothGattCharacteristic_Send = m_bluetoothGattService.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_SEND));
-                        if(m_bluetoothGattCharacteristic_Send != null)
-                        {
-                            //启用onCharacteristicChanged(),用于接收数据
-                            gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_Send, true);
-                            Log.i(TAG, ">>>已找到特征!");
-
-                            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance("", "");
-                            getFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment_readWrite, "bluetoothFragment").commitNow();
-
-                            byte[] senddatas = new byte[]{8, 8, 8, 8, 8, 8, 8, 8};
-                            m_bluetoothGattCharacteristic_Send.setValue(senddatas);
-                            m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_Send);
-                        }
-                        else
-                        {
-                            Log.i(TAG, ">>>该UUID无特征!");
-                        }
-                    }
-
-                    /**
-                     * 读取成功后回调
-                     * @param gatt
-                     * @param characteristic
-                     * @param status
-                     */
-                    @Override
-                    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-                    {
-                        super.onCharacteristicRead(gatt, characteristic, status);
-                        Log.i(TAG, ">>>数据读取成功!");
-
-                        byte[] bytesreceive = characteristic.getValue();
-                        Log.i(TAG, ">>>接收数据:" + bytesreceive[0] + "" + bytesreceive[1] + "" + bytesreceive[2] + "" + bytesreceive[4]);
-                    }
-
-                    /**
-                     * 写入成功后回调
-                     * @param gatt
-                     * @param characteristic
-                     * @param status
-                     */
-                    @Override
-                    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-                    {
-                        super.onCharacteristicWrite(gatt, characteristic, status);
-                        Log.i(TAG, ">>>数据发送成功!");
-                    }
-
-                    /**
-                     * 接收数据
-                     * @param gatt
-                     * @param characteristic
-                     */
-                    @Override
-                    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
-                    {
-                        super.onCharacteristicChanged(gatt, characteristic);
-
-                        byte[] bytesreceive = characteristic.getValue();
-                        Log.i(TAG, ">>>接收数据:" + bytesreceive[0] + "" + bytesreceive[1] + "" + bytesreceive[2] + "" + bytesreceive[4]);
-                    }
-                });
-            }
-            else if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED && m_bluetoothDevice.getBondState() == BluetoothListAdapter.CONNECTED)
-            {
-                m_textView1.setText("正在发送消息");
-                //TODO:发送信息
-            }
+            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance("", "");
+            getFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment_readWrite, "bluetoothFragment").commitNow();
         }
-        catch(Exception e)
+        else
         {
-            e.printStackTrace();
-            m_textView1.setText("配对异常：" + e.getMessage());
+            Toast.makeText(m_context, "请检查该设备是否被占用", Toast.LENGTH_SHORT);
         }
     }
 

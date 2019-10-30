@@ -28,13 +28,12 @@
             android:textSize="28sp" />
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/textView1"
+    <EditText
+        android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:text="00000000"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp" />
+        android:ems="10"
+        android:inputType="number" />
 
     <Button
         android:id="@+id/btn1"
@@ -42,12 +41,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/colorPrimary"
+        android:enabled="false"
         android:text="@string/btn_send"
         android:textColor="@color/white"
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="36dp"
@@ -61,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/colorPrimary"
+        android:enabled="false"
         android:text="@string/btn_receive"
         android:textColor="@color/white"
         android:textSize="16sp" />
