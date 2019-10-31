@@ -49,12 +49,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public Context m_context;
     public View m_view;
     public OnFragmentInteractionListener m_listener;
-    //已知服务
-    public static final String SERVICE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
-    //已知特征,发送数据用
-    public static final String CHARACTERISTIC_UUID_SEND = "0000ff03-0000-1000-8000-00805f9b34fb";
-    //已知特征,接收数据用
-    public static final String CHARACTERISTIC_UUID_RECEIVE = "0000ff02-0000-1000-8000-00805f9b34fb";
     public CheckBox m_checkBox;
     public TextView m_textView1;
     public ListView m_listView;
@@ -64,8 +58,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
-    public BluetoothGattService m_bluetoothGattService;
-    public BluetoothGatt m_bluetoothGatt;
     public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
 
     public static BluetoothFragment_List newInstance(String param1, String param2)
@@ -88,7 +80,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             if(action.equals(BluetoothDevice.ACTION_FOUND))
             {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                m_deviceList.add(device);
+                if(!m_deviceList.contains(device.getAddress()))
+                {
+                    m_deviceList.add(device);
+                }
                 BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
                 m_listView.setAdapter(adapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
