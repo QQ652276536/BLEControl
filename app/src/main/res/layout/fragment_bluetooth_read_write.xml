@@ -46,7 +46,6 @@
         android:layout_gravity="right"
         android:layout_marginRight="20dp"
         android:background="@color/colorPrimary"
-        android:enabled="false"
         android:text="@string/btn_clear"
         android:textColor="@color/white"
         android:textSize="16sp" />
