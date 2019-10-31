@@ -44,4 +44,5 @@
     <string name="btn_doorState">测量门状态</string>
     <string name="btn_magStr">测量磁场强度</string>
     <string name="btn_batteryVol">测量电池电压</string>
+    <string name="btn_clear">清屏</string>
 </resources>

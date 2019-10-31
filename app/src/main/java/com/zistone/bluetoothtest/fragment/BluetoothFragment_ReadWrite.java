@@ -58,6 +58,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private Button m_button3;
     private Button m_button4;
     private Button m_button5;
+    private Button m_button6;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
     private BluetoothGattService m_bluetoothGattService;
@@ -143,6 +144,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button4.setOnClickListener(this);
         m_button5 = m_view.findViewById(R.id.btn5);
         m_button5.setOnClickListener(this);
+        m_button6 = m_view.findViewById(R.id.btn6);
+        m_button6.setOnClickListener(this);
         if(m_bluetoothDevice != null)
         {
             Log.i(TAG, ">>>开始连接...");
@@ -157,7 +160,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 @Override
                 public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
                 {
-                    super.onConnectionStateChange(gatt, status, newState);
                     if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
                     {
                         Log.i(TAG, ">>>成功建立连接!");
@@ -180,7 +182,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 @Override
                 public void onServicesDiscovered(BluetoothGatt gatt, int status)
                 {
-                    //super.onServicesDiscovered(gatt, status);
                     //直到这里才是真正建立了可通信的连接
                     //通过UUID找到服务
                     m_bluetoothGattService = m_bluetoothGatt.getService(SERVICE_UUID);
@@ -218,33 +219,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 }
 
                 /**
-                 * 读取成功后回调,用于读取Read通道返回的数据,如果是Notify的方式请忽略该方法
-                 * 比如:在onCharacteristicWrite里面调用gatt.readCharacteristic(readCharact)后会回调该方法
-                 * @param gatt
-                 * @param characteristic
-                 * @param status
-                 */
-                @Override
-                public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-                {
-                    //super.onCharacteristicRead(gatt, characteristic, status);
-                    byte[] byteArray = characteristic.getValue();
-                    String result = "";
-                    for(int i = 0; i < byteArray.length; i++)
-                    {
-                        if(i != byteArray.length - 1)
-                        {
-                            result += byteArray[i] + "";
-                        }
-                    }
-                    Log.i(TAG, ">>>收到设备的数据:" + result);
-                    Message message = new Message();
-                    message.what = MESSAGE_2;
-                    message.obj = "收到设备的数据:" + result;
-                    handler.sendMessage(message);
-                }
-
-                /**
                  * 写入成功后回调
                  *
                  * @param gatt
@@ -254,36 +228,31 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 @Override
                 public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
                 {
-                    //super.onCharacteristicWrite(gatt, characteristic, status);
-                    Log.i(TAG, ">>>数据发送成功!");
+                    Log.i(TAG, ">>>发送成功!");
                     Message message = new Message();
                     message.what = MESSAGE_2;
-                    message.obj = "数据发送成功!";
+                    message.obj = "发送成功!";
                     handler.sendMessage(message);
                 }
 
                 /**
-                 * 收到硬件返回的数据时回调
+                 * 收到硬件返回的数据时回调,如果是Notify的方式
                  * @param gatt
                  * @param characteristic
                  */
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
                 {
-                    //super.onCharacteristicChanged(gatt, characteristic);
                     byte[] byteArray = characteristic.getValue();
-                    String result = "";
-                    for(int i = 0; i < byteArray.length; i++)
-                    {
-                        if(i != byteArray.length - 1)
-                        {
-                            result += byteArray[i] + " ";
-                        }
-                    }
-                    Log.i(TAG, ">>>收到设备的数据:" + result);
+                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                    Log.i(TAG, ">>>接收:" + result);
                     Message message = new Message();
                     message.what = MESSAGE_2;
-                    message.obj = "收到设备的数据:" + result;
+                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String[] strArray = result.split(" ");
+
+                    result = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
+                    message.obj = "接收:" + result;
                     handler.sendMessage(message);
                 }
             });
@@ -332,12 +301,15 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_ReadWrite.this).commitNow();
                 break;
             }
+            case R.id.btn6:
+                m_textView.setText("");
+                break;
             //开门
             case R.id.btn1:
             {
                 String hexStr = "680000000000006810000100E116";
                 String str = m_textView.getText().toString();
-                str += "\r\n发送数据:" + hexStr;
+                str += "\r\n发送:" + hexStr;
                 m_textView.setText(str);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -349,7 +321,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 String hexStr = "680000000000006810000101E216";
                 String str = m_textView.getText().toString();
-                str += "\r\n发送数据:" + hexStr;
+                str += "\r\n发送:" + hexStr;
                 m_textView.setText(str);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -361,7 +333,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 String hexStr = "680000000000006810000102E316";
                 String str = m_textView.getText().toString();
-                str += "\r\n发送数据:" + hexStr;
+                str += "\r\n发送:" + hexStr;
                 m_textView.setText(str);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -373,7 +345,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 String hexStr = "680000000000006810000103E416";
                 String str = m_textView.getText().toString();
-                str += "\r\n发送数据:" + hexStr;
+                str += "\r\n发送:" + hexStr;
                 m_textView.setText(str);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -385,7 +357,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 String hexStr = "680000000000006810000104E516";
                 String str = m_textView.getText().toString();
-                str += "\r\n发送数据:" + hexStr;
+                str += "\r\n发送:" + hexStr;
                 m_textView.setText(str);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);

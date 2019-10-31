@@ -18,7 +18,7 @@ public class ConvertUtil
     {
 
         System.out.println("------------------------------------------------");
-        System.out.println("生成的检验码为:" + CreateCheckCodeNoMore256("68 00 00 00 68 10 01 03"));
+        System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
         System.out.println("------------------------------------------------");
 
 
@@ -139,32 +139,6 @@ public class ConvertUtil
     }
 
     /**
-     * 生成校验码
-     * 将收到的消息还原转义后去除标识和校验位,然后各字节模256的和,不计超过256的溢出值
-     *
-     * @param hexStr 带空格不带0x的16进制字符串,比如81 03 00
-     * @return
-     */
-    public static String CreateCheckCodeNoMore256(String hexStr) throws Exception
-    {
-        if(!hexStr.contains(" ") || hexStr.contains("0x") || hexStr.contains("0X"))
-        {
-            throw new Exception("参数必须为带空格不带0x的16进制字符串");
-        }
-        String[] strArray = hexStr.split(" ");
-        int result = 0;
-        for(int i = 0; i < strArray.length; i++)
-        {
-            int tempHexNum = Integer.parseInt(strArray[i], 16) % 256;
-            if(tempHexNum <= 256)
-            {
-                result += tempHexNum;
-            }
-        }
-        return Integer.toHexString(result);
-    }
-
-    /**
      * Str[]的每个元素拼接成Str
      *
      * @param strArray
@@ -204,15 +178,22 @@ public class ConvertUtil
      * @param hexStr
      * @return
      */
-    public static String HexStrToStr(String hexStr) throws UnsupportedEncodingException
+    public static String HexStrToStr(String hexStr)
     {
-        //能被16整除,肯定可以被2整除
-        byte[] array = new byte[hexStr.length() / 2];
-        for(int i = 0; i < array.length; i++)
+        try
         {
-            array[i] = (byte) (0xff & Integer.parseInt(hexStr.substring(i * 2, i * 2 + 2), 16));
+            //能被16整除,肯定可以被2整除
+            byte[] array = new byte[hexStr.length() / 2];
+            for(int i = 0; i < array.length; i++)
+            {
+                array[i] = (byte) (0xff & Integer.parseInt(hexStr.substring(i * 2, i * 2 + 2), 16));
+            }
+            hexStr = new String(array, "UTF-8");
         }
-        hexStr = new String(array, "UTF-8");
+        catch(UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
         return hexStr;
     }
 
