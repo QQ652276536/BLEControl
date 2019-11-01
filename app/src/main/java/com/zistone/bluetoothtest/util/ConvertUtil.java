@@ -31,7 +31,7 @@ public class ConvertUtil
         int aaa = Integer.parseInt("1997", 16);
         System.out.println("aaa:" + aaa);
 
-        System.out.println("16进制Str转普通Str:" + HexStrToStr("00"));
+        System.out.println("16进制Str转普通Str:" + HexStrToStr("3231332E30323820475320"));
         System.out.println("____________________________________________________________________");
         System.out.println("Unicode编码的中文转16进制的Str:" + DeUnicode("李小伟"));
         System.out.println("Unicode编码的中文转16进制的Str:" + DeUnicode("LiWei"));

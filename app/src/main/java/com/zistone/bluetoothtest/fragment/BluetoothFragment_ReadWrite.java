@@ -30,6 +30,7 @@ import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.control.BluetoothListAdapter;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClickListener
@@ -64,6 +65,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private BluetoothGattService m_bluetoothGattService;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
+    private StringBuffer m_stringBuffer = new StringBuffer();
 
     public static BluetoothFragment_ReadWrite newInstance(BluetoothDevice bluetoothDevice, String param2)
     {
@@ -245,15 +247,33 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     byte[] byteArray = characteristic.getValue();
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    Log.i(TAG, ">>>接收:" + result);
-                    Message message = new Message();
-                    message.what = MESSAGE_2;
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    Log.i(TAG, ">>>接收:" + result);
                     String[] strArray = result.split(" ");
-
-                    result = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
-                    message.obj = "接收:" + result;
-                    handler.sendMessage(message);
+                    //一个包(20个字节)
+                    if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
+                    {
+                        Resolve(result);
+                        //清空缓存
+                        m_stringBuffer = new StringBuffer();
+                    }
+                    //分包
+                    else
+                    {
+                        if(!strArray[strArray.length - 1].equals("16"))
+                        {
+                            m_stringBuffer.append(result + " ");
+                        }
+                        //最后一个包
+                        else
+                        {
+                            m_stringBuffer.append(result);
+                            result = m_stringBuffer.toString();
+                            Resolve(result);
+                            //清空缓存
+                            m_stringBuffer = new StringBuffer();
+                        }
+                    }
                 }
             });
         }
@@ -261,6 +281,38 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         {
             ShowWarning(2);
         }
+    }
+
+    private void Resolve(String data)
+    {
+        Log.i(TAG, ">>>共接收:" + data);
+        String[] strArray = data.split(" ");
+        String responseResult = "";
+        String responseValue = "";
+        String indexStr = strArray[12];
+        switch(indexStr)
+        {
+            case "00":
+                responseResult = "开门";
+                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
+                break;
+            case "01":
+                break;
+            case "02":
+                break;
+            case "03":
+                responseResult = "强磁场";
+                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
+                responseValue += ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]
+                        + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                break;
+            case "04":
+                break;
+        }
+        Message message = new Message();
+        message.what = MESSAGE_2;
+        message.obj = "接收:" + responseResult + responseValue;
+        handler.sendMessage(message);
     }
 
     private void ShowWarning(int param)
