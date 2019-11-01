@@ -484,5 +484,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     {
         super.onDetach();
         m_listener = null;
+        m_bluetoothGatt.close();
     }
 }
