@@ -303,7 +303,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case "03":
                 responseResult = "强磁场";
                 responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                responseValue += ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]
+                responseValue += " "+ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]
                         + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
                 break;
             case "04":
