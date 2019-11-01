@@ -230,10 +230,34 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 @Override
                 public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
                 {
-                    Log.i(TAG, ">>>发送成功!");
+                    byte[] byteArray = characteristic.getValue();
+                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String[] strArray = result.split(" ");
+                    String sendResult = "";
+                    String indexStr = strArray[11];
+                    switch(indexStr)
+                    {
+                        case "00":
+                            sendResult = "开门指令发送成功!";
+                            break;
+                        case "01":
+                            sendResult = "读卡指令发送成功!";
+                            break;
+                        case "02":
+                            sendResult = "测量电池电压指令发送成功!";
+                            break;
+                        case "03":
+                            sendResult = "测量磁场强度指令发送成功!";
+                            break;
+                        case "04":
+                            sendResult = "测量门状态指令发送成功!";
+                            break;
+                    }
+                    Log.i(TAG, ">>>" + sendResult);
                     Message message = new Message();
                     message.what = MESSAGE_2;
-                    message.obj = "发送成功!";
+                    message.obj = sendResult;
                     handler.sendMessage(message);
                 }
 
@@ -303,8 +327,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case "03":
                 responseResult = "强磁场";
                 responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                responseValue += " "+ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]
-                        + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
                 break;
             case "04":
                 break;
@@ -360,9 +383,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn1:
             {
                 String hexStr = "680000000000006810000100E116";
-                String str = m_textView.getText().toString();
-                str += "\r\n发送:" + hexStr;
-                m_textView.setText(str);
+                Log.i(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -372,9 +393,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn2:
             {
                 String hexStr = "680000000000006810000101E216";
-                String str = m_textView.getText().toString();
-                str += "\r\n发送:" + hexStr;
-                m_textView.setText(str);
+                Log.i(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -384,9 +403,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn3:
             {
                 String hexStr = "680000000000006810000102E316";
-                String str = m_textView.getText().toString();
-                str += "\r\n发送:" + hexStr;
-                m_textView.setText(str);
+                Log.i(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -396,9 +413,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn4:
             {
                 String hexStr = "680000000000006810000103E416";
-                String str = m_textView.getText().toString();
-                str += "\r\n发送:" + hexStr;
-                m_textView.setText(str);
+                Log.i(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -408,9 +423,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn5:
             {
                 String hexStr = "680000000000006810000104E516";
-                String str = m_textView.getText().toString();
-                str += "\r\n发送:" + hexStr;
-                m_textView.setText(str);
+                Log.i(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
