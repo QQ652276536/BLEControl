@@ -1,5 +1,6 @@
 package com.zistone.bluetoothtest.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -35,7 +36,7 @@ import java.util.UUID;
 
 public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClickListener
 {
-    public static final String TAG = "BluetoothFragment_ReadWrite";
+    private static final String TAG = "BluetoothFragment_ReadWrite";
     //已知服务
     private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //写入特征的UUID

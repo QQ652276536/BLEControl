@@ -34,9 +34,14 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment, "bluetoothFragment").show(m_bluetoothFragment).commitNow();
     }
 
+    /**
+     * Fragment向Activtiy传递数据
+     *
+     * @param uri
+     */
     @Override
     public void onFragmentInteraction(Uri uri)
     {
-        Toast.makeText(this, "----------DuangDuangDuang------------", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
     }
 }

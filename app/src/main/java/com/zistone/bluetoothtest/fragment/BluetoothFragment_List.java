@@ -52,9 +52,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public CheckBox m_checkBox;
     public TextView m_textView1;
     public ListView m_listView;
-    //蓝牙适配器
     public BluetoothAdapter m_bluetoothAdapter;
-    //蓝牙列表
     public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
@@ -346,6 +344,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
         }
+        //m_listener.onFragmentInteraction(Uri.parse(""));
         return m_view;
     }
 
@@ -368,6 +367,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         super.onDetach();
         m_listener = null;
+        m_deviceList.clear();
     }
 
     @Override
