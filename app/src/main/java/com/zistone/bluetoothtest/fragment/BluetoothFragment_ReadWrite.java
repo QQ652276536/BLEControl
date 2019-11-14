@@ -32,16 +32,20 @@ import com.zistone.bluetoothtest.control.BluetoothListAdapter;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClickListener
 {
     private static final String TAG = "BluetoothFragment_ReadWrite";
     //已知服务
+    //    private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
     private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //写入特征的UUID
+    //    private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
     private static final UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
     //读取特征的UUID
+    //    private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
     private static final UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     //客户端特征配置
     private static final UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");

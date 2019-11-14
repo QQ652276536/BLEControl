@@ -6,106 +6,118 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_device_manager"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@color/colorPrimary">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/btn_return"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            app:srcCompat="@drawable/btn_return" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:text="@string/title_read_write"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
-    </android.support.v7.widget.Toolbar>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar_device_manager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:fadeScrollbars="false"
-        android:scrollbars="vertical"
-        android:text=""
-        android:textSize="18sp" />
+                <ImageButton
+                    android:id="@+id/btn_return"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/btn_return" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:text="@string/title_read_write"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+            </android.support.v7.widget.Toolbar>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:fadeScrollbars="false"
+                android:scrollbars="vertical"
+                android:text=""
+                android:textSize="18sp" />
 
 
-    <Button
-        android:id="@+id/btn6"
-        android:layout_width="60dp"
-        android:layout_height="30dp"
-        android:layout_gravity="right"
-        android:layout_marginRight="20dp"
-        android:background="@color/colorPrimary"
-        android:text="@string/btn_clear"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn6"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:background="@color/colorPrimary"
+                android:text="@string/btn_clear"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn1"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/cardview_dark_background"
-        android:enabled="false"
-        android:text="@string/btn_openDoor"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn1"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/cardview_dark_background"
+                android:enabled="false"
+                android:text="@string/btn_openDoor"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn2"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:background="@color/cardview_dark_background"
-        android:enabled="false"
-        android:text="@string/btn_readCar"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn2"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@color/cardview_dark_background"
+                android:enabled="false"
+                android:text="@string/btn_readCar"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn3"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:background="@color/cardview_dark_background"
-        android:enabled="false"
-        android:text="@string/btn_batteryVol"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn3"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@color/cardview_dark_background"
+                android:enabled="false"
+                android:text="@string/btn_batteryVol"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn4"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:background="@color/cardview_dark_background"
-        android:enabled="false"
-        android:text="@string/btn_magStr"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn4"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@color/cardview_dark_background"
+                android:enabled="false"
+                android:text="@string/btn_magStr"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btn5"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:background="@color/cardview_dark_background"
-        android:enabled="false"
-        android:text="@string/btn_doorState"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+            <Button
+                android:id="@+id/btn5"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@color/cardview_dark_background"
+                android:enabled="false"
+                android:text="@string/btn_doorState"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
