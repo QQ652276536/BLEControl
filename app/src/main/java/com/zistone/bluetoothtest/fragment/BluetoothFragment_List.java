@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,8 @@ import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.control.BluetoothListAdapter;
+import com.zistone.material_refresh_layout.MaterialRefreshLayout;
+import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -58,6 +61,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
     public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
+    //下拉刷新控件
+    private MaterialRefreshLayout m_materialRefreshLayout;
 
     public static BluetoothFragment_List newInstance(String param1, String param2)
     {
@@ -346,6 +351,57 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
         }
         //m_listener.onFragmentInteraction(Uri.parse(""));
+
+        //下拉刷新控件
+        m_materialRefreshLayout = m_view.findViewById(R.id.refresh);
+        //启用加载更多
+        m_materialRefreshLayout.setLoadMore(false);
+        m_materialRefreshLayout.setMaterialRefreshListener(new MaterialRefreshListener()
+        {
+            /**
+             * 下拉刷新
+             * @param materialRefreshLayout
+             */
+            @Override
+            public void onRefresh(final MaterialRefreshLayout materialRefreshLayout)
+            {
+                materialRefreshLayout.postDelayed(() ->
+                {
+                    m_deviceList.clear();
+                    BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                    m_listView.setAdapter(adapter);
+                    m_textView1.setText("正在搜索蓝牙设备");
+                    //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
+                    m_bluetoothAdapter.startDiscovery();
+                    //结束下拉刷新
+                    materialRefreshLayout.finishRefresh();
+                }, 1 * 1000);
+            }
+
+            /**
+             * 加载完毕
+             */
+            @Override
+            public void onfinish()
+            {
+                //Toast.makeText(m_context, "完成", Toast.LENGTH_LONG).show();
+            }
+
+            /**
+             * 加载更多
+             * @param materialRefreshLayout
+             */
+            @Override
+            public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout)
+            {
+                Toast.makeText(m_context, "别滑了,到底了", Toast.LENGTH_SHORT).show();
+            }
+        });
+        //自动刷新
+        m_materialRefreshLayout.autoRefresh();
+        //使用线性布局
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(m_context);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         return m_view;
     }
 
