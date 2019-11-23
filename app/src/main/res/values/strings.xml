@@ -45,4 +45,6 @@
     <string name="btn_magStr">测量磁场强度</string>
     <string name="btn_batteryVol">测量电池电压</string>
     <string name="btn_clear">清屏</string>
+    <string name="btn_test1">综合测试A</string>
+    <string name="btn_test2">综合测试B</string>
 </resources>

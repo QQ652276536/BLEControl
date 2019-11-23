@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,13 +40,13 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
 {
     private static final String TAG = "BluetoothFragment_ReadWrite";
     //已知服务
-    //    private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
+    //private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
     private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //写入特征的UUID
-    //    private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
+    //private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
     private static final UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
     //读取特征的UUID
-    //    private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
+    //private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
     private static final UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     //客户端特征配置
     private static final UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -65,6 +66,9 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private Button m_button4;
     private Button m_button5;
     private Button m_button6;
+    private Button m_button7;
+    private Button m_button8;
+    private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
     private BluetoothGattService m_bluetoothGattService;
@@ -103,6 +107,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_progressBar.setVisibility(View.INVISIBLE);
                     break;
                 }
                 case MESSAGE_2:
@@ -153,9 +158,15 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button5.setOnClickListener(this);
         m_button6 = m_view.findViewById(R.id.btn6);
         m_button6.setOnClickListener(this);
+        m_button7 = m_view.findViewById(R.id.btn7);
+        m_button7.setOnClickListener(this);
+        m_button8 = m_view.findViewById(R.id.btn8);
+        m_button8.setOnClickListener(this);
+        m_progressBar = m_view.findViewById(R.id.progressBar);
+        m_progressBar.setVisibility(View.VISIBLE);
         if(m_bluetoothDevice != null)
         {
-            Log.i(TAG, ">>>开始连接...");
+            Log.d(TAG, ">>>开始连接...");
             m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
             {
                 /**
@@ -169,13 +180,13 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 {
                     if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
                     {
-                        Log.i(TAG, ">>>成功建立连接!");
+                        Log.d(TAG, ">>>成功建立连接!");
                         //发现服务
                         gatt.discoverServices();
                     }
                     else
                     {
-                        Log.i(TAG, ">>>连接已断开!");
+                        Log.d(TAG, ">>>连接已断开!");
                         m_bluetoothGatt.close();
                         ShowWarning(1);
                     }
@@ -198,7 +209,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                         m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
                         if(m_bluetoothGattCharacteristic_write != null)
                         {
-                            Log.i(TAG, ">>>已找到写入数据的特征值!");
+                            Log.d(TAG, ">>>已找到写入数据的特征值!");
                             Message message = new Message();
                             message.what = MESSAGE_1;
                             handler.sendMessage(message);
@@ -211,7 +222,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                         m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
                         if(m_bluetoothGattCharacteristic_read != null)
                         {
-                            Log.i(TAG, ">>>已找到读取数据的特征值!");
+                            Log.d(TAG, ">>>已找到读取数据的特征值!");
                             //订阅读取通知
                             gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_read, true);
                             BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
@@ -259,7 +270,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                             sendResult = "测量门状态指令发送成功!";
                             break;
                     }
-                    Log.i(TAG, ">>>" + sendResult);
+                    Log.d(TAG, ">>>" + sendResult);
                     Message message = new Message();
                     message.what = MESSAGE_2;
                     message.obj = sendResult;
@@ -277,7 +288,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     byte[] byteArray = characteristic.getValue();
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
-                    Log.i(TAG, ">>>接收:" + result);
+                    Log.d(TAG, ">>>接收:" + result);
                     String[] strArray = result.split(" ");
                     //一个包(20个字节)
                     if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
@@ -314,7 +325,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
 
     private void Resolve(String data)
     {
-        Log.i(TAG, ">>>共接收:" + data);
+        Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String responseResult = "";
         String responseValue = "";
@@ -397,7 +408,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn1:
             {
                 String hexStr = "680000000000006810000100E116";
-                Log.i(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -407,7 +418,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn2:
             {
                 String hexStr = "680000000000006810000101E216";
-                Log.i(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -417,7 +428,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn3:
             {
                 String hexStr = "680000000000006810000102E316";
-                Log.i(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -427,7 +438,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn4:
             {
                 String hexStr = "680000000000006810000103E416";
-                Log.i(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -437,12 +448,29 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn5:
             {
                 String hexStr = "680000000000006810000104E516";
-                Log.i(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
                 break;
             }
+            case R.id.btn7:
+                //开门
+                String hexStr = "680000000000006810000100E116";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                //磁强
+                hexStr = "680000000000006810000103E416";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            case R.id.btn8:
+                m_textView.setText("开始接收设备状态信息...");
+                break;
         }
     }
 

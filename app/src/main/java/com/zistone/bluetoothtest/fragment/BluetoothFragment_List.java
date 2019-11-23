@@ -126,7 +126,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             {
                 byte[] readBuf = (byte[]) msg.obj;
                 String readMessage = new String(readBuf, 0, msg.arg1);
-                Log.i(TAG, "handleMessage readMessage=" + readMessage);
+                Log.d(TAG, "handleMessage readMessage=" + readMessage);
                 AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
                 builder.setTitle("我收到消息啦").setMessage(readMessage).setPositiveButton("确定", null);
                 builder.create().show();
