@@ -36,15 +36,13 @@
         </android.support.v7.widget.Toolbar>
 
         <Button
-            android:id="@+id/btn0"
+            android:id="@+id/button1"
+            style="@style/ButtonStyleA"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/cardview_dark_background"
             android:text="@string/btn_conn"
-            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -78,6 +76,7 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -92,6 +91,7 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -112,6 +112,7 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -126,6 +127,7 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -146,10 +148,11 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="<显示百分比>"
+                    android:text="显示百分比"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -166,180 +169,106 @@
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/text6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="<正常红色异常红色发>"
+                    android:text="正常红色异常绿色"
                     android:textSize="18sp" />
             </LinearLayout>
-
         </LinearLayout>
-
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/shape"
             android:gravity="center"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_openDoor"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_readCar"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_batteryVol"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_magStr"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_doorState"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_test1"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="@string/btn_test2"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Button"
-                    android:visibility="invisible" />
-
-                <Button
-                    android:id="@+id/btn9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Button"
-                    android:visibility="invisible" />
-
-            </LinearLayout>
-
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:fadeScrollbars="false"
-                android:scrollbars="vertical"
-                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="门锁控制"
                 android:textSize="18sp" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
+            <Button
+                android:id="@+id/button2"
+                style="@style/ButtonStyleA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:indeterminateTint="@color/colorPrimary"
-                android:visibility="invisible" />
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:enabled="false"
+                android:text="开一号门锁"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/button3"
+                style="@style/ButtonStyleA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:enabled="false"
+                android:text="开二号门锁"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/button4"
+                style="@style/ButtonStyleA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="10dp"
+                android:enabled="false"
+                android:text="开全部门锁"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="213dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/shape"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button5"
+                style="@style/ButtonStyleA"
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right"
+                android:text="清屏"
+                android:textSize="16sp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/debug_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textMultiLine"
+                    android:singleLine="false"
+                    android:text="TextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTexTextVTextViewTextVTextVTextViewTextViewTextViewTextViewTextViewTex" />
+            </ScrollView>
 
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>

@@ -59,15 +59,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Context m_context;
     private View m_view;
     private ImageButton m_btnReturn;
-    private TextView m_textView;
-    private Button m_button0;
+    private TextView m_debugView;
     private Button m_button1;
     private Button m_button2;
     private Button m_button3;
     private Button m_button4;
     private Button m_button5;
-    private Button m_button6;
-    private Button m_button7;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -75,8 +72,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
     private StringBuffer m_stringBuffer = new StringBuffer();
-    private boolean m_isComplexAFlag = false;
-    private boolean m_isComplexBFlag = false;
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
@@ -102,26 +97,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 case MESSAGE_1:
                 {
-                    m_button1.setEnabled(true);
                     m_button2.setEnabled(true);
                     m_button3.setEnabled(true);
                     m_button4.setEnabled(true);
-                    m_button5.setEnabled(true);
-                    m_button6.setEnabled(true);
-                    m_button7.setEnabled(true);
-                    m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button6.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_progressBar.setVisibility(View.INVISIBLE);
                     break;
                 }
                 case MESSAGE_2:
                 {
-                    m_textView.append("\r\n" + result);
+                    m_debugView.append("\r\n" + result);
                     break;
                 }
                 default:
@@ -161,186 +144,21 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
         setHasOptionsMenu(true);
         //此处强转,必须是Activity才有这个方法
-        ((MainActivity)getActivity()).setSupportActionBar(m_toolbar);
+        ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
         m_btnReturn = m_view.findViewById(R.id.btn_return);
         m_btnReturn.setOnClickListener(this);
-        m_textView = m_view.findViewById(R.id.textView);
-        m_textView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        m_button0 = m_view.findViewById(R.id.btn0);
-        m_button0.setOnClickListener(this);
-        m_button1 = m_view.findViewById(R.id.btn1);
+        m_debugView = m_view.findViewById(R.id.debug_view);
+        m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        m_button1 = m_view.findViewById(R.id.button1);
         m_button1.setOnClickListener(this);
-        m_button2 = m_view.findViewById(R.id.btn2);
+        m_button2 = m_view.findViewById(R.id.button2);
         m_button2.setOnClickListener(this);
-        m_button3 = m_view.findViewById(R.id.btn3);
+        m_button3 = m_view.findViewById(R.id.button3);
         m_button3.setOnClickListener(this);
-        m_button4 = m_view.findViewById(R.id.btn4);
+        m_button4 = m_view.findViewById(R.id.button4);
         m_button4.setOnClickListener(this);
-        m_button5 = m_view.findViewById(R.id.btn5);
+        m_button5 = m_view.findViewById(R.id.button5);
         m_button5.setOnClickListener(this);
-        m_button6 = m_view.findViewById(R.id.btn6);
-        m_button6.setOnClickListener(this);
-        m_button7 = m_view.findViewById(R.id.btn7);
-        m_button7.setOnClickListener(this);
-        m_progressBar = m_view.findViewById(R.id.progressBar);
-        m_progressBar.setVisibility(View.VISIBLE);
-        if(m_bluetoothDevice != null)
-        {
-            Log.d(TAG, ">>>开始连接...");
-            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
-            {
-                /**
-                 * 连接状态改变时回调
-                 * @param gatt
-                 * @param status
-                 * @param newState
-                 */
-                @Override
-                public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
-                {
-                    if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
-                    {
-                        Log.d(TAG, ">>>成功建立连接!");
-                        //发现服务
-                        gatt.discoverServices();
-                    }
-                    else
-                    {
-                        Log.d(TAG, ">>>连接已断开!");
-                        m_bluetoothGatt.close();
-                        ShowWarning(1);
-                    }
-                }
-
-                /**
-                 * 发现设备(真正建立连接)
-                 * @param gatt
-                 * @param status
-                 */
-                @Override
-                public void onServicesDiscovered(BluetoothGatt gatt, int status)
-                {
-                    //直到这里才是真正建立了可通信的连接
-                    //通过UUID找到服务
-                    m_bluetoothGattService = m_bluetoothGatt.getService(SERVICE_UUID);
-                    if(m_bluetoothGattService != null)
-                    {
-                        //写数据的服务和特征
-                        m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
-                        if(m_bluetoothGattCharacteristic_write != null)
-                        {
-                            Log.d(TAG, ">>>已找到写入数据的特征值!");
-                            Message message = new Message();
-                            message.what = MESSAGE_1;
-                            handler.sendMessage(message);
-                        }
-                        else
-                        {
-                            Log.e(TAG, ">>>该UUID无写入数据的特征值!");
-                        }
-                        //读取数据的服务和特征
-                        m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
-                        if(m_bluetoothGattCharacteristic_read != null)
-                        {
-                            Log.d(TAG, ">>>已找到读取数据的特征值!");
-                            //订阅读取通知
-                            gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_read, true);
-                            BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            gatt.writeDescriptor(descriptor);
-                        }
-                        else
-                        {
-                            Log.e(TAG, ">>>该UUID无读取数据的特征值!");
-                        }
-                    }
-                }
-
-                /**
-                 * 写入成功后回调
-                 *
-                 * @param gatt
-                 * @param characteristic
-                 * @param status
-                 */
-                @Override
-                public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-                {
-                    byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
-                    String[] strArray = result.split(" ");
-                    String sendResult = "";
-                    String indexStr = strArray[11];
-                    switch(indexStr)
-                    {
-                        case "00":
-                            sendResult = "开门";
-                            break;
-                        case "01":
-                            sendResult = "读卡";
-                            break;
-                        case "02":
-                            sendResult = "测量电池电压";
-                            break;
-                        case "03":
-                            sendResult = "测量磁场强度";
-                            break;
-                        case "04":
-                            sendResult = "测量门状态";
-                            break;
-                    }
-                    Log.d(TAG, ">>>" + sendResult);
-                    Message message = new Message();
-                    message.what = MESSAGE_2;
-                    message.obj = sendResult;
-                    handler.sendMessage(message);
-                }
-
-                /**
-                 * 收到硬件返回的数据时回调,如果是Notify的方式
-                 * @param gatt
-                 * @param characteristic
-                 */
-                @Override
-                public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
-                {
-                    byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
-                    Log.d(TAG, ">>>接收:" + result);
-                    String[] strArray = result.split(" ");
-                    //一个包(20个字节)
-                    if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
-                    {
-                        Resolve(result);
-                        //清空缓存
-                        m_stringBuffer = new StringBuffer();
-                    }
-                    //分包
-                    else
-                    {
-                        if(!strArray[strArray.length - 1].equals("16"))
-                        {
-                            m_stringBuffer.append(result + " ");
-                        }
-                        //最后一个包
-                        else
-                        {
-                            m_stringBuffer.append(result);
-                            result = m_stringBuffer.toString();
-                            Resolve(result);
-                            //清空缓存
-                            m_stringBuffer = new StringBuffer();
-                        }
-                    }
-                }
-            });
-        }
-        else
-        {
-            ShowWarning(2);
-        }
     }
 
     private void Resolve(String data)
@@ -349,41 +167,38 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         String[] strArray = data.split(" ");
         String responseResult = "";
         String responseValue = "";
-        if(!m_isComplexAFlag)
+        String indexStr = strArray[12];
+        switch(indexStr)
         {
-            String indexStr = strArray[12];
-            switch(indexStr)
-            {
-                //开门
-                case "00":
-                    responseResult = "开门";
-                    responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
-                    break;
-                //读卡
-                case "01":
-                    break;
-                //电池电压
-                case "02":
-                    break;
-                //磁场强度
-                case "03":
-                    responseResult = "强磁场";
-                    responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                    responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                    break;
-                //测量门状态
-                case "04":
-                    responseResult = "";
-                    if(strArray[13].equals("01"))
-                    {
-                        responseValue = "门已关";
-                    }
-                    else
-                    {
-                        responseResult = "门已开";
-                    }
-                    break;
-            }
+            //开门
+            case "00":
+                responseResult = "开门";
+                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
+                break;
+            //读卡
+            case "01":
+                break;
+            //电池电压
+            case "02":
+                break;
+            //磁场强度
+            case "03":
+                responseResult = "强磁场";
+                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
+                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                break;
+            //测量门状态
+            case "04":
+                responseResult = "";
+                if(strArray[13].equals("01"))
+                {
+                    responseValue = "门已关";
+                }
+                else
+                {
+                    responseResult = "门已开";
+                }
+                break;
         }
         Message message = new Message();
         message.what = MESSAGE_2;
@@ -429,158 +244,213 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
                 break;
             }
-            //清屏
-            case R.id.btn0:
-                m_textView.setText("");
-                break;
-            //开门
-            case R.id.btn1:
+            //连接
+            case R.id.button1:
             {
-                String hexStr = "680000000000006810000100E116";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //读卡
-            case R.id.btn2:
-            {
-                String hexStr = "680000000000006810000101E216";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量电池电压
-            case R.id.btn3:
-            {
-                String hexStr = "680000000000006810000102E316";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量磁场强度
-            case R.id.btn4:
-            {
-                String hexStr = "680000000000006810000103E416";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量门状态
-            case R.id.btn5:
-            {
-                m_textView.setText("");
-                String hexStr = "680000000000006810000104E516";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //综合测试A
-            case R.id.btn6:
-                m_isComplexAFlag = true;
-                String hexStr = "680000000000006810000180E616";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                m_isComplexAFlag = false;
-                break;
-            //综合测试B
-            case R.id.btn7:
-                if(!m_isComplexBFlag)
+                if(m_bluetoothDevice != null)
                 {
-                    m_textView.setText("开始接收设备状态信息...");
-                    m_isComplexBFlag = true;
-                    m_button7.setText("停止");
-                    m_button1.setEnabled(false);
-                    m_button2.setEnabled(false);
-                    m_button3.setEnabled(false);
-                    m_button4.setEnabled(false);
-                    m_button5.setEnabled(false);
-                    m_button6.setEnabled(false);
-                    m_button1.setBackgroundColor(Color.BLACK);
-                    m_button2.setBackgroundColor(Color.BLACK);
-                    m_button3.setBackgroundColor(Color.BLACK);
-                    m_button4.setBackgroundColor(Color.BLACK);
-                    m_button5.setBackgroundColor(Color.BLACK);
-                    m_button6.setBackgroundColor(Color.BLACK);
-                    //开启定时器
-                    m_refreshTimer = new Timer();
-                    m_refreshTask = new TimerTask()
+                    if(m_button1.getText().toString().equalsIgnoreCase("连接"))
                     {
+                        m_button1.setText("断开");
+                        m_button2.setEnabled(true);
+                        m_button3.setEnabled(true);
+                        m_button4.setEnabled(true);
+                    }
+                    else
+                    {
+                        m_button1.setText("连接");
+                        m_button2.setEnabled(false);
+                        m_button3.setEnabled(false);
+                        m_button4.setEnabled(false);
+                        if(m_bluetoothGatt != null)
+                            m_bluetoothGatt.disconnect();
+                    }
+                    if(1 > 0)
+                    {
+                        return;
+                    }
+                    Log.d(TAG, ">>>开始连接...");
+                    m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
+                    {
+                        /**
+                         * 连接状态改变时回调
+                         * @param gatt
+                         * @param status
+                         * @param newState
+                         */
                         @Override
-                        public void run()
+                        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
                         {
-                            getActivity().runOnUiThread(() ->
+                            if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
                             {
-                                try
-                                {
-                                    //磁强
-                                    String hexStr = "680000000000006810000103E416";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-                                    //门状态
-                                    hexStr = "680000000000006810000104E516";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-                                }
-                                catch(InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                            });
+                                Log.d(TAG, ">>>成功建立连接!");
+                                //发现服务
+                                gatt.discoverServices();
+                            }
+                            else
+                            {
+                                Log.d(TAG, ">>>连接已断开!");
+                                m_bluetoothGatt.close();
+                                ShowWarning(1);
+                            }
                         }
-                    };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+
+                        /**
+                         * 发现设备(真正建立连接)
+                         * @param gatt
+                         * @param status
+                         */
+                        @Override
+                        public void onServicesDiscovered(BluetoothGatt gatt, int status)
+                        {
+                            //直到这里才是真正建立了可通信的连接
+                            //通过UUID找到服务
+                            m_bluetoothGattService = m_bluetoothGatt.getService(SERVICE_UUID);
+                            if(m_bluetoothGattService != null)
+                            {
+                                //写数据的服务和特征
+                                m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
+                                if(m_bluetoothGattCharacteristic_write != null)
+                                {
+                                    Log.d(TAG, ">>>已找到写入数据的特征值!");
+                                    Message message = new Message();
+                                    message.what = MESSAGE_1;
+                                    handler.sendMessage(message);
+                                }
+                                else
+                                {
+                                    Log.e(TAG, ">>>该UUID无写入数据的特征值!");
+                                }
+                                //读取数据的服务和特征
+                                m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
+                                if(m_bluetoothGattCharacteristic_read != null)
+                                {
+                                    Log.d(TAG, ">>>已找到读取数据的特征值!");
+                                    //订阅读取通知
+                                    gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_read, true);
+                                    BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
+                                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                    gatt.writeDescriptor(descriptor);
+                                }
+                                else
+                                {
+                                    Log.e(TAG, ">>>该UUID无读取数据的特征值!");
+                                }
+                            }
+                        }
+
+                        /**
+                         * 写入成功后回调
+                         *
+                         * @param gatt
+                         * @param characteristic
+                         * @param status
+                         */
+                        @Override
+                        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
+                        {
+                            byte[] byteArray = characteristic.getValue();
+                            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                            result = ConvertUtil.HexStrAddCharacter(result, " ");
+                            String[] strArray = result.split(" ");
+                            String sendResult = "";
+                            String indexStr = strArray[11];
+                            switch(indexStr)
+                            {
+                                case "00":
+                                    sendResult = "开门";
+                                    break;
+                                case "01":
+                                    sendResult = "读卡";
+                                    break;
+                                case "02":
+                                    sendResult = "测量电池电压";
+                                    break;
+                                case "03":
+                                    sendResult = "测量磁场强度";
+                                    break;
+                                case "04":
+                                    sendResult = "测量门状态";
+                                    break;
+                            }
+                            Log.d(TAG, ">>>" + sendResult);
+                            Message message = new Message();
+                            message.what = MESSAGE_2;
+                            message.obj = sendResult;
+                            handler.sendMessage(message);
+                        }
+
+                        /**
+                         * 收到硬件返回的数据时回调,如果是Notify的方式
+                         * @param gatt
+                         * @param characteristic
+                         */
+                        @Override
+                        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
+                        {
+                            byte[] byteArray = characteristic.getValue();
+                            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                            result = ConvertUtil.HexStrAddCharacter(result, " ");
+                            Log.d(TAG, ">>>接收:" + result);
+                            String[] strArray = result.split(" ");
+                            //一个包(20个字节)
+                            if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
+                            {
+                                Resolve(result);
+                                //清空缓存
+                                m_stringBuffer = new StringBuffer();
+                            }
+                            //分包
+                            else
+                            {
+                                if(!strArray[strArray.length - 1].equals("16"))
+                                {
+                                    m_stringBuffer.append(result + " ");
+                                }
+                                //最后一个包
+                                else
+                                {
+                                    m_stringBuffer.append(result);
+                                    result = m_stringBuffer.toString();
+                                    Resolve(result);
+                                    //清空缓存
+                                    m_stringBuffer = new StringBuffer();
+                                }
+                            }
+                        }
+                    });
                 }
                 else
                 {
-                    m_isComplexBFlag = false;
-                    m_button7.setText("综合测试B");
-                    m_button1.setEnabled(true);
-                    m_button2.setEnabled(true);
-                    m_button3.setEnabled(true);
-                    m_button4.setEnabled(true);
-                    m_button5.setEnabled(true);
-                    m_button6.setEnabled(true);
-                    m_button7.setEnabled(true);
-                    m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button6.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    //关闭定时器
-                    if(m_refreshTimer != null)
-                    {
-                        m_refreshTimer.cancel();
-                        m_refreshTimer = null;
-                    }
-                    if(m_refreshTask != null)
-                    {
-                        m_refreshTask.cancel();
-                        m_refreshTask = null;
-                    }
+                    ShowWarning(2);
                 }
+                m_refreshTimer = new Timer();
+                m_refreshTask = new TimerTask()
+                {
+                    @Override
+                    public void run()
+                    {
+                        getActivity().runOnUiThread(() ->
+                        {
+                        });
+                    }
+                };
+                //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+                break;
+            }
+            case R.id.button2:
+                break;
+            case R.id.button3:
+                break;
+            case R.id.button4:
+                break;
+            //清屏
+            case R.id.button5:
+                m_debugView.setText("");
                 break;
         }
+
     }
 
     @Override
@@ -635,7 +505,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     {
         super.onDetach();
         m_listener = null;
-        m_bluetoothGatt.close();
+        if(m_bluetoothGatt != null)
+            m_bluetoothGatt.close();
         if(m_refreshTimer != null)
             m_refreshTimer.cancel();
         if(m_refreshTask != null)

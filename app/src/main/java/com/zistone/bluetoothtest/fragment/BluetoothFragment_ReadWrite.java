@@ -1,15 +1,12 @@
 package com.zistone.bluetoothtest.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.AppComponentFactory;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -17,28 +14,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
-import com.zistone.bluetoothtest.activity.MainActivity;
-import com.zistone.bluetoothtest.control.BluetoothListAdapter;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -161,7 +150,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_textView.setMovementMethod(ScrollingMovementMethod.getInstance());
         m_button0 = m_view.findViewById(R.id.btn0);
         m_button0.setOnClickListener(this);
-        m_button1 = m_view.findViewById(R.id.btn1);
+        m_button1 = m_view.findViewById(R.id.button1);
         m_button1.setOnClickListener(this);
         m_button2 = m_view.findViewById(R.id.btn2);
         m_button2.setOnClickListener(this);
@@ -173,7 +162,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button5.setOnClickListener(this);
         m_button6 = m_view.findViewById(R.id.btn6);
         m_button6.setOnClickListener(this);
-        m_button7 = m_view.findViewById(R.id.btn7);
+        m_button7 = m_view.findViewById(R.id.btn6);
         m_button7.setOnClickListener(this);
         m_progressBar = m_view.findViewById(R.id.progressBar);
         m_progressBar.setVisibility(View.VISIBLE);
@@ -427,7 +416,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 m_textView.setText("");
                 break;
             //开门
-            case R.id.btn1:
+            case R.id.button1:
             {
                 String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);

@@ -14,9 +14,12 @@ import android.widget.Toast;
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_List;
+import com.zistone.bluetoothtest.fragment.BluetoothFragment_PowerControl;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_ReadWrite;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener,
+        BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener,
+        BluetoothFragment_PowerControl.OnFragmentInteractionListener
 {
     public BluetoothFragment m_bluetoothFragment;
 

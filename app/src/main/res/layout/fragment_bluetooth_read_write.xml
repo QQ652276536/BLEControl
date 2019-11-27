@@ -63,7 +63,7 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btn6"
+                android:id="@+id/btn0"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:layout_gravity="right"
@@ -82,7 +82,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn1"
+                    android:id="@+id/button1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
@@ -158,7 +158,7 @@
                     android:textSize="16sp" />
 
                 <Button
-                    android:id="@+id/btn7"
+                    android:id="@+id/btn6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
@@ -179,7 +179,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn8"
+                    android:id="@+id/btn7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
@@ -193,7 +193,7 @@
                     android:textSize="16sp" />
 
                 <Button
-                    android:id="@+id/btn9"
+                    android:id="@+id/btn8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -201,7 +201,7 @@
                     android:visibility="invisible" />
 
                 <Button
-                    android:id="@+id/btn10"
+                    android:id="@+id/btn9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

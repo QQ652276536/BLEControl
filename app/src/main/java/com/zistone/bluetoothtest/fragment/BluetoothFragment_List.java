@@ -61,8 +61,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
     public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
+    public BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
+    private CheckBox m_checkBox1;
 
     public static BluetoothFragment_List newInstance(String param1, String param2)
     {
@@ -222,10 +224,22 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
         if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
-            m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, "");
-            //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-            getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
-            getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            //停止搜索蓝牙
+            CancelDiscovery();
+            if(!m_checkBox1.isChecked())
+            {
+                m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, "");
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            }
+            else
+            {
+                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_bluetoothDevice, "");
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            }
         }
         else
         {
@@ -402,6 +416,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //使用线性布局
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(m_context);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        m_checkBox1 = m_view.findViewById(R.id.checkBox);
         return m_view;
     }
 
