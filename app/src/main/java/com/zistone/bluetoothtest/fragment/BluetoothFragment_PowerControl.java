@@ -55,6 +55,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
+    private static final int MESSAGE_3 = 3;
+    private static final int MESSAGE_4 = 4;
+    private static final int MESSAGE_5 = 5;
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
@@ -106,14 +109,67 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     m_button2.setEnabled(true);
                     m_button3.setEnabled(true);
                     m_button4.setEnabled(true);
-                    break;
+                    m_refreshTimer = new Timer();
+                    m_refreshTask = new TimerTask()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            getActivity().runOnUiThread(() ->
+                            {
+                                try
+                                {
+                                    //门状态
+                                    String hexStr = "680000000000006810000104E516";
+                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    Thread.sleep(100);
+
+                                    //电池电压
+                                    hexStr = "680000000000006810000102E316";
+                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    Thread.sleep(100);
+
+                                    //磁强
+                                    hexStr = "680000000000006810000103E416";
+                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    Thread.sleep(100);
+                                }
+                                catch(InterruptedException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    };
+                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    m_refreshTimer.schedule(m_refreshTask, 0, 3 * 1000);
                 }
+                break;
                 case MESSAGE_2:
                 {
                     m_debugView.append("\r\n" + result);
-                    break;
                 }
-                default:
+                break;
+                //电池电压
+                case MESSAGE_3:
+                    m_textView5.setText(result);
+                    break;
+                //磁场强度
+                case MESSAGE_4:
+                    m_textView6.setText(result);
+                    break;
+                //门状态
+                case MESSAGE_5:
+                    m_textView1.setText(result);
                     break;
             }
         }
@@ -179,45 +235,61 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     {
         Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
-        String responseResult = "";
-        String responseValue = "";
         String indexStr = strArray[12];
         switch(indexStr)
         {
             //开门
             case "00":
-                responseResult = "开门";
-                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
-                break;
+            {
+                String responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
+                Message message = new Message();
+                message.what = MESSAGE_2;
+                message.obj = "收到:开门【" + responseValue + "】";
+                handler.sendMessage(message);
+            }
+            break;
             //读卡
             case "01":
-                break;
+            {
+            }
+            break;
             //电池电压
             case "02":
-                break;
+            {
+                Message message = new Message();
+                message.what = MESSAGE_3;
+                message.obj = "";
+                handler.sendMessage(message);
+            }
+            break;
             //磁场强度
             case "03":
-                responseResult = "强磁场";
-                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                break;
+            {
+                String responseValue1 = strArray[9].equals("00") ? "OK" : "Fail";
+                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                Message message = new Message();
+                message.what = MESSAGE_4;
+                message.obj = responseValue2;
+                handler.sendMessage(message);
+            }
+            break;
             //测量门状态
             case "04":
-                responseResult = "";
+            {
+                Message message = new Message();
+                message.what = MESSAGE_5;
                 if(strArray[13].equals("01"))
                 {
-                    responseValue = "门已关";
+                    message.obj = "门已关";
                 }
                 else
                 {
-                    responseResult = "门已开";
+                    message.obj = "门已开";
                 }
-                break;
+                handler.sendMessage(message);
+            }
+            break;
         }
-        Message message = new Message();
-        message.what = MESSAGE_2;
-        message.obj = "接收:" + responseResult + responseValue;
-        handler.sendMessage(message);
     }
 
     private void ShowWarning(int param)
@@ -266,9 +338,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     if(m_button1.getText().toString().equalsIgnoreCase("连接"))
                     {
                         m_button1.setText("断开");
-                        m_button2.setEnabled(true);
-                        m_button3.setEnabled(true);
-                        m_button4.setEnabled(true);
                     }
                     else
                     {
@@ -438,19 +507,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 {
                     ShowWarning(2);
                 }
-                m_refreshTimer = new Timer();
-                m_refreshTask = new TimerTask()
-                {
-                    @Override
-                    public void run()
-                    {
-                        getActivity().runOnUiThread(() ->
-                        {
-                        });
-                    }
-                };
-                //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
                 break;
             }
             case R.id.button2:

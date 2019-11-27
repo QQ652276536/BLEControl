@@ -255,14 +255,28 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/button5"
-                style="@style/ButtonStyleA"
-                android:layout_width="70dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:layout_gravity="right"
-                android:text="清屏"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="调试信息"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/button5"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:text="清屏"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <ScrollView
                 android:layout_width="match_parent"
