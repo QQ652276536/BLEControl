@@ -70,7 +70,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private TextView m_textView3;
     private TextView m_textView4;
     private TextView m_textView5;
-    private View m_magneticView;
+    private TextView m_textView6;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -172,7 +172,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_textView3 = m_view.findViewById(R.id.text3);
         m_textView4 = m_view.findViewById(R.id.text4);
         m_textView5 = m_view.findViewById(R.id.text5);
-        m_magneticView = m_view.findViewById(R.id.magneticView);
+        m_textView6 = m_view.findViewById(R.id.text6);
     }
 
     private void Resolve(String data)
