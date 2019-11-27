@@ -65,6 +65,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Button m_button3;
     private Button m_button4;
     private Button m_button5;
+    private TextView m_textView1;
+    private TextView m_textView2;
+    private TextView m_textView3;
+    private TextView m_textView4;
+    private TextView m_textView5;
+    private View m_magneticView;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -143,6 +149,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_toolbar = m_view.findViewById(R.id.toolbar);
         //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
         setHasOptionsMenu(true);
+        //去掉标题
+        m_toolbar.setTitle("");
         //此处强转,必须是Activity才有这个方法
         ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
         m_btnReturn = m_view.findViewById(R.id.btn_return);
@@ -159,6 +167,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_button4.setOnClickListener(this);
         m_button5 = m_view.findViewById(R.id.button5);
         m_button5.setOnClickListener(this);
+        m_textView1 = m_view.findViewById(R.id.text1);
+        m_textView2 = m_view.findViewById(R.id.text2);
+        m_textView3 = m_view.findViewById(R.id.text3);
+        m_textView4 = m_view.findViewById(R.id.text4);
+        m_textView5 = m_view.findViewById(R.id.text5);
+        m_magneticView = m_view.findViewById(R.id.magneticView);
     }
 
     private void Resolve(String data)

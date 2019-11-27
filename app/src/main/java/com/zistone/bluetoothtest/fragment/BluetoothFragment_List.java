@@ -41,6 +41,7 @@ import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener

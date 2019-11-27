@@ -584,7 +584,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        m_view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
+        m_view = inflater.inflate(R.layout.fragment_bluetooth_read_write, container, false);
         try
         {
             InitView();
@@ -617,7 +617,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     {
         super.onDetach();
         m_listener = null;
-        m_bluetoothGatt.close();
+        if(m_bluetoothGatt != null)
+            m_bluetoothGatt.close();
         if(m_refreshTimer != null)
             m_refreshTimer.cancel();
         if(m_refreshTask != null)
