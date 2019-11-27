@@ -47,4 +47,6 @@
     <string name="btn_clear">清屏</string>
     <string name="btn_test1">综合测试A</string>
     <string name="btn_test2">综合测试B</string>
+    <string name="title_ep_control">电力控制终端</string>
+    <string name="btn_conn">连接</string>
 </resources>

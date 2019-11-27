@@ -1,15 +1,12 @@
 package com.zistone.bluetoothtest.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.AppComponentFactory;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -26,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,18 +30,15 @@ import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.activity.MainActivity;
-import com.zistone.bluetoothtest.control.BluetoothListAdapter;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClickListener
+public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener
 {
-    private static final String TAG = "BluetoothFragment_ReadWrite";
+    private static final String TAG = "BluetoothFragment_PowerControl";
     //已知服务
     //private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
     private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
@@ -86,10 +79,11 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private boolean m_isComplexBFlag = false;
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
+    private Toolbar m_toolbar;
 
-    public static BluetoothFragment_ReadWrite newInstance(BluetoothDevice bluetoothDevice, String param2)
+    public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, String param2)
     {
-        BluetoothFragment_ReadWrite fragment = new BluetoothFragment_ReadWrite();
+        BluetoothFragment_PowerControl fragment = new BluetoothFragment_PowerControl();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
         args.putString(ARG_PARAM2, param2);
@@ -152,9 +146,22 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        //Activity的onCreateOptionsMenu会在之前调用,即先Clear一下,这样就只有Fragment自己设置的了
+        menu.clear();
+        inflater.inflate(R.menu.menu_setting, menu);
+    }
+
     public void InitView()
     {
         m_context = getContext();
+        m_toolbar = m_view.findViewById(R.id.toolbar);
+        //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
+        setHasOptionsMenu(true);
+        //此处强转,必须是Activity才有这个方法
+        ((MainActivity)getActivity()).setSupportActionBar(m_toolbar);
         m_btnReturn = m_view.findViewById(R.id.btn_return);
         m_btnReturn.setOnClickListener(this);
         m_textView = m_view.findViewById(R.id.textView);
@@ -419,7 +426,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_ReadWrite.this).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
                 break;
             }
             //清屏
