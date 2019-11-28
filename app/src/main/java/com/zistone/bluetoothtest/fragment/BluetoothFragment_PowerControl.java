@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,14 +41,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 {
     private static final String TAG = "BluetoothFragment_PowerControl";
     //已知服务
-    //private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
-    private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
+    //private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //写入特征的UUID
-    //private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
-    private static final UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+    private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
+    //private static final UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
     //读取特征的UUID
-    //private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
-    private static final UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+    private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
+    //private static final UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     //客户端特征配置
     private static final UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
@@ -84,6 +85,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
+    private ScrollView m_scrollView;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, String param2)
     {
@@ -156,7 +158,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 break;
                 case MESSAGE_2:
                 {
-                    m_debugView.append("\r\n" + result);
+                    m_debugView.append(result);
+                    //定位到最后一行
+                    int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
+                    //如果文本的高度大于ScrollView的,就自动滑动
+                    if(offset > m_scrollView.getHeight())
+                    {
+                        m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
+                    }
                 }
                 break;
                 //电池电压
@@ -212,7 +221,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_btnReturn = m_view.findViewById(R.id.btn_return);
         m_btnReturn.setOnClickListener(this);
         m_debugView = m_view.findViewById(R.id.debug_view);
-        m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         m_button1 = m_view.findViewById(R.id.button1);
         m_button1.setOnClickListener(this);
         m_button2 = m_view.findViewById(R.id.button2);
@@ -229,6 +237,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_textView4 = m_view.findViewById(R.id.text4);
         m_textView5 = m_view.findViewById(R.id.text5);
         m_textView6 = m_view.findViewById(R.id.text6);
+        m_scrollView = m_view.findViewById(R.id.scrollView);
     }
 
     private void Resolve(String data)
@@ -244,13 +253,17 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 String responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
                 Message message = new Message();
                 message.what = MESSAGE_2;
-                message.obj = "收到:开门【" + responseValue + "】";
+                message.obj = "收到:开门【" + responseValue + "】 ";
                 handler.sendMessage(message);
             }
             break;
             //读卡
             case "01":
             {
+                Message message = new Message();
+                message.what = MESSAGE_3;
+                message.obj = "收到:读卡【 】 ";
+                handler.sendMessage(message);
             }
             break;
             //电池电压
@@ -258,7 +271,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 Message message = new Message();
                 message.what = MESSAGE_3;
-                message.obj = "";
+                message.obj = "收到:电池电压【 】 ";
                 handler.sendMessage(message);
             }
             break;
@@ -266,10 +279,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case "03":
             {
                 String responseValue1 = strArray[9].equals("00") ? "OK" : "Fail";
-                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+//                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]);
                 Message message = new Message();
                 message.what = MESSAGE_4;
-                message.obj = responseValue2;
+                message.obj = "收到:磁场强度【" + responseValue2 + "】 ";
                 handler.sendMessage(message);
             }
             break;
@@ -280,11 +294,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_5;
                 if(strArray[13].equals("01"))
                 {
-                    message.obj = "门已关";
+                    message.obj = "收到:门状态【已关】 ";
                 }
                 else
                 {
-                    message.obj = "门已开";
+                    message.obj = "收到:门状态【已开】 ";
                 }
                 handler.sendMessage(message);
             }
@@ -346,10 +360,17 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         m_button3.setEnabled(false);
                         m_button4.setEnabled(false);
                         if(m_bluetoothGatt != null)
+                        {
                             m_bluetoothGatt.disconnect();
-                    }
-                    if(1 > 0)
-                    {
+                        }
+                        if(m_refreshTask != null)
+                        {
+                            m_refreshTask.cancel();
+                        }
+                        if(m_refreshTimer != null)
+                        {
+                            m_refreshTimer.cancel();
+                        }
                         return;
                     }
                     Log.d(TAG, ">>>开始连接...");
@@ -441,19 +462,19 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             switch(indexStr)
                             {
                                 case "00":
-                                    sendResult = "开门";
+                                    sendResult = "发送开门 ";
                                     break;
                                 case "01":
-                                    sendResult = "读卡";
+                                    sendResult = "发送读卡 ";
                                     break;
                                 case "02":
-                                    sendResult = "测量电池电压";
+                                    //sendResult = "发送测量电池电压 ";
                                     break;
                                 case "03":
-                                    sendResult = "测量磁场强度";
+                                    //sendResult = "发送测量磁场强度 ";
                                     break;
                                 case "04":
-                                    sendResult = "测量门状态";
+                                    //sendResult = "发送测量门状态 ";
                                     break;
                             }
                             Log.d(TAG, ">>>" + sendResult);
@@ -509,7 +530,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 break;
             }
+            //开一号门锁
             case R.id.button2:
+                String hexStr = "680000000000006810000100E116";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
                 break;
             case R.id.button3:
                 break;
