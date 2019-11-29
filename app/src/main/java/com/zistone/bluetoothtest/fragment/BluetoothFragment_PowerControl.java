@@ -279,7 +279,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case "03":
             {
                 String responseValue1 = strArray[9].equals("00") ? "OK" : "Fail";
-//                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                //                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
                 String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]);
                 Message message = new Message();
                 message.what = MESSAGE_4;
@@ -374,7 +374,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         return;
                     }
                     Log.d(TAG, ">>>开始连接...");
-                    m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
+                    m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
                     {
                         /**
                          * 连接状态改变时回调
@@ -523,6 +523,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             }
                         }
                     });
+
                 }
                 else
                 {
