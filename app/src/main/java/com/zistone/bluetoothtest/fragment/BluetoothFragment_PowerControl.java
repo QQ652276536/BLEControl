@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,14 +26,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.activity.MainActivity;
+import com.zistone.bluetoothtest.control.MyRadioGroup;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
+import java.io.Serializable;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -40,18 +46,6 @@ import java.util.UUID;
 public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener
 {
     private static final String TAG = "BluetoothFragment_PowerControl";
-    //已知服务
-    private static final UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
-    //private static final UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
-    //写入特征的UUID
-    private static final UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
-    //private static final UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
-    //读取特征的UUID
-    private static final UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
-    //private static final UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
-    //客户端特征配置
-    private static final UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
@@ -59,6 +53,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int MESSAGE_3 = 3;
     private static final int MESSAGE_4 = 4;
     private static final int MESSAGE_5 = 5;
+    private static UUID SERVICE_UUID;
+    private static UUID WRITE_UUID;
+    private static UUID READ_UUID;
+    private static UUID CONFIG_UUID;
+
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
@@ -87,15 +86,27 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Toolbar m_toolbar;
     private ScrollView m_scrollView;
 
-    public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, String param2)
+    public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
         BluetoothFragment_PowerControl fragment = new BluetoothFragment_PowerControl();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_PARAM2, (Serializable) map);
         fragment.setArguments(args);
         return fragment;
     }
+
+    private View.OnKeyListener backListener = (v, keyCode, event) ->
+    {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+        {
+            BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+            getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+            getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
+            return true;
+        }
+        return false;
+    };
 
     private Handler handler = new Handler()
     {
@@ -219,18 +230,18 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         //此处强转,必须是Activity才有这个方法
         ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
         m_btnReturn = m_view.findViewById(R.id.btn_return);
-        m_btnReturn.setOnClickListener(this);
+        m_btnReturn.setOnClickListener(this::onClick);
         m_debugView = m_view.findViewById(R.id.debug_view);
         m_button1 = m_view.findViewById(R.id.button1);
-        m_button1.setOnClickListener(this);
+        m_button1.setOnClickListener(this::onClick);
         m_button2 = m_view.findViewById(R.id.button2);
-        m_button2.setOnClickListener(this);
+        m_button2.setOnClickListener(this::onClick);
         m_button3 = m_view.findViewById(R.id.button3);
-        m_button3.setOnClickListener(this);
+        m_button3.setOnClickListener(this::onClick);
         m_button4 = m_view.findViewById(R.id.button4);
-        m_button4.setOnClickListener(this);
+        m_button4.setOnClickListener(this::onClick);
         m_button5 = m_view.findViewById(R.id.button5);
-        m_button5.setOnClickListener(this);
+        m_button5.setOnClickListener(this::onClick);
         m_textView1 = m_view.findViewById(R.id.text1);
         m_textView2 = m_view.findViewById(R.id.text2);
         m_textView3 = m_view.findViewById(R.id.text3);
@@ -564,6 +575,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         if(getArguments() != null)
         {
             m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
+            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+            SERVICE_UUID = map.get("SERVICE_UUID");
+            WRITE_UUID = map.get("WRITE_UUID");
+            READ_UUID = map.get("READ_UUID");
+            CONFIG_UUID = map.get("CONFIG_UUID");
         }
     }
 
@@ -573,6 +589,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
         try
         {
+            //强制获得焦点
+            m_view.requestFocus();
+            m_view.setFocusable(true);
+            m_view.setFocusableInTouchMode(true);
+            m_view.setOnKeyListener(backListener);
             InitView();
         }
         catch(Exception e)

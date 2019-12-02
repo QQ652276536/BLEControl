@@ -21,6 +21,27 @@
             android:textColor="#ff000000"
             android:textSize="17sp" />
 
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="BlueNRG" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amdtp" />
+        </RadioGroup>
+
         <CheckBox
             android:id="@+id/checkBox"
             android:layout_width="wrap_content"

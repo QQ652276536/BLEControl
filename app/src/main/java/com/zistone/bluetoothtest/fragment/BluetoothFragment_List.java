@@ -25,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,14 +43,24 @@ import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener
+public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, RadioGroup.OnCheckedChangeListener
 {
     public static final String TAG = "BluetoothFragment_List";
     public static final String ARG_PARAM1 = "param1";
     public static final String ARG_PARAM2 = "param2";
+    //已知服务
+    private static UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    //写入特征的UUID
+    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+    //读取特征的UUID
+    private static UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+    //客户端特征配置
+    private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     public String m_param1;
     public String m_param2;
     public Context m_context;
@@ -66,6 +78,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
     private CheckBox m_checkBox1;
+    private RadioGroup m_radioGroup;
+    private long m_exitTime = 0;
 
     public static BluetoothFragment_List newInstance(String param1, String param2)
     {
@@ -138,6 +152,46 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     };
 
     @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId)
+    {
+        switch(checkedId)
+        {
+            case R.id.radioButton1:
+                SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+                WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+                READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+                break;
+            case R.id.radioButton2:
+                SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
+                WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
+                READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
+                break;
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+    {
+        if(buttonView.getId() == R.id.ck_bluetooth)
+        {
+            if(isChecked == true)
+            {
+                BeginDiscovery();
+                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                startActivityForResult(intent, 1);
+            }
+            else
+            {
+                CancelDiscovery();
+                m_bluetoothAdapter.disable();
+                m_deviceList.clear();
+                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                m_listView.setAdapter(adapter);
+            }
+        }
+    }
+
+    @Override
     public void onStart()
     {
         super.onStart();
@@ -196,47 +250,30 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-    {
-        if(buttonView.getId() == R.id.ck_bluetooth)
-        {
-            if(isChecked == true)
-            {
-                BeginDiscovery();
-                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                startActivityForResult(intent, 1);
-            }
-            else
-            {
-                CancelDiscovery();
-                m_bluetoothAdapter.disable();
-                m_deviceList.clear();
-                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-                m_listView.setAdapter(adapter);
-            }
-        }
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
         //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
+        Map<String, UUID> map = new HashMap<>();
+        map.put("SERVICE_UUID", SERVICE_UUID);
+        map.put("READ_UUID", READ_UUID);
+        map.put("WRITE_UUID", WRITE_UUID);
+        map.put("CONFIG_UUID", CONFIG_UUID);
         if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
             //停止搜索蓝牙
             CancelDiscovery();
             if(!m_checkBox1.isChecked())
             {
-                m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, "");
+                m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             else
             {
-                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_bluetoothDevice, "");
+                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
@@ -305,6 +342,25 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_bluetoothAdapter.cancelDiscovery();
         }
     }
+
+    private View.OnKeyListener backListener = (v, keyCode, event) ->
+    {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+        {
+            if((System.currentTimeMillis() - m_exitTime) > 2000)
+            {
+                Toast.makeText(getActivity(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                m_exitTime = System.currentTimeMillis();
+            }
+            else
+            {
+                getActivity().finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return false;
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -418,6 +474,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(m_context);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         m_checkBox1 = m_view.findViewById(R.id.checkBox);
+        m_radioGroup = m_view.findViewById(R.id.radioGroup);
+        m_radioGroup.setOnCheckedChangeListener(this::onCheckedChanged);
+        //强制获得焦点
+        m_view.requestFocus();
+        m_view.setFocusable(true);
+        m_view.setFocusableInTouchMode(true);
+        m_view.setOnKeyListener(backListener);
         return m_view;
     }
 
