@@ -425,7 +425,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //开门
             case R.id.button1:
             {
-                String hexStr = "6800000000000068100100E116";
+                String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -435,7 +435,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //读卡
             case R.id.btn2:
             {
-                String hexStr = "6800000000000068100101E216";
+                String hexStr = "680000000000006810000101E216";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -445,7 +445,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //测量电池电压
             case R.id.btn3:
             {
-                String hexStr = "6800000000000068100102E316";
+                String hexStr = "680000000000006810000102E316";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -455,7 +455,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //测量磁场强度
             case R.id.btn4:
             {
-                String hexStr = "6800000000000068100103E416";
+                String hexStr = "680000000000006810000103E416";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -466,7 +466,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             case R.id.btn5:
             {
                 m_textView.setText("");
-                String hexStr = "6800000000000068100104E516";
+                String hexStr = "680000000000006810000104E516";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -476,7 +476,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //综合测试A
             case R.id.btn6:
                 m_isComplexAFlag = true;
-                String hexStr = "6800000000000068100180E616";
+                String hexStr = "680000000000006810000180E616";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -514,14 +514,14 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                                 try
                                 {
                                     //磁强
-                                    String hexStr = "6800000000000068100103E416";
+                                    String hexStr = "680000000000006810000103E416";
                                     Log.d(TAG, ">>>发送:" + hexStr);
                                     byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                                     m_bluetoothGattCharacteristic_write.setValue(byteArray);
                                     m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
                                     Thread.sleep(100);
                                     //门状态
-                                    hexStr = "6800000000000068100104E516";
+                                    hexStr = "680000000000006810000104E516";
                                     Log.d(TAG, ">>>发送:" + hexStr);
                                     byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                                     m_bluetoothGattCharacteristic_write.setValue(byteArray);
