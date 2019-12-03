@@ -48,11 +48,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final int MESSAGE_1 = 1;
-    private static final int MESSAGE_2 = 2;
-    private static final int MESSAGE_3 = 3;
-    private static final int MESSAGE_4 = 4;
-    private static final int MESSAGE_5 = 5;
+    private static final int MESSAGE_1 = 100;
+    private static final int MESSAGE_OPENDOOR = 0;
+    private static final int MESSAGE_READCAR = 1;
+    private static final int MESSAGE_BATTERY = 2;
+    private static final int MESSAGE_MAGNETIC = 3;
+    private static final int MESSAGE_DOORSTATE = 4;
+    private static final int MESSAGE_TESTA = 80;
     private static UUID SERVICE_UUID;
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
@@ -132,26 +134,34 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             {
                                 try
                                 {
-                                    //门状态
-                                    String hexStr = "680000000000006810000104E516";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    //                                    //门状态
+                                    //                                    String hexStr = "680000000000006810000104E516";
+                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    //                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    //                                    Thread.sleep(100);
+                                    //
+                                    //                                    //电池电压
+                                    //                                    hexStr = "680000000000006810000102E316";
+                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    //                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    //                                    Thread.sleep(100);
+                                    //
+                                    //                                    //磁强
+                                    //                                    hexStr = "680000000000006810000103E416";
+                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
+                                    //                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                                    //                                    Thread.sleep(100);
+
+                                    //综合测试
+                                    String hexStr = "680000000000006810000180E616";
+                                    Log.i(TAG, ">>>发送:" + hexStr);
                                     byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-
-                                    //电池电压
-                                    hexStr = "680000000000006810000102E316";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-
-                                    //磁强
-                                    hexStr = "680000000000006810000103E416";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                                     m_bluetoothGattCharacteristic_write.setValue(byteArray);
                                     m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
                                     Thread.sleep(100);
@@ -164,12 +174,25 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    m_refreshTimer.schedule(m_refreshTask, 0, 3 * 1000);
+                    //m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
                 }
                 break;
-                case MESSAGE_2:
+                case MESSAGE_OPENDOOR:
                 {
-                    m_debugView.append(result);
+                    if(result.equalsIgnoreCase("opendoor"))
+                    {
+                        m_debugView.append("已发送开门指令 ");
+                    }
+                    else if(result.equalsIgnoreCase("doorisopen"))
+                    {
+                        m_debugView.append("收到:门【已打开】 ");
+                        m_textView1.setText("已开");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:门【未打开】 ");
+                        m_textView1.setText("未开");
+                    }
                     //定位到最后一行
                     int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
@@ -180,16 +203,19 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 break;
                 //电池电压
-                case MESSAGE_3:
+                case MESSAGE_BATTERY:
                     m_textView5.setText(result);
                     break;
                 //磁场强度
-                case MESSAGE_4:
+                case MESSAGE_MAGNETIC:
                     m_textView6.setText(result);
                     break;
                 //门状态
-                case MESSAGE_5:
+                case MESSAGE_DOORSTATE:
                     m_textView1.setText(result);
+                    break;
+                case MESSAGE_TESTA:
+                    m_debugView.append(result);
                     break;
             }
         }
@@ -261,29 +287,31 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             //开门
             case "00":
             {
-                String responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
                 Message message = new Message();
-                message.what = MESSAGE_2;
-                message.obj = "收到:开门【" + responseValue + "】 ";
+                message.what = MESSAGE_OPENDOOR;
+                if(strArray[14].equalsIgnoreCase("00"))
+                {
+                    message.obj = "doorisopen";
+                }
+                else if(ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK"))
+                {
+                    message.obj = "doorisopen";
+                }
+                else
+                {
+                    message.obj = "";
+                }
                 handler.sendMessage(message);
             }
             break;
             //读卡
             case "01":
             {
-                Message message = new Message();
-                message.what = MESSAGE_3;
-                message.obj = "收到:读卡【 】 ";
-                handler.sendMessage(message);
             }
             break;
             //电池电压
             case "02":
             {
-                Message message = new Message();
-                message.what = MESSAGE_3;
-                message.obj = "收到:电池电压【 】 ";
-                handler.sendMessage(message);
             }
             break;
             //磁场强度
@@ -293,7 +321,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 //                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
                 String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]);
                 Message message = new Message();
-                message.what = MESSAGE_4;
+                message.what = MESSAGE_MAGNETIC;
                 message.obj = "收到:磁场强度【" + responseValue2 + "】 ";
                 handler.sendMessage(message);
             }
@@ -302,15 +330,23 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case "04":
             {
                 Message message = new Message();
-                message.what = MESSAGE_5;
+                message.what = MESSAGE_DOORSTATE;
                 if(strArray[13].equals("01"))
                 {
-                    message.obj = "收到:门状态【已关】 ";
+                    message.obj = "已关";
                 }
                 else
                 {
-                    message.obj = "收到:门状态【已开】 ";
+                    message.obj = "已开";
                 }
+                handler.sendMessage(message);
+            }
+            break;
+            case "80":
+            {
+                Message message = new Message();
+                message.what = MESSAGE_TESTA;
+                message.obj = ConvertUtil.StrArrayToStr(strArray);
                 handler.sendMessage(message);
             }
             break;
@@ -473,10 +509,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             switch(indexStr)
                             {
                                 case "00":
-                                    sendResult = "发送开门 ";
+                                    sendResult = "opendoor";
                                     break;
                                 case "01":
-                                    sendResult = "发送读卡 ";
+                                    //sendResult = "发送读卡 ";
                                     break;
                                 case "02":
                                     //sendResult = "发送测量电池电压 ";
@@ -490,7 +526,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             }
                             Log.d(TAG, ">>>" + sendResult);
                             Message message = new Message();
-                            message.what = MESSAGE_2;
+                            message.what = MESSAGE_OPENDOOR;
                             message.obj = sendResult;
                             handler.sendMessage(message);
                         }

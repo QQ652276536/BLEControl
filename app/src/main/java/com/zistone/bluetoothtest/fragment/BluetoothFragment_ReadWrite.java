@@ -124,6 +124,13 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 case MESSAGE_2:
                 {
                     m_textView.append("\r\n" + result);
+                    //定位到最后一行
+                    int offset = m_textView.getLineCount() * m_textView.getLineHeight();
+                    //如果文本的高度大于ScrollView的,就自动滑动
+                    if(offset > m_textView.getHeight())
+                    {
+                        m_textView.scrollTo(0, offset - m_textView.getHeight());
+                    }
                     break;
                 }
                 default:
@@ -282,7 +289,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     Log.d(TAG, ">>>" + sendResult);
                     Message message = new Message();
                     message.what = MESSAGE_2;
-                    message.obj = sendResult;
+                    //                    message.obj = sendResult;
+                    message.obj = "发送:" + ConvertUtil.StrArrayToStr(strArray);
                     handler.sendMessage(message);
                 }
 
@@ -376,7 +384,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         }
         Message message = new Message();
         message.what = MESSAGE_2;
-        message.obj = "接收:" + responseResult + responseValue;
+        //        message.obj = "接收:" + responseResult + responseValue;
+        message.obj = "接收:" + ConvertUtil.StrArrayToStr(strArray) + "\r\n";
         handler.sendMessage(message);
     }
 
@@ -465,7 +474,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //测量门状态
             case R.id.btn5:
             {
-                m_textView.setText("");
                 String hexStr = "680000000000006810000104E516";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
@@ -484,91 +492,91 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 m_isComplexAFlag = false;
                 break;
             //综合测试B
-            case R.id.btn7:
-                if(!m_isComplexBFlag)
-                {
-                    m_textView.setText("开始接收设备状态信息...");
-                    m_isComplexBFlag = true;
-                    m_button7.setText("停止");
-                    m_button1.setEnabled(false);
-                    m_button2.setEnabled(false);
-                    m_button3.setEnabled(false);
-                    m_button4.setEnabled(false);
-                    m_button5.setEnabled(false);
-                    m_button6.setEnabled(false);
-                    m_button1.setBackgroundColor(Color.BLACK);
-                    m_button2.setBackgroundColor(Color.BLACK);
-                    m_button3.setBackgroundColor(Color.BLACK);
-                    m_button4.setBackgroundColor(Color.BLACK);
-                    m_button5.setBackgroundColor(Color.BLACK);
-                    m_button6.setBackgroundColor(Color.BLACK);
-                    //开启定时器
-                    m_refreshTimer = new Timer();
-                    m_refreshTask = new TimerTask()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            getActivity().runOnUiThread(() ->
-                            {
-                                try
-                                {
-                                    //磁强
-                                    String hexStr = "680000000000006810000103E416";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-                                    //门状态
-                                    hexStr = "680000000000006810000104E516";
-                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    Thread.sleep(100);
-                                }
-                                catch(InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                            });
-                        }
-                    };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
-                }
-                else
-                {
-                    m_isComplexBFlag = false;
-                    m_button7.setText("综合测试B");
-                    m_button1.setEnabled(true);
-                    m_button2.setEnabled(true);
-                    m_button3.setEnabled(true);
-                    m_button4.setEnabled(true);
-                    m_button5.setEnabled(true);
-                    m_button6.setEnabled(true);
-                    m_button7.setEnabled(true);
-                    m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button6.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    m_button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    //关闭定时器
-                    if(m_refreshTimer != null)
-                    {
-                        m_refreshTimer.cancel();
-                        m_refreshTimer = null;
-                    }
-                    if(m_refreshTask != null)
-                    {
-                        m_refreshTask.cancel();
-                        m_refreshTask = null;
-                    }
-                }
-                break;
+            //            case R.id.btn7:
+            //                if(!m_isComplexBFlag)
+            //                {
+            //                    m_textView.setText("开始接收设备状态信息...");
+            //                    m_isComplexBFlag = true;
+            //                    m_button7.setText("停止");
+            //                    m_button1.setEnabled(false);
+            //                    m_button2.setEnabled(false);
+            //                    m_button3.setEnabled(false);
+            //                    m_button4.setEnabled(false);
+            //                    m_button5.setEnabled(false);
+            //                    m_button6.setEnabled(false);
+            //                    m_button1.setBackgroundColor(Color.BLACK);
+            //                    m_button2.setBackgroundColor(Color.BLACK);
+            //                    m_button3.setBackgroundColor(Color.BLACK);
+            //                    m_button4.setBackgroundColor(Color.BLACK);
+            //                    m_button5.setBackgroundColor(Color.BLACK);
+            //                    m_button6.setBackgroundColor(Color.BLACK);
+            //                    //开启定时器
+            //                    m_refreshTimer = new Timer();
+            //                    m_refreshTask = new TimerTask()
+            //                    {
+            //                        @Override
+            //                        public void run()
+            //                        {
+            //                            getActivity().runOnUiThread(() ->
+            //                            {
+            //                                try
+            //                                {
+            //                                    //磁强
+            //                                    String hexStr = "680000000000006810000103E416";
+            //                                    Log.d(TAG, ">>>发送:" + hexStr);
+            //                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+            //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+            //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            //                                    Thread.sleep(100);
+            //                                    //门状态
+            //                                    hexStr = "680000000000006810000104E516";
+            //                                    Log.d(TAG, ">>>发送:" + hexStr);
+            //                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+            //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+            //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            //                                    Thread.sleep(100);
+            //                                }
+            //                                catch(InterruptedException e)
+            //                                {
+            //                                    e.printStackTrace();
+            //                                }
+            //                            });
+            //                        }
+            //                    };
+            //                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+            //                    //m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+            //                }
+            //                else
+            //                {
+            //                    m_isComplexBFlag = false;
+            //                    m_button7.setText("综合测试B");
+            //                    m_button1.setEnabled(true);
+            //                    m_button2.setEnabled(true);
+            //                    m_button3.setEnabled(true);
+            //                    m_button4.setEnabled(true);
+            //                    m_button5.setEnabled(true);
+            //                    m_button6.setEnabled(true);
+            //                    m_button7.setEnabled(true);
+            //                    m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button6.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    m_button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
+            //                    //关闭定时器
+            //                    if(m_refreshTimer != null)
+            //                    {
+            //                        m_refreshTimer.cancel();
+            //                        m_refreshTimer = null;
+            //                    }
+            //                    if(m_refreshTask != null)
+            //                    {
+            //                        m_refreshTask.cancel();
+            //                        m_refreshTask = null;
+            //                    }
+            //                }
+            //                break;
         }
     }
 
