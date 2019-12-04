@@ -55,6 +55,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int MESSAGE_MAGNETIC = 3;
     private static final int MESSAGE_DOORSTATE = 4;
     private static final int MESSAGE_TESTA = 80;
+    private static final int MESSAGE_OPENDOORS1 = 81;
+    private static final int MESSAGE_OPENDOORS2 = 82;
+    private static final int MESSAGE_OPENALLDOORS = 83;
     private static UUID SERVICE_UUID;
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
@@ -217,6 +220,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case MESSAGE_TESTA:
                     m_debugView.append(result);
                     break;
+                //一号门锁
+                case MESSAGE_OPENDOORS1:
+                    break;
+                //二号门锁
+                case MESSAGE_OPENDOORS2:
+                    break;
+                //全部门锁
+                case MESSAGE_OPENALLDOORS:
+                    break;
             }
         }
     };
@@ -347,6 +359,31 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 Message message = new Message();
                 message.what = MESSAGE_TESTA;
                 message.obj = ConvertUtil.StrArrayToStr(strArray);
+                handler.sendMessage(message);
+            }
+            break;
+            //一号门锁
+            case "81":
+            {
+                Message message = new Message();
+                message.what = MESSAGE_OPENDOORS1;
+                message.obj = "";
+                handler.sendMessage(message);
+            }
+            //二号门锁
+            case "82":
+            {
+                Message message = new Message();
+                message.what = MESSAGE_OPENDOORS2;
+                message.obj = "";
+                handler.sendMessage(message);
+            }
+            //全部门锁
+            case "83":
+            {
+                Message message = new Message();
+                message.what = MESSAGE_OPENALLDOORS;
+                message.obj = "";
                 handler.sendMessage(message);
             }
             break;
@@ -580,16 +617,26 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             }
             //开一号门锁
             case R.id.button2:
+            {
                 String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
+            }
+            break;
             case R.id.button3:
                 break;
+            //开全部门锁
             case R.id.button4:
-                break;
+            {
+                String hexStr = "680000000000006810000181E716";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            }
+            break;
             //清屏
             case R.id.button5:
                 m_debugView.setText("");
