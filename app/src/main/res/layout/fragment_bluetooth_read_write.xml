@@ -188,7 +188,7 @@
                     android:layout_weight="1"
                     android:background="@color/cardview_dark_background"
                     android:enabled="false"
-                    android:text="@string/btn_test2"
+                    android:text="开一号门锁"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 
@@ -196,17 +196,29 @@
                     android:id="@+id/btn8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:text="Button"
-                    android:visibility="invisible" />
+                    android:background="@color/cardview_dark_background"
+                    android:enabled="false"
+                    android:text="开二号门锁"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:text="Button"
-                    android:visibility="invisible" />
+                    android:background="@color/cardview_dark_background"
+                    android:enabled="false"
+                    android:text="开全部门锁"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

@@ -625,8 +625,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
             }
             break;
+            //开二号门锁
             case R.id.button3:
-                break;
+            {
+                String hexStr = "680000000000006810000182E716";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            }
+            break;
             //开全部门锁
             case R.id.button4:
             {
