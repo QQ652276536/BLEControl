@@ -386,18 +386,59 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     responseResult = "门已开";
                 }
                 break;
-            //综合测试A
+            //综合测试A:68,00,00,00,00,00,01,68,10,00,07,00,80,03,0C,C3,07,62,A3,16
             case "80":
+            {
+                //全部门锁状态
+                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
+                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                String doorState2 = String.valueOf(bitStr.charAt(5));
+                String lockState2 = String.valueOf(bitStr.charAt(4));
+                //强磁开关状态
+                String magneticState = String.valueOf(bitStr.charAt(3));
+                //外接电源状态
+                String outsideState = String.valueOf(bitStr.charAt(2));
+                //内部电池充电状态
+                String insideState = String.valueOf(bitStr.charAt(1));
+                //电池电量
+                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                //磁强另外走索引为03的指令...
                 break;
-            //开一号门锁
+            }
+            //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
             case "81":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
                 break;
-            //开二号门锁
+            }
+            //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
             case "82":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
                 break;
-            //开全部门锁
+            }
+            //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
             case "83":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                String doorState2 = String.valueOf(bitStr.charAt(5));
+                String lockState2 = String.valueOf(bitStr.charAt(4));
                 break;
+            }
         }
         Message message = new Message();
         message.what = MESSAGE_2;

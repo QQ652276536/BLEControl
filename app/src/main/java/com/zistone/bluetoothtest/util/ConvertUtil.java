@@ -29,7 +29,7 @@ public class ConvertUtil
         System.out.println("普通Str转16进制Str:" + StrToHexStr("rD9TcH"));
 
         int aaa = Integer.parseInt("1997", 16);
-        System.out.println("aaa:" + aaa);
+        System.out.println("aaa:" + Integer.parseInt("0CC1",16));
 
         System.out.println("16进制Str转普通Str:" + HexStrToStr("3231332E30323820475320"));
         System.out.println("____________________________________________________________________");
@@ -38,6 +38,13 @@ public class ConvertUtil
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("674E5C0F4F1F"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("004C0069005700650069"));
         System.out.println("____________________________________________________________________");
+    }
+
+    public static String ByteToBit(byte b)
+    {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append((b >> 7) & 0x1).append((b >> 6) & 0x1).append((b >> 5) & 0x1).append((b >> 4) & 0x1).append((b >> 3) & 0x1).append((b >> 2) & 0x1).append((b >> 1) & 0x1).append((b >> 0) & 0x1);
+        return stringBuffer.toString();
     }
 
     /**
