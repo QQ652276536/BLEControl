@@ -386,7 +386,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     responseResult = "门已开";
                 }
                 break;
-            //综合测试A:68,00,00,00,00,00,01,68,10,00,07,00,80,03,0C,C3,07,62,A3,16
+            //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
             case "80":
             {
                 //全部门锁状态
@@ -404,7 +404,12 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 String insideState = String.valueOf(bitStr.charAt(1));
                 //电池电量
                 int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
-                //磁强另外走索引为03的指令...
+                //下端磁强
+                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
+                //上端磁强
+                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                //前端磁强
+                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                 break;
             }
             //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16

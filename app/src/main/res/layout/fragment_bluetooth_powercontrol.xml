@@ -185,8 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.8"
-                        android:text="■■■"
-                        android:textColor="@color/read"
+                        android:text="Null"
                         android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>

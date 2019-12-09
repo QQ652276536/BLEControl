@@ -29,9 +29,11 @@ public class ConvertUtil
         System.out.println("普通Str转16进制Str:" + StrToHexStr("rD9TcH"));
 
         int aaa = Integer.parseInt("1997", 16);
-        System.out.println("aaa:" + Integer.parseInt("0CC1",16));
+        System.out.println("下端:" + Integer.parseInt("0757", 16));
+        System.out.println("上端:" + Integer.parseInt("075F", 16));
+        System.out.println("前端:" + Integer.parseInt("06C3", 16));
 
-        System.out.println("16进制Str转普通Str:" + HexStrToStr("3231332E30323820475320"));
+        System.out.println("16进制Str转普通Str:" + HexStrToStr("075772075F06C3"));
         System.out.println("____________________________________________________________________");
         System.out.println("Unicode编码的中文转16进制的Str:" + DeUnicode("李小伟"));
         System.out.println("Unicode编码的中文转16进制的Str:" + DeUnicode("LiWei"));

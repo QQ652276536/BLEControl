@@ -48,6 +48,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int MESSAGE_ERROR = -1;
     private static final int MESSAGE_1 = 100;
     private static final int MESSAGE_OPENDOOR = 0;
     private static final int MESSAGE_READCAR = 1;
@@ -122,6 +123,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             String result = (String) message.obj;
             switch(message.what)
             {
+                case MESSAGE_ERROR:
+                    ShowWarning(MESSAGE_ERROR);
+                    m_button1.setText("连接");
+                    break;
                 case MESSAGE_1:
                 {
                     m_button2.setEnabled(true);
@@ -137,30 +142,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             {
                                 try
                                 {
-                                    //                                    //门状态
-                                    //                                    String hexStr = "680000000000006810000104E516";
-                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    //                                    byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    //                                    Thread.sleep(100);
-                                    //
-                                    //                                    //电池电压
-                                    //                                    hexStr = "680000000000006810000102E316";
-                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    //                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    //                                    Thread.sleep(100);
-                                    //
-                                    //                                    //磁强
-                                    //                                    hexStr = "680000000000006810000103E416";
-                                    //                                    Log.d(TAG, ">>>发送:" + hexStr);
-                                    //                                    byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                                    //                                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                                    //                                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                                    //                                    Thread.sleep(100);
-
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
                                     Log.i(TAG, ">>>发送:" + hexStr);
@@ -177,9 +158,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    //m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+                    m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+                    break;
                 }
-                break;
                 case MESSAGE_OPENDOOR:
                 {
                     if(result.equalsIgnoreCase("opendoor"))
@@ -203,11 +184,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
                     }
+                    break;
                 }
-                break;
                 //电池电压
                 case MESSAGE_BATTERY:
-                    m_textView5.setText(result);
+                    m_textView5.setText(result + "mV");
                     break;
                 //磁场强度
                 case MESSAGE_MAGNETIC:
@@ -217,18 +198,81 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case MESSAGE_DOORSTATE:
                     m_textView1.setText(result);
                     break;
+                //目前只取电池容量
                 case MESSAGE_TESTA:
-                    m_debugView.append(result);
+                {
+                    String strs[] = result.split(",");
+                    String doorState1 = strs[0];
+                    if(doorState1.equalsIgnoreCase("1"))
+                        m_textView1.setText("已开");
+                    else
+                        m_textView1.setText("已关");
+                    String lockState1 = strs[1];
+                    if(lockState1.equalsIgnoreCase("1"))
+                        m_textView2.setText("已开");
+                    else
+                        m_textView2.setText("已关");
+                    String doorState2 = strs[2];
+                    if(doorState2.equalsIgnoreCase("1"))
+                        m_textView3.setText("已开");
+                    else
+                        m_textView3.setText("已关");
+                    String lockState2 = strs[3];
+                    if(lockState2.equalsIgnoreCase("1"))
+                        m_textView4.setText("已开");
+                    else
+                        m_textView4.setText("已关");
+                    m_textView5.setText(strs[4] + "mV");
+                    m_textView6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
                     break;
+                }
                 //一号门锁
                 case MESSAGE_OPENDOORS1:
                     break;
                 //二号门锁
                 case MESSAGE_OPENDOORS2:
+                {
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    String doorState2 = String.valueOf(bitStr.charAt(7));
+                    if(doorState2.equalsIgnoreCase("1"))
+                        m_textView3.setText("已开");
+                    else
+                        m_textView3.setText("已关");
+                    String lockState2 = String.valueOf(bitStr.charAt(6));
+                    if(lockState2.equalsIgnoreCase("1"))
+                        m_textView4.setText("已开");
+                    else
+                        m_textView4.setText("已关");
                     break;
+                }
                 //全部门锁
                 case MESSAGE_OPENALLDOORS:
+                {
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    String doorState1 = String.valueOf(bitStr.charAt(7));
+                    if(doorState1.equalsIgnoreCase("1"))
+                        m_textView1.setText("已开");
+                    else
+                        m_textView1.setText("已关");
+                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    if(lockState1.equalsIgnoreCase("1"))
+                        m_textView2.setText("已开");
+                    else
+                        m_textView2.setText("已关");
+                    String doorState2 = String.valueOf(bitStr.charAt(5));
+                    if(doorState2.equalsIgnoreCase("1"))
+                        m_textView3.setText("已开");
+                    else
+                        m_textView3.setText("已关");
+                    String lockState2 = String.valueOf(bitStr.charAt(4));
+                    if(lockState2.equalsIgnoreCase("1"))
+                        m_textView4.setText("已开");
+                    else
+                        m_textView4.setText("已关");
                     break;
+                }
             }
         }
     };
@@ -356,9 +400,30 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             break;
             case "80":
             {
+                //全部门锁状态
+                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
+                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                String doorState2 = String.valueOf(bitStr.charAt(5));
+                String lockState2 = String.valueOf(bitStr.charAt(4));
+                //强磁开关状态
+                String magneticState = String.valueOf(bitStr.charAt(3));
+                //外接电源状态
+                String outsideState = String.valueOf(bitStr.charAt(2));
+                //内部电池充电状态
+                String insideState = String.valueOf(bitStr.charAt(1));
+                //电池电量
+                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                //下端磁强
+                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
+                //上端磁强
+                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                //前端磁强
+                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                 Message message = new Message();
                 message.what = MESSAGE_TESTA;
-                message.obj = ConvertUtil.StrArrayToStr(strArray);
+                message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
                 handler.sendMessage(message);
             }
             break;
@@ -375,7 +440,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 Message message = new Message();
                 message.what = MESSAGE_OPENDOORS2;
-                message.obj = "";
+                message.obj = strArray[13];
                 handler.sendMessage(message);
             }
             //全部门锁
@@ -383,7 +448,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 Message message = new Message();
                 message.what = MESSAGE_OPENALLDOORS;
-                message.obj = "";
+                message.obj = strArray[13];
                 handler.sendMessage(message);
             }
             break;
@@ -396,8 +461,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         builder.setTitle("警告");
         switch(param)
         {
-            case 1:
-                builder.setMessage("该设备的连接已断开!,请重试!");
+            case MESSAGE_ERROR:
+                builder.setMessage("该设备的连接已断开,请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
                     BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
@@ -479,7 +544,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             {
                                 Log.d(TAG, ">>>连接已断开!");
                                 m_bluetoothGatt.close();
-                                ShowWarning(1);
+                                Message message = new Message();
+                                message.what = MESSAGE_ERROR;
+                                handler.sendMessage(message);
                             }
                         }
 
@@ -501,9 +568,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 if(m_bluetoothGattCharacteristic_write != null)
                                 {
                                     Log.d(TAG, ">>>已找到写入数据的特征值!");
-                                    Message message = new Message();
-                                    message.what = MESSAGE_1;
-                                    handler.sendMessage(message);
                                 }
                                 else
                                 {
@@ -519,6 +583,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                     BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                                     gatt.writeDescriptor(descriptor);
+                                    //轮询
+                                    Message message = new Message();
+                                    message.what = MESSAGE_1;
+                                    handler.sendMessage(message);
                                 }
                                 else
                                 {
@@ -541,31 +609,43 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                             result = ConvertUtil.HexStrAddCharacter(result, " ");
                             String[] strArray = result.split(" ");
-                            String sendResult = "";
                             String indexStr = strArray[11];
                             switch(indexStr)
                             {
                                 case "00":
-                                    sendResult = "opendoor";
+                                {
+                                    Message message = new Message();
+                                    message.what = MESSAGE_OPENDOOR;
+                                    Log.d(TAG, ">>>发送开门指令");
+                                    message.obj = "opendoor";
+                                    handler.sendMessage(message);
                                     break;
+                                }
                                 case "01":
-                                    //sendResult = "发送读卡 ";
+                                    //sendResult = "发送读卡指令 ";
                                     break;
                                 case "02":
-                                    //sendResult = "发送测量电池电压 ";
+                                    //sendResult = "发送测量电池电压指令 ";
                                     break;
                                 case "03":
-                                    //sendResult = "发送测量磁场强度 ";
+                                    //sendResult = "发送测量磁场强度指令 ";
                                     break;
                                 case "04":
-                                    //sendResult = "发送测量门状态 ";
+                                    //sendResult = "发送测量门状态指令 ";
+                                    break;
+                                case "80":
+                                    //sendResult = "";
+                                    break;
+                                case "81":
+                                    //sendResult = "";
+                                    break;
+                                case "82":
+                                    //sendResult = "";
+                                    break;
+                                case "83":
+                                    //sendResult = "";
                                     break;
                             }
-                            Log.d(TAG, ">>>" + sendResult);
-                            Message message = new Message();
-                            message.what = MESSAGE_OPENDOOR;
-                            message.obj = sendResult;
-                            handler.sendMessage(message);
                         }
 
                         /**
