@@ -462,11 +462,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         switch(param)
         {
             case MESSAGE_ERROR:
-                builder.setMessage("该设备的连接已断开,请重试!");
+                builder.setMessage("该设备的连接已断开!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
                 });
                 break;
             case 2:

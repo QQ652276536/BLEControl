@@ -67,7 +67,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public View m_view;
     public OnFragmentInteractionListener m_listener;
     public CheckBox m_checkBox;
-    public TextView m_textView1;
     public ListView m_listView;
     public BluetoothAdapter m_bluetoothAdapter;
     public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
@@ -109,26 +108,26 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 m_listView.setAdapter(adapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             }
+            //蓝牙设备搜索完成
             else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
             {
                 handler.removeCallbacks(runnable);
-                m_textView1.setText("蓝牙设备搜索完成");
             }
             else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
             {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //正在配对
                 if(device.getBondState() == BluetoothDevice.BOND_BONDING)
                 {
-                    m_textView1.setText("正在配对" + device.getName());
                 }
+                //完成配对
                 else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
                 {
-                    m_textView1.setText("完成配对" + device.getName());
-                    handler.postDelayed(runnable, 50);
+                    handler.postDelayed(runnable, 100);
                 }
+                //取消配对
                 else if(device.getBondState() == BluetoothDevice.BOND_NONE)
                 {
-                    m_textView1.setText("取消配对" + device.getName());
                 }
             }
         }
@@ -226,7 +225,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     break;
             }
             m_checkBox.setOnCheckedChangeListener(this);
-            m_textView1.setOnClickListener(this);
             m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if(m_bluetoothAdapter == null)
             {
@@ -243,10 +241,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     @Override
     public void onClick(View v)
     {
-        if(v.getId() == R.id.tv_discovery)
-        {
-            BeginDiscovery();
-        }
     }
 
     @Override
@@ -310,7 +304,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         public void run()
         {
             BeginDiscovery();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 100);
         }
     };
 
@@ -324,7 +318,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_deviceList.clear();
             BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
             m_listView.setAdapter(adapter);
-            m_textView1.setText("正在搜索蓝牙设备");
             //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
             m_bluetoothAdapter.startDiscovery();
         }
@@ -336,7 +329,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void CancelDiscovery()
     {
         handler.removeCallbacks(runnable);
-        m_textView1.setText("取消搜索蓝牙设备");
         if(m_bluetoothAdapter.isDiscovering() == true)
         {
             m_bluetoothAdapter.cancelDiscovery();
@@ -394,14 +386,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         //动态注册注册广播接收器,接收蓝牙发现讯息
         IntentFilter btFilter = new IntentFilter();
-        btFilter.setPriority(1000);
+        btFilter.setPriority(10);
         btFilter.addAction(BluetoothDevice.ACTION_FOUND);
         btFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
 
         //获取蓝牙适配器
         m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         m_checkBox = m_view.findViewById(R.id.ck_bluetooth);
-        m_textView1 = m_view.findViewById(R.id.tv_discovery);
         m_listView = m_view.findViewById(R.id.lv_bluetooth);
         switch(m_bluetoothAdapter.getState())
         {
@@ -416,13 +407,11 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 break;
         }
         m_checkBox.setOnCheckedChangeListener(this);
-        m_textView1.setOnClickListener(this);
         if(m_bluetoothAdapter == null)
         {
             Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
         }
-        //m_listener.onFragmentInteraction(Uri.parse(""));
-
+        m_listener.onFragmentInteraction(Uri.parse("content://com.zistone.bluetoothtest/list"));
         //下拉刷新控件
         m_materialRefreshLayout = m_view.findViewById(R.id.refresh);
         //启用加载更多
@@ -441,7 +430,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     m_deviceList.clear();
                     BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
                     m_listView.setAdapter(adapter);
-                    m_textView1.setText("正在搜索蓝牙设备");
                     //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
                     m_bluetoothAdapter.startDiscovery();
                     //结束下拉刷新

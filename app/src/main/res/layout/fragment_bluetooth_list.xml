@@ -48,15 +48,6 @@
             android:layout_height="wrap_content"
             android:checked="false"
             android:text="电力控制终端" />
-
-        <TextView
-            android:id="@+id/tv_discovery"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="right|center"
-            android:textColor="#ff000000"
-            android:textSize="17sp" />
     </LinearLayout>
 
     <LinearLayout
