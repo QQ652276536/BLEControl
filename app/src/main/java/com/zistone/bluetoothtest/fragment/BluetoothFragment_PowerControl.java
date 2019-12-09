@@ -158,7 +158,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    m_refreshTimer.schedule(m_refreshTask, 0, 5 * 1000);
+                    m_refreshTimer.schedule(m_refreshTask, 0, 1 * 1000);
                     break;
                 }
                 case MESSAGE_OPENDOOR:
@@ -204,24 +204,48 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String strs[] = result.split(",");
                     String doorState1 = strs[0];
                     if(doorState1.equalsIgnoreCase("1"))
+                    {
                         m_textView1.setText("已开");
+                        m_textView1.setTextColor(Color.GREEN);
+                    }
                     else
+                    {
                         m_textView1.setText("已关");
+                        m_textView1.setTextColor(Color.RED);
+                    }
                     String lockState1 = strs[1];
                     if(lockState1.equalsIgnoreCase("1"))
+                    {
                         m_textView2.setText("已开");
+                        m_textView2.setTextColor(Color.GREEN);
+                    }
                     else
+                    {
                         m_textView2.setText("已关");
+                        m_textView2.setTextColor(Color.RED);
+                    }
                     String doorState2 = strs[2];
                     if(doorState2.equalsIgnoreCase("1"))
+                    {
                         m_textView3.setText("已开");
+                        m_textView3.setTextColor(Color.GREEN);
+                    }
                     else
+                    {
                         m_textView3.setText("已关");
+                        m_textView3.setTextColor(Color.RED);
+                    }
                     String lockState2 = strs[3];
                     if(lockState2.equalsIgnoreCase("1"))
+                    {
                         m_textView4.setText("已开");
+                        m_textView4.setTextColor(Color.GREEN);
+                    }
                     else
+                    {
                         m_textView4.setText("已关");
+                        m_textView4.setTextColor(Color.RED);
+                    }
                     m_textView5.setText(strs[4] + "mV");
                     m_textView6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
                     break;
@@ -231,6 +255,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     break;
                 //二号门锁
                 case MESSAGE_OPENDOORS2:
+
                 {
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -248,6 +273,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 //全部门锁
                 case MESSAGE_OPENALLDOORS:
+
                 {
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -283,6 +309,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public interface OnFragmentInteractionListener
     {
         void onFragmentInteraction(Uri uri);
+
     }
 
     public void onButtonPressed(Uri uri)
