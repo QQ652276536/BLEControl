@@ -151,9 +151,8 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
                         android:text="电池容量"
                         android:textSize="18sp" />
 
@@ -161,22 +160,20 @@
                         android:id="@+id/text5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
                         android:text="Null"
                         android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
                         android:text="磁场强度"
                         android:textSize="18sp" />
 
@@ -184,7 +181,7 @@
                         android:id="@+id/text6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
+                        android:singleLine="false"
                         android:text="Null"
                         android:textSize="18sp" />
                 </LinearLayout>
