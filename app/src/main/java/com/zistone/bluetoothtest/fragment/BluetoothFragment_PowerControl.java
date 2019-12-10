@@ -15,9 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,17 +26,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.activity.MainActivity;
-import com.zistone.bluetoothtest.control.MyRadioGroup;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
 import java.io.Serializable;
@@ -814,7 +808,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_textView6 = m_view.findViewById(R.id.text6);
             m_scrollView = m_view.findViewById(R.id.scrollView);
             m_llPowerControl = m_view.findViewById(R.id.fragment_bluetooth_powercontrol);
-            m_paramSettingWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_window, m_llPowerControl);
+            m_paramSettingWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_dialog, m_llPowerControl);
             m_paramSettingWindow.setOnClickListener(this::onClick);
         }
         catch(Exception e)

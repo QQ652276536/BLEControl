@@ -1,8 +1,6 @@
 package com.zistone.bluetoothtest.fragment;
 
-import android.animation.LayoutTransition;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
@@ -13,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 
 import com.zistone.bluetoothtest.R;
 
@@ -36,7 +33,7 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_window, null);
+        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_dialog, null);
         m_tabLayout = m_view.findViewById(R.id.tablayout);
         m_viewPager = m_view.findViewById(R.id.viewpager);
         m_viewPager.setOffscreenPageLimit(m_fragmentList.size());
