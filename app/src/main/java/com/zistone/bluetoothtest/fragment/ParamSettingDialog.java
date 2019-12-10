@@ -64,8 +64,8 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     {
         super.onCreate(savedInstanceState);
         m_fragmentList = new ArrayList<>();
-        m_fragmentList.add(new ParamSettingFragment_New());
-        m_fragmentList.add(new ParamSettingFragment_Load());
+        m_fragmentList.add(ParamSettingFragment_New.newInstance("", ""));
+        m_fragmentList.add(ParamSettingFragment_Load.newInstance("", ""));
     }
 
     @Override
