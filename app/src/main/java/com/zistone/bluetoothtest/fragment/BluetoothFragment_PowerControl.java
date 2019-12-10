@@ -17,14 +17,18 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -91,6 +95,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
     private ScrollView m_scrollView;
+    private LinearLayout m_paramSettingWindow;
+    private LinearLayout m_llPowerControl;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -320,46 +326,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        //Activity的onCreateOptionsMenu会在之前调用,即先Clear一下,这样就只有Fragment自己设置的了
-        menu.clear();
-        inflater.inflate(R.menu.menu_setting, menu);
-    }
-
-    public void InitView()
-    {
-        m_context = getContext();
-        m_toolbar = m_view.findViewById(R.id.toolbar);
-        //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
-        setHasOptionsMenu(true);
-        //去掉标题
-        m_toolbar.setTitle("");
-        //此处强转,必须是Activity才有这个方法
-        ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
-        m_btnReturn = m_view.findViewById(R.id.btn_return);
-        m_btnReturn.setOnClickListener(this::onClick);
-        m_debugView = m_view.findViewById(R.id.debug_view);
-        m_button1 = m_view.findViewById(R.id.button1);
-        m_button1.setOnClickListener(this::onClick);
-        m_button2 = m_view.findViewById(R.id.button2);
-        m_button2.setOnClickListener(this::onClick);
-        m_button3 = m_view.findViewById(R.id.button3);
-        m_button3.setOnClickListener(this::onClick);
-        m_button4 = m_view.findViewById(R.id.button4);
-        m_button4.setOnClickListener(this::onClick);
-        m_button5 = m_view.findViewById(R.id.button5);
-        m_button5.setOnClickListener(this::onClick);
-        m_textView1 = m_view.findViewById(R.id.text1);
-        m_textView2 = m_view.findViewById(R.id.text2);
-        m_textView3 = m_view.findViewById(R.id.text3);
-        m_textView4 = m_view.findViewById(R.id.text4);
-        m_textView5 = m_view.findViewById(R.id.text5);
-        m_textView6 = m_view.findViewById(R.id.text6);
-        m_scrollView = m_view.findViewById(R.id.scrollView);
-    }
-
     private void Resolve(String data)
     {
         Log.d(TAG, ">>>共接收:" + data);
@@ -504,6 +470,35 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 break;
         }
         builder.show();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        super.onOptionsItemSelected(item);
+        switch(item.getItemId())
+        {
+            case R.id.menu_1:
+            {
+                ParamSettingDialog paramSettingDialog = new ParamSettingDialog();
+                paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
+                paramSettingDialog.show(getFragmentManager(), "paramSettingDialog");
+                break;
+            }
+            case R.id.menu_2:
+            {
+                break;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        //Activity的onCreateOptionsMenu会在之前调用,即先Clear一下,这样就只有Fragment自己设置的了
+        menu.clear();
+        inflater.inflate(R.menu.menu_setting, menu);
     }
 
     @Override
@@ -783,6 +778,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         m_view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
+        m_context = getContext();
         try
         {
             //强制获得焦点
@@ -790,7 +786,36 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_view.setFocusable(true);
             m_view.setFocusableInTouchMode(true);
             m_view.setOnKeyListener(backListener);
-            InitView();
+            m_toolbar = m_view.findViewById(R.id.toolbar);
+            //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
+            setHasOptionsMenu(true);
+            //去掉标题
+            m_toolbar.setTitle("");
+            //此处强转,必须是Activity才有这个方法
+            ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
+            m_btnReturn = m_view.findViewById(R.id.btn_return);
+            m_btnReturn.setOnClickListener(this::onClick);
+            m_debugView = m_view.findViewById(R.id.debug_view);
+            m_button1 = m_view.findViewById(R.id.button1);
+            m_button1.setOnClickListener(this::onClick);
+            m_button2 = m_view.findViewById(R.id.button2);
+            m_button2.setOnClickListener(this::onClick);
+            m_button3 = m_view.findViewById(R.id.button3);
+            m_button3.setOnClickListener(this::onClick);
+            m_button4 = m_view.findViewById(R.id.button4);
+            m_button4.setOnClickListener(this::onClick);
+            m_button5 = m_view.findViewById(R.id.button5);
+            m_button5.setOnClickListener(this::onClick);
+            m_textView1 = m_view.findViewById(R.id.text1);
+            m_textView2 = m_view.findViewById(R.id.text2);
+            m_textView3 = m_view.findViewById(R.id.text3);
+            m_textView4 = m_view.findViewById(R.id.text4);
+            m_textView5 = m_view.findViewById(R.id.text5);
+            m_textView6 = m_view.findViewById(R.id.text6);
+            m_scrollView = m_view.findViewById(R.id.scrollView);
+            m_llPowerControl = m_view.findViewById(R.id.fragment_bluetooth_powercontrol);
+            m_paramSettingWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_window, m_llPowerControl);
+            m_paramSettingWindow.setOnClickListener(this::onClick);
         }
         catch(Exception e)
         {
