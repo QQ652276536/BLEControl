@@ -845,13 +845,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             m_bluetoothGatt.disconnect();
                         }
                         m_textView1.setText("Null");
-                        m_textView1.setTextColor(Color.BLACK);
+                        m_textView1.setTextColor(Color.GRAY);
                         m_textView2.setText("Null");
-                        m_textView2.setTextColor(Color.BLACK);
+                        m_textView2.setTextColor(Color.GRAY);
                         m_textView3.setText("Null");
-                        m_textView3.setTextColor(Color.BLACK);
+                        m_textView3.setTextColor(Color.GRAY);
                         m_textView4.setText("Null");
-                        m_textView4.setTextColor(Color.BLACK);
+                        m_textView4.setTextColor(Color.GRAY);
                         m_textView5.setText("Null");
                         m_textView6.setText("Null");
                     }
