@@ -2,14 +2,7 @@ package com.zistone.bluetoothtest.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
@@ -18,7 +11,9 @@ import com.zistone.bluetoothtest.fragment.BluetoothFragment_List;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_PowerControl;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_ReadWrite;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener,
+        BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener,
+        BluetoothFragment_PowerControl.OnFragmentInteractionListener
 {
     public BluetoothFragment m_bluetoothFragment;
 
