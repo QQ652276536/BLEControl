@@ -278,7 +278,7 @@
                         android:textSize="16sp" />
                 </LinearLayout>
 
-                <ScrollView
+                <com.zistone.bluetoothtest.control.MyScrollView
                     android:id="@+id/scrollView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -288,9 +288,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="textMultiLine"
+                        android:scrollbars="vertical"
                         android:singleLine="false"
                         android:text="" />
-                </ScrollView>
+                </com.zistone.bluetoothtest.control.MyScrollView>
 
             </LinearLayout>
         </LinearLayout>

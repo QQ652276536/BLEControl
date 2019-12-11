@@ -222,6 +222,57 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:background="@color/cardview_dark_background"
+                    android:enabled="false"
+                    android:text="查询内部控制参数"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btn11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:background="@color/cardview_dark_background"
+                    android:enabled="false"
+                    android:text="BBBBB"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/btn12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:background="@color/cardview_dark_background"
+                    android:enabled="false"
+                    android:text="CCCCC"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

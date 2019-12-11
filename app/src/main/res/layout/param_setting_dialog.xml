@@ -85,7 +85,7 @@
                             android:layout_height="wrap_content"
                             android:ems="5"
                             android:hint="New value"
-                            android:inputType="number" />
+                            android:inputType="textVisiblePassword" />
 
                         <TextView
                             android:layout_width="50dp"

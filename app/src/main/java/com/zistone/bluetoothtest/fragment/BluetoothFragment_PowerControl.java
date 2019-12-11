@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.activity.MainActivity;
+import com.zistone.bluetoothtest.control.MyScrollView;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
 import java.io.Serializable;
@@ -48,7 +50,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final int MESSAGE_ERROR = -1;
+    private static final int MESSAGE_ERROR_1 = -1;
+    private static final int MESSAGE_ERROR_2 = -2;
+    private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
     private static final int MESSAGE_OPENDOOR = 0;
     private static final int MESSAGE_READCAR = 1;
@@ -59,6 +63,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int MESSAGE_OPENDOORS1 = 81;
     private static final int MESSAGE_OPENDOORS2 = 82;
     private static final int MESSAGE_OPENALLDOORS = 83;
+    private static final int MESSAGE_SEARCHCONTROLPARAM = 86;
     private static UUID SERVICE_UUID;
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
@@ -90,7 +95,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
-    private ScrollView m_scrollView;
+    private MyScrollView m_scrollView;
     private LinearLayout m_paramSettingWindow;
     private LinearLayout m_llPowerControl;
     private ParamSettingDialog m_paramSettingDialog;
@@ -126,8 +131,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             String result = (String) message.obj;
             switch(message.what)
             {
-                case MESSAGE_ERROR:
-                    ShowWarning(MESSAGE_ERROR);
+                case MESSAGE_ERROR_1:
+                    ShowWarning(MESSAGE_ERROR_1);
                     m_button1.setText("连接");
                     break;
                 case MESSAGE_1:
@@ -276,7 +281,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 //全部门锁
                 case MESSAGE_OPENALLDOORS:
-
                 {
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -300,6 +304,100 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         m_textView4.setText("已开");
                     else
                         m_textView4.setText("已关");
+                    break;
+                }
+                //查询内部控制参数
+                case MESSAGE_SEARCHCONTROLPARAM:
+                {
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    //门检测开关用采用常开型(关门开路)
+                    String str1 = String.valueOf(bitStr.charAt(7));
+                    //锁检测开定于关用采用常开型(锁上开路)
+                    String str2 = String.valueOf(bitStr.charAt(6));
+                    //正常开锁不告警
+                    String str3 = String.valueOf(bitStr.charAt(5));
+                    //有外电可以进入维护方式
+                    String str4 = String.valueOf(bitStr.charAt(4));
+                    //启用软关机
+                    String str5 = String.valueOf(bitStr.charAt(3));
+                    //不检测强磁
+                    String str6 = String.valueOf(bitStr.charAt(2));
+                    //使用低磁检测阀值
+                    String str7 = String.valueOf(bitStr.charAt(1));
+                    //启用DEBUG软串口
+                    String str8 = String.valueOf(bitStr.charAt(0));
+                    if(str1.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:关门开路【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:关门开路【禁用】 ");
+                    }
+                    if(str2.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:锁上开路【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:锁上开路【禁用】 ");
+                    }
+                    if(str3.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:正常开锁不告警【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:正常开锁不告警【禁用】 ");
+                    }
+                    if(str4.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:有外电可以进入维护方式【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:有外电可以进入维护方式【禁用】 ");
+                    }
+                    if(str5.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:启用软关机【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:启用软关机【禁用】 ");
+                    }
+                    if(str6.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:不检测强磁【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:不检测强磁【禁用】 ");
+                    }
+                    if(str7.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到: 使用低磁检测阀值【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:使用低磁检测阀值【禁用】 ");
+                    }
+                    if(str8.equalsIgnoreCase("1"))
+                    {
+                        m_debugView.append("收到:启用DEBUG软串口【启用】 ");
+                    }
+                    else
+                    {
+                        m_debugView.append("收到:启用DEBUG软串口【禁用】 ");
+                    }
+                    //定位到最后一行
+                    int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
+                    //如果文本的高度大于ScrollView的,就自动滑动
+                    if(offset > m_debugView.getHeight())
+                    {
+                        m_debugView.scrollTo(0, offset - m_debugView.getHeight());
+                    }
                     break;
                 }
             }
@@ -447,6 +545,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             //查询内部控制参数
             case "86":
             {
+                Message message = new Message();
+                message.what = MESSAGE_SEARCHCONTROLPARAM;
+                message.obj = strArray[16];
+                handler.sendMessage(message);
                 break;
             }
         }
@@ -458,13 +560,19 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         builder.setTitle("警告");
         switch(param)
         {
-            case MESSAGE_ERROR:
+            case MESSAGE_ERROR_1:
                 builder.setMessage("该设备的连接已断开!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
                 });
                 break;
-            case 2:
+            case MESSAGE_ERROR_2:
+                builder.setMessage("该设备未连接蓝牙!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                });
+                break;
+            case MESSAGE_ERROR_3:
                 builder.setMessage("未获取到蓝牙,请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
@@ -483,7 +591,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         if(requestCode == 0)
         {
             String hexStr = data.getStringExtra("ParamSetting");
-            m_debugView.append("已发送参数设置指令");
+            if(m_bluetoothGattCharacteristic_write == null)
+            {
+                ShowWarning(MESSAGE_ERROR_2);
+                return;
+            }
+            m_debugView.append("已发送参数设置指令 ");
             int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
             if(offset > m_scrollView.getHeight())
             {
@@ -590,7 +703,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 Log.d(TAG, ">>>连接已断开!");
                                 m_bluetoothGatt.close();
                                 Message message = new Message();
-                                message.what = MESSAGE_ERROR;
+                                message.what = MESSAGE_ERROR_1;
                                 handler.sendMessage(message);
                             }
                         }
@@ -736,7 +849,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 else
                 {
-                    ShowWarning(2);
+                    ShowWarning(MESSAGE_ERROR_3);
                 }
                 break;
             }
@@ -818,27 +931,28 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_toolbar.setTitle("");
             //此处强转,必须是Activity才有这个方法
             ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
-            m_btnReturn = m_view.findViewById(R.id.btn_return);
-            m_btnReturn.setOnClickListener(this::onClick);
-            m_debugView = m_view.findViewById(R.id.debug_view);
-            m_button1 = m_view.findViewById(R.id.button1);
-            m_button1.setOnClickListener(this::onClick);
-            m_button2 = m_view.findViewById(R.id.button2);
-            m_button2.setOnClickListener(this::onClick);
-            m_button3 = m_view.findViewById(R.id.button3);
-            m_button3.setOnClickListener(this::onClick);
-            m_button4 = m_view.findViewById(R.id.button4);
-            m_button4.setOnClickListener(this::onClick);
-            m_button5 = m_view.findViewById(R.id.button5);
-            m_button5.setOnClickListener(this::onClick);
             m_textView1 = m_view.findViewById(R.id.text1);
             m_textView2 = m_view.findViewById(R.id.text2);
             m_textView3 = m_view.findViewById(R.id.text3);
             m_textView4 = m_view.findViewById(R.id.text4);
             m_textView5 = m_view.findViewById(R.id.text5);
             m_textView6 = m_view.findViewById(R.id.text6);
+            m_debugView = m_view.findViewById(R.id.debug_view);
+            m_btnReturn = m_view.findViewById(R.id.btn_return);
+            m_button1 = m_view.findViewById(R.id.button1);
+            m_button2 = m_view.findViewById(R.id.button2);
+            m_button3 = m_view.findViewById(R.id.button3);
+            m_button4 = m_view.findViewById(R.id.button4);
+            m_button5 = m_view.findViewById(R.id.button5);
             m_scrollView = m_view.findViewById(R.id.scrollView);
             m_llPowerControl = m_view.findViewById(R.id.fragment_bluetooth_powercontrol);
+            m_btnReturn.setOnClickListener(this::onClick);
+            m_button1.setOnClickListener(this::onClick);
+            m_button2.setOnClickListener(this::onClick);
+            m_button3.setOnClickListener(this::onClick);
+            m_button4.setOnClickListener(this::onClick);
+            m_button5.setOnClickListener(this::onClick);
+            m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
             m_paramSettingWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_dialog, m_llPowerControl);
             m_paramSettingWindow.setOnClickListener(this::onClick);
         }

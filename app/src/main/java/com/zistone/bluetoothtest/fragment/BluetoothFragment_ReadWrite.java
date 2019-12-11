@@ -61,6 +61,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private Button m_button7;
     private Button m_button8;
     private Button m_button9;
+    private Button m_button10;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -113,6 +114,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_button7.setEnabled(true);
                     m_button8.setEnabled(true);
                     m_button9.setEnabled(true);
+                    m_button10.setEnabled(true);
                     m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
@@ -122,6 +124,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button8.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button9.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button10.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_progressBar.setVisibility(View.INVISIBLE);
                     break;
                 }
@@ -159,8 +162,308 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         }
     }
 
-    public void InitView()
+    private void Resolve(String data)
     {
+        Log.d(TAG, ">>>共接收:" + data);
+        String[] strArray = data.split(" ");
+        String responseResult = "";
+        String responseValue = "";
+        String indexStr = strArray[12];
+        switch(indexStr)
+        {
+            //开门
+            case "00":
+                responseResult = "开门";
+                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
+                break;
+            //读卡
+            case "01":
+                break;
+            //电池电压
+            case "02":
+                break;
+            //磁场强度
+            case "03":
+                responseResult = "强磁场";
+                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
+                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
+                break;
+            //测量门状态
+            case "04":
+                responseResult = "";
+                if(strArray[13].equals("01"))
+                {
+                    responseValue = "门已关";
+                }
+                else
+                {
+                    responseResult = "门已开";
+                }
+                break;
+            //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
+            case "80":
+            {
+                //全部门锁状态
+                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
+                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                String doorState2 = String.valueOf(bitStr.charAt(5));
+                String lockState2 = String.valueOf(bitStr.charAt(4));
+                //强磁开关状态
+                String magneticState = String.valueOf(bitStr.charAt(3));
+                //外接电源状态
+                String outsideState = String.valueOf(bitStr.charAt(2));
+                //内部电池充电状态
+                String insideState = String.valueOf(bitStr.charAt(1));
+                //电池电量
+                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                //下端磁强
+                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
+                //上端磁强
+                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                //前端磁强
+                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
+                break;
+            }
+            //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
+            case "81":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                break;
+            }
+            //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
+            case "82":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                break;
+            }
+            //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
+            case "83":
+            {
+                String result = strArray[13];
+                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                String doorState1 = String.valueOf(bitStr.charAt(7));
+                String lockState1 = String.valueOf(bitStr.charAt(6));
+                String doorState2 = String.valueOf(bitStr.charAt(5));
+                String lockState2 = String.valueOf(bitStr.charAt(4));
+                break;
+            }
+            //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
+            case "86":
+            {
+                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[16]);
+                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                //门检测开关用采用常开型(关门开路)
+                String str1 = String.valueOf(bitStr.charAt(7));
+                //锁检测开定于关用采用常开型(锁上开路)
+                String str2 = String.valueOf(bitStr.charAt(6));
+                //正常开锁不告警
+                String str3 = String.valueOf(bitStr.charAt(5));
+                //有外电可以进入维护方式
+                String str4 = String.valueOf(bitStr.charAt(4));
+                //启用软关机
+                String str5 = String.valueOf(bitStr.charAt(3));
+                //不检测强磁
+                String str6 = String.valueOf(bitStr.charAt(2));
+                //使用低磁检测阀值
+                String str7 = String.valueOf(bitStr.charAt(1));
+                //启用DEBUG软串口
+                String str8 = String.valueOf(bitStr.charAt(0));
+                break;
+            }
+        }
+        Message message = new Message();
+        message.what = MESSAGE_2;
+        //        message.obj = "接收:" + responseResult + responseValue;
+        message.obj = "接收:" + ConvertUtil.StrArrayToStr(strArray) + "\r\n";
+        handler.sendMessage(message);
+    }
+
+    private void ShowWarning(int param)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+        builder.setTitle("警告");
+        switch(param)
+        {
+            case 1:
+                builder.setMessage("该设备的连接已断开!,请重试!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                });
+                break;
+            case 2:
+                builder.setMessage("未获取到蓝牙,请重试!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                });
+                break;
+        }
+        builder.show();
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        switch(v.getId())
+        {
+            case R.id.btn_return:
+            {
+                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_ReadWrite.this).commitNow();
+                break;
+            }
+            //清屏
+            case R.id.btn0:
+                m_textView.setText("");
+                break;
+            //开门
+            case R.id.button1:
+            {
+                String hexStr = "680000000000006810000100E116";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //读卡
+            case R.id.btn2:
+            {
+                String hexStr = "680000000000006810000101E216";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //测量电池电压
+            case R.id.btn3:
+            {
+                String hexStr = "680000000000006810000102E316";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //测量磁场强度
+            case R.id.btn4:
+            {
+                String hexStr = "680000000000006810000103E416";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //测量门状态
+            case R.id.btn5:
+            {
+                String hexStr = "680000000000006810000104E516";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //综合测试A
+            case R.id.btn6:
+            {
+                String hexStr = "680000000000006810000180E616";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //开一号门锁
+            case R.id.btn7:
+            {
+                String hexStr = "680000000000006810000181E716";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //开二号门锁
+            case R.id.btn8:
+            {
+                String hexStr = "680000000000006810000182E816";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //开全部门锁
+            case R.id.btn9:
+            {
+                String hexStr = "680000000000006810000183E916";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+            //查询内部控制参数
+            case R.id.btn10:
+            {
+                String hexStr = "680000000000006810000186EA16";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+        {
+            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
+            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+            SERVICE_UUID = map.get("SERVICE_UUID");
+            WRITE_UUID = map.get("WRITE_UUID");
+            READ_UUID = map.get("READ_UUID");
+            CONFIG_UUID = map.get("CONFIG_UUID");
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        m_view = inflater.inflate(R.layout.fragment_bluetooth_read_write, container, false);
+        //强制获得焦点
+        m_view.requestFocus();
+        m_view.setFocusable(true);
+        m_view.setFocusableInTouchMode(true);
+        m_view.setOnKeyListener(backListener);
         m_context = getContext();
         m_btnReturn = m_view.findViewById(R.id.btn_return);
         m_btnReturn.setOnClickListener(this);
@@ -186,6 +489,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button8.setOnClickListener(this);
         m_button9 = m_view.findViewById(R.id.btn9);
         m_button9.setOnClickListener(this);
+        m_button10 = m_view.findViewById(R.id.btn10);
+        m_button10.setOnClickListener(this);
         m_progressBar = m_view.findViewById(R.id.progressBar);
         m_progressBar.setVisibility(View.VISIBLE);
         if(m_bluetoothDevice != null)
@@ -345,287 +650,6 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         else
         {
             ShowWarning(2);
-        }
-    }
-
-    private void Resolve(String data)
-    {
-        Log.d(TAG, ">>>共接收:" + data);
-        String[] strArray = data.split(" ");
-        String responseResult = "";
-        String responseValue = "";
-        String indexStr = strArray[12];
-        switch(indexStr)
-        {
-            //开门
-            case "00":
-                responseResult = "开门";
-                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
-                break;
-            //读卡
-            case "01":
-                break;
-            //电池电压
-            case "02":
-                break;
-            //磁场强度
-            case "03":
-                responseResult = "强磁场";
-                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                break;
-            //测量门状态
-            case "04":
-                responseResult = "";
-                if(strArray[13].equals("01"))
-                {
-                    responseValue = "门已关";
-                }
-                else
-                {
-                    responseResult = "门已开";
-                }
-                break;
-            //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
-            case "80":
-            {
-                //全部门锁状态
-                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                String doorState2 = String.valueOf(bitStr.charAt(5));
-                String lockState2 = String.valueOf(bitStr.charAt(4));
-                //强磁开关状态
-                String magneticState = String.valueOf(bitStr.charAt(3));
-                //外接电源状态
-                String outsideState = String.valueOf(bitStr.charAt(2));
-                //内部电池充电状态
-                String insideState = String.valueOf(bitStr.charAt(1));
-                //电池电量
-                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
-                //下端磁强
-                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                //上端磁强
-                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
-                //前端磁强
-                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                break;
-            }
-            //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
-            case "81":
-            {
-                String result = strArray[13];
-                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                break;
-            }
-            //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
-            case "82":
-            {
-                String result = strArray[13];
-                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                break;
-            }
-            //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
-            case "83":
-            {
-                String result = strArray[13];
-                byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                String doorState2 = String.valueOf(bitStr.charAt(5));
-                String lockState2 = String.valueOf(bitStr.charAt(4));
-                break;
-            }
-        }
-        Message message = new Message();
-        message.what = MESSAGE_2;
-        //        message.obj = "接收:" + responseResult + responseValue;
-        message.obj = "接收:" + ConvertUtil.StrArrayToStr(strArray) + "\r\n";
-        handler.sendMessage(message);
-    }
-
-    private void ShowWarning(int param)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
-        builder.setTitle("警告");
-        switch(param)
-        {
-            case 1:
-                builder.setMessage("该设备的连接已断开!,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
-                break;
-            case 2:
-                builder.setMessage("未获取到蓝牙,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
-                break;
-        }
-        builder.show();
-    }
-
-    @Override
-    public void onClick(View v)
-    {
-        switch(v.getId())
-        {
-            case R.id.btn_return:
-            {
-                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_ReadWrite.this).commitNow();
-                break;
-            }
-            //清屏
-            case R.id.btn0:
-                m_textView.setText("");
-                break;
-            //开门
-            case R.id.button1:
-            {
-                String hexStr = "680000000000006810000100E116";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //读卡
-            case R.id.btn2:
-            {
-                String hexStr = "680000000000006810000101E216";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量电池电压
-            case R.id.btn3:
-            {
-                String hexStr = "680000000000006810000102E316";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量磁场强度
-            case R.id.btn4:
-            {
-                String hexStr = "680000000000006810000103E416";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //测量门状态
-            case R.id.btn5:
-            {
-                String hexStr = "680000000000006810000104E516";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //综合测试A
-            case R.id.btn6:
-            {
-                String hexStr = "680000000000006810000180E616";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //开一号门锁
-            case R.id.btn7:
-            {
-                String hexStr = "680000000000006810000181E716";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //开二号门锁
-            case R.id.btn8:
-            {
-                String hexStr = "680000000000006810000182E816";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-            //开全部门锁
-            case R.id.btn9:
-            {
-                String hexStr = "680000000000006810000183E916";
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-        {
-            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
-            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
-            SERVICE_UUID = map.get("SERVICE_UUID");
-            WRITE_UUID = map.get("WRITE_UUID");
-            READ_UUID = map.get("READ_UUID");
-            CONFIG_UUID = map.get("CONFIG_UUID");
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
-        m_view = inflater.inflate(R.layout.fragment_bluetooth_read_write, container, false);
-        try
-        {
-            //强制获得焦点
-            m_view.requestFocus();
-            m_view.setFocusable(true);
-            m_view.setFocusableInTouchMode(true);
-            m_view.setOnKeyListener(backListener);
-            InitView();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            Toast.makeText(m_context, "配对异常", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, e.getMessage());
         }
         return m_view;
     }

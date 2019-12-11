@@ -46,7 +46,6 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     private Button m_button3;
     private Button m_button4;
     private TableLayout m_table;
-    private String m_data;
 
     @Override
     public void onClick(View v)
@@ -70,7 +69,7 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 EditText editText = new EditText(m_context);
                 editText.setHint("New value");
                 editText.setEms(5);
-                editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                editText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 TextView textView3 = new TextView(m_context);
                 textView3.setText("BYTE");
                 textView3.setWidth(50);
@@ -97,15 +96,16 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 break;
             case R.id.paramsetting_btn_send:
             {
-                m_data = "";
+                String data = "";
                 for(int i = 0; i < m_table.getChildCount(); i++)
                 {
                     TableRow row = (TableRow) m_table.getChildAt(i);
                     EditText editText = (EditText) row.getChildAt(2);
-                    m_data += editText.getText().toString();
+                    data += editText.getText().toString();
                 }
+                data = "680000000000006810000186EA16";
                 Intent intent = new Intent();
-                intent.putExtra("ParamSetting", m_data);
+                intent.putExtra("ParamSetting", data);
                 getTargetFragment().onActivityResult(0, Activity.RESULT_OK, intent);
                 break;
             }
