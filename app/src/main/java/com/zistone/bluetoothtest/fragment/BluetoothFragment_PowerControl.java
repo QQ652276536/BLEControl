@@ -1,5 +1,6 @@
 package com.zistone.bluetoothtest.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -8,6 +9,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -91,6 +93,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private ScrollView m_scrollView;
     private LinearLayout m_paramSettingWindow;
     private LinearLayout m_llPowerControl;
+    private ParamSettingDialog m_paramSettingDialog;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -345,18 +348,18 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     message.obj = "";
                 }
                 handler.sendMessage(message);
+                break;
             }
-            break;
             //读卡
             case "01":
             {
+                break;
             }
-            break;
             //电池电压
             case "02":
             {
+                break;
             }
-            break;
             //磁场强度
             case "03":
             {
@@ -367,8 +370,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_MAGNETIC;
                 message.obj = "收到:磁场强度【" + responseValue2 + "】 ";
                 handler.sendMessage(message);
+                break;
             }
-            break;
             //测量门状态
             case "04":
             {
@@ -383,8 +386,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     message.obj = "已开";
                 }
                 handler.sendMessage(message);
+                break;
             }
-            break;
             case "80":
             {
                 //全部门锁状态
@@ -412,8 +415,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_TESTA;
                 message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
                 handler.sendMessage(message);
+                break;
             }
-            break;
             //一号门锁
             case "81":
             {
@@ -421,6 +424,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_OPENDOORS1;
                 message.obj = "";
                 handler.sendMessage(message);
+                break;
             }
             //二号门锁
             case "82":
@@ -429,6 +433,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_OPENDOORS2;
                 message.obj = strArray[13];
                 handler.sendMessage(message);
+                break;
             }
             //全部门锁
             case "83":
@@ -437,8 +442,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_OPENALLDOORS;
                 message.obj = strArray[13];
                 handler.sendMessage(message);
+                break;
             }
-            break;
+            //查询内部控制参数
+            case "86":
+            {
+                break;
+            }
         }
     }
 
@@ -467,6 +477,27 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0)
+        {
+            String hexStr = data.getStringExtra("ParamSetting");
+            m_debugView.append("已发送参数设置指令");
+            int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
+            if(offset > m_scrollView.getHeight())
+            {
+                m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
+            }
+            Log.d(TAG, ">>>发送:" + hexStr);
+            byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+            m_bluetoothGattCharacteristic_write.setValue(byteArray);
+            m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            m_paramSettingDialog.dismiss();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
@@ -474,9 +505,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             case R.id.menu_1:
             {
-                ParamSettingDialog paramSettingDialog = new ParamSettingDialog();
-                paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
-                paramSettingDialog.show(getFragmentManager(), "paramSettingDialog");
+                m_paramSettingDialog = new ParamSettingDialog();
+                m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
+                m_paramSettingDialog.show(getFragmentManager(), "ParamSettingDialog");
                 break;
             }
             case R.id.menu_2:

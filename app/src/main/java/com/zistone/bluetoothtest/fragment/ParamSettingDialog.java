@@ -1,7 +1,9 @@
 package com.zistone.bluetoothtest.fragment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -43,9 +45,8 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     private Button m_button2;
     private Button m_button3;
     private Button m_button4;
-    private ImageButton m_button_delValue;
-    private int m_tabRowCount = 1;
     private TableLayout m_table;
+    private String m_data;
 
     @Override
     public void onClick(View v)
@@ -54,10 +55,6 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
         {
             case R.id.paramsetting_btn_delvalue:
             {
-                if(m_tabRowCount > 0)
-                {
-                    m_tabRowCount--;
-                }
                 break;
             }
             case R.id.paramsetting_btn_addvalue:
@@ -91,7 +88,6 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 row.addView(textView3);
                 row.addView(imageButton);
                 m_table.addView(row, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
-                m_tabRowCount++;
                 break;
             }
             case R.id.paramsetting_btn_save:
@@ -100,7 +96,19 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 dismiss();
                 break;
             case R.id.paramsetting_btn_send:
+            {
+                m_data = "";
+                for(int i = 0; i < m_table.getChildCount(); i++)
+                {
+                    TableRow row = (TableRow) m_table.getChildAt(i);
+                    EditText editText = (EditText) row.getChildAt(2);
+                    m_data += editText.getText().toString();
+                }
+                Intent intent = new Intent();
+                intent.putExtra("ParamSetting", m_data);
+                getTargetFragment().onActivityResult(0, Activity.RESULT_OK, intent);
                 break;
+            }
         }
     }
 
@@ -132,8 +140,6 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
         m_button3.setOnClickListener(this::onClick);
         m_button4 = m_view.findViewById(R.id.paramsetting_btn_send);
         m_button4.setOnClickListener(this::onClick);
-        m_button_delValue = m_view.findViewById(R.id.paramsetting_btn_delvalue);
-        m_button_delValue.setOnClickListener(this::onClick);
         builder.setView(m_view);
         return builder.create();
     }
