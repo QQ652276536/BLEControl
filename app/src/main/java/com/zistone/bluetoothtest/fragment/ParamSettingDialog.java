@@ -80,6 +80,11 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 ImageButton imageButton = new ImageButton(m_context);
                 imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close3));
                 imageButton.getBackground().setAlpha(0);
+                imageButton.setOnClickListener(v1 ->
+                {
+                    TableRow tableRow = (TableRow) v1.getParent();
+                    m_table.removeView(tableRow);
+                });
                 row.addView(textView1);
                 row.addView(textView2);
                 row.addView(editText);
