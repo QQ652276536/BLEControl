@@ -177,12 +177,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     else if(result.equalsIgnoreCase("doorisopen"))
                     {
-                        m_debugView.append("收到:门【已打开】 ");
+                        m_debugView.append("收到:门【已打开】\n");
                         m_textView1.setText("已开");
                     }
                     else
                     {
-                        m_debugView.append("收到:门【未打开】 ");
+                        m_debugView.append("收到:门【未打开】\n");
                         m_textView1.setText("未开");
                     }
                     //定位到最后一行
@@ -330,67 +330,67 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     m_debugView.append("\n\n");
                     if(str1.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:关门开路【启用】 ");
+                        m_debugView.append("收到:\n关门开路【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:关门开路【禁用】 ");
+                        m_debugView.append("收到:\n关门开路【禁用】\n");
                     }
                     if(str2.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:锁上开路【启用】 ");
+                        m_debugView.append("锁上开路【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:锁上开路【禁用】 ");
+                        m_debugView.append("锁上开路【禁用】\n");
                     }
                     if(str3.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:正常开锁不告警【启用】 ");
+                        m_debugView.append("正常开锁不告警【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:正常开锁不告警【禁用】 ");
+                        m_debugView.append("正常开锁不告警【禁用】\n");
                     }
                     if(str4.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:有外电可以进入维护方式【启用】 ");
+                        m_debugView.append("有外电可以进入维护方式【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:有外电可以进入维护方式【禁用】 ");
+                        m_debugView.append("有外电可以进入维护方式【禁用】\n");
                     }
                     if(str5.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:启用软关机【启用】 ");
+                        m_debugView.append("启用软关机【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:启用软关机【禁用】 ");
+                        m_debugView.append("启用软关机【禁用】\n");
                     }
                     if(str6.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:不检测强磁【启用】 ");
+                        m_debugView.append("不检测强磁【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:不检测强磁【禁用】 ");
+                        m_debugView.append("不检测强磁【禁用】\n");
                     }
                     if(str7.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到: 使用低磁检测阀值【启用】 ");
+                        m_debugView.append("使用低磁检测阀值【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:使用低磁检测阀值【禁用】 ");
+                        m_debugView.append("使用低磁检测阀值【禁用】\n");
                     }
                     if(str8.equalsIgnoreCase("1"))
                     {
-                        m_debugView.append("收到:启用DEBUG软串口【启用】 ");
+                        m_debugView.append("启用DEBUG软串口【启用】\n");
                     }
                     else
                     {
-                        m_debugView.append("收到:启用DEBUG软串口【禁用】 ");
+                        m_debugView.append("启用DEBUG软串口【禁用】\n");
                     }
                     m_debugView.append("\n\n");
                     //定位到最后一行
@@ -551,6 +551,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = MESSAGE_SEARCHCONTROLPARAM;
                 message.obj = strArray[16];
                 handler.sendMessage(message);
+                break;
+            }
+            //修改内部控制参数:
+            case "87":
+            {
                 break;
             }
         }

@@ -252,25 +252,9 @@
                     android:layout_weight="1"
                     android:background="@color/cardview_dark_background"
                     android:enabled="false"
-                    android:text="BBBBB"
+                    android:text="修改内部控制参数"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:visibility="invisible" />
-
-                <Button
-                    android:id="@+id/btn12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:background="@color/cardview_dark_background"
-                    android:enabled="false"
-                    android:text="CCCCC"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:visibility="invisible" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
         </LinearLayout>

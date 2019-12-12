@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
+import com.zistone.bluetoothtest.util.ConvertUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,9 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 break;
             }
             case R.id.paramsetting_btn_save:
+            {
                 break;
+            }
             case R.id.paramsetting_btn_cancel:
                 dismiss();
                 break;
@@ -103,7 +106,6 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                     EditText editText = (EditText) row.getChildAt(2);
                     data += editText.getText().toString();
                 }
-                data = "680000000000006810000186EA16";
                 Intent intent = new Intent();
                 intent.putExtra("ParamSetting", data);
                 getTargetFragment().onActivityResult(0, Activity.RESULT_OK, intent);

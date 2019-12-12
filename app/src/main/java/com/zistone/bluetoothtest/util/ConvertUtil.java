@@ -16,11 +16,16 @@ public class ConvertUtil
 
     public static void main(String[] args) throws Exception
     {
+        String bitStr = "01111111";
+        System.out.println("二进制Str转Byte:" + ConvertUtil.BinaryStrToByte(bitStr));
+        byte byt = ConvertUtil.BitToByte(bitStr);
+        System.out.println("Bit转Str:" + byt);
+        System.out.println("Bit转16进制Str:" + IntToHexStr(byt));
+        System.out.println("普通Str转Bit:" + ConvertUtil.ByteToBit(byt));
+        System.out.println("____________________________________________________________________");
 
-        System.out.println("------------------------------------------------");
         System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
-        System.out.println("------------------------------------------------");
-
+        System.out.println("____________________________________________________________________");
 
         System.out.println(ByteArrayToHexStr(new byte[]{(byte) 2, (byte) 97, (byte) 51, (byte) 52}));
         System.out.println((double) ByteArray4ToLong(new byte[]{(byte) 6, (byte) -18, (byte) -9, (byte) -15}) / 1000000);
@@ -40,6 +45,39 @@ public class ConvertUtil
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("674E5C0F4F1F"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("004C0069005700650069"));
         System.out.println("____________________________________________________________________");
+    }
+
+    public static byte BitToByte(String bit)
+    {
+        int result, len;
+        if(null == bit)
+        {
+            return 0;
+        }
+        len = bit.length();
+        if(len != 4 && len != 8)
+        {
+            return 0;
+        }
+        if(len == 8)
+        {
+            //正数
+            if(bit.charAt(0) == '0')
+            {
+                result = Integer.parseInt(bit, 2);
+            }
+            //负数
+            else
+            {
+                result = Integer.parseInt(bit, 2) - 256;
+            }
+        }
+        //4bit处理
+        else
+        {
+            result = Integer.parseInt(bit, 2);
+        }
+        return (byte) result;
     }
 
     public static String ByteToBit(byte b)

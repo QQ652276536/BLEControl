@@ -62,6 +62,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     private Button m_button8;
     private Button m_button9;
     private Button m_button10;
+    private Button m_button11;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -115,6 +116,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_button8.setEnabled(true);
                     m_button9.setEnabled(true);
                     m_button10.setEnabled(true);
+                    m_button11.setEnabled(true);
                     m_button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
@@ -125,6 +127,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                     m_button8.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button9.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_button10.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    m_button11.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     m_progressBar.setVisibility(View.INVISIBLE);
                     break;
                 }
@@ -166,15 +169,12 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
     {
         Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
-        String responseResult = "";
-        String responseValue = "";
         String indexStr = strArray[12];
+        String receive = ConvertUtil.StrArrayToStr(strArray);
         switch(indexStr)
         {
             //开门
             case "00":
-                responseResult = "开门";
-                responseValue = ConvertUtil.HexStrToStr(strArray[13] + strArray[14]);
                 break;
             //读卡
             case "01":
@@ -184,21 +184,11 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 break;
             //磁场强度
             case "03":
-                responseResult = "强磁场";
-                responseValue = strArray[9].equals("00") ? "OK" : "Fail";
+                String responseValue = strArray[9].equals("00") ? "OK" : "Fail";
                 responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
                 break;
             //测量门状态
             case "04":
-                responseResult = "";
-                if(strArray[13].equals("01"))
-                {
-                    responseValue = "门已关";
-                }
-                else
-                {
-                    responseResult = "门已开";
-                }
                 break;
             //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
             case "80":
@@ -261,7 +251,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
             case "86":
             {
-                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[16]);
+                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
                 String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
                 //门检测开关用采用常开型(关门开路)
                 String str1 = String.valueOf(bitStr.charAt(7));
@@ -279,13 +269,83 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 String str7 = String.valueOf(bitStr.charAt(1));
                 //启用DEBUG软串口
                 String str8 = String.valueOf(bitStr.charAt(0));
+                StringBuffer stringBuffer = new StringBuffer();
+                if(str1.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("\r\n关门开路【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("\r\n关门开路【禁用】\n");
+                }
+                if(str2.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("锁上开路【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("锁上开路【禁用】\n");
+                }
+                if(str3.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("正常开锁不告警【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("正常开锁不告警【禁用】\n");
+                }
+                if(str4.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("有外电可以进入维护方式【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("有外电可以进入维护方式【禁用】\n");
+                }
+                if(str5.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("启用软关机【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("启用软关机【禁用】\n");
+                }
+                if(str6.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("不检测强磁【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("不检测强磁【禁用】\n");
+                }
+                if(str7.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("使用低磁检测阀值【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("使用低磁检测阀值【禁用】\n");
+                }
+                if(str8.equalsIgnoreCase("1"))
+                {
+                    stringBuffer.append("启用DEBUG软串口【启用】\n");
+                }
+                else
+                {
+                    stringBuffer.append("启用DEBUG软串口【禁用】\n");
+                }
+                receive = stringBuffer.toString() + "\r\n";
+                break;
+            }
+            //修改内部控制参数:
+            case "87":
+            {
                 break;
             }
         }
         Message message = new Message();
         message.what = MESSAGE_2;
-        //        message.obj = "接收:" + responseResult + responseValue;
-        message.obj = "接收:" + ConvertUtil.StrArrayToStr(strArray) + "\r\n";
+        message.obj = "接收:" + receive;
         handler.sendMessage(message);
     }
 
@@ -431,6 +491,16 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
                 break;
             }
+            //修改内部控制参数
+            case R.id.btn11:
+            {
+                String hexStr = "6800000000000068100005877F000000EA16";
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                break;
+            }
         }
     }
 
@@ -491,6 +561,8 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
         m_button9.setOnClickListener(this);
         m_button10 = m_view.findViewById(R.id.btn10);
         m_button10.setOnClickListener(this);
+        m_button11 = m_view.findViewById(R.id.btn11);
+        m_button11.setOnClickListener(this);
         m_progressBar = m_view.findViewById(R.id.progressBar);
         m_progressBar.setVisibility(View.VISIBLE);
         if(m_bluetoothDevice != null)
