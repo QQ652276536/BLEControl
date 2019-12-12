@@ -5,15 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.Gravity;
@@ -24,19 +19,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
-import com.zistone.bluetoothtest.util.ConvertUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ParamSettingDialog extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener
+public class WriteValueDialog extends DialogFragment implements View.OnClickListener,
+        TabLayout.OnTabSelectedListener
 {
     private TabLayout m_tabLayout;
     private View m_view;
@@ -53,11 +43,11 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     {
         switch(v.getId())
         {
-            case R.id.paramsetting_btn_delvalue:
+            case R.id.writevalue_btn_delvalue:
             {
                 break;
             }
-            case R.id.paramsetting_btn_addvalue:
+            case R.id.writevalue_btn_addvalue:
             {
                 TableRow row = new TableRow(m_context);
                 row.setGravity(Gravity.CENTER_VERTICAL);
@@ -90,14 +80,14 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 m_table.addView(row, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
                 break;
             }
-            case R.id.paramsetting_btn_save:
+            case R.id.writevalue_btn_save:
             {
                 break;
             }
-            case R.id.paramsetting_btn_cancel:
+            case R.id.writevalue_btn_cancel:
                 dismiss();
                 break;
-            case R.id.paramsetting_btn_send:
+            case R.id.writevalue_btn_send:
             {
                 String data = "";
                 for(int i = 0; i < m_table.getChildCount(); i++)
@@ -107,7 +97,7 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                     data += editText.getText().toString();
                 }
                 Intent intent = new Intent();
-                intent.putExtra("ParamSetting", data);
+                intent.putExtra("WriteValue", data);
                 getTargetFragment().onActivityResult(0, Activity.RESULT_OK, intent);
                 break;
             }
@@ -125,22 +115,22 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_dialog, null);
+        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.writevalue_dialog, null);
         m_context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         m_tabLayout = m_view.findViewById(R.id.tablayout);
-        m_frameLayout = m_view.findViewById(R.id.paramsetting_framelayout);
-        m_table = m_view.findViewById(R.id.paramsetting_table);
+        m_frameLayout = m_view.findViewById(R.id.writevalue_framelayout);
+        m_table = m_view.findViewById(R.id.writevalue_table);
         m_tabLayout.getTabAt(0).setText("NEW");
         m_tabLayout.getTabAt(1).setText("LOAD");
         m_tabLayout.addOnTabSelectedListener(this);
-        m_button1 = m_view.findViewById(R.id.paramsetting_btn_addvalue);
+        m_button1 = m_view.findViewById(R.id.writevalue_btn_addvalue);
         m_button1.setOnClickListener(this::onClick);
-        m_button2 = m_view.findViewById(R.id.paramsetting_btn_save);
+        m_button2 = m_view.findViewById(R.id.writevalue_btn_save);
         m_button2.setOnClickListener(this::onClick);
-        m_button3 = m_view.findViewById(R.id.paramsetting_btn_cancel);
+        m_button3 = m_view.findViewById(R.id.writevalue_btn_cancel);
         m_button3.setOnClickListener(this::onClick);
-        m_button4 = m_view.findViewById(R.id.paramsetting_btn_send);
+        m_button4 = m_view.findViewById(R.id.writevalue_btn_send);
         m_button4.setOnClickListener(this::onClick);
         builder.setView(m_view);
         return builder.create();

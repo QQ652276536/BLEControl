@@ -1,6 +1,5 @@
 package com.zistone.bluetoothtest.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -30,7 +29,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -96,9 +94,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
     private MyScrollView m_scrollView;
-    private LinearLayout m_paramSettingWindow;
+    private LinearLayout m_writeValueWindow;
     private LinearLayout m_llPowerControl;
-    private ParamSettingDialog m_paramSettingDialog;
+    private WriteValueDialog m_writeValueDialog;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -593,7 +591,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 0)
         {
-            String hexStr = data.getStringExtra("ParamSetting");
+            String hexStr = data.getStringExtra("WriteValue");
             if(m_button1.getText().toString().equalsIgnoreCase("断开"))
             {
                 m_debugView.append("已发送参数设置指令 ");
@@ -611,7 +609,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 ShowWarning(MESSAGE_ERROR_2);
             }
-            m_paramSettingDialog.dismiss();
+            m_writeValueDialog.dismiss();
         }
     }
 
@@ -623,15 +621,17 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             case R.id.menu_1:
             {
-                m_paramSettingDialog = new ParamSettingDialog();
-                m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
-                m_paramSettingDialog.show(getFragmentManager(), "ParamSettingDialog");
                 break;
             }
             case R.id.menu_2:
             {
+                m_writeValueDialog = new WriteValueDialog();
+                m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
+                m_writeValueDialog.show(getFragmentManager(), "WriteValueDialog");
                 break;
             }
+            case R.id.menu_3:
+                break;
         }
         return true;
     }
@@ -967,8 +967,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_button4.setOnClickListener(this::onClick);
             m_button5.setOnClickListener(this::onClick);
             m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-            m_paramSettingWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.param_setting_dialog, m_llPowerControl);
-            m_paramSettingWindow.setOnClickListener(this::onClick);
+            m_writeValueWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.writevalue_dialog, m_llPowerControl);
+            m_writeValueWindow.setOnClickListener(this::onClick);
         }
         catch(Exception e)
         {
