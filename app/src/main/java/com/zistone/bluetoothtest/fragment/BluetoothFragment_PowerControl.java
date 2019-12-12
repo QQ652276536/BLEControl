@@ -48,6 +48,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String SERACHCONTROLPARAMCOMM = "680000000000006810000186EA16";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
     private static final int MESSAGE_ERROR_3 = -3;
@@ -62,6 +63,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int MESSAGE_OPENDOORS2 = 82;
     private static final int MESSAGE_OPENALLDOORS = 83;
     private static final int MESSAGE_SEARCHCONTROLPARAM = 86;
+    private static final int MESSAGE_SEND_SEARCHCONTROLPARAM = 862;
+    private static final int MESSAGE_SENDCONTROLPARAM = 87;
     private static UUID SERVICE_UUID;
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
@@ -97,6 +100,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private LinearLayout m_llPowerControl;
     private WriteValueDialog m_writeValueDialog;
     private ParamSettingDialog m_paramSettingDialog;
+    private boolean m_isSendParamSetting = false;
+    //发送查询结果用来初始化界面的开关
+    private boolean m_isOpenParamSettingDialog = false;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -108,6 +114,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         return fragment;
     }
 
+    /**
+     * 返回键的监听
+     */
     private View.OnKeyListener backListener = (v, keyCode, event) ->
     {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
@@ -119,6 +128,20 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
         return false;
     };
+
+    /**
+     * 发送控制参数的查询指令
+     */
+    private void SendSearchControlParamComm()
+    {
+        if(m_bluetoothGatt != null && m_bluetoothGattCharacteristic_write != null)
+        {
+            Log.d(TAG, ">>>发送参数查询:" + SERACHCONTROLPARAMCOMM);
+            byte[] byteArray = ConvertUtil.HexStrToByteArray(SERACHCONTROLPARAMCOMM);
+            m_bluetoothGattCharacteristic_write.setValue(byteArray);
+            m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+        }
+    }
 
     private Handler handler = new Handler()
     {
@@ -150,7 +173,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 {
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
-                                    Log.i(TAG, ">>>发送:" + hexStr);
+                                    //Log.i(TAG, ">>>发送综合测试:" + hexStr);
                                     byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                                     m_bluetoothGattCharacteristic_write.setValue(byteArray);
                                     m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -164,14 +187,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    m_refreshTimer.schedule(m_refreshTask, 0, 1 * 1000);
+                    m_refreshTimer.schedule(m_refreshTask, 0, 2 * 1000);
                     break;
                 }
                 case MESSAGE_OPENDOOR:
                 {
                     if(result.equalsIgnoreCase("opendoor"))
                     {
-                        m_debugView.append("已发送开门指令 ");
+                        m_debugView.append("发送开门指令 ");
                     }
                     else if(result.equalsIgnoreCase("doorisopen"))
                     {
@@ -261,7 +284,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     break;
                 //二号门锁
                 case MESSAGE_OPENDOORS2:
-
                 {
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -325,72 +347,83 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String str7 = String.valueOf(bitStr.charAt(1));
                     //启用DEBUG软串口
                     String str8 = String.valueOf(bitStr.charAt(0));
-                    m_debugView.append("\n\n");
-                    if(str1.equalsIgnoreCase("1"))
+                    //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
+                    if(m_isOpenParamSettingDialog)
                     {
-                        m_debugView.append("收到:\n关门开路【启用】\n");
+                        m_paramSettingDialog = ParamSettingDialog.newInstance(new String[]{
+                                str8, str7, str6, str5, str4, str3, str2, str1
+                        });
+                        m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
+                        m_paramSettingDialog.show(getFragmentManager(), "ParamSetting");
+                        m_isOpenParamSettingDialog = false;
                     }
                     else
                     {
-                        m_debugView.append("收到:\n关门开路【禁用】\n");
+                        if(str1.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("收到:\n关门开路【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("收到:\n关门开路【禁用】\n");
+                        }
+                        if(str2.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("锁上开路【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("锁上开路【禁用】\n");
+                        }
+                        if(str3.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("正常开锁不告警【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("正常开锁不告警【禁用】\n");
+                        }
+                        if(str4.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("有外电可以进入维护方式【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("有外电可以进入维护方式【禁用】\n");
+                        }
+                        if(str5.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("启用软关机【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("启用软关机【禁用】\n");
+                        }
+                        if(str6.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("不检测强磁【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("不检测强磁【禁用】\n");
+                        }
+                        if(str7.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("使用低磁检测阀值【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("使用低磁检测阀值【禁用】\n");
+                        }
+                        if(str8.equalsIgnoreCase("1"))
+                        {
+                            m_debugView.append("启用DEBUG软串口【启用】\n");
+                        }
+                        else
+                        {
+                            m_debugView.append("启用DEBUG软串口【禁用】\n");
+                        }
                     }
-                    if(str2.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("锁上开路【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("锁上开路【禁用】\n");
-                    }
-                    if(str3.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("正常开锁不告警【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("正常开锁不告警【禁用】\n");
-                    }
-                    if(str4.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("有外电可以进入维护方式【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("有外电可以进入维护方式【禁用】\n");
-                    }
-                    if(str5.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("启用软关机【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("启用软关机【禁用】\n");
-                    }
-                    if(str6.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("不检测强磁【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("不检测强磁【禁用】\n");
-                    }
-                    if(str7.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("使用低磁检测阀值【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("使用低磁检测阀值【禁用】\n");
-                    }
-                    if(str8.equalsIgnoreCase("1"))
-                    {
-                        m_debugView.append("启用DEBUG软串口【启用】\n");
-                    }
-                    else
-                    {
-                        m_debugView.append("启用DEBUG软串口【禁用】\n");
-                    }
-                    m_debugView.append("\n\n");
                     //定位到最后一行
                     int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
@@ -398,6 +431,27 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         m_debugView.scrollTo(0, offset - m_debugView.getHeight());
                     }
+                    break;
+                }
+                //修改内部控制参数
+                case MESSAGE_SENDCONTROLPARAM:
+                {
+                    Log.d(TAG, ">>>发送参数设置:" + result);
+                    m_debugView.append("发送参数设置指令 ");
+                    int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
+                    if(offset > m_scrollView.getHeight())
+                    {
+                        m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
+                    }
+                    byte[] byteArray = ConvertUtil.HexStrToByteArray(result);
+                    m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                    m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                    break;
+                }
+                //发送查询内部控制参数的指令
+                case MESSAGE_SEND_SEARCHCONTROLPARAM:
+                {
+                    SendSearchControlParamComm();
                     break;
                 }
             }
@@ -410,7 +464,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public interface OnFragmentInteractionListener
     {
         void onFragmentInteraction(Uri uri);
-
     }
 
     public void onButtonPressed(Uri uri)
@@ -421,31 +474,49 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
     }
 
+    /**
+     * 解析硬件返回的数据
+     *
+     * @param data
+     */
     private void Resolve(String data)
     {
-        Log.d(TAG, ">>>共接收:" + data);
+        //Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
         switch(indexStr)
         {
             //开门
+            //87与00的索引位冲突,要在这里做判断
             case "00":
             {
-                Message message = new Message();
-                message.what = MESSAGE_OPENDOOR;
-                if(strArray[14].equalsIgnoreCase("00"))
+                //收到设备返回的参数设置后才发送参数查询的指令
+                if(m_isSendParamSetting)
                 {
-                    message.obj = "doorisopen";
-                }
-                else if(ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK"))
-                {
-                    message.obj = "doorisopen";
+                    Message message = new Message();
+                    message.what = MESSAGE_SEND_SEARCHCONTROLPARAM;
+                    message.obj = "";
+                    handler.sendMessage(message);
+                    m_isSendParamSetting = false;
                 }
                 else
                 {
-                    message.obj = "";
+                    Message message = new Message();
+                    message.what = MESSAGE_OPENDOOR;
+                    if(strArray[14].equalsIgnoreCase("00"))
+                    {
+                        message.obj = "doorisopen";
+                    }
+                    else if(ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK"))
+                    {
+                        message.obj = "doorisopen";
+                    }
+                    else
+                    {
+                        message.obj = "";
+                    }
+                    handler.sendMessage(message);
                 }
-                handler.sendMessage(message);
                 break;
             }
             //读卡
@@ -547,11 +618,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 Message message = new Message();
                 message.what = MESSAGE_SEARCHCONTROLPARAM;
-                message.obj = strArray[16];
+                message.obj = strArray[13];
                 handler.sendMessage(message);
                 break;
             }
-            //修改内部控制参数:
+            //修改内部控制参数
+            //87与00的索引位冲突,所以不会执行到这里
             case "87":
             {
                 break;
@@ -594,16 +666,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             String hexStr = data.getStringExtra("WriteValue");
             if(m_button1.getText().toString().equalsIgnoreCase("断开"))
             {
-                m_debugView.append("已发送参数写入指令 ");
-                int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
-                if(offset > m_scrollView.getHeight())
-                {
-                    m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
-                }
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
             }
             else
             {
@@ -613,19 +675,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
         else if(requestCode == 2)
         {
-            String hexStr = data.getStringExtra("ParamSetting");
+            String result = data.getStringExtra("ParamSetting");
             if(m_button1.getText().toString().equalsIgnoreCase("断开"))
             {
-                m_debugView.append("已发送参数设置指令 ");
-                int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
-                if(offset > m_scrollView.getHeight())
-                {
-                    m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
-                }
-                Log.d(TAG, ">>>发送:" + hexStr);
-                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
-                m_bluetoothGattCharacteristic_write.setValue(byteArray);
-                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+                m_isSendParamSetting = true;
+                Message message = new Message();
+                message.what = MESSAGE_SENDCONTROLPARAM;
+                message.obj = result;
+                handler.sendMessage(message);
             }
             else
             {
@@ -643,9 +700,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             case R.id.menu_1:
             {
-                m_paramSettingDialog = new ParamSettingDialog();
-                m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
-                m_paramSettingDialog.show(getFragmentManager(), "ParamSetting");
+                //先查询参数,然后再显示修改参数的页面
+                SendSearchControlParamComm();
+                m_isOpenParamSettingDialog = true;
                 break;
             }
             case R.id.menu_2:
@@ -753,6 +810,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                         //轮询
                                         Message message = new Message();
                                         message.what = MESSAGE_1;
+                                        message.obj = "";
                                         handler.sendMessage(message);
                                     }
                                     else
@@ -779,38 +837,42 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 String indexStr = strArray[11];
                                 switch(indexStr)
                                 {
+                                    //发送开门指令
+                                    //87与00的索引位冲突,要在这里做判断
                                     case "00":
                                     {
-                                        Message message = new Message();
-                                        message.what = MESSAGE_OPENDOOR;
-                                        Log.d(TAG, ">>>发送开门指令");
-                                        message.obj = "opendoor";
-                                        handler.sendMessage(message);
                                         break;
                                     }
+                                    //发送读卡指令
                                     case "01":
-                                        //sendResult = "发送读卡指令 ";
                                         break;
+                                    //发送测量电池电压指令
                                     case "02":
-                                        //sendResult = "发送测量电池电压指令 ";
                                         break;
+                                    //发送测量磁场强度指令
                                     case "03":
-                                        //sendResult = "发送测量磁场强度指令 ";
                                         break;
+                                    //发送测量门状态指令
                                     case "04":
-                                        //sendResult = "发送测量门状态指令 ";
                                         break;
+                                    //发送综合测量指令
                                     case "80":
-                                        //sendResult = "";
                                         break;
+                                    //发送开一号门锁指令
                                     case "81":
-                                        //sendResult = "";
                                         break;
+                                    //发送开二号门锁指令
                                     case "82":
-                                        //sendResult = "";
                                         break;
+                                    //发送开全部门锁指令
                                     case "83":
-                                        //sendResult = "";
+                                        break;
+                                    //发送查询内部控制参数指令
+                                    case "86":
+                                        break;
+                                    //发送修改内部控制参数指令
+                                    //87与00的索引位冲突,所以不会执行到这里
+                                    case "87":
                                         break;
                                 }
                             }
@@ -826,7 +888,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 byte[] byteArray = characteristic.getValue();
                                 String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                                 result = ConvertUtil.HexStrAddCharacter(result, " ");
-                                Log.d(TAG, ">>>接收:" + result);
+                                //Log.d(TAG, ">>>接收:" + result);
                                 String[] strArray = result.split(" ");
                                 //一个包(20个字节)
                                 if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
@@ -896,7 +958,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case R.id.button2:
             {
                 String hexStr = "680000000000006810000100E116";
-                Log.d(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送开一号门锁:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -906,7 +968,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case R.id.button3:
             {
                 String hexStr = "680000000000006810000182E716";
-                Log.d(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送开二号门锁:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
@@ -916,7 +978,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case R.id.button4:
             {
                 String hexStr = "680000000000006810000181E716";
-                Log.d(TAG, ">>>发送:" + hexStr);
+                Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
                 byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
                 m_bluetoothGattCharacteristic_write.setValue(byteArray);
                 m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);

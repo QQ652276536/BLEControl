@@ -16,12 +16,9 @@ public class ConvertUtil
 
     public static void main(String[] args) throws Exception
     {
-        String bitStr = "01111111";
-        System.out.println("二进制Str转Byte:" + ConvertUtil.BinaryStrToByte(bitStr));
-        byte byt = ConvertUtil.BitToByte(bitStr);
-        System.out.println("Bit转Str:" + byt);
-        System.out.println("Bit转16进制Str:" + IntToHexStr(byt));
-        System.out.println("普通Str转Bit:" + ConvertUtil.ByteToBit(byt));
+        String bitStr = "10000001";
+        System.out.println("二进制Str转十进制Int:" + Integer.parseInt(bitStr, 2));
+        System.out.println("十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr, 2)));
         System.out.println("____________________________________________________________________");
 
         System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
