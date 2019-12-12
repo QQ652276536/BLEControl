@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_1"
         android:orderInCategory="80"
-        android:title="参数设置"
+        android:title="内部控制参数设置"
         app:showAsAction="never" />
 
     <item

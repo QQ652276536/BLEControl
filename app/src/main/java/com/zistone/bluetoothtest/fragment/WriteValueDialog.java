@@ -98,7 +98,7 @@ public class WriteValueDialog extends DialogFragment implements View.OnClickList
                 }
                 Intent intent = new Intent();
                 intent.putExtra("WriteValue", data);
-                getTargetFragment().onActivityResult(0, Activity.RESULT_OK, intent);
+                getTargetFragment().onActivityResult(1, Activity.RESULT_OK, intent);
                 break;
             }
         }

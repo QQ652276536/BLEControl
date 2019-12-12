@@ -94,9 +94,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private TimerTask m_refreshTask;
     private Toolbar m_toolbar;
     private MyScrollView m_scrollView;
-    private LinearLayout m_writeValueWindow;
     private LinearLayout m_llPowerControl;
     private WriteValueDialog m_writeValueDialog;
+    private ParamSettingDialog m_paramSettingDialog;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -589,9 +589,31 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0)
+        if(requestCode == 1)
         {
             String hexStr = data.getStringExtra("WriteValue");
+            if(m_button1.getText().toString().equalsIgnoreCase("断开"))
+            {
+                m_debugView.append("已发送参数写入指令 ");
+                int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
+                if(offset > m_scrollView.getHeight())
+                {
+                    m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
+                }
+                Log.d(TAG, ">>>发送:" + hexStr);
+                byte[] byteArray = ConvertUtil.HexStrToByteArray(hexStr);
+                m_bluetoothGattCharacteristic_write.setValue(byteArray);
+                m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            }
+            else
+            {
+                ShowWarning(MESSAGE_ERROR_2);
+            }
+            m_writeValueDialog.dismiss();
+        }
+        else if(requestCode == 2)
+        {
+            String hexStr = data.getStringExtra("ParamSetting");
             if(m_button1.getText().toString().equalsIgnoreCase("断开"))
             {
                 m_debugView.append("已发送参数设置指令 ");
@@ -609,7 +631,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 ShowWarning(MESSAGE_ERROR_2);
             }
-            m_writeValueDialog.dismiss();
+            m_paramSettingDialog.dismiss();
         }
     }
 
@@ -621,12 +643,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             case R.id.menu_1:
             {
+                m_paramSettingDialog = new ParamSettingDialog();
+                m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
+                m_paramSettingDialog.show(getFragmentManager(), "ParamSetting");
                 break;
             }
             case R.id.menu_2:
             {
                 m_writeValueDialog = new WriteValueDialog();
-                m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 0);
+                m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
                 m_writeValueDialog.show(getFragmentManager(), "WriteValueDialog");
                 break;
             }
@@ -967,8 +992,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_button4.setOnClickListener(this::onClick);
             m_button5.setOnClickListener(this::onClick);
             m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-            m_writeValueWindow = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.writevalue_dialog, m_llPowerControl);
-            m_writeValueWindow.setOnClickListener(this::onClick);
         }
         catch(Exception e)
         {
