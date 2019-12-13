@@ -2,10 +2,10 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--控件触发时-->
-    <item android:color="@color/deepskyblue" android:state_pressed="true"></item>
+    <item android:color="@color/gray" android:state_pressed="true"></item>
     <!--控件可用状态-->
     <item android:color="@color/colorPrimary" android:state_enabled="true"></item>
     <item android:color="@color/gray" android:state_enabled="false"></item>
 
-    <item android:color="@color/deepskyblue" android:state_pressed="false"></item>
+    <item android:color="@color/gray" android:state_pressed="false"></item>
 </selector>
