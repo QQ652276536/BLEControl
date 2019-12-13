@@ -234,7 +234,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            m_checkBox.setChecked(false);
+            Toast.makeText(m_context, "用户拒绝了权限", Toast.LENGTH_SHORT).show();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
