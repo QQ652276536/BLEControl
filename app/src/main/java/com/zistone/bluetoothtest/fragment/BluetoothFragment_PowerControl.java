@@ -1018,7 +1018,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_view.setFocusable(true);
             m_view.setFocusableInTouchMode(true);
             m_view.setOnKeyListener(backListener);
-            m_toolbar = m_view.findViewById(R.id.toolbar);
+            m_toolbar = m_view.findViewById(R.id.toolbar_powercontrol);
             //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
             setHasOptionsMenu(true);
             //去掉标题
