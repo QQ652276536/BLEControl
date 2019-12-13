@@ -89,7 +89,7 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 int value = Integer.parseInt(bitStr, 2);
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
-                String data = "680000000000006810000587" + hexStr + "000000EA16";
+                String data = "680000000000006810000587" + hexStr.toUpperCase() + "000000EA16";
                 Intent intent = new Intent();
                 intent.putExtra("ParamSetting", data);
                 getTargetFragment().onActivityResult(2, Activity.RESULT_OK, intent);
@@ -123,31 +123,31 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
         if(strArray[1].equalsIgnoreCase("1"))
             m_checkBox2.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox2.setChecked(false);
         if(strArray[2].equalsIgnoreCase("1"))
             m_checkBox3.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox3.setChecked(false);
         if(strArray[3].equalsIgnoreCase("1"))
             m_checkBox4.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox4.setChecked(false);
         if(strArray[4].equalsIgnoreCase("1"))
             m_checkBox5.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox5.setChecked(false);
         if(strArray[5].equalsIgnoreCase("1"))
             m_checkBox6.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox6.setChecked(false);
         if(strArray[6].equalsIgnoreCase("1"))
             m_checkBox7.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox7.setChecked(false);
         if(strArray[7].equalsIgnoreCase("1"))
             m_checkBox8.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
+            m_checkBox8.setChecked(false);
         m_checkBox1.setOnCheckedChangeListener(this::onCheckedChanged);
         m_checkBox2.setOnCheckedChangeListener(this::onCheckedChanged);
         m_checkBox3.setOnCheckedChangeListener(this::onCheckedChanged);
