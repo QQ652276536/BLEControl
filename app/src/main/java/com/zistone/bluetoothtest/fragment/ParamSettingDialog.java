@@ -116,38 +116,38 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
         m_button1.setOnClickListener(this::onClick);
         m_button2.setOnClickListener(this::onClick);
         String[] strArray = (String[]) getArguments().getSerializable(ARG_PARAM1);
-        if(strArray[0].equalsIgnoreCase("1"))
-            m_checkBox1.setChecked(true);
-        else
-            m_checkBox1.setChecked(false);
-        if(strArray[1].equalsIgnoreCase("1"))
-            m_checkBox2.setChecked(true);
-        else
-            m_checkBox2.setChecked(false);
-        if(strArray[2].equalsIgnoreCase("1"))
-            m_checkBox3.setChecked(true);
-        else
-            m_checkBox3.setChecked(false);
-        if(strArray[3].equalsIgnoreCase("1"))
-            m_checkBox4.setChecked(true);
-        else
-            m_checkBox4.setChecked(false);
-        if(strArray[4].equalsIgnoreCase("1"))
-            m_checkBox5.setChecked(true);
-        else
-            m_checkBox5.setChecked(false);
-        if(strArray[5].equalsIgnoreCase("1"))
-            m_checkBox6.setChecked(true);
-        else
-            m_checkBox6.setChecked(false);
-        if(strArray[6].equalsIgnoreCase("1"))
-            m_checkBox7.setChecked(true);
-        else
-            m_checkBox7.setChecked(false);
-        if(strArray[7].equalsIgnoreCase("1"))
+        if(strArray[0].equals("1"))
             m_checkBox8.setChecked(true);
         else
             m_checkBox8.setChecked(false);
+        if(strArray[1].equals("1"))
+            m_checkBox7.setChecked(true);
+        else
+            m_checkBox7.setChecked(false);
+        if(strArray[2].equals("1"))
+            m_checkBox6.setChecked(true);
+        else
+            m_checkBox6.setChecked(false);
+        if(strArray[3].equals("1"))
+            m_checkBox5.setChecked(true);
+        else
+            m_checkBox5.setChecked(false);
+        if(strArray[4].equals("1"))
+            m_checkBox4.setChecked(true);
+        else
+            m_checkBox4.setChecked(false);
+        if(strArray[5].equals("1"))
+            m_checkBox3.setChecked(true);
+        else
+            m_checkBox3.setChecked(false);
+        if(strArray[6].equals("1"))
+            m_checkBox2.setChecked(true);
+        else
+            m_checkBox2.setChecked(false);
+        if(strArray[7].equals("1"))
+            m_checkBox1.setChecked(true);
+        else
+            m_checkBox1.setChecked(false);
         m_checkBox1.setOnCheckedChangeListener(this::onCheckedChanged);
         m_checkBox2.setOnCheckedChangeListener(this::onCheckedChanged);
         m_checkBox3.setOnCheckedChangeListener(this::onCheckedChanged);
