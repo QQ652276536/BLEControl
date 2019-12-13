@@ -3,15 +3,8 @@ package com.zistone.bluetoothtest.fragment;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -34,7 +27,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
@@ -44,7 +36,6 @@ import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -425,15 +416,19 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public void onRefresh(final MaterialRefreshLayout materialRefreshLayout)
             {
-                materialRefreshLayout.postDelayed(() ->
+                materialRefreshLayout.postDelayed(new Runnable()
                 {
-                    m_deviceList.clear();
-                    BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-                    m_listView.setAdapter(adapter);
-                    //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
-                    m_bluetoothAdapter.startDiscovery();
-                    //结束下拉刷新
-                    materialRefreshLayout.finishRefresh();
+                    @Override
+                    public void run()
+                    {
+                        m_deviceList.clear();
+                        BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                        m_listView.setAdapter(adapter);
+                        //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
+                        m_bluetoothAdapter.startDiscovery();
+                        //结束下拉刷新
+                        materialRefreshLayout.finishRefresh();
+                    }
                 }, 1 * 1000);
             }
 

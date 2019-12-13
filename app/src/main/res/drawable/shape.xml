@@ -3,7 +3,7 @@
     <!-- 边框颜色值 -->
     <item>
         <shape>
-            <solid android:color="@color/cardview_dark_background" />
+            <solid android:color="@color/gray" />
         </shape>
     </item>
     <item android:top="1dp" android:bottom="1dp" android:left="1dp" android:right="1dp">

@@ -32,8 +32,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zistone.bluetoothtest.MainActivity;
 import com.zistone.bluetoothtest.R;
-import com.zistone.bluetoothtest.activity.MainActivity;
 import com.zistone.bluetoothtest.control.MyScrollView;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
@@ -125,16 +125,20 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     /**
      * 返回键的监听
      */
-    private View.OnKeyListener backListener = (v, keyCode, event) ->
+    private View.OnKeyListener backListener = new View.OnKeyListener()
     {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event)
         {
-            BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-            getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-            getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
-            return true;
+            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+            {
+                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
+                return true;
+            }
+            return false;
         }
-        return false;
     };
 
     /**

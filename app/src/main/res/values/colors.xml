@@ -6,5 +6,10 @@
     <color name="black">#A3A2A2</color>
     <color name="white">#FFFFFF</color>
     <color name="read">#FF0000</color>
+    <color name="gray">#808080</color>
+    <color name="darkgray">#A9A9A9</color>
+    <color name="slategray">#708090</color>
     <color name="transparent">#00000000</color>
+    <color name="deepskyblue">#00BFFF</color>
+    <color name="skyblue">#87CEEB</color>
 </resources>
