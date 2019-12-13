@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.logging.ErrorManager;
 
 public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener
 {
@@ -78,6 +79,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
     private static UUID CONFIG_UUID;
+    private boolean m_connectionState = false;
 
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
@@ -164,6 +166,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             switch(message.what)
             {
                 case MESSAGE_ERROR_1:
+                    m_connectionState = false;
                     ShowWarning(MESSAGE_ERROR_1);
                     m_button1.setText("连接");
                     break;
@@ -197,6 +200,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
                     m_refreshTimer.schedule(m_refreshTask, 0, 2 * 1000);
+                    m_connectionState = true;
                     break;
                 }
                 case RECEIVE_OPENDOOR:
@@ -634,10 +638,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         switch(param)
         {
             case MESSAGE_ERROR_1:
-                Toast.makeText(m_context, "该设备的连接已断开", Toast.LENGTH_SHORT).show();
+                Toast.makeText(m_context, "蓝牙已断开", Toast.LENGTH_SHORT).show();
                 break;
             case MESSAGE_ERROR_2:
-                Toast.makeText(m_context, "该设备未连接蓝牙", Toast.LENGTH_SHORT).show();
+                Toast.makeText(m_context, "未连接蓝牙", Toast.LENGTH_SHORT).show();
                 break;
             case MESSAGE_ERROR_3:
             {
@@ -659,58 +663,64 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1)
+        if(m_connectionState)
         {
-            String hexStr = data.getStringExtra("WriteValue");
-            if(m_button1.getText().toString().equalsIgnoreCase("断开"))
+            switch(resultCode)
             {
+                case 1:
+                {
+                    String hexStr = data.getStringExtra("WriteValue");
+                    break;
+                }
+                case 2:
+                {
+                    String hexStr = data.getStringExtra("ParamSetting");
+                    Message message = new Message();
+                    message.what = SEND_SET_CONTROLPARAM;
+                    message.obj = hexStr;
+                    handler.sendMessage(message);
+                    break;
+                }
             }
-            else
-            {
-                ShowWarning(MESSAGE_ERROR_2);
-            }
-            m_writeValueDialog.dismiss();
         }
-        else if(requestCode == 2)
+        else
         {
-            String hexStr = data.getStringExtra("ParamSetting");
-            if(m_button1.getText().toString().equalsIgnoreCase("断开"))
-            {
-                Message message = new Message();
-                message.what = SEND_SET_CONTROLPARAM;
-                message.obj = hexStr;
-                handler.sendMessage(message);
-            }
-            else
-            {
-                ShowWarning(MESSAGE_ERROR_2);
-            }
-            m_paramSettingDialog.dismiss();
+            ShowWarning(MESSAGE_ERROR_1);
         }
+        m_paramSettingDialog.dismiss();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
-        switch(item.getItemId())
+        if(m_connectionState)
         {
-            case R.id.menu_1:
+            switch(item.getItemId())
             {
-                //先查询参数,然后再显示修改参数的页面
-                SendComm(SEARCH_CONTROLPARAM_COMM);
-                m_isOpenParamSettingDialog = true;
-                break;
+                case R.id.menu_1:
+                {
+                    //先查询参数,然后再显示修改参数的页面
+                    SendComm(SEARCH_CONTROLPARAM_COMM);
+                    m_isOpenParamSettingDialog = true;
+                    break;
+                }
+                case R.id.menu_2:
+                {
+                    m_writeValueDialog = new WriteValueDialog();
+                    m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
+                    m_writeValueDialog.show(getFragmentManager(), "WriteValueDialog");
+                    break;
+                }
+                case R.id.menu_3:
+                {
+                    break;
+                }
             }
-            case R.id.menu_2:
-            {
-                m_writeValueDialog = new WriteValueDialog();
-                m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
-                m_writeValueDialog.show(getFragmentManager(), "WriteValueDialog");
-                break;
-            }
-            case R.id.menu_3:
-                break;
+        }
+        else
+        {
+            ShowWarning(MESSAGE_ERROR_2);
         }
         return true;
     }
@@ -740,7 +750,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 if(m_bluetoothDevice != null)
                 {
-                    if(m_button1.getText().toString().equalsIgnoreCase("连接"))
+                    if(m_button1.getText().toString().equals("连接"))
                     {
                         m_button1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
@@ -918,6 +928,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     else
                     {
+                        m_connectionState = false;
                         m_button1.setText("连接");
                         m_button2.setEnabled(false);
                         m_button3.setEnabled(false);

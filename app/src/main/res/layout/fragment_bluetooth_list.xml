@@ -20,52 +20,96 @@
             android:textColor="@color/white"
             android:textSize="28sp" />
 
-    </android.support.v7.widget.Toolbar>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
         <CheckBox
-            android:id="@+id/ck_bluetooth"
+            android:id="@+id/ck_bluetooth_bluetoothlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:button="@null"
             android:checked="false"
-            android:drawableLeft="@drawable/ck_status_selector"
-            android:text="开关"
-            android:textColor="#ff000000"
-            android:textSize="17sp" />
+            android:drawableLeft="@drawable/ck_status_selector_b" />
 
-        <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
+    </android.support.v7.widget.Toolbar>
 
-            <RadioButton
-                android:id="@+id/radioButton1"
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="BlueNRG" />
+                android:layout_gravity="center_vertical"
+                android:width="100dp"
+                android:gravity="center"
+                android:text="设备型号"
+                android:textSize="16sp" />
 
-            <RadioButton
-                android:id="@+id/radioButton2"
+            <RadioGroup
+                android:id="@+id/radioGroup1_bluetoothlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioButton1_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BlueNRG"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/radioButton2_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Amdtp"
+                    android:textColor="@color/gray" />
+            </RadioGroup>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Amdtp" />
-        </RadioGroup>
+                android:layout_gravity="center_vertical"
+                android:width="100dp"
+                android:gravity="center"
+                android:text="功能模块"
+                android:textSize="16sp" />
 
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="电力控制终端" />
-    </LinearLayout>
+            <RadioGroup
+                android:id="@+id/radioGroup2_bluetoothlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioButton3_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="电力控制"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/radioButton4_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="通信测试"
+                    android:textColor="@color/gray" />
+            </RadioGroup>
+        </TableRow>
+
+    </TableLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,42 +117,41 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:gravity="center"
             android:text="名称"
-            android:textColor="#ff000000"
-            android:textSize="17sp" />
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="5"
+            android:layout_weight="4"
             android:gravity="center"
             android:text="地址"
-            android:textColor="#ff000000"
-            android:textSize="17sp" />
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="center"
             android:text="状态"
-            android:textColor="#ff000000"
-            android:textSize="17sp" />
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
     </LinearLayout>
 
 
     <com.zistone.material_refresh_layout.MaterialRefreshLayout
-        android:id="@+id/refresh"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:id="@+id/refresh_bluetoothlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ListView
-            android:id="@+id/lv_bluetooth"
+            android:id="@+id/lv_bluetoothlist"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </com.zistone.material_refresh_layout.MaterialRefreshLayout>
