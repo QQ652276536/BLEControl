@@ -337,7 +337,7 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 receive = stringBuffer.toString() + "\r\n";
                 break;
             }
-            //修改内部控制参数:
+            //修改内部控制参数:68,00,00,00,00,00,01,68,10,00,02,00,87,E3,16
             case "87":
             {
                 break;
