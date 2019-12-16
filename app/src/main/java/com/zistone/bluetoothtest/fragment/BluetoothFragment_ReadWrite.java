@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.util.ConvertUtil;
@@ -253,9 +252,9 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
             {
                 byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
                 String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
-                //门检测开关用采用常开型(关门开路)
+                //门检测开关(关门开路)
                 String str1 = String.valueOf(bitStr.charAt(7));
-                //锁检测开定于关用采用常开型(锁上开路)
+                //锁检测开关(锁上开路)
                 String str2 = String.valueOf(bitStr.charAt(6));
                 //正常开锁不告警
                 String str3 = String.valueOf(bitStr.charAt(5));
@@ -272,19 +271,19 @@ public class BluetoothFragment_ReadWrite extends Fragment implements View.OnClic
                 StringBuffer stringBuffer = new StringBuffer();
                 if(str1.equalsIgnoreCase("1"))
                 {
-                    stringBuffer.append("\r\n关门开路【启用】\n");
+                    stringBuffer.append("\r\n门检测开关(关门开路)【启用】\n");
                 }
                 else
                 {
-                    stringBuffer.append("\r\n关门开路【禁用】\n");
+                    stringBuffer.append("\r\n门检测开关(关门开路)【禁用】\n");
                 }
                 if(str2.equalsIgnoreCase("1"))
                 {
-                    stringBuffer.append("锁上开路【启用】\n");
+                    stringBuffer.append("锁检测开关(锁上开路)【启用】\n");
                 }
                 else
                 {
-                    stringBuffer.append("锁上开路【禁用】\n");
+                    stringBuffer.append("锁检测开关(锁上开路)【禁用】\n");
                 }
                 if(str3.equalsIgnoreCase("1"))
                 {

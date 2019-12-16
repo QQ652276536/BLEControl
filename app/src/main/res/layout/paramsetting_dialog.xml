@@ -32,7 +32,7 @@
                 android:text="启用DEBUG软串口" />
 
             <CheckBox
-                android:id="@+id/cbx1_paramsetting"
+                android:id="@+id/cbx8_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -49,7 +49,7 @@
                 android:text="使用低磁检测阀值" />
 
             <CheckBox
-                android:id="@+id/cbx2_paramsetting"
+                android:id="@+id/cbx7_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -66,7 +66,7 @@
                 android:text="不检测强磁" />
 
             <CheckBox
-                android:id="@+id/cbx3_paramsetting"
+                android:id="@+id/cbx6_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -83,7 +83,7 @@
                 android:text="启用软关机" />
 
             <CheckBox
-                android:id="@+id/cbx4_paramsetting"
+                android:id="@+id/cbx5_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -100,7 +100,7 @@
                 android:text="有外电可以进入维护方式" />
 
             <CheckBox
-                android:id="@+id/cbx5_paramsetting"
+                android:id="@+id/cbx4_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -117,7 +117,7 @@
                 android:text="正常开锁不告警" />
 
             <CheckBox
-                android:id="@+id/cbx6_paramsetting"
+                android:id="@+id/cbx3_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -134,7 +134,7 @@
                 android:text="锁检测开定于关用采用常开型（锁上开路）" />
 
             <CheckBox
-                android:id="@+id/cbx7_paramsetting"
+                android:id="@+id/cbx2_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -151,7 +151,7 @@
                 android:text="门检测开关用采用常开型（关门开路）" />
 
             <CheckBox
-                android:id="@+id/cbx8_paramsetting"
+                android:id="@+id/cbx1_paramsetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </TableRow>
@@ -182,7 +182,7 @@
             style="@style/ButtonStyleB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SEND" />
+            android:text="SAVE" />
     </LinearLayout>
 
 </LinearLayout>

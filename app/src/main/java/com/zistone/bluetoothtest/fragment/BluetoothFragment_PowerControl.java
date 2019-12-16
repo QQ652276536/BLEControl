@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.ErrorManager;
 
 public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener
 {
@@ -187,7 +186,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 {
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
-                                    //Log.i(TAG, ">>>发送综合测试:" + hexStr);
+                                    //Log.d(TAG, ">>>发送综合测试:" + hexStr);
                                     SendComm(hexStr);
                                     Thread.sleep(100);
                                 }
@@ -345,26 +344,27 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
-                    String str1 = String.valueOf(bitStr.charAt(0));
+                    String bitStr8 = String.valueOf(bitStr.charAt(7));
                     //使用低磁检测阀值
-                    String str2 = String.valueOf(bitStr.charAt(1));
+                    String bitStr7 = String.valueOf(bitStr.charAt(6));
                     //不检测强磁
-                    String str3 = String.valueOf(bitStr.charAt(2));
+                    String bitStr6 = String.valueOf(bitStr.charAt(5));
                     //启用软关机
-                    String str4 = String.valueOf(bitStr.charAt(3));
+                    String bitStr5 = String.valueOf(bitStr.charAt(4));
                     //有外电可以进入维护方式
-                    String str5 = String.valueOf(bitStr.charAt(4));
+                    String bitStr4 = String.valueOf(bitStr.charAt(3));
                     //正常开锁不告警
-                    String str6 = String.valueOf(bitStr.charAt(5));
-                    //锁检测开定于关用采用常开型(锁上开路)
-                    String str7 = String.valueOf(bitStr.charAt(6));
-                    //门检测开关用采用常开型(关门开路)
-                    String str8 = String.valueOf(bitStr.charAt(7));
+                    String bitStr3 = String.valueOf(bitStr.charAt(2));
+                    //锁检测开关(锁上开路)
+                    String bitStr2 = String.valueOf(bitStr.charAt(1));
+                    //门检测开关(关门开路)
+                    String bitStr1 = String.valueOf(bitStr.charAt(0));
+                    Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
                     if(m_isOpenParamSettingDialog)
                     {
                         m_paramSettingDialog = ParamSettingDialog.newInstance(new String[]{
-                                str1, str2, str3, str4, str5, str6, str7, str8
+                                bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
                         });
                         m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
                         m_paramSettingDialog.show(getFragmentManager(), "ParamSetting");
@@ -372,7 +372,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     else
                     {
-                        if(str8.equalsIgnoreCase("1"))
+                        if(bitStr8.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("\n收到:\n启用DEBUG软串口【启用】\n");
                         }
@@ -380,7 +380,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("\n收到:\n启用DEBUG软串口【禁用】\n");
                         }
-                        if(str7.equalsIgnoreCase("1"))
+                        if(bitStr7.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("使用低磁检测阀值【启用】\n");
                         }
@@ -388,7 +388,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("使用低磁检测阀值【禁用】\n");
                         }
-                        if(str6.equalsIgnoreCase("1"))
+                        if(bitStr6.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("不检测强磁【启用】\n");
                         }
@@ -396,7 +396,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("不检测强磁【禁用】\n");
                         }
-                        if(str5.equalsIgnoreCase("1"))
+                        if(bitStr5.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("启用软关机【启用】\n");
                         }
@@ -404,7 +404,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("启用软关机【禁用】\n");
                         }
-                        if(str4.equalsIgnoreCase("1"))
+                        if(bitStr4.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("有外电可以进入维护方式【启用】\n");
                         }
@@ -412,7 +412,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("有外电可以进入维护方式【禁用】\n");
                         }
-                        if(str3.equalsIgnoreCase("1"))
+                        if(bitStr3.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("正常开锁不告警【启用】\n");
                         }
@@ -420,21 +420,21 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("正常开锁不告警【禁用】\n");
                         }
-                        if(str2.equalsIgnoreCase("1"))
+                        if(bitStr2.equalsIgnoreCase("1"))
                         {
-                            m_debugView.append("锁上开路【启用】\n");
+                            m_debugView.append("锁检测开关(锁上开路)【启用】\n");
                         }
                         else
                         {
-                            m_debugView.append("锁上开路【禁用】\n");
+                            m_debugView.append("锁检测开关(锁上开路)【禁用】\n");
                         }
-                        if(str1.equalsIgnoreCase("1"))
+                        if(bitStr1.equalsIgnoreCase("1"))
                         {
-                            m_debugView.append("关门开路【启用】\n");
+                            m_debugView.append("门检测开关(关门开路)【启用】\n");
                         }
                         else
                         {
-                            m_debugView.append("关门开路【禁用】\n");
+                            m_debugView.append("门检测开关(关门开路)【禁用】\n");
                         }
                     }
                     //定位到最后一行
@@ -665,7 +665,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
         if(m_connectionState)
         {
-            switch(resultCode)
+            switch(requestCode)
             {
                 case 1:
                 {

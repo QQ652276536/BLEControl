@@ -2,9 +2,6 @@ package com.zistone.bluetoothtest.fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,28 +9,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import com.zistone.bluetoothtest.R;
-import com.zistone.bluetoothtest.control.MyRadioGroup;
-import com.zistone.bluetoothtest.util.ConvertUtil;
-
-import java.io.Serializable;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * 修改内部控制参数
@@ -76,16 +60,25 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
                 break;
             case R.id.btn2_paramsetting:
             {
+                String bitStr8 = m_checkBox8.isChecked() ? "1" : "0";
+                String bitStr7 = m_checkBox7.isChecked() ? "1" : "0";
+                String bitStr6 = m_checkBox6.isChecked() ? "1" : "0";
+                String bitStr5 = m_checkBox5.isChecked() ? "1" : "0";
+                String bitStr4 = m_checkBox4.isChecked() ? "1" : "0";
+                String bitStr3 = m_checkBox3.isChecked() ? "1" : "0";
+                String bitStr2 = m_checkBox2.isChecked() ? "1" : "0";
+                String bitStr1 = m_checkBox1.isChecked() ? "1" : "0";
                 StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append(m_checkBox8.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox7.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox6.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox5.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox4.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox3.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox2.isChecked() ? "1" : "0");
-                stringBuffer.append(m_checkBox1.isChecked() ? "1" : "0");
+                stringBuffer.append(bitStr1);
+                stringBuffer.append(bitStr2);
+                stringBuffer.append(bitStr3);
+                stringBuffer.append(bitStr4);
+                stringBuffer.append(bitStr5);
+                stringBuffer.append(bitStr6);
+                stringBuffer.append(bitStr7);
+                stringBuffer.append(bitStr8);
                 String bitStr = stringBuffer.toString();
+                Log.d(TAG, String.format(">>>发送参数设置(Bit):\n门检测开关用采用常开型(关门开路)%s\n门锁检测开定于关用采用常开型(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                 int value = Integer.parseInt(bitStr, 2);
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
@@ -116,35 +109,52 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
         m_button1.setOnClickListener(this::onClick);
         m_button2.setOnClickListener(this::onClick);
         String[] strArray = (String[]) getArguments().getSerializable(ARG_PARAM1);
-        if(strArray[0].equals("1"))
+        //启用DEBUG软串口
+        String bitStr8 = strArray[7];
+        //使用低磁检测阀值
+        String bitStr7 = strArray[6];
+        //不检测强磁
+        String bitStr6 = strArray[5];
+        //启用软关机
+        String bitStr5 = strArray[4];
+        //有外电可以进入维护方式
+        String bitStr4 = strArray[3];
+        //正常开锁不告警
+        String bitStr3 = strArray[2];
+        //锁检测开关(锁上开路)
+        String bitStr2 = strArray[1];
+        //门检测开关(关门开路)
+        String bitStr1 = strArray[0];
+        Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+        if(bitStr8.equals("1"))
             m_checkBox8.setChecked(true);
         else
             m_checkBox8.setChecked(false);
-        if(strArray[1].equals("1"))
+        if(bitStr7.equals("1"))
             m_checkBox7.setChecked(true);
         else
             m_checkBox7.setChecked(false);
-        if(strArray[2].equals("1"))
+        if(bitStr6.equals("1"))
             m_checkBox6.setChecked(true);
         else
             m_checkBox6.setChecked(false);
-        if(strArray[3].equals("1"))
+        if(bitStr5.equals("1"))
             m_checkBox5.setChecked(true);
         else
             m_checkBox5.setChecked(false);
-        if(strArray[4].equals("1"))
+        if(bitStr4.equals("1"))
             m_checkBox4.setChecked(true);
         else
             m_checkBox4.setChecked(false);
-        if(strArray[5].equals("1"))
+        if(bitStr3.equals("1"))
             m_checkBox3.setChecked(true);
         else
             m_checkBox3.setChecked(false);
-        if(strArray[6].equals("1"))
+        if(bitStr2.equals("1"))
             m_checkBox2.setChecked(true);
         else
             m_checkBox2.setChecked(false);
-        if(strArray[7].equals("1"))
+        if(bitStr1.equals("1"))
             m_checkBox1.setChecked(true);
         else
             m_checkBox1.setChecked(false);
