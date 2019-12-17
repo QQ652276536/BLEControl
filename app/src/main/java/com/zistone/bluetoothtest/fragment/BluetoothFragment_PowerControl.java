@@ -142,6 +142,38 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
     };
 
+    private void DisConnect()
+    {
+        m_connectionState = false;
+        m_button1.setText("连接");
+        m_button2.setEnabled(false);
+        m_button3.setEnabled(false);
+        m_button4.setEnabled(false);
+        if(m_refreshTask != null)
+        {
+            m_refreshTask.cancel();
+        }
+        if(m_refreshTimer != null)
+        {
+            m_refreshTimer.cancel();
+        }
+        //先结束定时任务再关闭蓝牙
+        if(m_bluetoothGatt != null)
+        {
+            m_bluetoothGatt.disconnect();
+        }
+        m_textView1.setText("Null");
+        m_textView1.setTextColor(Color.GRAY);
+        m_textView2.setText("Null");
+        m_textView2.setTextColor(Color.GRAY);
+        m_textView3.setText("Null");
+        m_textView3.setTextColor(Color.GRAY);
+        m_textView4.setText("Null");
+        m_textView4.setTextColor(Color.GRAY);
+        m_textView5.setText("Null");
+        m_textView6.setText("Null");
+    }
+
     /**
      * 发送指令
      */
@@ -165,9 +197,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             switch(message.what)
             {
                 case MESSAGE_ERROR_1:
-                    m_connectionState = false;
+                    DisConnect();
                     ShowWarning(MESSAGE_ERROR_1);
-                    m_button1.setText("连接");
                     break;
                 case MESSAGE_1:
                 {
@@ -928,34 +959,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     else
                     {
-                        m_connectionState = false;
-                        m_button1.setText("连接");
-                        m_button2.setEnabled(false);
-                        m_button3.setEnabled(false);
-                        m_button4.setEnabled(false);
-                        if(m_refreshTask != null)
-                        {
-                            m_refreshTask.cancel();
-                        }
-                        if(m_refreshTimer != null)
-                        {
-                            m_refreshTimer.cancel();
-                        }
-                        //先结束定时任务再关闭蓝牙
-                        if(m_bluetoothGatt != null)
-                        {
-                            m_bluetoothGatt.disconnect();
-                        }
-                        m_textView1.setText("Null");
-                        m_textView1.setTextColor(Color.GRAY);
-                        m_textView2.setText("Null");
-                        m_textView2.setTextColor(Color.GRAY);
-                        m_textView3.setText("Null");
-                        m_textView3.setTextColor(Color.GRAY);
-                        m_textView4.setText("Null");
-                        m_textView4.setTextColor(Color.GRAY);
-                        m_textView5.setText("Null");
-                        m_textView6.setText("Null");
+                        DisConnect();
                     }
                 }
                 else
