@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BluetoothTest</string>
+    <string name="app_name">Bluetooth Test</string>
 
     <string name="text_phone">手机</string>
     <string name="text_userName">用户名</string>
