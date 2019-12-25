@@ -12,6 +12,10 @@ import com.zistone.bluetoothtest.fragment.BluetoothFragment_ReadWrite;
 
 public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener
 {
+    public static final int ACTIVITYRESULT_WRITEVALUE = 1;
+    public static final int ACTIVITYRESULT_PARAMSETTING = 2;
+    public static final int ACTIVITYRESULT_OTA = 3;
+
     public BluetoothFragment m_bluetoothFragment;
 
     @Override

@@ -699,18 +699,23 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             switch(requestCode)
             {
-                case 1:
+                case MainActivity.ACTIVITYRESULT_WRITEVALUE:
                 {
                     String hexStr = data.getStringExtra("WriteValue");
                     break;
                 }
-                case 2:
+                case MainActivity.ACTIVITYRESULT_PARAMSETTING:
                 {
                     String hexStr = data.getStringExtra("ParamSetting");
                     Message message = new Message();
                     message.what = SEND_SET_CONTROLPARAM;
                     message.obj = hexStr;
                     handler.sendMessage(message);
+                    break;
+                }
+                case MainActivity.ACTIVITYRESULT_OTA:
+                {
+                    String hexStr = data.getStringExtra("OTA");
                     break;
                 }
             }

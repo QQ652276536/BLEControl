@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.zistone.bluetoothtest.MainActivity;
 import com.zistone.bluetoothtest.R;
 
 /**
@@ -85,7 +86,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 String data = "680000000000006810000587" + hexStr.toUpperCase() + "000000EA16";
                 Intent intent = new Intent();
                 intent.putExtra("ParamSetting", data);
-                getTargetFragment().onActivityResult(2, Activity.RESULT_OK, intent);
+                getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_PARAMSETTING, Activity.RESULT_OK, intent);
                 break;
             }
         }
@@ -94,7 +95,6 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        //设置背景透明
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         m_button1 = m_view.findViewById(R.id.btn1_paramsetting);
         m_button2 = m_view.findViewById(R.id.btn2_paramsetting);

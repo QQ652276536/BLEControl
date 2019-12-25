@@ -22,10 +22,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.zistone.bluetoothtest.MainActivity;
 import com.zistone.bluetoothtest.R;
 
-public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener,
-        TabLayout.OnTabSelectedListener
+public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener
 {
     private static final String TAG = "DialogFragment_WriteValue";
     private static final String ARG_PARAM1 = "param1";
@@ -107,7 +107,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                 }
                 Intent intent = new Intent();
                 intent.putExtra("WriteValue", data);
-                getTargetFragment().onActivityResult(1, Activity.RESULT_OK, intent);
+                getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_WRITEVALUE, Activity.RESULT_OK, intent);
                 break;
             }
         }
@@ -116,7 +116,6 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        //设置背景透明
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         return super.onCreateView(inflater, container, savedInstanceState);
     }
