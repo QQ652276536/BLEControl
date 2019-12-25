@@ -24,9 +24,9 @@ import com.zistone.bluetoothtest.R;
  * <p>
  * 要查看修改的结果需要发送内部控制参数的查询指令,因为该指令与开门的指令索引冲突导致发送以后收到的会是开门的结果
  */
-public class ParamSettingDialog extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener
+public class DialogFragment_ParamSetting extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
-    private static final String TAG = "ParamSettingDialog";
+    private static final String TAG = "DialogFragment_ParamSetting";
     private static final String ARG_PARAM1 = "param1";
     private Context m_context;
     private View m_view;
@@ -41,9 +41,9 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     private CheckBox m_checkBox7;
     private CheckBox m_checkBox8;
 
-    public static ParamSettingDialog newInstance(String[] strArray)
+    public static DialogFragment_ParamSetting newInstance(String[] strArray)
     {
-        ParamSettingDialog fragment = new ParamSettingDialog();
+        DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, strArray);
         fragment.setArguments(args);
@@ -172,7 +172,7 @@ public class ParamSettingDialog extends DialogFragment implements View.OnClickLi
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.paramsetting_dialog, null);
+        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_paramsetting, null);
         m_context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(m_view);

@@ -108,8 +108,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Toolbar m_toolbar;
     private MyScrollView m_scrollView;
     private LinearLayout m_llPowerControl;
-    private WriteValueDialog m_writeValueDialog;
-    private ParamSettingDialog m_paramSettingDialog;
+    private FragmentDialog_WriteValue m_writeValueDialog;
+    private DialogFragment_ParamSetting m_paramSetting;
     //发送查询结果用来初始化界面的开关
     private boolean m_isOpenParamSettingDialog = false;
 
@@ -394,11 +394,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
                     if(m_isOpenParamSettingDialog)
                     {
-                        m_paramSettingDialog = ParamSettingDialog.newInstance(new String[]{
+                        m_paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
                                 bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
                         });
-                        m_paramSettingDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
-                        m_paramSettingDialog.show(getFragmentManager(), "ParamSetting");
+                        m_paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
+                        m_paramSetting.show(getFragmentManager(), "ParamSetting");
                         m_isOpenParamSettingDialog = false;
                     }
                     else
@@ -718,7 +718,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             ShowWarning(MESSAGE_ERROR_1);
         }
-        m_paramSettingDialog.dismiss();
+        m_paramSetting.dismiss();
     }
 
     @Override
@@ -738,9 +738,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 case R.id.menu_2:
                 {
-                    m_writeValueDialog = new WriteValueDialog();
+                    m_writeValueDialog = new FragmentDialog_WriteValue();
                     m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
-                    m_writeValueDialog.show(getFragmentManager(), "WriteValueDialog");
+                    m_writeValueDialog.show(getFragmentManager(), "FragmentDialog_WriteValue");
                     break;
                 }
                 case R.id.menu_3:

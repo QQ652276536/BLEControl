@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.zistone.bluetoothtest.R;
 
-public class WriteValueDialog extends DialogFragment implements View.OnClickListener,
+public class FragmentDialog_WriteValue extends DialogFragment implements View.OnClickListener,
         TabLayout.OnTabSelectedListener
 {
     private TabLayout m_tabLayout;
@@ -115,7 +115,7 @@ public class WriteValueDialog extends DialogFragment implements View.OnClickList
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.writevalue_dialog, null);
+        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_writevalue, null);
         m_context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         m_tabLayout = m_view.findViewById(R.id.tablayout);
