@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:button="@null"
             android:checked="false"
-            android:drawableLeft="@drawable/ck_status_selector_b" />
+            android:drawableLeft="@drawable/ck_status_selector_a" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -52,7 +52,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <RadioButton
@@ -66,8 +65,15 @@
                     android:id="@+id/radioButton2_bluetoothlist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     android:text="Amdtp"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/radioButton5_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="OTA"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </TableRow>

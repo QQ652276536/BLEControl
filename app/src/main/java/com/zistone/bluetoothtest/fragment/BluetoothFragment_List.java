@@ -74,6 +74,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private RadioButton m_radioButton2;
     private RadioButton m_radioButton3;
     private RadioButton m_radioButton4;
+    private RadioButton m_radioButton5;
     private long m_exitTime = 0;
 
     private View.OnKeyListener backListener = (v, keyCode, event) ->
@@ -256,11 +257,17 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
         }
-        else
+        else if(m_radioButton2.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
+        }
+        else if(m_radioButton5.isChecked())
+        {
+            SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
+            WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
+            READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
         }
         Map<String, UUID> map = new HashMap<>();
         map.put("SERVICE_UUID", SERVICE_UUID);
@@ -449,7 +456,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_view.setFocusable(true);
         m_view.setFocusableInTouchMode(true);
         m_view.setOnKeyListener(backListener);
-
         m_radioGroup1 = m_view.findViewById(R.id.radioGroup1_bluetoothlist);
         m_radioGroup2 = m_view.findViewById(R.id.radioGroup2_bluetoothlist);
         m_checkBox = m_view.findViewById(R.id.ck_bluetooth_bluetoothlist);
@@ -457,6 +463,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton2 = m_view.findViewById(R.id.radioButton2_bluetoothlist);
         m_radioButton3 = m_view.findViewById(R.id.radioButton3_bluetoothlist);
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
+        m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
         switch(m_bluetoothAdapter.getState())
         {

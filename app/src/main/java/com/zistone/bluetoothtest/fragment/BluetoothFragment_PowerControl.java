@@ -108,8 +108,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Toolbar m_toolbar;
     private MyScrollView m_scrollView;
     private LinearLayout m_llPowerControl;
-    private FragmentDialog_WriteValue m_writeValueDialog;
+    private DialogFragment_WriteValue m_writeValue;
     private DialogFragment_ParamSetting m_paramSetting;
+    private DialogFragment_OTA m_ota;
     //发送查询结果用来初始化界面的开关
     private boolean m_isOpenParamSettingDialog = false;
 
@@ -398,7 +399,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
                         });
                         m_paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
-                        m_paramSetting.show(getFragmentManager(), "ParamSetting");
+                        m_paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
                         m_isOpenParamSettingDialog = false;
                     }
                     else
@@ -729,6 +730,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             switch(item.getItemId())
             {
+                //内部控制参数设置
                 case R.id.menu_1:
                 {
                     //先查询参数,然后再显示修改参数的页面
@@ -736,15 +738,20 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     m_isOpenParamSettingDialog = true;
                     break;
                 }
+                //写入指令
                 case R.id.menu_2:
                 {
-                    m_writeValueDialog = new FragmentDialog_WriteValue();
-                    m_writeValueDialog.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
-                    m_writeValueDialog.show(getFragmentManager(), "FragmentDialog_WriteValue");
+                    m_writeValue = new DialogFragment_WriteValue();
+                    m_writeValue.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
+                    m_writeValue.show(getFragmentManager(), "DialogFragment_WriteValue");
                     break;
                 }
+                //OTA
                 case R.id.menu_3:
                 {
+                    m_ota = DialogFragment_OTA.newInstance(m_bluetoothDevice);
+                    m_ota.setTargetFragment(BluetoothFragment_PowerControl.this, 3);
+                    m_ota.show(getFragmentManager(), "DialogFragment_OTA");
                     break;
                 }
             }
