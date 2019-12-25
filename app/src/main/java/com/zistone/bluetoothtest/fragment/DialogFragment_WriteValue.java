@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -25,18 +24,28 @@ import android.widget.TextView;
 
 import com.zistone.bluetoothtest.R;
 
-public class FragmentDialog_WriteValue extends DialogFragment implements View.OnClickListener,
+public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener,
         TabLayout.OnTabSelectedListener
 {
+    private static final String TAG = "DialogFragment_WriteValue";
+    private static final String ARG_PARAM1 = "param1";
     private TabLayout m_tabLayout;
     private View m_view;
-    private FrameLayout m_frameLayout;
     private Context m_context;
     private Button m_button1;
     private Button m_button2;
     private Button m_button3;
     private Button m_button4;
     private TableLayout m_table;
+
+    public static DialogFragment_ParamSetting newInstance(String[] strArray)
+    {
+        DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_PARAM1, strArray);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onClick(View v)
@@ -119,7 +128,6 @@ public class FragmentDialog_WriteValue extends DialogFragment implements View.On
         m_context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         m_tabLayout = m_view.findViewById(R.id.tablayout);
-        m_frameLayout = m_view.findViewById(R.id.writevalue_framelayout);
         m_table = m_view.findViewById(R.id.writevalue_table);
         m_tabLayout.getTabAt(0).setText("NEW");
         m_tabLayout.getTabAt(1).setText("LOAD");
