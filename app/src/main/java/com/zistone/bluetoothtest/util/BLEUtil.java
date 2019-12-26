@@ -16,23 +16,16 @@ import java.util.UUID;
 
 public class BLEUtil
 {
-    private static final String TAG = "BleUtil";
-    //已知服务
-    private static UUID SERVICE_UUID;
-    //写入特征的UUID
-    private static UUID WRITE_UUID;
-    //读取特征的UUID
-    private static UUID READ_UUID;
-    //客户端特征配置
-    private static UUID CONFIG_UUID;
+    private static final String TAG = "BLEUtil";
+    //服务,写入,读取,配置
+    private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static Context m_context;
     private static BLEUtil m_bleUtil;
-    private BLEUtilCallback m_callback;
-    public static BluetoothGatt m_bluetoothGatt;
-    public static BluetoothGattService m_bluetoothGattService;
-    public static BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
-    public static BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
-    private UUID[] m_uuidArray;
+    private static BLEUtilCallback m_callback;
+    private static BluetoothGatt m_bluetoothGatt;
+    private static BluetoothGattService m_bluetoothGattService;
+    private static BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write, m_bluetoothGattCharacteristic_read;
+    private static UUID[] m_uuidArray;
     //设备连接状态
     private boolean m_connectionState = false;
     //设备返回的数据
@@ -47,7 +40,7 @@ public class BLEUtil
         return m_bleUtil;
     }
 
-    public void Init(Context context, BLEUtilCallback callback, UUID[] uuidArray)
+    public static void Init(Context context, BLEUtilCallback callback, UUID[] uuidArray)
     {
         m_context = context;
         m_callback = callback;
@@ -101,7 +94,7 @@ public class BLEUtil
         }
 
         /**
-         * 发现设备(真正建立连接)
+         * 发现设备(真正建立连接)后回调
          * @param gatt
          * @param status
          */
