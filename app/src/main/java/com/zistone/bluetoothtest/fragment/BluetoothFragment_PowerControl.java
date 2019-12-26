@@ -78,7 +78,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
     private static UUID CONFIG_UUID;
-    private boolean m_connectionState = false;
+
+    private BluetoothDevice m_bluetoothDevice;
+    private BluetoothGatt m_bluetoothGatt;
+    private BluetoothGattService m_bluetoothGattService;
+    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
+    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
 
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
@@ -97,11 +102,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private TextView m_textView5;
     private TextView m_textView6;
     private ProgressBar m_progressBar;
-    private BluetoothDevice m_bluetoothDevice;
-    private BluetoothGatt m_bluetoothGatt;
-    private BluetoothGattService m_bluetoothGattService;
-    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
-    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
     private StringBuffer m_stringBuffer = new StringBuffer();
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
@@ -113,6 +113,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private DialogFragment_OTA m_ota;
     //发送查询结果用来初始化界面的开关
     private boolean m_isOpenParamSettingDialog = false;
+    private boolean m_connectionState = false;
 
     public static BluetoothFragment_PowerControl newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -817,7 +818,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 else
                                 {
                                     Log.d(TAG, ">>>连接已断开!");
-                                    m_bluetoothGatt.close();
+                                    gatt.close();
                                     Message message = new Message();
                                     message.what = MESSAGE_ERROR_1;
                                     handler.sendMessage(message);
@@ -834,7 +835,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             {
                                 //直到这里才是真正建立了可通信的连接
                                 //通过UUID找到服务
-                                m_bluetoothGattService = m_bluetoothGatt.getService(SERVICE_UUID);
+                                m_bluetoothGattService = gatt.getService(SERVICE_UUID);
                                 if(m_bluetoothGattService != null)
                                 {
                                     //写数据的服务和特征

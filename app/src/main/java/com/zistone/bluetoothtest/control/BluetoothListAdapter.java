@@ -10,33 +10,32 @@ import android.widget.TextView;
 
 import com.zistone.bluetoothtest.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class BluetoothListAdapter extends BaseAdapter
 {
     private static final String TAG = "BluetoothListAdapter";
-    private LayoutInflater mInflater;
-    private Context mContext;
-    private ArrayList<BluetoothDevice> mBlueList;
-    public static int CONNECTED = 3;
+    private Context m_context;
+    private LayoutInflater m_layoutInflater;
+    private List<BluetoothDevice> m_list;
 
-    public BluetoothListAdapter(Context context, ArrayList<BluetoothDevice> blue_list)
+    public BluetoothListAdapter(Context context, List<BluetoothDevice> blue_list)
     {
-        mInflater = LayoutInflater.from(context);
-        mContext = context;
-        mBlueList = blue_list;
+        m_layoutInflater = LayoutInflater.from(context);
+        m_context = context;
+        m_list = blue_list;
     }
 
     @Override
     public int getCount()
     {
-        return mBlueList.size();
+        return m_list.size();
     }
 
     @Override
     public Object getItem(int position)
     {
-        return mBlueList.get(position);
+        return m_list.get(position);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class BluetoothListAdapter extends BaseAdapter
         if(convertView == null)
         {
             holder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.item_bluetooth, null);
+            convertView = m_layoutInflater.inflate(R.layout.item_bluetooth, null);
             holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
             holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
             holder.tv_blue_state = convertView.findViewById(R.id.tv_blue_state);
@@ -63,7 +62,7 @@ public class BluetoothListAdapter extends BaseAdapter
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final BluetoothDevice device = mBlueList.get(position);
+        final BluetoothDevice device = m_list.get(position);
         holder.tv_blue_name.setText(device.getName());
         holder.tv_blue_address.setText(device.getAddress());
         switch(device.getBondState())

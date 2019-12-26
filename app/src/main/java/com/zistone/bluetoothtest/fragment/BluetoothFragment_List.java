@@ -198,7 +198,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onStart();
         handler.postDelayed(runnable, 100);
         m_bluetoothReceiver = new BluetoothReceiver();
-        //需要过滤多个动作，则调用IntentFilter对象的addAction添加新动作
+        //注册广播
         IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         foundFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         foundFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);

@@ -18,8 +18,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zistone.bluetoothtest.R;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * 设备空中升级
@@ -37,6 +43,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     private TextView m_textView2;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
+    private byte[] m_byteArray;
 
     public static DialogFragment_OTA newInstance(BluetoothDevice bluetoothDevice)
     {
@@ -78,6 +85,29 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                     path = uri.getPath();
                 }
                 m_textView2.setText(path);
+                File file = new File(path);
+                FileInputStream fileInputStream;
+                BufferedInputStream bufferedInputStream;
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 150);
+                try
+                {
+                    fileInputStream = new FileInputStream(file);
+                    bufferedInputStream = new BufferedInputStream(fileInputStream);
+                    byte[] bytes = new byte[1024];
+                    while(bufferedInputStream.available() > 0)
+                    {
+                        bufferedInputStream.read(bytes);
+                        byteArrayOutputStream.write(bytes);
+                    }
+                    m_byteArray = byteArrayOutputStream.toByteArray();
+                    fileInputStream.close();
+                    byteArrayOutputStream.close();
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    Toast.makeText(m_context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
         }
