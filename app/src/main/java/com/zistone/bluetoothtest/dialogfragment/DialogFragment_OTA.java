@@ -1,4 +1,4 @@
-package com.zistone.bluetoothtest.fragment;
+package com.zistone.bluetoothtest.dialogfragment;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;

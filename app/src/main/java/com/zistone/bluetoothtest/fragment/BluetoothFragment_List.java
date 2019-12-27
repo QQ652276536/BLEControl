@@ -66,6 +66,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public BluetoothDevice m_bluetoothDevice;
     public BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     public BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
+    public BluetoothFragment_OTA m_bluetoothFragment_ota;
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
     private RadioGroup m_radioGroup1;
@@ -75,6 +76,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private RadioButton m_radioButton3;
     private RadioButton m_radioButton4;
     private RadioButton m_radioButton5;
+    private RadioButton m_radioButton6;
     private long m_exitTime = 0;
 
     private View.OnKeyListener backListener = (v, keyCode, event) ->
@@ -251,18 +253,21 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
+        //BlueNRG
         if(m_radioButton1.isChecked())
         {
             SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
             WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
         }
+        //Amdtp
         else if(m_radioButton2.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
         }
+        //OTA
         else if(m_radioButton5.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
@@ -278,19 +283,28 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             //停止搜索蓝牙
             CancelDiscovery();
-            if(m_radioButton4.isChecked())
-            {
-                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_bluetoothDevice, map);
-                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth,
-                        m_bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
-            }
-            else
+            //电力控制
+            if(m_radioButton3.isChecked())
             {
                 m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            }
+            //命令测试
+            else if(m_radioButton4.isChecked())
+            {
+                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_bluetoothDevice, map);
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            }
+            //设备升级
+            else if(m_radioButton6.isChecked())
+            {
+                m_bluetoothFragment_ota = BluetoothFragment_OTA.newInstance(m_bluetoothDevice, map);
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_ota, "bluetoothFragment_ota").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
         }
@@ -465,6 +479,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton3 = m_view.findViewById(R.id.radioButton3_bluetoothlist);
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
         m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
+        m_radioButton6 = m_view.findViewById(R.id.radioButton6_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
         switch(m_bluetoothAdapter.getState())
         {

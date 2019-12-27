@@ -35,6 +35,9 @@ import android.widget.Toast;
 import com.zistone.bluetoothtest.MainActivity;
 import com.zistone.bluetoothtest.R;
 import com.zistone.bluetoothtest.control.MyScrollView;
+import com.zistone.bluetoothtest.dialogfragment.DialogFragment_OTA;
+import com.zistone.bluetoothtest.dialogfragment.DialogFragment_ParamSetting;
+import com.zistone.bluetoothtest.dialogfragment.DialogFragment_WriteValue;
 import com.zistone.bluetoothtest.util.ConvertUtil;
 
 import java.io.Serializable;
