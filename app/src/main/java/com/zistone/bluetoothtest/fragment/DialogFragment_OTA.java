@@ -26,6 +26,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 设备空中升级
@@ -34,7 +36,12 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
 {
     private static final String TAG = "DialogFragment_OTA";
     private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
     private static final int FILE_SELECTOR_CODE = 1;
+    private static UUID SERVICE_UUID;
+    private static UUID WRITE_UUID;
+    private static UUID READ_UUID;
+    private static UUID CONFIG_UUID;
     private Context m_context;
     private View m_view;
     private Button m_button1;
@@ -155,7 +162,6 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         m_progressBar = m_view.findViewById(R.id.progressBar_ota);
         m_button1.setOnClickListener(this::onClick);
         m_button2.setOnClickListener(this::onClick);
-        m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
         if(m_bluetoothDevice != null)
         {
             m_textView1.setText(m_bluetoothDevice.getAddress());
@@ -171,6 +177,21 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(m_view);
         return builder.create();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+        {
+            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
+            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+            SERVICE_UUID = map.get("SERVICE_UUID");
+            WRITE_UUID = map.get("WRITE_UUID");
+            READ_UUID = map.get("READ_UUID");
+            CONFIG_UUID = map.get("CONFIG_UUID");
+        }
     }
 
 }

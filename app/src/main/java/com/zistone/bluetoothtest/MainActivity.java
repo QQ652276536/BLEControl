@@ -7,10 +7,11 @@ import android.widget.Toast;
 
 import com.zistone.bluetoothtest.fragment.BluetoothFragment;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_List;
+import com.zistone.bluetoothtest.fragment.BluetoothFragment_OTA;
 import com.zistone.bluetoothtest.fragment.BluetoothFragment_PowerControl;
-import com.zistone.bluetoothtest.fragment.BluetoothFragment_ReadWrite;
+import com.zistone.bluetoothtest.fragment.BluetoothFragment_CommandTest;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_ReadWrite.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener, BluetoothFragment_OTA.OnFragmentInteractionListener
 {
     public static final int ACTIVITYRESULT_WRITEVALUE = 1;
     public static final int ACTIVITYRESULT_PARAMSETTING = 2;

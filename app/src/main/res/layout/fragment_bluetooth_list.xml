@@ -67,14 +67,6 @@
                     android:layout_height="wrap_content"
                     android:text="Amdtp"
                     android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/radioButton5_bluetoothlist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="OTA"
-                    android:textColor="@color/gray" />
             </RadioGroup>
         </TableRow>
 
@@ -110,7 +102,15 @@
                     android:id="@+id/radioButton4_bluetoothlist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="通信测试"
+                    android:text="命令测试"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/radioButton5_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="OTA"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </TableRow>

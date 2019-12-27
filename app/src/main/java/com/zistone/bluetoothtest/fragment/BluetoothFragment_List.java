@@ -64,7 +64,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
-    public BluetoothFragment_ReadWrite m_bluetoothFragment_readWrite;
+    public BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     public BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
@@ -280,9 +280,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             CancelDiscovery();
             if(m_radioButton4.isChecked())
             {
-                m_bluetoothFragment_readWrite = BluetoothFragment_ReadWrite.newInstance(m_bluetoothDevice, map);
+                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_readWrite, "bluetoothFragment_readWrite").commitNow();
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth,
+                        m_bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             else
