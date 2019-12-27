@@ -127,7 +127,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     {
         switch(v.getId())
         {
-            case R.id.btn_return:
+            case R.id.btn_return_ota:
             {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
