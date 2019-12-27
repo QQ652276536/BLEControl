@@ -61,7 +61,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         BluetoothFragment_OTA fragment = new BluetoothFragment_OTA();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
-        args.putSerializable(ARG_PARAM1, (Serializable) map);
+        args.putSerializable(ARG_PARAM2, (Serializable) map);
         fragment.setArguments(args);
         return fragment;
     }
@@ -127,6 +127,13 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     {
         switch(v.getId())
         {
+            case R.id.btn_return:
+            {
+                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_OTA.this).commitNow();
+                break;
+            }
             case R.id.btn1_ota:
             {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -184,7 +191,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         m_view.setFocusableInTouchMode(true);
         m_view.setOnKeyListener(backListener);
         m_context = getContext();
-        m_btnReturn = m_view.findViewById(R.id.btn_return);
+        m_btnReturn = m_view.findViewById(R.id.btn_return_ota);
         m_btnReturn.setOnClickListener(this);
         m_button1 = m_view.findViewById(R.id.btn1_ota);
         m_button2 = m_view.findViewById(R.id.btn2_ota);
@@ -193,14 +200,11 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         m_progressBar = m_view.findViewById(R.id.progressBar_ota);
         m_button1.setOnClickListener(this::onClick);
         m_button2.setOnClickListener(this::onClick);
-        if(m_bluetoothDevice != null)
-        {
-            m_textView1.setText(m_bluetoothDevice.getAddress());
-        }
-        m_progressBar = m_view.findViewById(R.id.progressBar);
+        m_progressBar = m_view.findViewById(R.id.progressBar_ota);
         m_progressBar.setVisibility(View.VISIBLE);
         if(m_bluetoothDevice != null)
         {
+            m_textView1.setText(m_bluetoothDevice.getAddress());
             Log.d(TAG, ">>>开始连接...");
             m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
             {
