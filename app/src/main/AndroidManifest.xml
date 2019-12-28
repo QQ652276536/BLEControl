@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zistone.bluetoothtest">
+    package="com.zistone.bluetoothcontrol">
 
     <!-- 需要硬件支持低功耗蓝牙 -->
     <uses-feature android:name="android.permission.BLUETOOTH_ADMIN" />
