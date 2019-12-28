@@ -3,20 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_1"
+        android:id="@+id/menu_1_setting"
         android:orderInCategory="80"
-        android:title="内部控制参数设置"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_2"
-        android:orderInCategory="80"
-        android:title="写入指令"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_3"
-        android:orderInCategory="80"
-        android:title="文件传输"
+        android:title="OTA"
         app:showAsAction="never" />
 </menu>

@@ -740,7 +740,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             switch(item.getItemId())
             {
                 //内部控制参数设置
-                case R.id.menu_1:
+                case R.id.menu_1_power:
                 {
                     //先查询参数,然后再显示修改参数的页面
                     SendComm(SEARCH_CONTROLPARAM_COMM);
@@ -748,7 +748,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     break;
                 }
                 //写入指令
-                case R.id.menu_2:
+                case R.id.menu_2_power:
                 {
                     m_writeValue = new DialogFragment_WriteValue();
                     m_writeValue.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
@@ -756,7 +756,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     break;
                 }
                 //OTA
-                case R.id.menu_3:
+                case R.id.menu_3_power:
                 {
                     m_ota = DialogFragment_OTA.newInstance(m_bluetoothDevice);
                     m_ota.setTargetFragment(BluetoothFragment_PowerControl.this, 3);
@@ -777,7 +777,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     {
         //Activity的onCreateOptionsMenu会在之前调用,即先Clear一下,这样就只有Fragment自己设置的了
         menu.clear();
-        inflater.inflate(R.menu.menu_setting, menu);
+        inflater.inflate(R.menu.powercontrol_menu_setting, menu);
     }
 
     @Override

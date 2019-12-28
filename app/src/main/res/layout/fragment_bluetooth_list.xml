@@ -114,14 +114,6 @@
                     android:layout_height="wrap_content"
                     android:text="命令测试"
                     android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/radioButton6_bluetoothlist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="设备升级"
-                    android:textColor="@color/gray" />
             </RadioGroup>
         </LinearLayout>
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_1_power"
+        android:orderInCategory="80"
+        android:title="内部控制参数设置"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_2_power"
+        android:orderInCategory="80"
+        android:title="写入指令"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_3_power"
+        android:orderInCategory="80"
+        android:title="文件传输(ZIP)"
+        app:showAsAction="never" />
+</menu>
