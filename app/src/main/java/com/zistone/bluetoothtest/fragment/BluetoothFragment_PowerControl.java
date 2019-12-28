@@ -91,6 +91,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
+    private Toolbar m_toolbar;
     private ImageButton m_btnReturn;
     private TextView m_debugView;
     private Button m_button1;
@@ -108,7 +109,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private StringBuffer m_stringBuffer = new StringBuffer();
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
-    private Toolbar m_toolbar;
     private MyScrollView m_scrollView;
     private LinearLayout m_llPowerControl;
     private DialogFragment_WriteValue m_writeValue;

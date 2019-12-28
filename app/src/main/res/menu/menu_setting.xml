@@ -7,4 +7,10 @@
         android:orderInCategory="80"
         android:title="OTA"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_2_setting"
+        android:orderInCategory="80"
+        android:title="..."
+        app:showAsAction="never" />
 </menu>
