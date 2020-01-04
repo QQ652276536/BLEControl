@@ -206,7 +206,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         {
             m_textView1.setText(m_bluetoothDevice.getAddress());
             Log.d(TAG, ">>>开始连接...");
-            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
+            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
             {
                 /**
                  * 连接状态改变时回调

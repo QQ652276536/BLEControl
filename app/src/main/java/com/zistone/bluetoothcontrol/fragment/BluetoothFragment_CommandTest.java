@@ -560,7 +560,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         if(m_bluetoothDevice != null)
         {
             Log.d(TAG, ">>>开始连接...");
-            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, true, new BluetoothGattCallback()
+            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
             {
                 /**
                  * 连接状态改变时回调
