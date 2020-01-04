@@ -65,6 +65,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private static UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     //客户端特征配置
     private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    private BluetoothListAdapter m_bluetoothListAdapter;
     public Context m_context;
     public View m_view;
     private Toolbar m_toolbar;
@@ -162,8 +163,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 {
                     m_deviceList.add(device);
                 }
-                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, FilterDevice(m_deviceList));
-                m_listView.setAdapter(adapter);
+                m_bluetoothListAdapter.SetM_list(FilterDevice(m_deviceList));
+                m_listView.setAdapter(m_bluetoothListAdapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             }
             //蓝牙设备搜索完成
@@ -304,8 +305,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     CancelDiscovery();
                     m_bluetoothAdapter.disable();
                     m_deviceList.clear();
-                    BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-                    m_listView.setAdapter(adapter);
+                    m_bluetoothListAdapter.SetM_list(m_deviceList);
+                    m_listView.setAdapter(m_bluetoothListAdapter);
                 }
                 break;
             }
@@ -376,6 +377,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
+        m_bluetoothListAdapter.SetM_isClick(true);
+        m_bluetoothListAdapter.SetM_currentIem(position);
+        m_bluetoothListAdapter.notifyDataSetChanged();
         //BlueNRG
         if(m_radioButton1.isChecked())
         {
@@ -465,8 +469,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             m_bluetoothAdapter.cancelDiscovery();
             m_deviceList.clear();
-            BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-            m_listView.setAdapter(adapter);
+            m_bluetoothListAdapter.SetM_list(m_deviceList);
+            m_listView.setAdapter(m_bluetoothListAdapter);
         }
         //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
         m_bluetoothAdapter.startDiscovery();
@@ -622,6 +626,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
             }
         };
+        m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
         return m_view;
     }
 
@@ -662,7 +667,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
-        BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-        m_listView.setAdapter(adapter);
+        m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
+        m_listView.setAdapter(m_bluetoothListAdapter);
     }
 }

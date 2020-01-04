@@ -2,6 +2,7 @@ package com.zistone.bluetoothcontrol.control;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,43 @@ public class BluetoothListAdapter extends BaseAdapter
     private Context m_context;
     private LayoutInflater m_layoutInflater;
     private List<BluetoothDevice> m_list;
+    private boolean m_isClick = false;
+    private int m_currentIem = 0;
 
-    public BluetoothListAdapter(Context context, List<BluetoothDevice> blue_list)
+    public List<BluetoothDevice> GetM_list()
+    {
+        return m_list;
+    }
+
+    public void SetM_list(List<BluetoothDevice> m_list)
+    {
+        this.m_list = m_list;
+    }
+
+    public boolean GetM_isClick()
+    {
+        return m_isClick;
+    }
+
+    public void SetM_isClick(boolean m_isClick)
+    {
+        this.m_isClick = m_isClick;
+    }
+
+    public int GetM_currentIem()
+    {
+        return m_currentIem;
+    }
+
+    public void SetM_currentIem(int m_currentIem)
+    {
+        this.m_currentIem = m_currentIem;
+    }
+
+    public BluetoothListAdapter(Context context)
     {
         m_layoutInflater = LayoutInflater.from(context);
         m_context = context;
-        m_list = blue_list;
     }
 
     @Override
@@ -61,7 +93,6 @@ public class BluetoothListAdapter extends BaseAdapter
         {
             holder = (ViewHolder) convertView.getTag();
         }
-
         final BluetoothDevice device = m_list.get(position);
         holder.tv_blue_name.setText(device.getName());
         holder.tv_blue_address.setText(device.getAddress());
@@ -79,7 +110,18 @@ public class BluetoothListAdapter extends BaseAdapter
             default:
                 holder.tv_blue_state.setText("");
         }
-
+        if(position == m_currentIem && m_isClick)
+        {
+            holder.tv_blue_name.setTextColor(Color.argb(255, 0, 133, 119));
+            holder.tv_blue_address.setTextColor(Color.argb(255, 0, 133, 119));
+            holder.tv_blue_state.setTextColor(Color.argb(255, 0, 133, 119));
+        }
+        else
+        {
+            holder.tv_blue_name.setTextColor(Color.BLACK);
+            holder.tv_blue_address.setTextColor(Color.BLACK);
+            holder.tv_blue_state.setTextColor(Color.BLACK);
+        }
         return convertView;
     }
 
