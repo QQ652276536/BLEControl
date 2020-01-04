@@ -11,6 +11,12 @@
     <item
         android:id="@+id/menu_2_setting"
         android:orderInCategory="80"
+        android:title="设备筛选"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_3_setting"
+        android:orderInCategory="80"
         android:title="..."
         app:showAsAction="never" />
 </menu>

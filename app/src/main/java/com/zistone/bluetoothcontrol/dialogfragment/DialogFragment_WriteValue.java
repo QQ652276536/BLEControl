@@ -52,7 +52,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     {
         switch(v.getId())
         {
-            case R.id.writevalue_btn_delvalue:
+            case R.id.btn1_devlceFilter:
             {
                 break;
             }

@@ -1003,7 +1003,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             //开全部门锁
             case R.id.button4:
             {
-                String hexStr = "680000000000006810000181E716";
+                String hexStr = "680000000000006810000183E716";
                 Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
                 SendComm(hexStr);
             }

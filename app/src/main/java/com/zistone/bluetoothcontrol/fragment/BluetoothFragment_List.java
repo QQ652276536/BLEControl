@@ -41,6 +41,8 @@ import android.widget.Toast;
 import com.zistone.bluetoothcontrol.MainActivity;
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
+import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_DeviceFilter;
+import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
@@ -63,8 +65,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private static UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     //客户端特征配置
     private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    public String m_param1;
-    public String m_param2;
     public Context m_context;
     public View m_view;
     private Toolbar m_toolbar;
@@ -80,14 +80,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public BluetoothFragment_OTA m_bluetoothFragment_ota;
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
-    private RadioGroup m_radioGroup1;
-    private RadioGroup m_radioGroup2;
-    private RadioButton m_radioButton1;
-    private RadioButton m_radioButton2;
-    private RadioButton m_radioButton3;
-    private RadioButton m_radioButton4;
-    private RadioButton m_radioButton5;
+    private RadioGroup m_radioGroup1, m_radioGroup2;
+    private RadioButton m_radioButton1, m_radioButton2, m_radioButton3, m_radioButton4, m_radioButton5;
     private long m_exitTime = 0;
+    private DialogFragment_DeviceFilter m_dialogFragment_deviceFilter;
+    private DialogFragment_DeviceFilter.Callback m_deviceFilterCallback;
+    private String m_param1, m_param2;
+    private List<String> m_filterNameList = new ArrayList<>();
 
     private View.OnKeyListener backListener = (v, keyCode, event) ->
     {
@@ -118,6 +117,37 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return fragment;
     }
 
+    /**
+     * 过滤蓝牙设备
+     *
+     * @param list
+     * @return
+     */
+    private List<BluetoothDevice> FilterDevice(List<BluetoothDevice> list)
+    {
+        //根据设备名过滤
+        if(m_filterNameList != null && m_filterNameList.size() > 0)
+        {
+            List<BluetoothDevice> resultList = new ArrayList<>();
+            for(BluetoothDevice tempDevice : list)
+            {
+                for(String tempName : m_filterNameList)
+                {
+                    if(tempName.equals(tempDevice.getName()))
+                    {
+                        resultList.add(tempDevice);
+                        break;
+                    }
+                }
+            }
+            return resultList;
+        }
+        else
+        {
+            return list;
+        }
+    }
+
     public class BluetoothReceiver extends BroadcastReceiver
     {
         @Override
@@ -132,7 +162,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 {
                     m_deviceList.add(device);
                 }
-                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+                BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, FilterDevice(m_deviceList));
                 m_listView.setAdapter(adapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             }
@@ -244,7 +274,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 Intent intent = GetAppOpenIntentByPackageName(m_context, "com.ambiqmicro.android.amota");
                 m_context.startActivity(intent);
                 break;
+            //设备过滤
             case R.id.menu_2_setting:
+                m_dialogFragment_deviceFilter = DialogFragment_DeviceFilter.newInstance(m_deviceFilterCallback, "");
+                m_dialogFragment_deviceFilter.show(getFragmentManager(), "DialogFragment_OTA");
+                break;
+            //...
+            case R.id.menu_3_setting:
                 break;
         }
         return true;
@@ -368,8 +404,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         map.put("CONFIG_UUID", CONFIG_UUID);
         if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
-            //停止搜索蓝牙
-            CancelDiscovery();
             //电力控制
             if(m_radioButton3.isChecked())
             {
@@ -431,9 +465,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             m_bluetoothAdapter.cancelDiscovery();
             m_deviceList.clear();
+            BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
+            m_listView.setAdapter(adapter);
         }
-        BluetoothListAdapter adapter = new BluetoothListAdapter(m_context, m_deviceList);
-        m_listView.setAdapter(adapter);
         //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
         m_bluetoothAdapter.startDiscovery();
     }
@@ -466,7 +500,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         super.onActivityCreated(savedInstanceState);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -579,6 +612,16 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 break;
         }
         m_checkBox.setOnCheckedChangeListener(this);
+        m_filterNameList = DeviceFilterShared.Get(m_context);
+        m_deviceFilterCallback = new DialogFragment_DeviceFilter.Callback()
+        {
+            @Override
+            public void SaveCallback(List<String> list)
+            {
+                m_filterNameList = list;
+                Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
+            }
+        };
         return m_view;
     }
 

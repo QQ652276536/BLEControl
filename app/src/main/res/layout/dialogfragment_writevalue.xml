@@ -41,128 +41,121 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/writevalue_framelayout"
+    <ScrollView
+        android:id="@+id/writevalue_scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp">
 
-        <ScrollView
-            android:id="@+id/writevalue_scrollView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TableLayout
+                android:id="@+id/writevalue_table"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="0X" />
+
+                    <EditText
+                        android:id="@+id/editText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="5"
+                        android:hint="New value"
+                        android:inputType="textVisiblePassword" />
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="BYTE" />
+
+                    <ImageButton
+                        android:id="@+id/btn1_devlceFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/transparent"
+                        android:visibility="invisible"
+                        app:srcCompat="@drawable/close3" />
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/writevalue_btn_addvalue"
+                style="@style/ButtonStyleB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="ADD VALUE" />
+
+            <EditText
+                android:id="@+id/writevalue_edit_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:hint="Save as..."
+                android:inputType="text" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TableLayout
-                    android:id="@+id/writevalue_table"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="TextView"
-                            android:visibility="invisible" />
-
-                        <TextView
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:text="0X" />
-
-                        <EditText
-                            android:id="@+id/editText1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:ems="5"
-                            android:hint="New value"
-                            android:inputType="textVisiblePassword" />
-
-                        <TextView
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:text="BYTE" />
-
-                        <ImageButton
-                            android:id="@+id/writevalue_btn_delvalue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/transparent"
-                            android:visibility="invisible"
-                            app:srcCompat="@drawable/close3" />
-                    </TableRow>
-
-                </TableLayout>
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/writevalue_btn_addvalue"
+                    android:id="@+id/writevalue_btn_save"
                     style="@style/ButtonStyleB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="ADD VALUE" />
+                    android:text="SAVE" />
 
-                <EditText
-                    android:id="@+id/writevalue_edit_save"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ems="10"
-                    android:hint="Save as..."
-                    android:inputType="text" />
+                    android:text="TextView"
+                    android:visibility="invisible" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/writevalue_btn_cancel"
+                    style="@style/ButtonStyleB"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:text="CANCEL" />
 
-                    <Button
-                        android:id="@+id/writevalue_btn_save"
-                        style="@style/ButtonStyleB"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SAVE" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:visibility="invisible" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TextView"
-                        android:visibility="invisible" />
-
-                    <Button
-                        android:id="@+id/writevalue_btn_cancel"
-                        style="@style/ButtonStyleB"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CANCEL" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TextView"
-                        android:visibility="invisible" />
-
-                    <Button
-                        android:id="@+id/writevalue_btn_send"
-                        style="@style/ButtonStyleB"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SEND" />
-                </LinearLayout>
+                <Button
+                    android:id="@+id/writevalue_btn_send"
+                    style="@style/ButtonStyleB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SEND" />
             </LinearLayout>
+        </LinearLayout>
 
-        </ScrollView>
-
-    </FrameLayout>
+    </ScrollView>
 
 </LinearLayout>
