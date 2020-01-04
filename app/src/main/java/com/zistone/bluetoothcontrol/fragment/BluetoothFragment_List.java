@@ -182,7 +182,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 //完成配对
                 else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
                 {
-                    handler.postDelayed(runnable, 100);
                 }
                 //取消配对
                 else if(device.getBondState() == BluetoothDevice.BOND_NONE)
@@ -317,7 +316,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onStart()
     {
         super.onStart();
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, 0);
         m_bluetoothReceiver = new BluetoothReceiver();
         //注册广播
         IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -456,7 +455,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         public void run()
         {
             BeginDiscovery();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, 500);
         }
     };
 
@@ -562,7 +561,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
                     }
-                }, 1 * 1000);
+                }, 500);
             }
 
             /**
