@@ -41,27 +41,14 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
-    private static UUID SERVICE_UUID;
-    private static UUID WRITE_UUID;
-    private static UUID READ_UUID;
-    private static UUID CONFIG_UUID;
+    private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
+    private static Callback m_callback;
     private OnFragmentInteractionListener m_listener;
     private Context m_context;
     private View m_view;
     private ImageButton m_btnReturn;
     private TextView m_textView;
-    private Button m_button0;
-    private Button m_button1;
-    private Button m_button2;
-    private Button m_button3;
-    private Button m_button4;
-    private Button m_button5;
-    private Button m_button6;
-    private Button m_button7;
-    private Button m_button8;
-    private Button m_button9;
-    private Button m_button10;
-    private Button m_button11;
+    private Button m_button0, m_button1, m_button2, m_button3, m_button4, m_button5, m_button6, m_button7, m_button8, m_button9, m_button10, m_button11;
     private ProgressBar m_progressBar;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothGatt m_bluetoothGatt;
@@ -72,9 +59,15 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private Timer m_refreshTimer;
     private TimerTask m_refreshTask;
 
-    public static BluetoothFragment_CommandTest newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
+    public interface Callback
+    {
+        void IsConnectSuccess();
+    }
+
+    public static BluetoothFragment_CommandTest newInstance(Callback callback, BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
         BluetoothFragment_CommandTest fragment = new BluetoothFragment_CommandTest();
+        m_callback = callback;
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
         args.putSerializable(ARG_PARAM2, (Serializable) map);
@@ -628,6 +621,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                             BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             gatt.writeDescriptor(descriptor);
+                            //回调
+                            m_callback.IsConnectSuccess();
                         }
                         else
                         {

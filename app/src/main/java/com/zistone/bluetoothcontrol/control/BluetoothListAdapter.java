@@ -19,7 +19,7 @@ public class BluetoothListAdapter extends BaseAdapter
     private Context m_context;
     private LayoutInflater m_layoutInflater;
     private List<BluetoothDevice> m_list;
-    private boolean m_isClick = false;
+    private boolean m_isConnectSuccess = false;
     private int m_currentIem = 0;
 
     public List<BluetoothDevice> GetM_list()
@@ -32,14 +32,14 @@ public class BluetoothListAdapter extends BaseAdapter
         this.m_list = m_list;
     }
 
-    public boolean GetM_isClick()
+    public boolean GetM_isConnectSuccess()
     {
-        return m_isClick;
+        return m_isConnectSuccess;
     }
 
-    public void SetM_isClick(boolean m_isClick)
+    public void SetM_isConnectSuccess(boolean m_isConnectSuccess)
     {
-        this.m_isClick = m_isClick;
+        this.m_isConnectSuccess = m_isConnectSuccess;
     }
 
     public int GetM_currentIem()
@@ -110,7 +110,7 @@ public class BluetoothListAdapter extends BaseAdapter
             default:
                 holder.tv_blue_state.setText("");
         }
-        if(position == m_currentIem && m_isClick)
+        if(position == m_currentIem && m_isConnectSuccess)
         {
             holder.tv_blue_name.setTextColor(Color.argb(255, 0, 133, 119));
             holder.tv_blue_address.setTextColor(Color.argb(255, 0, 133, 119));
