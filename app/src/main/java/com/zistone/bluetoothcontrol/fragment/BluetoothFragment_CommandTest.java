@@ -39,6 +39,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
+    private static final int MESSAGE_ERROR_1 = -1;
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static Callback m_callback;
     private OnFragmentInteractionListener m_listener;
@@ -92,6 +93,10 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             String result = (String) message.obj;
             switch(message.what)
             {
+                case MESSAGE_ERROR_1:
+                    m_progressBar.setVisibility(View.INVISIBLE);
+                    ShowWarning(1);
+                    break;
                 case MESSAGE_1:
                 {
                     m_button1.setEnabled(true);
@@ -577,8 +582,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     {
                         Log.d(TAG, ">>>连接已断开!");
                         m_bluetoothGatt.close();
-                        m_progressBar.setVisibility(View.INVISIBLE);
-                        ShowWarning(1);
+                        Message message = new Message();
+                        message.what = MESSAGE_ERROR_1;
+                        handler.sendMessage(message);
                     }
                 }
 
