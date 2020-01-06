@@ -352,16 +352,20 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 builder.setMessage("该设备的连接已断开!请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+
+                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                    getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
                 });
                 break;
             case 2:
                 builder.setMessage("未获取到蓝牙,请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+
+                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                    getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
                 });
                 break;
         }
