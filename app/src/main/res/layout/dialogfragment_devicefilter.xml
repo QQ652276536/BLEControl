@@ -15,11 +15,30 @@
         android:text="设备筛选"
         android:textSize="22sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="测试完毕后隐藏设备" />
+
+        <CheckBox
+            android:id="@+id/chk1_deviceFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:checked="false" />
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/scrollView_deviceFilter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="15dp">
 
         <LinearLayout
             android:layout_width="match_parent"

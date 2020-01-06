@@ -13,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
@@ -25,7 +28,7 @@ import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DialogFragment_DeviceFilter extends DialogFragment implements View.OnClickListener
+public class DialogFragment_DeviceFilter extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
     private static final String TAG = "DialogFragment_DeviceFilter";
     private static final String ARG_PARAM1 = "param1";
@@ -35,6 +38,24 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
     private Button m_button1, m_button2, m_button3, m_button4;
     private EditText m_edit1;
     private TableLayout m_table;
+    private CheckBox m_chk1;
+
+    public interface Callback
+    {
+        /**
+         * 只显示与设置的设备名称相同的设备
+         *
+         * @param list 设备名
+         */
+        void OnlyShowSetDeviceCallback(List<String> list);
+
+        /**
+         * 隐藏已连接成功的设备
+         *
+         * @param flag 是否开启
+         */
+        void HideConnectedDevice(boolean flag);
+    }
 
     public static DialogFragment_DeviceFilter newInstance(Callback callBack, String str)
     {
@@ -77,21 +98,21 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
             }
             case R.id.btn3_deviceFilter:
             {
+                List<String> list = new ArrayList<>();
+                for(int i = 0; i < m_table.getChildCount(); i++)
+                {
+                    TableRow row = (TableRow) m_table.getChildAt(i);
+                    EditText editText = (EditText) row.getChildAt(1);
+                    String str = editText.getText().toString();
+                    if(!str.trim().equals(""))
+                    {
+                        list.add(str);
+                    }
+                }
+                DeviceFilterShared.SetFilterName(m_context, list);
                 if(m_callback != null)
                 {
-                    List<String> list = new ArrayList<>();
-                    for(int i = 0; i < m_table.getChildCount(); i++)
-                    {
-                        TableRow row = (TableRow) m_table.getChildAt(i);
-                        EditText editText = (EditText) row.getChildAt(1);
-                        String str = editText.getText().toString();
-                        if(!str.trim().equals(""))
-                        {
-                            list.add(str);
-                        }
-                    }
-                    DeviceFilterShared.Set(m_context, list);
-                    m_callback.SaveCallback(list);
+                    m_callback.OnlyShowSetDeviceCallback(list);
                 }
                 dismiss();
                 break;
@@ -108,6 +129,17 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        m_chk1 = m_view.findViewById(R.id.chk1_deviceFilter);
+        boolean flag = DeviceFilterShared.GetFilterDevice(m_context);
+        if(flag)
+        {
+            m_chk1.setChecked(true);
+        }
+        else
+        {
+            m_chk1.setChecked(false);
+        }
+        m_chk1.setOnCheckedChangeListener(this::onCheckedChanged);
         m_button2 = m_view.findViewById(R.id.btn2_deviceFilter);
         m_button2.setOnClickListener(this::onClick);
         m_button3 = m_view.findViewById(R.id.btn3_deviceFilter);
@@ -116,7 +148,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
         m_button4.setOnClickListener(this::onClick);
         m_edit1 = m_view.findViewById(R.id.editText1_deviceFilter);
         m_table = m_view.findViewById(R.id.table_deviceFilter);
-        List<String> list = DeviceFilterShared.Get(m_context);
+        List<String> list = DeviceFilterShared.GetFilterName(m_context);
         if(list != null && list.size() > 0)
         {
             String[] strArray = new String[list.size()];
@@ -165,9 +197,23 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
         return builder.create();
     }
 
-    public interface Callback
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     {
-        void SaveCallback(List<String> list);
+        switch(buttonView.getId())
+        {
+            case R.id.chk1_deviceFilter:
+                boolean flag = DeviceFilterShared.SetFilterDevie(m_context, isChecked);
+                if(flag)
+                {
+                    Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
+                }
+                if(m_callback != null)
+                {
+                    m_callback.HideConnectedDevice(isChecked);
+                }
+                break;
+        }
     }
 
 }

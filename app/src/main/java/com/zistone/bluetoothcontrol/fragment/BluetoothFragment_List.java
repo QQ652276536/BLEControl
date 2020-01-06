@@ -48,6 +48,7 @@ import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -73,12 +74,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public CheckBox m_checkBox;
     public ListView m_listView;
     public BluetoothAdapter m_bluetoothAdapter;
-    public ArrayList<BluetoothDevice> m_deviceList = new ArrayList<>();
+    //蓝牙设备的集合
+    public List<BluetoothDevice> m_deviceList = new ArrayList<>();
     public BluetoothReceiver m_bluetoothReceiver;
     public BluetoothDevice m_bluetoothDevice;
     public BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     private BluetoothFragment_CommandTest.Callback m_commandTestCallback;
     public BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
+    private BluetoothFragment_PowerControl.Callback m_powerControlCallback;
     public BluetoothFragment_OTA m_bluetoothFragment_ota;
     //下拉刷新控件
     private MaterialRefreshLayout m_materialRefreshLayout;
@@ -88,7 +91,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private DialogFragment_DeviceFilter m_dialogFragment_deviceFilter;
     private DialogFragment_DeviceFilter.Callback m_deviceFilterCallback;
     private String m_param1, m_param2;
-    private List<String> m_filterNameList = new ArrayList<>();
+    //根据名称筛选设备、根据地址过滤设备
+    private List<String> m_filterNameList = new ArrayList<>(), m_filterAddressList = new ArrayList<>();
+    private boolean m_isHideConnectedDevice = false;
 
     private View.OnKeyListener backListener = (v, keyCode, event) ->
     {
@@ -119,77 +124,145 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return fragment;
     }
 
+    private void InitListener()
+    {
+        //命令测试的回调
+        m_commandTestCallback = new BluetoothFragment_CommandTest.Callback()
+        {
+            @Override
+            public void IsConnectSuccess()
+            {
+                //将连接成功的设备地址存起来,用来过滤.
+                m_filterAddressList.add(m_bluetoothDevice.getAddress());
+                //过滤设备后重新绑定适配器
+                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                m_listView.setAdapter(m_bluetoothListAdapter);
+                //适配器的数据改变后更新ListView
+                m_bluetoothListAdapter.notifyDataSetChanged();
+            }
+        };
+
+        //设备筛选的回调
+        m_deviceFilterCallback = new DialogFragment_DeviceFilter.Callback()
+        {
+            @Override
+            public void OnlyShowSetDeviceCallback(List<String> list)
+            {
+                m_filterNameList = list;
+                Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void HideConnectedDevice(boolean flag)
+            {
+                m_isHideConnectedDevice = flag;
+                if(!m_isHideConnectedDevice)
+                {
+                    m_filterAddressList.clear();
+                }
+            }
+        };
+
+        //电力控制的回调
+        m_powerControlCallback = new BluetoothFragment_PowerControl.Callback()
+        {
+            @Override
+            public void IsConnectSuccess()
+            {
+                //将连接成功的设备地址存起来,用来过滤.
+                m_filterAddressList.add(m_bluetoothDevice.getAddress());
+                //过滤设备后重新绑定适配器
+                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                m_listView.setAdapter(m_bluetoothListAdapter);
+                //适配器的数据改变后更新ListView
+                m_bluetoothListAdapter.notifyDataSetChanged();
+            }
+        };
+
+    }
+
     /**
-     * 过滤蓝牙设备
+     * 根据设置选项过滤扫描到蓝牙设备
      *
      * @param list
      * @return
      */
-    private List<BluetoothDevice> FilterDevice(List<BluetoothDevice> list)
+    private List<BluetoothDevice> FilterDeviceByCondition(List<BluetoothDevice> list)
     {
-        //根据设备名过滤
+        //设置的设备名称相同的蓝牙设备
         if(m_filterNameList != null && m_filterNameList.size() > 0)
         {
-            List<BluetoothDevice> resultList = new ArrayList<>();
-            for(BluetoothDevice tempDevice : list)
-            {
-                for(String tempName : m_filterNameList)
-                {
-                    if(tempName.equals(tempDevice.getName()))
-                    {
-                        resultList.add(tempDevice);
-                        break;
-                    }
-                }
-            }
-            return resultList;
+            list = OnlyShowSetNameSameDevice(list);
         }
-        else
+        //隐藏了连接成功的蓝牙设备
+        if(m_isHideConnectedDevice)
         {
-            return list;
+            list = HideConnectedDevice(list);
         }
+        return list;
     }
 
-    public class BluetoothReceiver extends BroadcastReceiver
+    /**
+     * 隐藏已经连接成功的蓝牙设备
+     * <p>
+     * 该方法在接口回调里也有调用,在过滤设备（连接成功后该设备不再显示）后,不要调用会导致BluetoothDevice对象被删除的方法,因为该对象可能正在被使用!
+     *
+     * @param list 扫描到的蓝牙设备
+     * @return
+     */
+    private List<BluetoothDevice> HideConnectedDevice(List<BluetoothDevice> list)
     {
-        @Override
-        public void onReceive(Context context, Intent intent)
+        List<BluetoothDevice> resultList = new ArrayList<>();
+        for(BluetoothDevice tempDevice : list)
         {
-            String action = intent.getAction();
-            // 获得已经搜索到的蓝牙设备
-            if(action.equals(BluetoothDevice.ACTION_FOUND))
+            boolean flag = false;
+            String address = tempDevice.getAddress();
+            for(String tempAddress : m_filterAddressList)
             {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(!m_deviceList.contains(device.getAddress()))
+                //地址相同的过滤掉(不是销毁对象)
+                if(address.equals(tempAddress))
                 {
-                    m_deviceList.add(device);
+                    flag = true;
+                    break;
                 }
-                m_bluetoothListAdapter.SetM_list(FilterDevice(m_deviceList));
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             }
-            //蓝牙设备搜索完成
-            else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
+            if(!flag)
             {
-                handler.removeCallbacks(runnable);
-            }
-            else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
-            {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                //正在配对
-                if(device.getBondState() == BluetoothDevice.BOND_BONDING)
-                {
-                }
-                //完成配对
-                else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
-                {
-                }
-                //取消配对
-                else if(device.getBondState() == BluetoothDevice.BOND_NONE)
-                {
-                }
+                resultList.add(tempDevice);
             }
         }
+        return resultList;
+    }
+
+    /**
+     * 只显示和设置的设备名称相同的蓝牙设备
+     *
+     * @param list 扫描到的蓝牙设备
+     * @return
+     */
+    private List<BluetoothDevice> OnlyShowSetNameSameDevice(List<BluetoothDevice> list)
+    {
+        Iterator<BluetoothDevice> iterator = list.iterator();
+        while(iterator.hasNext())
+        {
+            String name = iterator.next().getName();
+            //设备名相同的保留
+            boolean flag = false;
+            for(String tempName : m_filterNameList)
+            {
+                //存在没有名称的设备
+                if(name != null && name.equals(tempName))
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag)
+            {
+                iterator.remove();
+            }
+        }
+        return list;
     }
 
     public Handler handler = new Handler()
@@ -376,8 +449,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
-        m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_deviceList.get(position).getAddress());
-        m_bluetoothListAdapter.SetM_currentIem(position);
+        String address = m_deviceList.get(position).getAddress();
+        m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
+        m_bluetoothListAdapter.SetM_clickItemAddress(address);
+        //如果没有开启设备连接成功后隐藏的选项则,给选中的蓝牙设备加上选中效果,因为该选项开启后选中的设备会被隐藏,效果就会显示在下一个设备上.
+        if(!m_isHideConnectedDevice)
+        {
+            //m_bluetoothListAdapter.SetM_isClick(true);
+        }
         m_bluetoothListAdapter.notifyDataSetChanged();
         //BlueNRG
         if(m_radioButton1.isChecked())
@@ -410,7 +489,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //电力控制
             if(m_radioButton3.isChecked())
             {
-                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_bluetoothDevice, map);
+                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_powerControlCallback, m_bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
@@ -464,13 +543,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     public void BeginDiscovery()
     {
+        //先清空适配器
+        m_deviceList.clear();
+        m_bluetoothListAdapter.SetM_list(m_deviceList);
+        m_listView.setAdapter(m_bluetoothListAdapter);
         if(m_bluetoothAdapter.isDiscovering())
         {
             m_bluetoothAdapter.cancelDiscovery();
-            m_deviceList.clear();
         }
-        m_bluetoothListAdapter.SetM_list(m_deviceList);
-        m_listView.setAdapter(m_bluetoothListAdapter);
         //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
         m_bluetoothAdapter.startDiscovery();
     }
@@ -496,17 +576,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_param1 = getArguments().getString(ARG_PARAM1);
             m_param2 = getArguments().getString(ARG_PARAM2);
         }
-        m_commandTestCallback = new BluetoothFragment_CommandTest.Callback()
-        {
-            @Override
-            public void IsConnectSuccess()
-            {
-                m_bluetoothListAdapter.SetM_isConnectSuccess(true);
-                m_bluetoothListAdapter.notifyDataSetChanged();
-                //如果连接成功后则从列表里移除该设备,重新刷新可恢复
-
-            }
-        };
     }
 
     @Override
@@ -626,17 +695,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 break;
         }
         m_checkBox.setOnCheckedChangeListener(this);
-        m_filterNameList = DeviceFilterShared.Get(m_context);
-        m_deviceFilterCallback = new DialogFragment_DeviceFilter.Callback()
-        {
-            @Override
-            public void SaveCallback(List<String> list)
-            {
-                m_filterNameList = list;
-                Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
-            }
-        };
         m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
+        m_filterNameList = DeviceFilterShared.GetFilterName(m_context);
+        m_isHideConnectedDevice = DeviceFilterShared.GetFilterDevice(m_context);
+        InitListener();
         return m_view;
     }
 
@@ -677,7 +739,80 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
-        m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
+        m_bluetoothListAdapter.SetM_list(m_deviceList);
         m_listView.setAdapter(m_bluetoothListAdapter);
     }
+
+    @Override
+    public void onHiddenChanged(boolean hidden)
+    {
+        super.onHiddenChanged(hidden);
+        //不在最前端显示
+        if(hidden)
+        {
+            int a = 1;
+        }
+        //在最前端显示
+        else
+        {
+            int b = 2;
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser)
+    {
+        super.setUserVisibleHint(isVisibleToUser);
+        //界面可见
+        if(isVisibleToUser)
+        {
+        }
+        //界面不可见
+        else
+        {
+        }
+    }
+
+    public class BluetoothReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            //获得已经搜索到的蓝牙设备
+            if(action.equals(BluetoothDevice.ACTION_FOUND))
+            {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(!m_deviceList.contains(device.getAddress()))
+                {
+                    m_deviceList.add(device);
+                }
+                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                m_listView.setAdapter(m_bluetoothListAdapter);
+                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
+            }
+            //蓝牙设备搜索完成
+            else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
+            {
+                handler.removeCallbacks(runnable);
+            }
+            else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
+            {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //正在配对
+                if(device.getBondState() == BluetoothDevice.BOND_BONDING)
+                {
+                }
+                //完成配对
+                else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
+                {
+                }
+                //取消配对
+                else if(device.getBondState() == BluetoothDevice.BOND_NONE)
+                {
+                }
+            }
+        }
+    }
+
 }

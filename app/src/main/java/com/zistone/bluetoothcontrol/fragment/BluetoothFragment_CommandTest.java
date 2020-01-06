@@ -30,8 +30,6 @@ import com.zistone.bluetoothcontrol.util.ConvertUtil;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 public class BluetoothFragment_CommandTest extends Fragment implements View.OnClickListener
@@ -56,8 +54,6 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
     private StringBuffer m_stringBuffer = new StringBuffer();
-    private Timer m_refreshTimer;
-    private TimerTask m_refreshTask;
 
     public interface Callback
     {
@@ -348,7 +344,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         switch(param)
         {
             case 1:
-                builder.setMessage("该设备的连接已断开!,请重试!");
+                builder.setMessage("该设备的连接已断开!请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
                     BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
@@ -581,6 +577,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     {
                         Log.d(TAG, ">>>连接已断开!");
                         m_bluetoothGatt.close();
+                        m_progressBar.setVisibility(View.INVISIBLE);
                         ShowWarning(1);
                     }
                 }
@@ -621,8 +618,11 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                             BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             gatt.writeDescriptor(descriptor);
-                            //回调
-                            m_callback.IsConnectSuccess();
+                            //连接成功的回调
+                            if(m_callback != null)
+                            {
+                                m_callback.IsConnectSuccess();
+                            }
                         }
                         else
                         {
@@ -741,9 +741,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         m_listener = null;
         if(m_bluetoothGatt != null)
             m_bluetoothGatt.close();
-        if(m_refreshTimer != null)
-            m_refreshTimer.cancel();
-        if(m_refreshTask != null)
-            m_refreshTask.cancel();
+        if(m_bluetoothDevice != null)
+            m_bluetoothDevice = null;
     }
 }

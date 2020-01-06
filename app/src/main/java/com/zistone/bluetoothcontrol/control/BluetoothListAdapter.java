@@ -19,37 +19,37 @@ public class BluetoothListAdapter extends BaseAdapter
     private Context m_context;
     private LayoutInflater m_layoutInflater;
     private List<BluetoothDevice> m_list;
-    private boolean m_isConnectSuccess = false;
-    private int m_currentIem = 0;
+    private boolean m_isClick = false;
+    private String m_clickItemAddress = "";
+
+    public String GetM_clickItemAddress()
+    {
+        return m_clickItemAddress;
+    }
+
+    public void SetM_clickItemAddress(String m_clickItemAddress)
+    {
+        this.m_clickItemAddress = m_clickItemAddress;
+    }
 
     public List<BluetoothDevice> GetM_list()
     {
         return m_list;
     }
 
+    public boolean GetM_isClick()
+    {
+        return m_isClick;
+    }
+
+    public void SetM_isClick(boolean m_isClick)
+    {
+        this.m_isClick = m_isClick;
+    }
+
     public void SetM_list(List<BluetoothDevice> m_list)
     {
         this.m_list = m_list;
-    }
-
-    public boolean GetM_isConnectSuccess()
-    {
-        return m_isConnectSuccess;
-    }
-
-    public void SetM_isConnectSuccess(boolean m_isConnectSuccess)
-    {
-        this.m_isConnectSuccess = m_isConnectSuccess;
-    }
-
-    public int GetM_currentIem()
-    {
-        return m_currentIem;
-    }
-
-    public void SetM_currentIem(int m_currentIem)
-    {
-        this.m_currentIem = m_currentIem;
     }
 
     public BluetoothListAdapter(Context context)
@@ -110,7 +110,8 @@ public class BluetoothListAdapter extends BaseAdapter
             default:
                 holder.tv_blue_state.setText("");
         }
-        if(position == m_currentIem && m_isConnectSuccess)
+        String clickItemName = holder.tv_blue_address.getText().toString();
+        if(clickItemName != null && clickItemName.equals(m_clickItemAddress) && m_isClick)
         {
             holder.tv_blue_name.setTextColor(Color.argb(255, 0, 133, 119));
             holder.tv_blue_address.setTextColor(Color.argb(255, 0, 133, 119));
