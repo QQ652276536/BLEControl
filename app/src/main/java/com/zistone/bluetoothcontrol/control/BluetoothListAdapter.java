@@ -2,7 +2,6 @@ package com.zistone.bluetoothcontrol.control;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +19,6 @@ public class BluetoothListAdapter extends BaseAdapter
     private LayoutInflater m_layoutInflater;
     private List<BluetoothDevice> m_list;
     private boolean m_isClick = false;
-    private String m_clickItemAddress = "";
-
-    public String GetM_clickItemAddress()
-    {
-        return m_clickItemAddress;
-    }
-
-    public void SetM_clickItemAddress(String m_clickItemAddress)
-    {
-        this.m_clickItemAddress = m_clickItemAddress;
-    }
 
     public List<BluetoothDevice> GetM_list()
     {
@@ -109,19 +97,6 @@ public class BluetoothListAdapter extends BaseAdapter
                 break;
             default:
                 holder.tv_blue_state.setText("");
-        }
-        String clickItemName = holder.tv_blue_address.getText().toString();
-        if(clickItemName != null && clickItemName.equals(m_clickItemAddress) && m_isClick)
-        {
-            holder.tv_blue_name.setTextColor(Color.argb(255, 0, 133, 119));
-            holder.tv_blue_address.setTextColor(Color.argb(255, 0, 133, 119));
-            holder.tv_blue_state.setTextColor(Color.argb(255, 0, 133, 119));
-        }
-        else
-        {
-            holder.tv_blue_name.setTextColor(Color.BLACK);
-            holder.tv_blue_address.setTextColor(Color.BLACK);
-            holder.tv_blue_state.setTextColor(Color.BLACK);
         }
         return convertView;
     }

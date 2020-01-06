@@ -451,12 +451,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         String address = m_deviceList.get(position).getAddress();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
-        m_bluetoothListAdapter.SetM_clickItemAddress(address);
-        //如果没有开启设备连接成功后隐藏的选项则,给选中的蓝牙设备加上选中效果,因为该选项开启后选中的设备会被隐藏,效果就会显示在下一个设备上.
-        if(!m_isHideConnectedDevice)
-        {
-            //m_bluetoothListAdapter.SetM_isClick(true);
-        }
         m_bluetoothListAdapter.notifyDataSetChanged();
         //BlueNRG
         if(m_radioButton1.isChecked())
