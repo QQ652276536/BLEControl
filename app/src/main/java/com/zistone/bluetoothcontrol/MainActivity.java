@@ -24,11 +24,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        InitData();
-    }
-
-    private void InitData()
-    {
         m_bluetoothFragment = BluetoothFragment.newInstance("", "");
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment, "bluetoothFragment").show(m_bluetoothFragment).commitNow();
     }

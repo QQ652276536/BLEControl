@@ -400,8 +400,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     }
 
     /**
-     * 重写onRequestPermissionsResult方法
-     * 获取动态权限请求的结果,再开启蓝牙
+     * 获取动态权限请求的结果
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
@@ -423,12 +422,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                             default:
                                 m_checkBox.setChecked(false);
                                 break;
-                        }
-                        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        if(m_bluetoothAdapter == null)
-                        {
-                            m_checkBox.setChecked(false);
-                            Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
                         }
                         break;
                 }
@@ -595,6 +588,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_toolbar.setTitle("");
         //此处强转,必须是Activity才有这个方法
         ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
+        //申请权限蓝牙权限
         if(ContextCompat.checkSelfPermission(m_context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(getActivity(), new String[]{
@@ -606,12 +600,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         btFilter.setPriority(10);
         btFilter.addAction(BluetoothDevice.ACTION_FOUND);
         btFilter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
-        //获取蓝牙适配器
-        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(m_bluetoothAdapter == null)
-        {
-            Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
-        }
         m_listener.onFragmentInteraction(Uri.parse("content://com.zistone.bluetoothcontrol/list"));
         //下拉刷新控件
         m_materialRefreshLayout = m_view.findViewById(R.id.refresh_bluetoothlist);
@@ -676,17 +664,26 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
         m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
-        switch(m_bluetoothAdapter.getState())
+        //获取蓝牙适配器
+        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(m_bluetoothAdapter != null)
         {
-            case BluetoothAdapter.STATE_ON:
-            case BluetoothAdapter.STATE_TURNING_ON:
-                m_checkBox.setChecked(true);
-                break;
-            case BluetoothAdapter.STATE_OFF:
-            case BluetoothAdapter.STATE_TURNING_OFF:
-            default:
-                m_checkBox.setChecked(false);
-                break;
+            switch(m_bluetoothAdapter.getState())
+            {
+                case BluetoothAdapter.STATE_ON:
+                case BluetoothAdapter.STATE_TURNING_ON:
+                    m_checkBox.setChecked(true);
+                    break;
+                case BluetoothAdapter.STATE_OFF:
+                case BluetoothAdapter.STATE_TURNING_OFF:
+                default:
+                    m_checkBox.setChecked(false);
+                    break;
+            }
+        }
+        else
+        {
+            Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
         }
         m_checkBox.setOnCheckedChangeListener(this);
         m_bluetoothListAdapter = new BluetoothListAdapter(m_context);

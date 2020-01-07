@@ -12,4 +12,5 @@
     <color name="transparent">#00000000</color>
     <color name="deepskyblue">#00BFFF</color>
     <color name="skyblue">#87CEEB</color>
+    <color name="pureBlack">#000000</color>
 </resources>
