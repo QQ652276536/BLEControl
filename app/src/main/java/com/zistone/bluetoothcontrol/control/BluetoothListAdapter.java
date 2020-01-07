@@ -116,7 +116,7 @@ public class BluetoothListAdapter extends BaseAdapter
             default:
                 holder.tv_blue_state.setText("");
         }
-        holder.tv_blue_rssi.setText(rssi + "");
+        holder.tv_blue_rssi.setText(rssi + "dBm");
         return convertView;
     }
 
