@@ -88,7 +88,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
 
-    private OnFragmentInteractionListener m_listener;
+    private OnFragmentInteractionListener m_onFragmentInteractionListener;
     private Context m_context;
     private View m_view;
     private Toolbar m_toolbar;
@@ -117,17 +117,17 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     //发送查询结果用来初始化界面的开关
     private boolean m_isOpenParamSettingDialog = false;
     private boolean m_connectionState = false;
-    private static Callback m_callback;
+    private static Listener m_listener;
 
-    public interface Callback
+    public interface Listener
     {
-        void IsConnectSuccess();
+        void ConnectSuccessListener();
     }
 
-    public static BluetoothFragment_PowerControl newInstance(Callback callback, BluetoothDevice bluetoothDevice, Map<String, UUID> map)
+    public static BluetoothFragment_PowerControl newInstance(Listener listener, BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
         BluetoothFragment_PowerControl fragment = new BluetoothFragment_PowerControl();
-        m_callback = callback;
+        m_listener = listener;
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
         args.putSerializable(ARG_PARAM2, (Serializable) map);
@@ -514,9 +514,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 
     public void onButtonPressed(Uri uri)
     {
-        if(m_listener != null)
+        if(m_onFragmentInteractionListener != null)
         {
-            m_listener.onFragmentInteraction(uri);
+            m_onFragmentInteractionListener.onFragmentInteraction(uri);
         }
     }
 
@@ -874,10 +874,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                         message.obj = "";
                                         handler.sendMessage(message);
                                         //连接成功的回调
-                                        if(m_callback != null)
-                                        {
-                                            m_callback.IsConnectSuccess();
-                                        }
+                                        m_listener.ConnectSuccessListener();
                                     }
                                     else
                                     {
@@ -1106,7 +1103,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         super.onAttach(context);
         if(context instanceof OnFragmentInteractionListener)
         {
-            m_listener = (OnFragmentInteractionListener) context;
+            m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         }
         else
         {
@@ -1118,7 +1115,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onDetach()
     {
         super.onDetach();
-        m_listener = null;
+        m_onFragmentInteractionListener = null;
         if(m_bluetoothGatt != null)
             m_bluetoothGatt.close();
         if(m_refreshTimer != null)

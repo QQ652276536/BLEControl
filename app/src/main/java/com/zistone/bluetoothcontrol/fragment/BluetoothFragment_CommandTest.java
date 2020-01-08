@@ -41,8 +41,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private static final int MESSAGE_2 = 2;
     private static final int MESSAGE_ERROR_1 = -1;
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
-    private static Callback m_callback;
-    private OnFragmentInteractionListener m_listener;
+    private static Listener m_listener;
+    private OnFragmentInteractionListener m_onFragmentInteractionListener;
     private Context m_context;
     private View m_view;
     private ImageButton m_btnReturn;
@@ -56,15 +56,15 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
     private StringBuffer m_stringBuffer = new StringBuffer();
 
-    public interface Callback
+    public interface Listener
     {
-        void IsConnectSuccess();
+        void ConnectSuccessListener();
     }
 
-    public static BluetoothFragment_CommandTest newInstance(Callback callback, BluetoothDevice bluetoothDevice, Map<String, UUID> map)
+    public static BluetoothFragment_CommandTest newInstance(Listener listener, BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
         BluetoothFragment_CommandTest fragment = new BluetoothFragment_CommandTest();
-        m_callback = callback;
+        m_listener = listener;
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
         args.putSerializable(ARG_PARAM2, (Serializable) map);
@@ -152,9 +152,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
 
     public void onButtonPressed(Uri uri)
     {
-        if(m_listener != null)
+        if(m_onFragmentInteractionListener != null)
         {
-            m_listener.onFragmentInteraction(uri);
+            m_onFragmentInteractionListener.onFragmentInteraction(uri);
         }
     }
 
@@ -629,10 +629,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             gatt.writeDescriptor(descriptor);
                             //连接成功的回调
-                            if(m_callback != null)
-                            {
-                                m_callback.IsConnectSuccess();
-                            }
+                            m_listener.ConnectSuccessListener();
                         }
                         else
                         {
@@ -736,7 +733,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         super.onAttach(context);
         if(context instanceof OnFragmentInteractionListener)
         {
-            m_listener = (OnFragmentInteractionListener) context;
+            m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         }
         else
         {
@@ -748,7 +745,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     public void onDetach()
     {
         super.onDetach();
-        m_listener = null;
+        m_onFragmentInteractionListener = null;
         if(m_bluetoothGatt != null)
             m_bluetoothGatt.close();
         if(m_bluetoothDevice != null)

@@ -32,7 +32,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
 {
     private static final String TAG = "DialogFragment_DeviceFilter";
     private static final String ARG_PARAM1 = "param1";
-    private static Callback m_callback;
+    private static Listener m_listener;
     private View m_view;
     private Context m_context;
     private Button m_button1, m_button2, m_button3, m_button4;
@@ -40,27 +40,27 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
     private TableLayout m_table;
     private CheckBox m_chk1;
 
-    public interface Callback
+    public interface Listener
     {
         /**
          * 只显示与设置的设备名称相同的设备
          *
          * @param list 设备名
          */
-        void OnlyShowSetDeviceCallback(List<String> list);
+        void OnlyShowSetDeviceListener(List<String> list);
 
         /**
          * 隐藏已连接成功的设备
          *
          * @param flag 是否开启
          */
-        void HideConnectedDevice(boolean flag);
+        void HideConnectedDeviceListener(boolean flag);
     }
 
-    public static DialogFragment_DeviceFilter newInstance(Callback callBack, String str)
+    public static DialogFragment_DeviceFilter newInstance(Listener listener, String str)
     {
         DialogFragment_DeviceFilter fragment = new DialogFragment_DeviceFilter();
-        m_callback = callBack;
+        m_listener = listener;
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, str);
         fragment.setArguments(args);
@@ -110,10 +110,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
                     }
                 }
                 DeviceFilterShared.SetFilterName(m_context, list);
-                if(m_callback != null)
-                {
-                    m_callback.OnlyShowSetDeviceCallback(list);
-                }
+                m_listener.OnlyShowSetDeviceListener(list);
                 dismiss();
                 break;
             }
@@ -208,10 +205,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
                 {
                     Toast.makeText(m_context, "保存成功", Toast.LENGTH_SHORT).show();
                 }
-                if(m_callback != null)
-                {
-                    m_callback.HideConnectedDevice(isChecked);
-                }
+                m_listener.HideConnectedDeviceListener(isChecked);
                 break;
         }
     }

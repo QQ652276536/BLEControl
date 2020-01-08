@@ -54,7 +54,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     private BluetoothGattService m_bluetoothGattService;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
-    private BluetoothFragment_PowerControl.OnFragmentInteractionListener m_listener;
+    private OnFragmentInteractionListener m_onFragmentInteractionListener;
 
     public static BluetoothFragment_OTA newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -323,9 +323,9 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
 
     public void onButtonPressed(Uri uri)
     {
-        if(m_listener != null)
+        if(m_onFragmentInteractionListener != null)
         {
-            m_listener.onFragmentInteraction(uri);
+            m_onFragmentInteractionListener.onFragmentInteraction(uri);
         }
     }
 
@@ -335,7 +335,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         super.onAttach(context);
         if(context instanceof BluetoothFragment_PowerControl.OnFragmentInteractionListener)
         {
-            m_listener = (BluetoothFragment_PowerControl.OnFragmentInteractionListener) context;
+            m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         }
         else
         {
@@ -347,7 +347,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     public void onDetach()
     {
         super.onDetach();
-        m_listener = null;
+        m_onFragmentInteractionListener = null;
         if(m_bluetoothGatt != null)
             m_bluetoothGatt.close();
     }
