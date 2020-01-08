@@ -77,6 +77,12 @@ public class BluetoothListAdapter extends BaseAdapter
     }
 
     @Override
+    public void notifyDataSetChanged()
+    {
+        super.notifyDataSetChanged();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
         ViewHolder holder;

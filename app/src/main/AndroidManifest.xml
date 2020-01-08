@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zistone.bluetoothcontrol">
 
-    <!-- 需要硬件支持低功耗蓝牙 -->
-    <uses-feature android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- 蓝牙权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
