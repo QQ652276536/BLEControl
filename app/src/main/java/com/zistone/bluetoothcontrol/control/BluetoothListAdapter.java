@@ -101,7 +101,7 @@ public class BluetoothListAdapter extends BaseAdapter
             holder = (ViewHolder) convertView.getTag();
         }
         final BluetoothDevice device = m_deviceList.get(position);
-        Integer rssi = 0;
+        int rssi = 0;
         if(device.getAddress() != null && !device.getAddress().trim().equals(""))
         {
             rssi = m_rssiMap.get(device.getAddress());
