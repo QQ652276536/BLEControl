@@ -27,9 +27,9 @@ public class BluetoothListAdapter extends BaseAdapter
         return m_rssiMap;
     }
 
-    public void SetM_rssiMap(Map<String, Integer> m_rssiMap)
+    public void SetM_rssiMap(Map<String, Integer> rssiMap)
     {
-        this.m_rssiMap = m_rssiMap;
+        this.m_rssiMap = rssiMap;
     }
 
     public List<BluetoothDevice> GetM_list()
@@ -42,14 +42,14 @@ public class BluetoothListAdapter extends BaseAdapter
         return m_isClick;
     }
 
-    public void SetM_isClick(boolean m_isClick)
+    public void SetM_isClick(boolean isClick)
     {
-        this.m_isClick = m_isClick;
+        this.m_isClick = isClick;
     }
 
-    public void SetM_list(List<BluetoothDevice> m_deviceList)
+    public void SetM_list(List<BluetoothDevice> deviceList)
     {
-        this.m_deviceList = m_deviceList;
+        this.m_deviceList = deviceList;
     }
 
     public BluetoothListAdapter(Context context)

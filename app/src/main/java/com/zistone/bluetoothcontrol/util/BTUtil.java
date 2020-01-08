@@ -15,15 +15,15 @@ import android.widget.Toast;
 import java.util.UUID;
 
 /**
- * 低功耗蓝牙
+ * 传统蓝牙
  */
-public class BLEUtil
+public class BTUtil
 {
     private static final String TAG = "BLEUtil";
     //服务,写入,读取,配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static Context m_context;
-    private static BLEUtil m_bleUtil;
+    private static BTUtil m_bleUtil;
     private static BLEUtilCallback m_callback;
     private static BluetoothGatt m_bluetoothGatt;
     private static BluetoothGattService m_bluetoothGattService;
@@ -34,11 +34,11 @@ public class BLEUtil
     //设备返回的数据
     private String m_deviceReturnData;
 
-    public static synchronized BLEUtil GetInstance()
+    public static synchronized BTUtil GetInstance()
     {
         if(m_bleUtil == null)
         {
-            m_bleUtil = new BLEUtil();
+            m_bleUtil = new BTUtil();
         }
         return m_bleUtil;
     }

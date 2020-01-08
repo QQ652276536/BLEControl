@@ -57,7 +57,7 @@ public class BluetoothReceiver extends BroadcastReceiver
     {
         String action = intent.getAction();
         //正在扫描设备
-        if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action))
+        if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED))
         {
         }
         //扫描到一台设备
