@@ -650,7 +650,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
-                        BeginDiscovery();
+                        if(m_checkBox.isChecked())
+                        {
+                            BeginDiscovery();
+                        }
+                        else
+                        {
+                            Toast.makeText(m_context, "检查蓝牙是否开启", Toast.LENGTH_SHORT).show();
+                        }
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
                     }

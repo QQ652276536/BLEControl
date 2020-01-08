@@ -102,9 +102,13 @@ public class BluetoothListAdapter extends BaseAdapter
         }
         final BluetoothDevice device = m_deviceList.get(position);
         int rssi = 0;
-        if(device.getAddress() != null && !device.getAddress().trim().equals(""))
+        if(device.getAddress() != null)
         {
-            rssi = m_rssiMap.get(device.getAddress());
+            Integer value = m_rssiMap.get(device.getAddress());
+            if(value != null)
+            {
+                rssi = value.intValue();
+            }
         }
         holder.tv_blue_name.setText(device.getName());
         holder.tv_blue_address.setText(device.getAddress());

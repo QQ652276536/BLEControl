@@ -100,6 +100,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     @Override
     public void onFragmentInteraction(Uri uri)
     {
-        Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
     }
 }
