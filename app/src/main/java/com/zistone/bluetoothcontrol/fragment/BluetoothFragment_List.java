@@ -6,7 +6,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -42,7 +45,6 @@ import com.zistone.bluetoothcontrol.MainActivity;
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
 import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_DeviceFilter;
-import com.zistone.bluetoothcontrol.util.BluetoothReceiver;
 import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
@@ -77,9 +79,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private BluetoothAdapter m_bluetoothAdapter;
     //蓝牙设备的集合
     private List<BluetoothDevice> m_deviceList = new ArrayList<>();
-    //蓝牙广播
-    private BluetoothReceiver m_bluetoothReceiver;
-    private BluetoothReceiver.Listener m_bluetoothReceiverListener;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     private BluetoothFragment_CommandTest.Listener m_commandTestListener;
@@ -100,6 +99,24 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private Map<String, Integer> m_rssiMap = new HashMap<>();
     //BLE的扫描,与不一样startDiscovery()是有区别的
     private BluetoothLeScanner m_bluetoothLeScanner;
+    //筛选条件,可以设置名称、地址、UUID
+    private List<ScanFilter> m_scanFilterList = new ArrayList<ScanFilter>()
+    {{
+        ScanFilter.Builder filter = new ScanFilter.Builder();
+        ParcelUuid parcelUuid = ParcelUuid.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
+        filter.setServiceUuid(parcelUuid);
+        this.add(filter.build());
+
+    }};
+    //扫描设置,可以设置扫描模式、时间、类型、结果等
+    //模式:
+    //  SCAN_MODE_LOW_LATENCY:扫描优先
+    //  SCAN_MODE_LOW_POWER:省电优先
+    //  SCAN_MODE_BALANCED:平衡模式
+    //  SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
+    //时间:
+    //  扫描到设置时间后执行onBatchScanResults的回调
+    private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
 
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
@@ -128,17 +145,21 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             BluetoothDevice device = result.getDevice();
             String address = device.getAddress();
             int rssi = result.getRssi();
-            m_rssiMap.put(address, rssi);
-            m_deviceList.add(device);
+            if(!m_deviceList.contains(device))
+            {
+                m_deviceList.add(device);
+                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+            }
+            m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
+            m_rssiMap.put(address, rssi);
             getActivity().runOnUiThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-                    m_bluetoothListAdapter.SetM_list(m_deviceList);
                     m_listView.setAdapter(m_bluetoothListAdapter);
+                    m_listView.setOnItemClickListener(BluetoothFragment_List.this);
                     m_bluetoothListAdapter.notifyDataSetChanged();
                 }
             });
@@ -198,51 +219,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void InitListener()
     {
-        //蓝牙广播的回调
-        m_bluetoothReceiverListener = new BluetoothReceiver.Listener()
-        {
-            @Override
-            public void StartedScannListener()
-            {
-            }
-
-            @Override
-            public void FoundDeviceListener(BluetoothDevice device, int rssi)
-            {
-                if(!m_deviceList.contains(device.getAddress()))
-                {
-                    m_deviceList.add(device);
-                }
-                m_rssiMap.put(device.getAddress(), rssi);
-                m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-                m_bluetoothListAdapter.SetM_list(m_deviceList);
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
-                Log.i(TAG, "FoundDeviceListener........................");
-                getActivity().runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-                        m_bluetoothListAdapter.SetM_list(m_deviceList);
-                        m_bluetoothListAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-
-            @Override
-            public void StateChangedListener(int param)
-            {
-            }
-
-            @Override
-            public void ScannOverListener()
-            {
-                m_bluetoothLeScanner.stopScan(scanCallback);
-            }
-        };
-
         //命令测试的回调
         m_commandTestListener = new BluetoothFragment_CommandTest.Listener()
         {
@@ -501,13 +477,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onStart()
     {
         super.onStart();
-        m_bluetoothReceiver = new BluetoothReceiver(m_bluetoothReceiverListener);
-        //注册广播
-        IntentFilter foundFilter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        foundFilter.addAction(BluetoothDevice.ACTION_FOUND);
-        foundFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        foundFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        m_context.registerReceiver(m_bluetoothReceiver, foundFilter);
     }
 
     @Override
@@ -522,7 +491,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         String address = m_deviceList.get(position).getAddress();
         m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
-        m_bluetoothListAdapter.notifyDataSetChanged();
         //BlueNRG
         if(m_radioButton1.isChecked())
         {
@@ -612,6 +580,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -620,12 +594,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_param1 = getArguments().getString(ARG_PARAM1);
             m_param2 = getArguments().getString(ARG_PARAM2);
         }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -817,7 +785,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         super.onStop();
         CancelDiscovery();
-        m_context.unregisterReceiver(m_bluetoothReceiver);
     }
 
     @Override

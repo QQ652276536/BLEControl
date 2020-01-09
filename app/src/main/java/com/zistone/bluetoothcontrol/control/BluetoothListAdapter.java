@@ -110,7 +110,15 @@ public class BluetoothListAdapter extends BaseAdapter
                 rssi = value.intValue();
             }
         }
-        holder.tv_blue_name.setText(device.getName());
+        if(device.getName() != null)
+        {
+            holder.tv_blue_name.setText(device.getName());
+        }
+        else
+        {
+
+            holder.tv_blue_name.setText("Null");
+        }
         holder.tv_blue_address.setText(device.getAddress());
         holder.tv_blue_rssi.setText(rssi + "dBm");
         holder.tv_blue_rssi.setTextColor(Color.argb(255, 0, 133, 119));
