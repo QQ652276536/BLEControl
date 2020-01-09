@@ -32,8 +32,10 @@ public class BluetoothReceiver extends BroadcastReceiver
 
         /**
          * 设备状态改变
+         *
+         * @param param
          */
-        void StateChangedListener();
+        void StateChangedListener(int param);
 
         /**
          * 扫描完成
@@ -59,6 +61,7 @@ public class BluetoothReceiver extends BroadcastReceiver
         //正在扫描设备
         if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED))
         {
+            m_listener.StartedScannListener();
         }
         //扫描到一台设备
         else if(action.equals(BluetoothDevice.ACTION_FOUND))
@@ -68,7 +71,7 @@ public class BluetoothReceiver extends BroadcastReceiver
             String address = device.getAddress();
             Log.d(TAG, String.format("扫描到设备:%s,地址:%s", name, address));
             int rssi = 0;
-            //设备未配对
+            //获取未配对设备的信号强度
             if(device.getBondState() != BluetoothDevice.BOND_BONDED)
             {
                 rssi = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI);

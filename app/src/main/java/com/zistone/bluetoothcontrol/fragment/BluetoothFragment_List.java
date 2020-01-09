@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +44,7 @@ import com.zistone.bluetoothcontrol.MainActivity;
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
 import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_DeviceFilter;
+import com.zistone.bluetoothcontrol.util.BluetoothReceiver;
 import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
@@ -79,7 +79,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private BluetoothAdapter m_bluetoothAdapter;
     //蓝牙设备的集合
     private List<BluetoothDevice> m_deviceList = new ArrayList<>();
+    //蓝牙广播
     private BluetoothReceiver m_bluetoothReceiver;
+    private BluetoothReceiver.Listener m_bluetoothReceiverListener;
     private BluetoothDevice m_bluetoothDevice;
     private BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     private BluetoothFragment_CommandTest.Listener m_commandTestListener;
@@ -172,7 +174,38 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private void InitListener()
     {
         //蓝牙广播的回调
+        m_bluetoothReceiverListener = new BluetoothReceiver.Listener()
+        {
+            @Override
+            public void StartedScannListener()
+            {
+            }
 
+            @Override
+            public void FoundDeviceListener(BluetoothDevice device, int rssi)
+            {
+                if(!m_deviceList.contains(device.getAddress()))
+                {
+                    m_deviceList.add(device);
+                }
+                m_rssiMap.put(device.getAddress(), rssi);
+                m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                m_listView.setAdapter(m_bluetoothListAdapter);
+                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
+            }
+
+            @Override
+            public void StateChangedListener(int param)
+            {
+            }
+
+            @Override
+            public void ScannOverListener()
+            {
+                m_bluetoothAdapter.cancelDiscovery();
+            }
+        };
 
         //命令测试的回调
         m_commandTestListener = new BluetoothFragment_CommandTest.Listener()
@@ -438,7 +471,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onStart()
     {
         super.onStart();
-        m_bluetoothReceiver = new BluetoothReceiver();
+        m_bluetoothReceiver = new BluetoothReceiver(m_bluetoothReceiverListener);
         //注册广播
         IntentFilter foundFilter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         foundFilter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -804,48 +837,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //界面不可见
         else
         {
-        }
-    }
-
-    private class BluetoothReceiver extends BroadcastReceiver
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            //获得已经搜索到的蓝牙设备
-            if(action.equals(BluetoothDevice.ACTION_FOUND))
-            {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(!m_deviceList.contains(device.getAddress()))
-                {
-                    m_deviceList.add(device);
-                }
-                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                m_listView.setOnItemClickListener(BluetoothFragment_List.this);
-            }
-            //蓝牙设备搜索完成
-            else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
-            {
-                m_bluetoothAdapter.cancelDiscovery();
-            }
-            else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
-            {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                //正在配对
-                if(device.getBondState() == BluetoothDevice.BOND_BONDING)
-                {
-                }
-                //完成配对
-                else if(device.getBondState() == BluetoothDevice.BOND_BONDED)
-                {
-                }
-                //取消配对
-                else if(device.getBondState() == BluetoothDevice.BOND_NONE)
-                {
-                }
-            }
         }
     }
 
