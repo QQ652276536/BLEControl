@@ -138,6 +138,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 {
                     m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
                     m_bluetoothListAdapter.SetM_list(m_deviceList);
+                    m_listView.setAdapter(m_bluetoothListAdapter);
                     m_bluetoothListAdapter.notifyDataSetChanged();
                 }
             });
@@ -192,6 +193,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return (m_bluetoothLeScanner != null && m_bluetoothAdapter != null && m_bluetoothAdapter.isEnabled() && m_bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
     }
 
+    /**
+     * 统一初始化监听
+     */
     private void InitListener()
     {
         //蓝牙广播的回调
@@ -214,6 +218,17 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 m_bluetoothListAdapter.SetM_list(m_deviceList);
                 m_listView.setAdapter(m_bluetoothListAdapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
+                Log.i(TAG, "FoundDeviceListener........................");
+                getActivity().runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                        m_bluetoothListAdapter.SetM_list(m_deviceList);
+                        m_bluetoothListAdapter.notifyDataSetChanged();
+                    }
+                });
             }
 
             @Override
