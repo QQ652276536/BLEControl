@@ -2,6 +2,7 @@ package com.zistone.bluetoothcontrol.control;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +93,6 @@ public class BluetoothListAdapter extends BaseAdapter
             convertView = m_layoutInflater.inflate(R.layout.item_bluetooth, null);
             holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
             holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
-            holder.tv_blue_state = convertView.findViewById(R.id.tv_blue_state);
             holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
             convertView.setTag(holder);
         }
@@ -112,21 +112,8 @@ public class BluetoothListAdapter extends BaseAdapter
         }
         holder.tv_blue_name.setText(device.getName());
         holder.tv_blue_address.setText(device.getAddress());
-        switch(device.getBondState())
-        {
-            case BluetoothDevice.BOND_NONE:
-                holder.tv_blue_state.setText("未绑定");
-                break;
-            case BluetoothDevice.BOND_BONDING:
-                holder.tv_blue_state.setText("绑定中");
-                break;
-            case BluetoothDevice.BOND_BONDED:
-                holder.tv_blue_state.setText("已绑定");
-                break;
-            default:
-                holder.tv_blue_state.setText("");
-        }
         holder.tv_blue_rssi.setText(rssi + "dBm");
+        holder.tv_blue_rssi.setTextColor(Color.argb(255, 0, 133, 119));
         return convertView;
     }
 
@@ -134,7 +121,6 @@ public class BluetoothListAdapter extends BaseAdapter
     {
         public TextView tv_blue_name;
         public TextView tv_blue_address;
-        public TextView tv_blue_state;
         public TextView tv_blue_rssi;
     }
 

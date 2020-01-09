@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.zistone.bluetoothcontrol.fragment.BluetoothFragment;
 import com.zistone.bluetoothcontrol.fragment.BluetoothFragment_CommandTest;
@@ -68,29 +67,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment, "bluetoothFragment").show(m_bluetoothFragment).commitNow();
         RequestPermission();
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
-    {
-        switch(requestCode)
-        {
-            case 1:
-            {
-                //权限允许
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    Toast.makeText(this, "蓝牙权限已授权", Toast.LENGTH_SHORT);
-                }
-                //权限被拒绝
-                else
-                {
-                    Toast.makeText(this, "蓝牙权限被拒绝", Toast.LENGTH_SHORT);
-                }
-                return;
-            }
-        }
-    }
-
 
     /**
      * Fragment向Activtiy传递数据

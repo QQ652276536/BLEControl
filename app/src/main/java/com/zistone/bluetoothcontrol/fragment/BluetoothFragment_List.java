@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -17,10 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -128,15 +126,21 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
-            if(device.getBondState() != BluetoothDevice.BOND_BONDED)
+            String address = device.getAddress();
+            int rssi = result.getRssi();
+            m_rssiMap.put(address, rssi);
+            m_deviceList.add(device);
+            Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
+            getActivity().runOnUiThread(new Runnable()
             {
-                String address = device.getAddress();
-                int rssi = result.getRssi();
-                m_rssiMap.put(address, rssi);
-                Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
-                m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-                m_bluetoothListAdapter.notifyDataSetChanged();
-            }
+                @Override
+                public void run()
+                {
+                    m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                    m_bluetoothListAdapter.SetM_list(m_deviceList);
+                    m_bluetoothListAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
         @Override
@@ -149,6 +153,11 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         public void onScanFailed(int errorCode)
         {
             super.onScanFailed(errorCode);
+            //扫描失败返回的参数有4个
+            //errorCode=1:已启动具有相同设置的BLE扫描
+            //errorCode=2:应用未注册
+            //errorCode=3:内部错误
+            //errorCode=4:设备不支持低功耗蓝牙
         }
     };
 
@@ -171,6 +180,18 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return false;
     };
 
+    /**
+     * 检查蓝牙适配器是否打开
+     * 在开始扫描和取消扫描的都时候都需要判断适配器的状态以及是否获取到扫描器,否则将抛出异常IllegalStateException: BT Adapter is not turned
+     * ON.
+     *
+     * @return
+     */
+    private boolean IsBluetoothAvailable()
+    {
+        return (m_bluetoothLeScanner != null && m_bluetoothAdapter != null && m_bluetoothAdapter.isEnabled() && m_bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
+    }
+
     private void InitListener()
     {
         //蓝牙广播的回调
@@ -190,7 +211,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 }
                 m_rssiMap.put(device.getAddress(), rssi);
                 m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                m_bluetoothListAdapter.SetM_list(m_deviceList);
                 m_listView.setAdapter(m_bluetoothListAdapter);
                 m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             }
@@ -203,7 +224,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public void ScannOverListener()
             {
-                m_bluetoothAdapter.cancelDiscovery();
+                m_bluetoothLeScanner.stopScan(scanCallback);
             }
         };
 
@@ -450,17 +471,11 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             {
                 if(isChecked == true)
                 {
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    startActivityForResult(intent, 1);
                     BeginDiscovery();
                 }
                 else
                 {
                     CancelDiscovery();
-                    m_bluetoothAdapter.disable();
-                    m_deviceList.clear();
-                    m_bluetoothListAdapter.SetM_list(m_deviceList);
-                    m_listView.setAdapter(m_bluetoothListAdapter);
                 }
                 break;
             }
@@ -478,39 +493,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         foundFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         foundFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         m_context.registerReceiver(m_bluetoothReceiver, foundFilter);
-    }
-
-    /**
-     * 获取动态权限请求的结果
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        switch(requestCode)
-        {
-            case 1:
-                switch(grantResults[0])
-                {
-                    case PackageManager.PERMISSION_GRANTED:
-                        switch(m_bluetoothAdapter.getState())
-                        {
-                            case BluetoothAdapter.STATE_ON:
-                            case BluetoothAdapter.STATE_TURNING_ON:
-                                m_checkBox.setChecked(true);
-                                break;
-                            case BluetoothAdapter.STATE_OFF:
-                            case BluetoothAdapter.STATE_TURNING_OFF:
-                            default:
-                                m_checkBox.setChecked(false);
-                                break;
-                        }
-                        break;
-                }
-                break;
-            case 2:
-                break;
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -587,31 +569,28 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
 
     /**
      * 开始搜索蓝牙
+     * 开始扫描时候要确保蓝牙适配器处于开启状态
      */
     private void BeginDiscovery()
     {
-        //先清空适配器的数据源
-        m_deviceList.clear();
-        m_bluetoothListAdapter.SetM_list(m_deviceList);
-        m_listView.setAdapter(m_bluetoothListAdapter);
-        if(m_bluetoothAdapter.isDiscovering())
+        if(IsBluetoothAvailable())
         {
-            m_bluetoothAdapter.cancelDiscovery();
+            m_bluetoothLeScanner.stopScan(scanCallback);
+            m_bluetoothLeScanner.startScan(scanCallback);
         }
-        //startDiscovery虽然兼容经典蓝牙和低功耗蓝牙,但有些设备无法检测到低功耗蓝牙
-        m_bluetoothAdapter.startDiscovery();
+        else
+        {
+            Toast.makeText(m_context, "请确认系统蓝牙是否开启", Toast.LENGTH_SHORT);
+        }
     }
 
     /**
      * 取消搜索蓝牙
+     * 取消扫描的时候要确保蓝牙适配器处于开启状态
      */
     private void CancelDiscovery()
     {
-        if(m_bluetoothAdapter.isDiscovering())
-        {
-            m_bluetoothAdapter.cancelDiscovery();
-        }
-        if(m_bluetoothLeScanner != null)
+        if(IsBluetoothAvailable())
         {
             m_bluetoothLeScanner.stopScan(scanCallback);
         }
@@ -651,14 +630,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_toolbar.setTitle("");
         //此处强转,必须是Activity才有这个方法
         ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
-        //申请权限蓝牙权限
-        if(ContextCompat.checkSelfPermission(m_context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-            }, 1);
-            Toast.makeText(m_context, "申请权限了!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_LONG).show();
-        }
         //动态注册注册广播接收器,接收蓝牙发现讯息
         IntentFilter btFilter = new IntentFilter();
         btFilter.setPriority(10);
@@ -683,14 +654,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
-                        if(m_checkBox.isChecked())
-                        {
-                            BeginDiscovery();
-                        }
-                        else
-                        {
-                            Toast.makeText(m_context, "检查蓝牙是否开启", Toast.LENGTH_SHORT).show();
-                        }
+                        BeginDiscovery();
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
                     }
@@ -735,31 +699,51 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
         m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
-        //获取蓝牙适配器
+        //获取本地蓝牙适配器
         m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(m_bluetoothAdapter != null)
         {
-            switch(m_bluetoothAdapter.getState())
+            //未打开蓝牙,才需要打开蓝牙
+            //会以Dialog样式显示一个Activity,我们可以在onActivityResult()方法去处理返回值
+            if(!m_bluetoothAdapter.isEnabled())
             {
-                case BluetoothAdapter.STATE_ON:
-                case BluetoothAdapter.STATE_TURNING_ON:
-                    m_checkBox.setChecked(true);
-                    break;
-                case BluetoothAdapter.STATE_OFF:
-                case BluetoothAdapter.STATE_TURNING_OFF:
-                default:
-                    m_checkBox.setChecked(false);
-                    break;
+                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(intent, 1);
             }
-            m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
-            if(m_bluetoothLeScanner != null)
+            else
             {
-                m_bluetoothLeScanner.startScan(scanCallback);
+                switch(m_bluetoothAdapter.getState())
+                {
+                    //蓝牙已开启则直接开始扫描设备
+                    case BluetoothAdapter.STATE_ON:
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        m_checkBox.setChecked(true);
+                        m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
+                        BeginDiscovery();
+                        break;
+                    //蓝牙未开启
+                    case BluetoothAdapter.STATE_OFF:
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                    default:
+                        m_checkBox.setChecked(false);
+                        break;
+                }
             }
         }
         else
         {
-            Toast.makeText(m_context, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
+            android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+            builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    onDestroy();
+                    System.exit(0);
+                }
+            });
+            builder.setMessage("设备不支持蓝牙");
+            builder.show();
         }
         m_checkBox.setOnCheckedChangeListener(this);
         m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
@@ -767,6 +751,28 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_isHideConnectedDevice = DeviceFilterShared.GetFilterDevice(m_context);
         InitListener();
         return m_view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        switch(requestCode)
+        {
+            case 1:
+                //用户授权开启蓝牙
+                if(requestCode != 0)
+                {
+                    m_checkBox.setChecked(true);
+                    m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
+                    BeginDiscovery();
+                }
+                //用户拒绝开启蓝牙
+                else
+                {
+                    m_checkBox.setChecked(false);
+                }
+                break;
+        }
     }
 
     @Override
