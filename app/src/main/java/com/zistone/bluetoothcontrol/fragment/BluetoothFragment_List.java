@@ -153,10 +153,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
             m_rssiMap.put(address, rssi);
             m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-            //使用notifyDataSetChanged()会保存当前的状态
+            //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
             m_bluetoothListAdapter.notifyDataSetChanged();
-            //使用notifyDataSetInvalidated()清空所有信息重新布局,会定位到第一行
-            //m_bluetoothListAdapter.notifyDataSetInvalidated();
             m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             //根据设备地址找设备在m_deviceList中的下标
             //            for(BluetoothDevice tempDevice : m_deviceList)
@@ -259,11 +257,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             {
                 //将连接成功的设备地址存起来,用来过滤.
                 m_filterAddressList.add(m_bluetoothDevice.getAddress());
-                //过滤设备后重新绑定适配器
-                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                //适配器的数据改变后更新ListView
-                m_bluetoothListAdapter.notifyDataSetChanged();
             }
         };
 
@@ -296,11 +289,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             {
                 //将连接成功的设备地址存起来,用来过滤.
                 m_filterAddressList.add(m_bluetoothDevice.getAddress());
-                //过滤设备后重新绑定适配器
-                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                //适配器的数据改变后更新ListView
-                m_bluetoothListAdapter.notifyDataSetChanged();
             }
         };
 
@@ -671,6 +659,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                         m_rssiMap.clear();
                         m_bluetoothListAdapter.SetM_list(m_deviceList);
                         m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                        //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
                         m_bluetoothListAdapter.notifyDataSetChanged();
                         m_listView.setAdapter(m_bluetoothListAdapter);
                         BeginDiscovery();
@@ -830,9 +819,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
         m_rssiMap.clear();
-        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-        m_bluetoothListAdapter.SetM_list(m_deviceList);
-        m_listView.setAdapter(m_bluetoothListAdapter);
     }
 
     @Override
