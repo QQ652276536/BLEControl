@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
-                android:text="设备型号"
+                android:text="特征"
                 android:textSize="16sp" />
 
             <RadioGroup
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
-                android:text="功能模块"
+                android:text="功能"
                 android:textSize="16sp" />
 
             <RadioGroup
