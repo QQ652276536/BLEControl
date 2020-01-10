@@ -488,7 +488,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         switch(v.getId())
         {
             case R.id.btn1_bluetoothlist:
-                if(m_btn1.getText().toString().equals("开始扫描"))
+                if(m_btn1.getText().toString().equals("SCAN"))
                 {
                     BeginDiscovery();
                 }
@@ -573,7 +573,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         if(IsBluetoothAvailable())
         {
-            m_btn1.setText("停止扫描");
+            m_btn1.setText("STOP");
             m_bluetoothLeScanner.stopScan(scanCallback);
             m_bluetoothLeScanner.startScan(scanCallback);
         }
@@ -591,7 +591,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         if(IsBluetoothAvailable())
         {
-            m_btn1.setText("开始扫描");
+            m_btn1.setText("SCAN");
             m_bluetoothLeScanner.stopScan(scanCallback);
         }
     }
@@ -726,7 +726,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     //蓝牙已开启则直接开始扫描设备
                     case BluetoothAdapter.STATE_ON:
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        m_btn1.setText("停止扫描");
+                        m_btn1.setText("STOP");
                         m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
                         BeginDiscovery();
                         break;
@@ -734,7 +734,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     case BluetoothAdapter.STATE_OFF:
                     case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        m_btn1.setText("开始扫描");
+                        m_btn1.setText("SCAN");
                         break;
                 }
             }
