@@ -116,7 +116,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     //  SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
     //时间:
     //  扫描到设置时间后执行onBatchScanResults的回调
-    private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
+    private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
 
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
@@ -150,19 +150,21 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 m_deviceList.add(device);
                 m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
             }
-            m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
             m_rssiMap.put(address, rssi);
-            getActivity().runOnUiThread(new Runnable()
+            m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+            m_listView.setAdapter(m_bluetoothListAdapter);
+            //根据设备地址找设备在m_deviceList中的下标
+            for(BluetoothDevice tempDevice : m_deviceList)
             {
-                @Override
-                public void run()
+                if(address.equals(tempDevice.getAddress()))
                 {
-                    m_listView.setAdapter(m_bluetoothListAdapter);
-                    m_listView.setOnItemClickListener(BluetoothFragment_List.this);
-                    m_bluetoothListAdapter.notifyDataSetChanged();
+                    //使用局部刷新
+                    int itemIndex = m_deviceList.indexOf(tempDevice);
+                    UpdateListView(itemIndex);
+                    break;
                 }
-            });
+            }
         }
 
         @Override
@@ -201,6 +203,32 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         return false;
     };
+
+    /**
+     * 局部刷新ListView
+     *
+     * @param itemIndex
+     */
+    private void UpdateListView(int itemIndex)
+    {
+        //ListView没有加载完时,getFirstVisiblePosition和getLastVisiblePosition获取的始终为0和-1
+        m_listView.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                //第一个可显示控件的位置
+                int firstVisiblePosition = m_listView.getFirstVisiblePosition();
+                int lastVisiblePosition = m_listView.getLastVisiblePosition();
+                //当要更新View在可见的位置时才更新
+                if(itemIndex > firstVisiblePosition && itemIndex <= lastVisiblePosition)
+                {
+                    View view = m_listView.getChildAt(itemIndex - firstVisiblePosition);
+                    m_bluetoothListAdapter.UpdateView(view, itemIndex);
+                }
+            }
+        });
+    }
 
     /**
      * 检查蓝牙适配器是否打开
@@ -627,7 +655,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             /**
              * 下拉刷新
-             * 下拉刷新的时候需要清空ListView然后重新绑定,其它情况下暂不需要
+             * 下拉刷新的时候需要清空ListView然后重新绑定
              * @param materialRefreshLayout
              */
             @Override
@@ -689,6 +717,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
         m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
+        m_listView.setOnItemClickListener(BluetoothFragment_List.this);
         //获取本地蓝牙适配器
         m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(m_bluetoothAdapter != null)
@@ -785,6 +814,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onDetach();
         m_onFragmentInteractionListener = null;
         m_deviceList.clear();
+        m_rssiMap.clear();
     }
 
     @Override
@@ -801,6 +831,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
+        m_rssiMap.clear();
+        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
         m_bluetoothListAdapter.SetM_list(m_deviceList);
         m_listView.setAdapter(m_bluetoothListAdapter);
     }

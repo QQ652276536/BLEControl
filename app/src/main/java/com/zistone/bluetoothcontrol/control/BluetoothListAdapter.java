@@ -2,7 +2,6 @@ package com.zistone.bluetoothcontrol.control;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +56,32 @@ public class BluetoothListAdapter extends BaseAdapter
     {
         m_layoutInflater = LayoutInflater.from(context);
         m_context = context;
+    }
+
+    public void UpdateView(View convertView, int itemIndex)
+    {
+        if(convertView == null)
+        {
+            return;
+        }
+        ViewHolder holder = (ViewHolder) convertView.getTag();
+        holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
+        holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
+        holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
+        BluetoothDevice device = m_deviceList.get(itemIndex);
+        String address = device.getAddress();
+        //        String name = device.getName();
+        //        holder.tv_blue_name.setText(name);
+        //        holder.tv_blue_address.setText(address);
+        Integer value = m_rssiMap.get(address);
+        if(value != null)
+        {
+            holder.tv_blue_rssi.setText(value.intValue() + "dBm");
+        }
+        else
+        {
+            holder.tv_blue_rssi.setText("0dBm");
+        }
     }
 
     @Override
@@ -121,7 +146,6 @@ public class BluetoothListAdapter extends BaseAdapter
         }
         holder.tv_blue_address.setText(device.getAddress());
         holder.tv_blue_rssi.setText(rssi + "dBm");
-        holder.tv_blue_rssi.setTextColor(Color.argb(255, 0, 133, 119));
         return convertView;
     }
 
