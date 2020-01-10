@@ -117,6 +117,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     //时间:
     //  扫描到设置时间后执行onBatchScanResults的回调
     private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+    private boolean m_isScan = false;
 
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
@@ -153,7 +154,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
             m_rssiMap.put(address, rssi);
             m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-            m_listView.setAdapter(m_bluetoothListAdapter);
+            if(!m_isScan)
+            {
+                m_isScan = true;
+                m_listView.setAdapter(m_bluetoothListAdapter);
+            }
+            m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             //根据设备地址找设备在m_deviceList中的下标
             for(BluetoothDevice tempDevice : m_deviceList)
             {
@@ -604,6 +610,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         if(IsBluetoothAvailable())
         {
             m_bluetoothLeScanner.stopScan(scanCallback);
+            m_isScan = false;
         }
     }
 
@@ -717,7 +724,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothlist);
         m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothlist);
         m_listView = m_view.findViewById(R.id.lv_bluetoothlist);
-        m_listView.setOnItemClickListener(BluetoothFragment_List.this);
         //获取本地蓝牙适配器
         m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(m_bluetoothAdapter != null)
