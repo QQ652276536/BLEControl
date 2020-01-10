@@ -627,6 +627,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             /**
              * 下拉刷新
+             * 下拉刷新的时候需要清空ListView然后重新绑定,其它情况下暂不需要
              * @param materialRefreshLayout
              */
             @Override
@@ -637,6 +638,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
+                        m_deviceList.clear();
+                        m_rssiMap.clear();
+                        m_bluetoothListAdapter.SetM_list(m_deviceList);
+                        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                        m_bluetoothListAdapter.notifyDataSetChanged();
+                        m_listView.setAdapter(m_bluetoothListAdapter);
                         BeginDiscovery();
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
