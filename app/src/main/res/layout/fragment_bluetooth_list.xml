@@ -13,6 +13,16 @@
         android:layout_gravity="center"
         android:background="@color/colorPrimary">
 
+        <Button
+            android:id="@+id/btn1_bluetoothlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:gravity="center_vertical"
+            android:text="SCAN"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -20,15 +30,6 @@
             android:text="@string/title_bluetooth_control"
             android:textColor="@color/white"
             android:textSize="28sp" />
-
-        <Button
-            android:id="@+id/btn1_bluetoothlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:text="SCAN"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
 
     </android.support.v7.widget.Toolbar>
 

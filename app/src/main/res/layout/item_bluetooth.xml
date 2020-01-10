@@ -54,19 +54,19 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_blue_rssi"
+                    android:id="@+id/tv_blue_address"
                     android:layout_width="wrap_content"
                     android:layout_height="25dp"
-                    android:layout_column="2"
+                    android:layout_column="1"
                     android:layout_weight="1"
                     android:textColor="@color/gray"
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/tv_blue_address"
+                    android:id="@+id/tv_blue_rssi"
                     android:layout_width="wrap_content"
                     android:layout_height="25dp"
-                    android:layout_column="1"
+                    android:layout_column="2"
                     android:layout_weight="1"
                     android:textColor="@color/gray"
                     android:textSize="16dp" />
