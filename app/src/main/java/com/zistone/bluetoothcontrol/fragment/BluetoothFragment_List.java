@@ -117,7 +117,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     //时间:
     //  扫描到设置时间后执行onBatchScanResults的回调
     private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-    private boolean m_isScan = false;
 
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
@@ -154,23 +153,22 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
             m_rssiMap.put(address, rssi);
             m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
-            if(!m_isScan)
-            {
-                m_listView.setAdapter(m_bluetoothListAdapter);
-                m_isScan = true;
-            }
+            //使用notifyDataSetChanged()会保存当前的状态
+            m_bluetoothListAdapter.notifyDataSetChanged();
+            //使用notifyDataSetInvalidated()清空所有信息重新布局,会定位到第一行
+            //m_bluetoothListAdapter.notifyDataSetInvalidated();
             m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             //根据设备地址找设备在m_deviceList中的下标
-            for(BluetoothDevice tempDevice : m_deviceList)
-            {
-                if(address.equals(tempDevice.getAddress()))
-                {
-                    //使用局部刷新
-                    int itemIndex = m_deviceList.indexOf(tempDevice);
-                    UpdateListView(itemIndex);
-                    break;
-                }
-            }
+            //            for(BluetoothDevice tempDevice : m_deviceList)
+            //            {
+            //                if(address.equals(tempDevice.getAddress()))
+            //                {
+            //                    //使用局部刷新
+            //                    int itemIndex = m_deviceList.indexOf(tempDevice);
+            //                    UpdateListView(itemIndex);
+            //                    break;
+            //                }
+            //            }
         }
 
         @Override
@@ -505,12 +503,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 if(m_btn1.getText().toString().equals("开始扫描"))
                 {
                     BeginDiscovery();
-                    m_btn1.setText("停止扫描");
                 }
                 else
                 {
                     CancelDiscovery();
-                    m_btn1.setText("开始扫描");
                 }
         }
     }
@@ -589,6 +585,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         if(IsBluetoothAvailable())
         {
+            m_btn1.setText("停止扫描");
             m_bluetoothLeScanner.stopScan(scanCallback);
             m_bluetoothLeScanner.startScan(scanCallback);
         }
@@ -606,8 +603,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         if(IsBluetoothAvailable())
         {
+            m_btn1.setText("开始扫描");
             m_bluetoothLeScanner.stopScan(scanCallback);
-            m_isScan = false;
         }
     }
 
@@ -670,7 +667,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
-                        m_btn1.setText("停止扫描");
                         m_deviceList.clear();
                         m_rssiMap.clear();
                         m_bluetoothListAdapter.SetM_list(m_deviceList);
@@ -785,14 +781,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 //用户授权开启蓝牙
                 if(requestCode != 0)
                 {
-                    m_btn1.setText("停止扫描");
                     m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
                     BeginDiscovery();
                 }
                 //用户拒绝开启蓝牙
                 else
                 {
-                    m_btn1.setText("开始扫描");
                 }
                 break;
         }
