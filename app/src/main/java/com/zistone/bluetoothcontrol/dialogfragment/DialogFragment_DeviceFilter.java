@@ -83,7 +83,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
                 editText.setEms(7);
                 editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 ImageButton imageButton = new ImageButton(m_context);
-                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close3));
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close1));
                 imageButton.getBackground().setAlpha(0);
                 imageButton.setOnClickListener(v1 ->
                 {
@@ -167,7 +167,7 @@ public class DialogFragment_DeviceFilter extends DialogFragment implements View.
                     editText.setInputType(InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
                     editText.setText(strArray[i]);
                     ImageButton imageButton = new ImageButton(m_context);
-                    imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close3));
+                    imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close1));
                     imageButton.getBackground().setAlpha(0);
                     imageButton.setOnClickListener(v1 ->
                     {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_bluetooth_list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -119,13 +120,133 @@
             </RadioGroup>
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/down1"
-            android:gravity="center" />
+        <TableLayout
+            android:id="@+id/table_bluetoothlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv1_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="No Filter" />
+
+                <ImageButton
+                    android:id="@+id/btn2_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/down1" />
+
+                <ImageButton
+                    android:id="@+id/btn3_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/close1" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row1_bluetoothlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/device_name1" />
+
+                <EditText
+                    android:id="@+id/tv2_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPostalAddress" />
+
+                <ImageButton
+                    android:id="@+id/delBtn2_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/close1" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row2_bluetoothlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/device_address1" />
+
+                <EditText
+                    android:id="@+id/tv3_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPostalAddress" />
+
+                <ImageButton
+                    android:id="@+id/delBtn3_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    app:srcCompat="@drawable/close1" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row3_bluetoothlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/rssi2" />
+
+                <SeekBar
+                    android:id="@+id/seekBar_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tv4_bluetoothlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="-100dBm" />
+            </TableRow>
+        </TableLayout>
 
         <com.zistone.material_refresh_layout.MaterialRefreshLayout
             android:id="@+id/refresh_bluetoothlist"

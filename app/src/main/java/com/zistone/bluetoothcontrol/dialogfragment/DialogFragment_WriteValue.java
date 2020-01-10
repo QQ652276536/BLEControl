@@ -74,7 +74,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                 textView3.setText("BYTE");
                 textView3.setWidth(50);
                 ImageButton imageButton = new ImageButton(m_context);
-                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close3));
+                imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close1));
                 imageButton.getBackground().setAlpha(0);
                 imageButton.setOnClickListener(v1 ->
                 {

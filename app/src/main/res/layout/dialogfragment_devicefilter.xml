@@ -73,7 +73,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
                         android:visibility="invisible"
-                        app:srcCompat="@drawable/close3" />
+                        app:srcCompat="@drawable/close1" />
                 </TableRow>
 
             </TableLayout>
