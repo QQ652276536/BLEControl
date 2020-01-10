@@ -135,14 +135,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:text="No Filter" />
 
                 <ImageButton
                     android:id="@+id/btnUpDown_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:background="@color/transparent"
                     android:scaleType="fitEnd"
                     app:srcCompat="@drawable/down1" />
@@ -152,7 +152,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:background="@color/transparent"
                     app:srcCompat="@drawable/close1" />
 
@@ -161,20 +161,20 @@
             <TableRow
                 android:id="@+id/row1_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     app:srcCompat="@drawable/device_name1" />
 
                 <EditText
                     android:id="@+id/editName_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:ems="10"
                     android:hint="Fileter by name"
                     android:inputType="textPostalAddress" />
@@ -184,7 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:background="@color/transparent"
                     app:srcCompat="@drawable/close1" />
             </TableRow>
@@ -192,20 +192,20 @@
             <TableRow
                 android:id="@+id/row2_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     app:srcCompat="@drawable/device_address1" />
 
                 <EditText
                     android:id="@+id/editAddress_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:ems="10"
                     android:hint="Filter by address"
                     android:inputType="textPostalAddress" />
@@ -215,7 +215,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:background="@color/transparent"
                     app:srcCompat="@drawable/close1" />
             </TableRow>
@@ -223,12 +223,13 @@
             <TableRow
                 android:id="@+id/row3_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.5"
                     app:srcCompat="@drawable/rssi2" />
 
                 <SeekBar
@@ -236,15 +237,44 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1" />
+                    android:layout_weight="5" />
 
                 <TextView
                     android:id="@+id/tvRssi_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:text="-100dBm" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row4_bluetoothList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.5"
+                    app:srcCompat="@drawable/hide1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="5"
+                    android:text=" Hide connect success device"
+                    android:textSize="16dp" />
+
+                <CheckBox
+                    android:id="@+id/cbx_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.5" />
+
             </TableRow>
         </TableLayout>
 
