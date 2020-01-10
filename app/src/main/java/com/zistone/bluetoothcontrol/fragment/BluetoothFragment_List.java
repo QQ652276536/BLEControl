@@ -34,7 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -74,7 +74,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private View m_view;
     private Toolbar m_toolbar;
     private OnFragmentInteractionListener m_onFragmentInteractionListener;
-    private CheckBox m_checkBox;
+    private Button m_btn1;
     private ListView m_listView;
     private BluetoothAdapter m_bluetoothAdapter;
     //蓝牙设备的集合
@@ -156,8 +156,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
             if(!m_isScan)
             {
-                m_isScan = true;
                 m_listView.setAdapter(m_bluetoothListAdapter);
+                m_isScan = true;
             }
             m_listView.setOnItemClickListener(BluetoothFragment_List.this);
             //根据设备地址找设备在m_deviceList中的下标
@@ -457,11 +457,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
-        if(!m_checkBox.isChecked())
-        {
-            Toast.makeText(m_context, "请先开启蓝牙", Toast.LENGTH_SHORT).show();
-            return false;
-        }
         switch(item.getItemId())
         {
             //OTA
@@ -492,18 +487,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         switch(buttonView.getId())
         {
-            case R.id.ck_bluetooth_bluetoothlist:
-            {
-                if(isChecked == true)
-                {
-                    BeginDiscovery();
-                }
-                else
-                {
-                    CancelDiscovery();
-                }
-                break;
-            }
         }
     }
 
@@ -516,6 +499,20 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     @Override
     public void onClick(View v)
     {
+        switch(v.getId())
+        {
+            case R.id.btn1_bluetoothlist:
+                if(m_btn1.getText().toString().equals("开始扫描"))
+                {
+                    BeginDiscovery();
+                    m_btn1.setText("停止扫描");
+                }
+                else
+                {
+                    CancelDiscovery();
+                    m_btn1.setText("开始扫描");
+                }
+        }
     }
 
     @Override
@@ -673,6 +670,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
+                        m_btn1.setText("停止扫描");
                         m_deviceList.clear();
                         m_rssiMap.clear();
                         m_bluetoothListAdapter.SetM_list(m_deviceList);
@@ -717,7 +715,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_view.setOnKeyListener(backListener);
         m_radioGroup1 = m_view.findViewById(R.id.radioGroup1_bluetoothlist);
         m_radioGroup2 = m_view.findViewById(R.id.radioGroup2_bluetoothlist);
-        m_checkBox = m_view.findViewById(R.id.ck_bluetooth_bluetoothlist);
+        m_btn1 = m_view.findViewById(R.id.btn1_bluetoothlist);
+        m_btn1.setOnClickListener(this::onClick);
         m_radioButton1 = m_view.findViewById(R.id.radioButton1_bluetoothlist);
         m_radioButton2 = m_view.findViewById(R.id.radioButton2_bluetoothlist);
         m_radioButton3 = m_view.findViewById(R.id.radioButton3_bluetoothlist);
@@ -742,7 +741,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     //蓝牙已开启则直接开始扫描设备
                     case BluetoothAdapter.STATE_ON:
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        m_checkBox.setChecked(true);
+                        m_btn1.setText("停止扫描");
                         m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
                         BeginDiscovery();
                         break;
@@ -750,7 +749,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     case BluetoothAdapter.STATE_OFF:
                     case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        m_checkBox.setChecked(false);
+                        m_btn1.setText("开始扫描");
                         break;
                 }
             }
@@ -770,7 +769,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             builder.setMessage("设备不支持蓝牙");
             builder.show();
         }
-        m_checkBox.setOnCheckedChangeListener(this);
         m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
         m_filterNameList = DeviceFilterShared.GetFilterName(m_context);
         m_isHideConnectedDevice = DeviceFilterShared.GetFilterDevice(m_context);
@@ -787,14 +785,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 //用户授权开启蓝牙
                 if(requestCode != 0)
                 {
-                    m_checkBox.setChecked(true);
+                    m_btn1.setText("停止扫描");
                     m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
                     BeginDiscovery();
                 }
                 //用户拒绝开启蓝牙
                 else
                 {
-                    m_checkBox.setChecked(false);
+                    m_btn1.setText("开始扫描");
                 }
                 break;
         }

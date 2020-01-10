@@ -20,13 +20,14 @@
             android:textColor="@color/white"
             android:textSize="28sp" />
 
-        <CheckBox
-            android:id="@+id/ck_bluetooth_bluetoothlist"
+        <Button
+            android:id="@+id/btn1_bluetoothlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:button="@null"
-            android:checked="false"
-            android:drawableLeft="@drawable/ck_status_selector_a" />
+            android:background="@color/transparent"
+            android:text="开始扫描"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
 
     </android.support.v7.widget.Toolbar>
 
