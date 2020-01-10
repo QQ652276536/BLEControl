@@ -143,7 +143,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event)
         {
-            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
@@ -161,16 +161,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         m_button2.setEnabled(false);
         m_button3.setEnabled(false);
         m_button4.setEnabled(false);
-        if(m_refreshTask != null)
+        if (m_refreshTask != null)
         {
             m_refreshTask.cancel();
         }
-        if(m_refreshTimer != null)
+        if (m_refreshTimer != null)
         {
             m_refreshTimer.cancel();
         }
         //先结束定时任务再关闭蓝牙
-        if(m_bluetoothGatt != null)
+        if (m_bluetoothGatt != null)
         {
             m_bluetoothGatt.disconnect();
         }
@@ -191,7 +191,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
      */
     private void SendComm(String data)
     {
-        if(m_bluetoothGatt != null && m_bluetoothGattCharacteristic_write != null && data != null && !data.equals(""))
+        if (m_bluetoothGatt != null && m_bluetoothGattCharacteristic_write != null && data != null && !data.equals(""))
         {
             byte[] byteArray = ConvertUtil.HexStrToByteArray(data);
             m_bluetoothGattCharacteristic_write.setValue(byteArray);
@@ -206,7 +206,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             super.handleMessage(message);
             String result = (String) message.obj;
-            switch(message.what)
+            switch (message.what)
             {
                 case MESSAGE_ERROR_1:
                     DisConnect();
@@ -233,7 +233,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                     SendComm(hexStr);
                                     Thread.sleep(100);
                                 }
-                                catch(InterruptedException e)
+                                catch (InterruptedException e)
                                 {
                                     e.printStackTrace();
                                 }
@@ -247,11 +247,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 case RECEIVE_OPENDOOR:
                 {
-                    if(result.equalsIgnoreCase("opendoor"))
+                    if (result.equalsIgnoreCase("opendoor"))
                     {
                         m_debugView.append("发送开门指令 ");
                     }
-                    else if(result.equalsIgnoreCase("doorisopen"))
+                    else if (result.equalsIgnoreCase("doorisopen"))
                     {
                         m_debugView.append("收到:门【已打开】\n");
                         m_textView1.setText("已开");
@@ -264,7 +264,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //定位到最后一行
                     int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if(offset > m_scrollView.getHeight())
+                    if (offset > m_scrollView.getHeight())
                     {
                         m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
                     }
@@ -287,7 +287,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 {
                     String strs[] = result.split(",");
                     String doorState1 = strs[0];
-                    if(doorState1.equalsIgnoreCase("1"))
+                    if (doorState1.equalsIgnoreCase("1"))
                     {
                         m_textView1.setText("已开");
                         m_textView1.setTextColor(Color.GREEN);
@@ -298,7 +298,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         m_textView1.setTextColor(Color.RED);
                     }
                     String lockState1 = strs[1];
-                    if(lockState1.equalsIgnoreCase("1"))
+                    if (lockState1.equalsIgnoreCase("1"))
                     {
                         m_textView2.setText("已开");
                         m_textView2.setTextColor(Color.GREEN);
@@ -309,7 +309,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         m_textView2.setTextColor(Color.RED);
                     }
                     String doorState2 = strs[2];
-                    if(doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equalsIgnoreCase("1"))
                     {
                         m_textView3.setText("已开");
                         m_textView3.setTextColor(Color.GREEN);
@@ -320,7 +320,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         m_textView3.setTextColor(Color.RED);
                     }
                     String lockState2 = strs[3];
-                    if(lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equalsIgnoreCase("1"))
                     {
                         m_textView4.setText("已开");
                         m_textView4.setTextColor(Color.GREEN);
@@ -343,12 +343,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if(doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equalsIgnoreCase("1"))
                         m_textView3.setText("已开");
                     else
                         m_textView3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if(lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equalsIgnoreCase("1"))
                         m_textView4.setText("已开");
                     else
                         m_textView4.setText("已关");
@@ -360,22 +360,22 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
-                    if(doorState1.equalsIgnoreCase("1"))
+                    if (doorState1.equalsIgnoreCase("1"))
                         m_textView1.setText("已开");
                     else
                         m_textView1.setText("已关");
                     String lockState1 = String.valueOf(bitStr.charAt(6));
-                    if(lockState1.equalsIgnoreCase("1"))
+                    if (lockState1.equalsIgnoreCase("1"))
                         m_textView2.setText("已开");
                     else
                         m_textView2.setText("已关");
                     String doorState2 = String.valueOf(bitStr.charAt(5));
-                    if(doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equalsIgnoreCase("1"))
                         m_textView3.setText("已开");
                     else
                         m_textView3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(4));
-                    if(lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equalsIgnoreCase("1"))
                         m_textView4.setText("已开");
                     else
                         m_textView4.setText("已关");
@@ -404,7 +404,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
-                    if(m_isOpenParamSettingDialog)
+                    if (m_isOpenParamSettingDialog)
                     {
                         m_paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
                                 bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
@@ -415,7 +415,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     else
                     {
-                        if(bitStr8.equalsIgnoreCase("1"))
+                        if (bitStr8.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("\n收到:\n启用DEBUG软串口【启用】\n");
                         }
@@ -423,7 +423,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("\n收到:\n启用DEBUG软串口【禁用】\n");
                         }
-                        if(bitStr7.equalsIgnoreCase("1"))
+                        if (bitStr7.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("使用低磁检测阀值【启用】\n");
                         }
@@ -431,7 +431,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("使用低磁检测阀值【禁用】\n");
                         }
-                        if(bitStr6.equalsIgnoreCase("1"))
+                        if (bitStr6.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("不检测强磁【启用】\n");
                         }
@@ -439,7 +439,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("不检测强磁【禁用】\n");
                         }
-                        if(bitStr5.equalsIgnoreCase("1"))
+                        if (bitStr5.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("启用软关机【启用】\n");
                         }
@@ -447,7 +447,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("启用软关机【禁用】\n");
                         }
-                        if(bitStr4.equalsIgnoreCase("1"))
+                        if (bitStr4.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("有外电可以进入维护方式【启用】\n");
                         }
@@ -455,7 +455,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("有外电可以进入维护方式【禁用】\n");
                         }
-                        if(bitStr3.equalsIgnoreCase("1"))
+                        if (bitStr3.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("正常开锁不告警【启用】\n");
                         }
@@ -463,7 +463,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("正常开锁不告警【禁用】\n");
                         }
-                        if(bitStr2.equalsIgnoreCase("1"))
+                        if (bitStr2.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("锁检测开关(锁上开路)【启用】\n");
                         }
@@ -471,7 +471,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         {
                             m_debugView.append("锁检测开关(锁上开路)【禁用】\n");
                         }
-                        if(bitStr1.equalsIgnoreCase("1"))
+                        if (bitStr1.equalsIgnoreCase("1"))
                         {
                             m_debugView.append("门检测开关(关门开路)【启用】\n");
                         }
@@ -483,7 +483,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //定位到最后一行
                     int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if(offset > m_debugView.getHeight())
+                    if (offset > m_debugView.getHeight())
                     {
                         m_debugView.scrollTo(0, offset - m_debugView.getHeight());
                     }
@@ -496,7 +496,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     SendComm(result);
                     m_debugView.append("发送参数设置指令 ");
                     int offset = m_debugView.getLineCount() * m_debugView.getLineHeight();
-                    if(offset > m_scrollView.getHeight())
+                    if (offset > m_scrollView.getHeight())
                     {
                         m_debugView.scrollTo(0, offset - m_scrollView.getHeight());
                     }
@@ -514,7 +514,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 
     public void onButtonPressed(Uri uri)
     {
-        if(m_onFragmentInteractionListener != null)
+        if (m_onFragmentInteractionListener != null)
         {
             m_onFragmentInteractionListener.onFragmentInteraction(uri);
         }
@@ -538,18 +538,18 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         //Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
-        switch(indexStr)
+        switch (indexStr)
         {
             //开门
             case "00":
             {
                 Message message = new Message();
                 message.what = RECEIVE_OPENDOOR;
-                if(strArray[14].equalsIgnoreCase("00"))
+                if (strArray[14].equalsIgnoreCase("00"))
                 {
                     message.obj = "doorisopen";
                 }
-                else if(ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK"))
+                else if (ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK"))
                 {
                     message.obj = "doorisopen";
                 }
@@ -587,7 +587,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 Message message = new Message();
                 message.what = RECEIVE_DOORSTATE;
-                if(strArray[13].equals("01"))
+                if (strArray[13].equals("01"))
                 {
                     message.obj = "已关";
                 }
@@ -678,7 +678,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 
     private void ShowWarning(int param)
     {
-        switch(param)
+        switch (param)
         {
             case MESSAGE_ERROR_1:
                 Toast.makeText(m_context, "蓝牙已断开", Toast.LENGTH_SHORT).show();
@@ -693,8 +693,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 builder.setMessage("未获取到蓝牙,请重试!");
                 builder.setPositiveButton("知道了", (dialog, which) ->
                 {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
+                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                    getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
                 });
                 builder.show();
                 break;
@@ -706,9 +707,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(m_connectionState)
+        if (m_connectionState)
         {
-            switch(requestCode)
+            switch (requestCode)
             {
                 case MainActivity.ACTIVITYRESULT_WRITEVALUE:
                 {
@@ -742,9 +743,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
-        if(m_connectionState)
+        if (m_connectionState)
         {
-            switch(item.getItemId())
+            switch (item.getItemId())
             {
                 //内部控制参数设置
                 case R.id.menu_1_power:
@@ -790,7 +791,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     @Override
     public void onClick(View v)
     {
-        switch(v.getId())
+        switch (v.getId())
         {
             case R.id.btn_return:
             {
@@ -802,9 +803,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             //连接
             case R.id.button1:
             {
-                if(m_bluetoothDevice != null)
+                if (m_bluetoothDevice != null)
                 {
-                    if(m_button1.getText().toString().equals("连接"))
+                    if (m_button1.getText().toString().equals("连接"))
                     {
                         m_button1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
@@ -819,7 +820,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                             @Override
                             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
                             {
-                                if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
+                                if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
                                 {
                                     Log.d(TAG, ">>>成功建立连接!");
                                     //发现服务
@@ -846,11 +847,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 //直到这里才是真正建立了可通信的连接
                                 //通过UUID找到服务
                                 m_bluetoothGattService = gatt.getService(SERVICE_UUID);
-                                if(m_bluetoothGattService != null)
+                                if (m_bluetoothGattService != null)
                                 {
                                     //写数据的服务和特征
                                     m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
-                                    if(m_bluetoothGattCharacteristic_write != null)
+                                    if (m_bluetoothGattCharacteristic_write != null)
                                     {
                                         Log.d(TAG, ">>>已找到写入数据的特征值!");
                                     }
@@ -860,7 +861,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                     }
                                     //读取数据的服务和特征
                                     m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
-                                    if(m_bluetoothGattCharacteristic_read != null)
+                                    if (m_bluetoothGattCharacteristic_read != null)
                                     {
                                         Log.d(TAG, ">>>已找到读取数据的特征值!");
                                         //订阅读取通知
@@ -898,7 +899,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 result = ConvertUtil.HexStrAddCharacter(result, " ");
                                 String[] strArray = result.split(" ");
                                 String indexStr = strArray[11];
-                                switch(indexStr)
+                                switch (indexStr)
                                 {
                                     //发送开门指令
                                     case "00":
@@ -956,7 +957,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 //Log.d(TAG, ">>>接收:" + result);
                                 String[] strArray = result.split(" ");
                                 //一个包(20个字节)
-                                if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
+                                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
                                 {
                                     Resolve(result);
                                     //清空缓存
@@ -965,7 +966,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                 //分包
                                 else
                                 {
-                                    if(!strArray[strArray.length - 1].equals("16"))
+                                    if (!strArray[strArray.length - 1].equals("16"))
                                     {
                                         m_stringBuffer.append(result + " ");
                                     }
@@ -1035,7 +1036,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null)
+        if (getArguments() != null)
         {
             m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
@@ -1088,7 +1089,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             m_button5.setOnClickListener(this::onClick);
             m_debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             e.printStackTrace();
             Toast.makeText(m_context, "配对异常", Toast.LENGTH_SHORT).show();
@@ -1101,7 +1102,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onAttach(Context context)
     {
         super.onAttach(context);
-        if(context instanceof OnFragmentInteractionListener)
+        if (context instanceof OnFragmentInteractionListener)
         {
             m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         }
@@ -1116,13 +1117,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     {
         super.onDetach();
         m_onFragmentInteractionListener = null;
-        if(m_bluetoothGatt != null)
+        if (m_bluetoothGatt != null)
             m_bluetoothGatt.close();
-        if(m_refreshTimer != null)
+        if (m_refreshTimer != null)
             m_refreshTimer.cancel();
-        if(m_refreshTask != null)
+        if (m_refreshTask != null)
             m_refreshTask.cancel();
-        if(m_bluetoothDevice != null)
+        if (m_bluetoothDevice != null)
             m_bluetoothDevice = null;
     }
 

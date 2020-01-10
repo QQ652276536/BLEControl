@@ -7,14 +7,14 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_bluetoothlist"
+        android:id="@+id/toolbar_bluetoothList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/colorPrimary">
 
         <Button
-            android:id="@+id/btn1_bluetoothlist"
+            android:id="@+id/btn1_bluetoothList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
@@ -54,28 +54,28 @@
                 android:textSize="16sp" />
 
             <RadioGroup
-                android:id="@+id/radioGroup1_bluetoothlist"
+                android:id="@+id/radioGroup1_bluetoothList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/radioButton1_bluetoothlist"
+                    android:id="@+id/radioButton1_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="BlueNRG"
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/radioButton2_bluetoothlist"
+                    android:id="@+id/radioButton2_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Amdtp"
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/radioButton5_bluetoothlist"
+                    android:id="@+id/radioButton5_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -98,14 +98,14 @@
                 android:textSize="16sp" />
 
             <RadioGroup
-                android:id="@+id/radioGroup2_bluetoothlist"
+                android:id="@+id/radioGroup2_bluetoothList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/radioButton3_bluetoothlist"
+                    android:id="@+id/radioButton3_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -113,7 +113,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/radioButton4_bluetoothlist"
+                    android:id="@+id/radioButton4_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Command Test"
@@ -122,7 +122,7 @@
         </LinearLayout>
 
         <TableLayout
-            android:id="@+id/table_bluetoothlist"
+            android:id="@+id/table_bluetoothList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -131,7 +131,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/tv1_bluetoothlist"
+                    android:id="@+id/tv1_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -139,7 +139,7 @@
                     android:text="No Filter" />
 
                 <ImageButton
-                    android:id="@+id/btn2_bluetoothlist"
+                    android:id="@+id/btnUpDown_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -148,7 +148,7 @@
                     app:srcCompat="@drawable/down1" />
 
                 <ImageButton
-                    android:id="@+id/btn3_bluetoothlist"
+                    android:id="@+id/btnClearFilter_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -159,10 +159,9 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/row1_bluetoothlist"
+                android:id="@+id/row1_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -172,15 +171,16 @@
                     app:srcCompat="@drawable/device_name1" />
 
                 <EditText
-                    android:id="@+id/tv2_bluetoothlist"
+                    android:id="@+id/editName_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:hint="Fileter by name"
                     android:inputType="textPostalAddress" />
 
                 <ImageButton
-                    android:id="@+id/delBtn2_bluetoothlist"
+                    android:id="@+id/btnClearName_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -190,10 +190,9 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/row2_bluetoothlist"
+                android:id="@+id/row2_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -203,15 +202,16 @@
                     app:srcCompat="@drawable/device_address1" />
 
                 <EditText
-                    android:id="@+id/tv3_bluetoothlist"
+                    android:id="@+id/editAddress_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:hint="Filter by address"
                     android:inputType="textPostalAddress" />
 
                 <ImageButton
-                    android:id="@+id/delBtn3_bluetoothlist"
+                    android:id="@+id/btnClearAddress_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -221,10 +221,9 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/row3_bluetoothlist"
+                android:id="@+id/row3_bluetoothList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -233,14 +232,14 @@
                     app:srcCompat="@drawable/rssi2" />
 
                 <SeekBar
-                    android:id="@+id/seekBar_bluetoothlist"
+                    android:id="@+id/seekBar_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/tv4_bluetoothlist"
+                    android:id="@+id/tvRssi_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -250,12 +249,12 @@
         </TableLayout>
 
         <com.zistone.material_refresh_layout.MaterialRefreshLayout
-            android:id="@+id/refresh_bluetoothlist"
+            android:id="@+id/refresh_bluetoothList"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ListView
-                android:id="@+id/lv_bluetoothlist"
+                android:id="@+id/lv_bluetoothList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </com.zistone.material_refresh_layout.MaterialRefreshLayout>
