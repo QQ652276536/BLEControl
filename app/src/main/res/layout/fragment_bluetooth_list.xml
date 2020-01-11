@@ -61,6 +61,8 @@
                 android:id="@+id/radioButton1_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:button="@drawable/rad_selector"
                 android:text="BlueNRG"
                 android:textColor="@color/gray" />
 
@@ -68,6 +70,7 @@
                 android:id="@+id/radioButton2_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:button="@drawable/rad_selector"
                 android:text="Amdtp"
                 android:textColor="@color/gray" />
 
@@ -75,6 +78,7 @@
                 android:id="@+id/radioButton5_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:button="@drawable/rad_selector"
                 android:checked="true"
                 android:text="OTA"
                 android:textColor="@color/gray" />
@@ -108,6 +112,7 @@
                 android:id="@+id/radioButton3_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:button="@drawable/rad_selector"
                 android:checked="true"
                 android:text="Power Control"
                 android:textColor="@color/gray" />
@@ -116,6 +121,7 @@
                 android:id="@+id/radioButton4_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:button="@drawable/rad_selector"
                 android:text="Command Test"
                 android:textColor="@color/gray" />
         </RadioGroup>
