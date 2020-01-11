@@ -68,7 +68,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private static final String TAG = "BluetoothFragment_List";
     private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2";
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
-    private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
+    private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private BluetoothListAdapter m_bluetoothListAdapter;
     private Context m_context;
     private View m_view;

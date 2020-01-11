@@ -36,124 +36,127 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/WhiteSmoke"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="UUID："
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup1_bluetoothList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton1_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BlueNRG"
+                android:textColor="@color/gray" />
+
+            <RadioButton
+                android:id="@+id/radioButton2_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amdtp"
+                android:textColor="@color/gray" />
+
+            <RadioButton
+                android:id="@+id/radioButton5_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="OTA"
+                android:textColor="@color/gray" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/WhiteSmoke"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="Function："
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup2_bluetoothList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton3_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Power Control"
+                android:textColor="@color/gray" />
+
+            <RadioButton
+                android:id="@+id/radioButton4_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Command Test"
+                android:textColor="@color/gray" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll1_bluetoothList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/WhiteSmoke"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <Button
+            android:id="@+id/btnFilterContent_bluetoothList"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="5"
+            android:background="@color/transparent"
+            android:drawableRight="@drawable/down1"
+            android:gravity="center_vertical"
+            android:text="No Filter"
+            android:textAllCaps="false"
+            android:textColor="@color/gray" />
+
+        <ImageButton
+            android:id="@+id/btnClearFilterContent_bluetoothList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:visibility="visible"
+            app:srcCompat="@drawable/close1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:text="UUID："
-                android:textSize="16sp" />
-
-            <RadioGroup
-                android:id="@+id/radioGroup1_bluetoothList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/radioButton1_bluetoothList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BlueNRG"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/radioButton2_bluetoothList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Amdtp"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/radioButton5_bluetoothList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="OTA"
-                    android:textColor="@color/gray" />
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:text="Function："
-                android:textSize="16sp" />
-
-            <RadioGroup
-                android:id="@+id/radioGroup2_bluetoothList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/radioButton3_bluetoothList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Power Control"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/radioButton4_bluetoothList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Command Test"
-                    android:textColor="@color/gray" />
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll1_bluetoothList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <Button
-                    android:id="@+id/btnFilterContent_bluetoothList"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="5"
-                    android:background="@color/transparent"
-                    android:drawableRight="@drawable/down1"
-                    android:gravity="center_vertical"
-                    android:text="No Filter"
-                    android:textAllCaps="false"
-                    android:textColor="@color/gray" />
-
-                <ImageButton
-                    android:id="@+id/btnClearFilterContent_bluetoothList"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:background="@color/transparent"
-                    android:visibility="visible"
-                    app:srcCompat="@drawable/close1" />
-
-            </TableRow>
-        </LinearLayout>
 
         <com.zistone.material_refresh_layout.MaterialRefreshLayout
             android:id="@+id/refresh_bluetoothList"
