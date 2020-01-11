@@ -1,9 +1,6 @@
 package com.zistone.bluetoothcontrol.util;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 
 /**
  * 字符转换工具类
@@ -45,8 +42,18 @@ public class ConvertUtil
         System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
         System.out.println("____________________________________________________________________");
 
-        System.out.println(ByteArrayToHexStr(new byte[]{(byte) 2, (byte) 97, (byte) 51, (byte) 52}));
-        System.out.println((double) ByteArray4ToLong(new byte[]{(byte) 6, (byte) -18, (byte) -9, (byte) -15}) / 1000000);
+        System.out.println(ByteArrayToHexStr(new byte[]{
+                (byte) 2,
+                (byte) 97,
+                (byte) 51,
+                (byte) 52
+        }));
+        System.out.println((double) ByteArray4ToLong(new byte[]{
+                (byte) 6,
+                (byte) -18,
+                (byte) -9,
+                (byte) -15
+        }) / 1000000);
         System.out.println("____________________________________________________________________");
         //测试通过
         System.out.println("普通Str转16进制Str:" + StrToHexStr("rD9TcH"));
@@ -63,6 +70,19 @@ public class ConvertUtil
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("674E5C0F4F1F"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("004C0069005700650069"));
         System.out.println("____________________________________________________________________");
+    }
+
+    /**
+     * 替换字符串里最后出现的元素
+     *
+     * @param text
+     * @param strToReplace
+     * @param replaceWithThis
+     * @return
+     */
+    public static String ReplaceLast(String text, String strToReplace, String replaceWithThis)
+    {
+        return text.replaceFirst("(?s)" + strToReplace + "(?!.*?" + strToReplace + ")", replaceWithThis);
     }
 
     public static byte BitToByte(String bit)
