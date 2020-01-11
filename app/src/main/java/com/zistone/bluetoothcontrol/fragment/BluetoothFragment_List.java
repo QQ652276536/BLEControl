@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -643,9 +644,28 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 //                    getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_ota, "bluetoothFragment_ota").commitNow();
 
                 //启动第三方apk
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                //getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this)
+                // .commitNow();
                 Intent intent = GetAppOpenIntentByPackageName(m_context, "com.ambiqmicro.android.amota");
-                m_context.startActivity(intent);
+                if(intent != null)
+                {
+                    m_context.startActivity(intent);
+                }
+                else
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            onDestroy();
+                            System.exit(0);
+                        }
+                    });
+                    builder.setMessage("未安装OTA_ZM301,无法使用该功能!");
+                    builder.show();
+                }
                 break;
             //...
             case R.id.menu_2_setting:
@@ -810,7 +830,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
             {
                 @Override
