@@ -263,7 +263,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_filterContent = ConvertUtil.ReplaceLast(m_filterContent, ",", "");
         if(m_filterContent.equals(""))
         {
+            m_btnClearContentFilter.setVisibility(View.INVISIBLE);
             m_filterContent = "No filter";
+        }
+        else
+        {
+            m_btnClearContentFilter.setVisibility(View.VISIBLE);
         }
         m_btnFilterContent.setText(m_filterContent);
     }
@@ -714,6 +719,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             case R.id.chk_filterPop:
                 m_isHideConnectSuccessDevice = isChecked;
+                ShowSetFilterContent();
                 break;
         }
     }
@@ -736,6 +742,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     CancelDiscovery();
                 break;
             case R.id.btnClearFilterContent_bluetoothList:
+                m_btnClearContentFilter.setVisibility(View.INVISIBLE);
                 m_filterName = "";
                 m_filterAddress = "";
                 m_filterRssi = 100;

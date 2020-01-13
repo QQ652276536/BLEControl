@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/device_address1" />
+                app:srcCompat="@drawable/mac1" />
 
             <EditText
                 android:id="@+id/editAddress_filterPop"
