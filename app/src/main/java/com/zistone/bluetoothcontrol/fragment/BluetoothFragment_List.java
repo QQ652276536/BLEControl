@@ -59,6 +59,8 @@ import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -187,6 +189,19 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //根据条件筛选设备
             Map<String, MyBluetoothDevice> map = FilterDeviceByCondition(m_deviceMap);
             m_deviceList = new ArrayList<>(map.values());
+            //按照信号强度降序排序
+            Collections.sort(m_deviceList, new Comparator<MyBluetoothDevice>()
+            {
+                @Override
+                public int compare(MyBluetoothDevice o1, MyBluetoothDevice o2)
+                {
+                    if(o1.get_rssi() > o2.get_rssi())
+                        return -1;
+                    if(o1.get_rssi() < o2.get_rssi())
+                        return 1;
+                    return 0;
+                }
+            });
             m_bluetoothListAdapter.setM_deviceList(m_deviceList);
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
             //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
