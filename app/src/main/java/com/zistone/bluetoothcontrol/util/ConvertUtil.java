@@ -13,32 +13,6 @@ public class ConvertUtil
 
     public static void main(String[] args) throws Exception
     {
-
-        System.out.println("____________________________________________________________________");
-        String bitStr1 = "11111111";
-        String bitStr2 = "00000000";
-        String bitStr3 = "11000011";
-        String bitStr4 = "01111110";
-        String bitStr5 = "00111100";
-        String bitStr6 = "00011000";
-        String bitStr7 = "00010000";
-        String bitStr8 = "10000000";
-        String bitStr9 = "10000001";
-        String bitStr10 = "10101010";
-        String bitStr11 = "01010101";
-        System.out.println(bitStr1 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr1, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr1, 2)));
-        System.out.println(bitStr2 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr2, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr2, 2)));
-        System.out.println(bitStr3 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr3, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr3, 2)));
-        System.out.println(bitStr4 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr4, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr4, 2)));
-        System.out.println(bitStr5 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr5, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr5, 2)));
-        System.out.println(bitStr6 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr6, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr6, 2)));
-        System.out.println(bitStr7 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr7, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr7, 2)));
-        System.out.println(bitStr8 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr8, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr8, 2)));
-        System.out.println(bitStr9 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr9, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr9, 2)));
-        System.out.println(bitStr10 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr10, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr10, 2)));
-        System.out.println(bitStr11 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr11, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr11, 2)));
-        System.out.println("____________________________________________________________________");
-
         System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
         System.out.println("____________________________________________________________________");
 
@@ -69,6 +43,35 @@ public class ConvertUtil
         System.out.println("Unicode编码的中文转16进制的Str:" + DeUnicode("LiWei"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("674E5C0F4F1F"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("004C0069005700650069"));
+        System.out.println("____________________________________________________________________");
+        TestBinaryStrToInt();
+    }
+
+    private static void TestBinaryStrToInt()
+    {
+        System.out.println("____________________________________________________________________");
+        String bitStr1 = "11111111";
+        String bitStr2 = "00000000";
+        String bitStr3 = "11000011";
+        String bitStr4 = "01111110";
+        String bitStr5 = "00111100";
+        String bitStr6 = "00011000";
+        String bitStr7 = "00010000";
+        String bitStr8 = "10000000";
+        String bitStr9 = "10000001";
+        String bitStr10 = "10101010";
+        String bitStr11 = "01010101";
+        System.out.println(bitStr1 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr1, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr1, 2)));
+        System.out.println(bitStr2 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr2, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr2, 2)));
+        System.out.println(bitStr3 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr3, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr3, 2)));
+        System.out.println(bitStr4 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr4, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr4, 2)));
+        System.out.println(bitStr5 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr5, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr5, 2)));
+        System.out.println(bitStr6 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr6, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr6, 2)));
+        System.out.println(bitStr7 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr7, 2) + "\t\t" + "十进制Int转十六进制Int:" + Integer.toHexString(Integer.parseInt(bitStr7, 2)));
+        System.out.println(bitStr8 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr8, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr8, 2)));
+        System.out.println(bitStr9 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr9, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr9, 2)));
+        System.out.println(bitStr10 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr10, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr10, 2)));
+        System.out.println(bitStr11 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr11, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr11, 2)));
         System.out.println("____________________________________________________________________");
     }
 

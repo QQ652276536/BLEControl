@@ -1,6 +1,5 @@
 package com.zistone.bluetoothcontrol.control;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,48 +8,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.zistone.bluetoothcontrol.R;
+import com.zistone.bluetoothcontrol.pojo.MyBluetoothDevice;
 
 import java.util.List;
-import java.util.Map;
 
 public class BluetoothListAdapter extends BaseAdapter
 {
     private static final String TAG = "BluetoothListAdapter";
     private Context m_context;
     private LayoutInflater m_layoutInflater;
-    private List<BluetoothDevice> m_deviceList;
+    private List<MyBluetoothDevice> m_deviceList;
     private boolean m_isClick = false;
-    private Map<String, Integer> m_rssiMap;
-
-    public Map<String, Integer> GetM_rssiMap()
-    {
-        return m_rssiMap;
-    }
-
-    public void SetM_rssiMap(Map<String, Integer> rssiMap)
-    {
-        this.m_rssiMap = rssiMap;
-    }
-
-    public List<BluetoothDevice> GetM_list()
-    {
-        return m_deviceList;
-    }
-
-    public boolean GetM_isClick()
-    {
-        return m_isClick;
-    }
-
-    public void SetM_isClick(boolean isClick)
-    {
-        this.m_isClick = isClick;
-    }
-
-    public void SetM_list(List<BluetoothDevice> deviceList)
-    {
-        this.m_deviceList = deviceList;
-    }
 
     public BluetoothListAdapter(Context context)
     {
@@ -58,30 +26,24 @@ public class BluetoothListAdapter extends BaseAdapter
         m_context = context;
     }
 
-    public void UpdateView(View convertView, int itemIndex)
+    public List<MyBluetoothDevice> getM_deviceList()
     {
-        if(convertView == null)
-        {
-            return;
-        }
-        ViewHolder holder = (ViewHolder) convertView.getTag();
-        holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
-        holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
-        holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
-        BluetoothDevice device = m_deviceList.get(itemIndex);
-        String address = device.getAddress();
-        //        String name = device.getName();
-        //        holder.tv_blue_name.setText(name);
-        //        holder.tv_blue_address.setText(address);
-        Integer value = m_rssiMap.get(address);
-        if(value != null)
-        {
-            holder.tv_blue_rssi.setText(value.intValue() + "dBm");
-        }
-        else
-        {
-            holder.tv_blue_rssi.setText("0dBm");
-        }
+        return m_deviceList;
+    }
+
+    public void setM_deviceList(List<MyBluetoothDevice> m_deviceList)
+    {
+        this.m_deviceList = m_deviceList;
+    }
+
+    public boolean isM_isClick()
+    {
+        return m_isClick;
+    }
+
+    public void setM_isClick(boolean m_isClick)
+    {
+        this.m_isClick = m_isClick;
     }
 
     @Override
@@ -125,26 +87,15 @@ public class BluetoothListAdapter extends BaseAdapter
         {
             holder = (ViewHolder) convertView.getTag();
         }
-        final BluetoothDevice device = m_deviceList.get(position);
-        int rssi = 0;
-        if(device.getAddress() != null)
-        {
-            Integer value = m_rssiMap.get(device.getAddress());
-            if(value != null)
-            {
-                rssi = value.intValue();
-            }
-        }
-        if(device.getName() != null)
-        {
-            holder.tv_blue_name.setText(device.getName());
-        }
+        MyBluetoothDevice device = m_deviceList.get(position);
+        String name = device.get_name();
+        String address = device.get_address();
+        int rssi = device.get_rssi();
+        if(name != null)
+            holder.tv_blue_name.setText(name);
         else
-        {
-
             holder.tv_blue_name.setText("Null");
-        }
-        holder.tv_blue_address.setText(device.getAddress());
+        holder.tv_blue_address.setText(address);
         holder.tv_blue_rssi.setText(rssi + "dBm");
         return convertView;
     }

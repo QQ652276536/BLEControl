@@ -52,6 +52,7 @@ import android.widget.Toast;
 import com.zistone.bluetoothcontrol.MainActivity;
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
+import com.zistone.bluetoothcontrol.pojo.MyBluetoothDevice;
 import com.zistone.bluetoothcontrol.util.ConvertUtil;
 import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
@@ -76,7 +77,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private Toolbar m_toolbar;
     private ListView m_listView;
     private BluetoothAdapter m_bluetoothAdapter;
-    private BluetoothDevice m_bluetoothDevice;
     private BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
     private BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
     private BluetoothFragment_OTA m_bluetoothFragment_ota;
@@ -123,13 +123,16 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
     //记录点击返回键的时间
     private long m_exitTime = 0;
+    //当前连接的设备
+    private MyBluetoothDevice m_myBluetoothDevice;
+    //扫描到的设备,由Map转换,为保证和map数据的同步,不允许对该集合操作
+    private List<MyBluetoothDevice> m_deviceList = new ArrayList<>();
     //扫描到的设备、连接成功的设备
-    private List<BluetoothDevice> m_deviceList = new ArrayList<>(), m_connectSuccessList = new ArrayList<>();
+    private Map<String, MyBluetoothDevice> m_deviceMap = new HashMap<>(), m_connectSuccessMap = new HashMap<>();
     //传递进来的参数1、传递进来的参数2、根据名称筛选设备、根据地址过滤设备
     private String m_param1, m_param2, m_filterName, m_filterAddress, m_filterContent;
     //根据信号强度筛选设备
     private int m_filterRssi = 100;
-    private Map<String, Integer> m_rssiMap = new HashMap<>();
     private boolean m_isHideConnectSuccessDevice = false, m_isBtnUpDownFlag = false;
     private PopupWindow m_filterPopWindow;
 
@@ -157,31 +160,38 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         public void onScanResult(int callbackType, ScanResult result)
         {
             super.onScanResult(callbackType, result);
-            BluetoothDevice device = result.getDevice();
-            String address = device.getAddress();
+            BluetoothDevice bluetoothDevice = result.getDevice();
+            String name = bluetoothDevice.getName();
+            String address = bluetoothDevice.getAddress();
             int rssi = result.getRssi();
-            if(!m_deviceList.contains(device))
+            int state = bluetoothDevice.getBondState();
+            //设备去重
+            if(m_deviceMap.containsKey(address))
             {
-                m_deviceList.add(device);
-                m_bluetoothListAdapter.SetM_list(FilterDeviceByCondition(m_deviceList));
+                MyBluetoothDevice device = m_deviceMap.get(address);
+                device.set_name(name);
+                device.set_rssi(rssi);
+                device.set_boundState(state);
+                m_deviceMap.put(address, device);
             }
+            else
+            {
+                MyBluetoothDevice device = new MyBluetoothDevice();
+                device.set_name(name);
+                device.set_address(address);
+                device.set_rssi(rssi);
+                device.set_boundState(state);
+                device.set_bluetoothDevice(bluetoothDevice);
+                m_deviceMap.put(address, device);
+            }
+            //根据条件筛选设备
+            Map<String, MyBluetoothDevice> map = FilterDeviceByCondition(m_deviceMap);
+            m_deviceList = new ArrayList<>(map.values());
+            m_bluetoothListAdapter.setM_deviceList(m_deviceList);
             Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
-            m_rssiMap.put(address, rssi);
-            m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
             //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
             m_bluetoothListAdapter.notifyDataSetChanged();
             m_listView.setOnItemClickListener(BluetoothFragment_List.this);
-            //根据设备地址找设备在m_deviceList中的下标
-            //            for(BluetoothDevice tempDevice : m_deviceList)
-            //            {
-            //                if(address.equals(tempDevice.getAddress()))
-            //                {
-            //                    //使用局部刷新
-            //                    int itemIndex = m_deviceList.indexOf(tempDevice);
-            //                    UpdateListView(itemIndex);
-            //                    break;
-            //                }
-            //            }
         }
 
         @Override
@@ -264,9 +274,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             m_editAddress.setText(m_filterAddress);
         m_editAddress.addTextChangedListener(m_textWatcher);
         m_seekBar = contentView.findViewById(R.id.seekBar_filterPop);
-        //滚动条的数值在0-60,信号强度 = (数值+40) * -1
+        //进度条的最大数值为60,信号强度 = (数值+40) * -1
         m_seekBar.setMax(60);
-        //滚动条的数值 = Math.abs(信号强度) - 40
+        //进度条的数值 = Math.abs(信号强度) - 40
         m_seekBar.setProgress(Math.abs(m_filterRssi) - 40);
         m_seekBar.setOnSeekBarChangeListener(m_onSeekBarChangeListener);
         m_textRssi = contentView.findViewById(R.id.tvRssi_filterPop);
@@ -283,32 +293,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         int[] location = new int[2];
         view.getLocationOnScreen(location);
         m_filterPopWindow.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1] + view.getHeight());
-    }
-
-    /**
-     * 局部刷新ListView
-     *
-     * @param itemIndex
-     */
-    private void UpdateListView(int itemIndex)
-    {
-        //ListView没有加载完时,getFirstVisiblePosition和getLastVisiblePosition获取的始终为0和-1
-        m_listView.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                //第一个可显示控件的位置
-                int firstVisiblePosition = m_listView.getFirstVisiblePosition();
-                int lastVisiblePosition = m_listView.getLastVisiblePosition();
-                //当要更新View在可见的位置时才更新
-                if(itemIndex > firstVisiblePosition && itemIndex <= lastVisiblePosition)
-                {
-                    View view = m_listView.getChildAt(itemIndex - firstVisiblePosition);
-                    m_bluetoothListAdapter.UpdateView(view, itemIndex);
-                }
-            }
-        });
     }
 
     /**
@@ -373,7 +357,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             }
         };
 
-        //滚动条拖动
+        //进度条拖动
         m_onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener()
         {
             /**
@@ -390,7 +374,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             }
 
             /**
-             * 按住滚动条时
+             * 按住进度条时
              * @param seekBar
              */
             @Override
@@ -399,7 +383,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             }
 
             /**
-             * 放开滚动条时
+             * 放开进度条时
              * @param seekBar
              */
             @Override
@@ -426,9 +410,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     public void run()
                     {
                         m_deviceList.clear();
-                        m_rssiMap.clear();
-                        m_bluetoothListAdapter.SetM_list(m_deviceList);
-                        m_bluetoothListAdapter.SetM_rssiMap(m_rssiMap);
+                        m_bluetoothListAdapter.setM_deviceList(m_deviceList);
                         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
                         m_bluetoothListAdapter.notifyDataSetChanged();
                         m_listView.setAdapter(m_bluetoothListAdapter);
@@ -466,7 +448,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             public void ConnectSuccessListener()
             {
                 //将连接成功的设备地址存起来
-                m_connectSuccessList.add(m_bluetoothDevice);
+                m_connectSuccessMap.put(m_myBluetoothDevice.get_address(), m_myBluetoothDevice);
             }
         };
 
@@ -477,7 +459,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             public void ConnectSuccessListener()
             {
                 //将连接成功的设备地址存起来
-                m_connectSuccessList.add(m_bluetoothDevice);
+                m_connectSuccessMap.put(m_myBluetoothDevice.get_address(), m_myBluetoothDevice);
             }
         };
 
@@ -486,16 +468,16 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     /**
      * 根据设置选项过滤扫描到蓝牙设备
      *
-     * @param list
+     * @param map
      * @return
      */
-    private List<BluetoothDevice> FilterDeviceByCondition(List<BluetoothDevice> list)
+    private Map<String, MyBluetoothDevice> FilterDeviceByCondition(Map<String, MyBluetoothDevice> map)
     {
-        list = OnlyShowSetNameSameDevice(list);
-        list = OnlyShowSetAddressSameDevice(list);
-        list = OnlyShowSetRssiSameDevice(list);
-        list = HideConnectSuccessDevice(list);
-        return list;
+        map = OnlyShowSetNameSameDevice(map);
+        map = OnlyShowSetAddressSameDevice(map);
+        map = OnlyShowSetRssiSameDevice(map);
+        map = HideConnectSuccessDevice(map);
+        return map;
     }
 
     /**
@@ -503,100 +485,93 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      * <p>
      * 该方法在接口回调里也有调用,在过滤设备（连接成功后该设备不再显示）后,不要调用会导致BluetoothDevice对象被删除的方法,因为该对象可能正在被使用!
      *
-     * @param list 扫描到的蓝牙设备
+     * @param map 扫描到的蓝牙设备
      * @return
      */
-    private List<BluetoothDevice> HideConnectSuccessDevice(List<BluetoothDevice> list)
+    private Map<String, MyBluetoothDevice> HideConnectSuccessDevice(Map<String, MyBluetoothDevice> map)
     {
         if(m_isHideConnectSuccessDevice)
         {
-            List<BluetoothDevice> resultList = new ArrayList<>();
-            for(BluetoothDevice tempDevice1 : list)
+            Map<String, MyBluetoothDevice> resultMap = new HashMap<>();
+            Iterator<Map.Entry<String, MyBluetoothDevice>> iterator1 = map.entrySet().iterator();
+            while(iterator1.hasNext())
             {
-                boolean flag = false;
-                for(BluetoothDevice tempDevice2 : m_connectSuccessList)
+                MyBluetoothDevice tempDevice = iterator1.next().getValue();
+                if(m_connectSuccessMap.containsValue(tempDevice))
                 {
-                    if(tempDevice1.equals(tempDevice2))
-                    {
-                        flag = true;
-                        break;
-                    }
+                    continue;
                 }
-                if(!flag)
-                    resultList.add(tempDevice1);
+                resultMap.put(tempDevice.get_address(), tempDevice);
             }
-            return resultList;
+            return resultMap;
         }
         else
         {
-            return list;
+            return map;
         }
     }
 
     /**
      * 只显示和筛选条件的强度相似的蓝牙设备
      *
-     * @param list 扫描到的蓝牙设备
+     * @param map 扫描到的蓝牙设备
      * @return
      */
-    private List<BluetoothDevice> OnlyShowSetRssiSameDevice(List<BluetoothDevice> list)
+    private Map<String, MyBluetoothDevice> OnlyShowSetRssiSameDevice(Map<String, MyBluetoothDevice> map)
     {
         if(m_filterRssi != 100)
         {
-            Iterator<BluetoothDevice> iterator = list.iterator();
+            Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
-                String address = iterator.next().getAddress();
-                Integer rssi = m_rssiMap.get(address);
-                if(rssi == null)
-                    continue;
-                if(rssi.intValue() < m_filterRssi * (-1))
+                MyBluetoothDevice device = iterator.next().getValue();
+                if(device.get_rssi() < m_filterRssi * (-1))
                     iterator.remove();
             }
         }
-        return list;
+        return map;
     }
 
     /**
      * 只显示和筛选条件的地址相似的蓝牙设备
      *
-     * @param list 扫描到的蓝牙设备
+     * @param map 扫描到的蓝牙设备
      * @return
      */
-    private List<BluetoothDevice> OnlyShowSetAddressSameDevice(List<BluetoothDevice> list)
+    private Map<String, MyBluetoothDevice> OnlyShowSetAddressSameDevice(Map<String, MyBluetoothDevice> map)
     {
         if(!m_filterAddress.trim().equals(""))
         {
-            Iterator<BluetoothDevice> iterator = list.iterator();
+            Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
-                String address = iterator.next().getAddress();
+                String address = iterator.next().getValue().get_address();
                 if(address == null || !address.trim().contains(m_filterAddress))
                     iterator.remove();
             }
         }
-        return list;
+        return map;
     }
 
     /**
      * 只显示和筛选条件的名称相似的蓝牙设备
      *
-     * @param list 扫描到的蓝牙设备
+     * @param map 扫描到的蓝牙设备
      * @return
      */
-    private List<BluetoothDevice> OnlyShowSetNameSameDevice(List<BluetoothDevice> list)
+    private Map<String, MyBluetoothDevice> OnlyShowSetNameSameDevice(Map<String, MyBluetoothDevice> map)
     {
         if(!m_filterName.trim().equals(""))
         {
-            Iterator<BluetoothDevice> iterator = list.iterator();
+            Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
-                String name = iterator.next().getName();
+                String name = iterator.next().getValue().get_name();
                 if(name == null || !name.trim().contains(m_filterName))
                     iterator.remove();
             }
         }
-        return list;
+        return map;
     }
 
     /**
@@ -713,13 +688,16 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     CancelDiscovery();
                 break;
             case R.id.btnClearFilterContent_bluetoothList:
-                m_btnFilterContent.setText("No Filter");
                 m_filterName = "";
                 m_filterAddress = "";
                 m_filterRssi = 100;
+                m_isHideConnectSuccessDevice = false;
+                m_filterContent = "No filter";
                 DeviceFilterShared.SetFilterName(m_context, m_filterName);
                 DeviceFilterShared.SetFilterAddress(m_context, m_filterAddress);
                 DeviceFilterShared.SetFilterRssi(m_context, m_filterRssi);
+                DeviceFilterShared.SetFilterDevie(m_context, m_isHideConnectSuccessDevice);
+                m_btnFilterContent.setText(m_filterContent);
                 break;
             case R.id.btnFilterContent_bluetoothList:
                 if(!m_isBtnUpDownFlag)
@@ -754,8 +732,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
-        String address = m_deviceList.get(position).getAddress();
-        m_bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
+        String address = m_deviceList.get(position).get_address();
+        BluetoothDevice bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
+        m_myBluetoothDevice = m_deviceMap.get(address);
         //BlueNRG
         if(m_radioButton1.isChecked())
         {
@@ -782,12 +761,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         map.put("READ_UUID", READ_UUID);
         map.put("WRITE_UUID", WRITE_UUID);
         map.put("CONFIG_UUID", CONFIG_UUID);
-        if(m_bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
+        if(bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
             //电力控制
             if(m_radioButton3.isChecked())
             {
-                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_powerControlListener, m_bluetoothDevice, map);
+                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_powerControlListener, bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
@@ -795,7 +774,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //命令测试
             else if(m_radioButton4.isChecked())
             {
-                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_commandTestListener, m_bluetoothDevice, map);
+                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_commandTestListener, bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
@@ -1014,7 +993,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onDetach();
         m_onFragmentInteractionListener = null;
         m_deviceList.clear();
-        m_rssiMap.clear();
     }
 
     @Override
@@ -1031,7 +1009,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
-        m_rssiMap.clear();
     }
 
     @Override
