@@ -22,7 +22,7 @@
                 app:srcCompat="@drawable/device_name1" />
 
             <EditText
-                android:id="@+id/editName_bluetoothList"
+                android:id="@+id/editName_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
@@ -32,7 +32,7 @@
                 android:textSize="14dp" />
 
             <ImageButton
-                android:id="@+id/btnClearName_bluetoothList"
+                android:id="@+id/btnClearName_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -53,7 +53,7 @@
                 app:srcCompat="@drawable/device_address1" />
 
             <EditText
-                android:id="@+id/editAddress_bluetoothList"
+                android:id="@+id/editAddress_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
@@ -63,7 +63,7 @@
                 android:textSize="14sp" />
 
             <ImageButton
-                android:id="@+id/btnClearAddress_bluetoothList"
+                android:id="@+id/btnClearAddress_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -84,14 +84,14 @@
                 app:srcCompat="@drawable/rssi2" />
 
             <SeekBar
-                android:id="@+id/seekBar_bluetoothList"
+                android:id="@+id/seekBar_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="5" />
 
             <TextView
-                android:id="@+id/tvRssi_bluetoothList"
+                android:id="@+id/tvRssi_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -119,7 +119,7 @@
                 android:textSize="14sp" />
 
             <CheckBox
-                android:id="@+id/cbx_bluetoothList"
+                android:id="@+id/chk_filterPop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

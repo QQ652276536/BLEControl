@@ -3,10 +3,6 @@ package com.zistone.bluetoothcontrol.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.alibaba.fastjson.JSON;
-
-import java.util.List;
-
 public class DeviceFilterShared
 {
     public static SharedPreferences Share(Context context)
