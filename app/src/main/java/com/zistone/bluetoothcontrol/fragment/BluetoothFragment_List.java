@@ -694,8 +694,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            onDestroy();
-                            System.exit(0);
                         }
                     });
                     builder.setMessage("未安装OTA_ZM301,无法使用该功能!");
@@ -841,7 +839,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     /**
      * 开启本地蓝牙
      */
-    private void StartBluetoothAdapter()
+    private void OpenBluetoothAdapter()
     {
         m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(m_bluetoothAdapter != null)
@@ -880,7 +878,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    onDestroy();
                     System.exit(0);
                 }
             });
@@ -1004,7 +1001,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //设置监听在后
         m_materialRefreshLayout.setMaterialRefreshListener(m_materialRefreshListener);
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
-        StartBluetoothAdapter();
+        OpenBluetoothAdapter();
         BeginDiscovery();
         return m_view;
     }
