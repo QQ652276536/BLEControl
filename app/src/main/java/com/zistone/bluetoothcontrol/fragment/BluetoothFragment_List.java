@@ -424,6 +424,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
+                        m_deviceMap.clear();
                         m_deviceList.clear();
                         m_bluetoothListAdapter.setM_deviceList(m_deviceList);
                         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
@@ -462,8 +463,19 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public void ConnectSuccessListener()
             {
-                //将连接成功的设备地址存起来
-                m_connectSuccessMap.put(m_myBluetoothDevice.get_address(), m_myBluetoothDevice);
+                String address = m_myBluetoothDevice.get_address();
+                Log.i(TAG, String.format("设备%s连接成功", address));
+                //选择设备后会停止扫描,连接成功后再调用一次筛选
+                if(m_isHideConnectSuccessDevice)
+                {
+                    //根据条件筛选设备
+                    m_connectSuccessMap.put(address, m_myBluetoothDevice);
+                    Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(m_deviceMap);
+                    m_deviceList = new ArrayList<>(map.values());
+                    m_bluetoothListAdapter.setM_deviceList(m_deviceList);
+                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+                    m_bluetoothListAdapter.notifyDataSetChanged();
+                }
             }
         };
 
@@ -473,8 +485,19 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public void ConnectSuccessListener()
             {
-                //将连接成功的设备地址存起来
-                m_connectSuccessMap.put(m_myBluetoothDevice.get_address(), m_myBluetoothDevice);
+                String address = m_myBluetoothDevice.get_address();
+                Log.i(TAG, String.format("设备%s连接成功", address));
+                //选择设备后会停止扫描,连接成功后再调用一次筛选
+                if(m_isHideConnectSuccessDevice)
+                {
+                    //根据条件筛选设备
+                    m_connectSuccessMap.put(address, m_myBluetoothDevice);
+                    Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(m_deviceMap);
+                    m_deviceList = new ArrayList<>(map.values());
+                    m_bluetoothListAdapter.setM_deviceList(m_deviceList);
+                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+                    m_bluetoothListAdapter.notifyDataSetChanged();
+                }
             }
         };
 
@@ -499,6 +522,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      * 隐藏已经连接成功的蓝牙设备
      * <p>
      * 该方法在接口回调里也有调用,在过滤设备（连接成功后该设备不再显示）后,不要调用会导致BluetoothDevice对象被删除的方法,因为该对象可能正在被使用!
+     * <p>
+     * 在连接成功的设备与扫描出来的设备比较时用设备地址比较,不要用对象,因为下拉刷新扫描出来的对象与上次的地址值不一样!
      *
      * @param map 扫描到的蓝牙设备
      * @return
@@ -511,12 +536,22 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator1 = map.entrySet().iterator();
             while(iterator1.hasNext())
             {
-                MyBluetoothDevice tempDevice = iterator1.next().getValue();
-                if(m_connectSuccessMap.containsValue(tempDevice))
+                MyBluetoothDevice tempDevice1 = iterator1.next().getValue();
+                String tempAddress1 = tempDevice1.get_address();
+                boolean flag = false;
+                Iterator<Map.Entry<String, MyBluetoothDevice>> iterator2 = m_connectSuccessMap.entrySet().iterator();
+                while(iterator2.hasNext())
                 {
-                    continue;
+                    MyBluetoothDevice tempDevice2 = iterator2.next().getValue();
+                    String tempAddress2 = tempDevice2.get_address();
+                    if(tempAddress1.equals(tempAddress2))
+                    {
+                        flag = true;
+                        break;
+                    }
                 }
-                resultMap.put(tempDevice.get_address(), tempDevice);
+                if(!flag)
+                    resultMap.put(tempAddress1, tempDevice1);
             }
             return resultMap;
         }
@@ -708,6 +743,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 m_filterRssi = 100;
                 m_isHideConnectSuccessDevice = false;
                 m_filterContent = "No filter";
+                //清空连接成功的设备
+                m_connectSuccessMap.clear();
                 DeviceFilterShared.SetFilterName(m_context, m_filterName);
                 DeviceFilterShared.SetFilterAddress(m_context, m_filterAddress);
                 DeviceFilterShared.SetFilterRssi(m_context, m_filterRssi);
@@ -1008,6 +1045,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onDetach();
         m_onFragmentInteractionListener = null;
         m_deviceList.clear();
+        m_deviceMap.clear();
+        m_connectSuccessMap.clear();
     }
 
     @Override
@@ -1024,6 +1063,8 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         CancelDiscovery();
         m_bluetoothAdapter.disable();
         m_deviceList.clear();
+        m_deviceMap.clear();
+        m_connectSuccessMap.clear();
     }
 
     @Override
@@ -1042,6 +1083,11 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
     }
 
+    /**
+     * 当fragment结合viewpager使用时,这个方法会调用
+     *
+     * @param isVisibleToUser
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
@@ -1049,10 +1095,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //界面可见
         if(isVisibleToUser)
         {
+            int a = 1;
         }
         //界面不可见
         else
         {
+            int b = 2;
         }
     }
 
