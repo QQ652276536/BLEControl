@@ -791,7 +791,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        //连接设备前先关闭扫描蓝牙,否则连接成功后再次扫描会发生阻塞,导致扫描不到设备
         CancelDiscovery();
         String address = m_deviceList.get(position).get_address();
         BluetoothDevice bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);

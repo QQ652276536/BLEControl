@@ -17,13 +17,13 @@ import java.util.UUID;
 /**
  * 传统蓝牙
  */
-public class BTUtil
+public class BluetoothUtil
 {
-    private static final String TAG = "BLEUtil";
+    private static final String TAG = "BluetoothUtil";
     //服务,写入,读取,配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static Context m_context;
-    private static BTUtil m_bleUtil;
+    private static BluetoothUtil bluetoothUtil;
     private static BLEUtilCallback m_callback;
     private static BluetoothGatt m_bluetoothGatt;
     private static BluetoothGattService m_bluetoothGattService;
@@ -34,11 +34,11 @@ public class BTUtil
     //设备返回的数据
     private String m_deviceReturnData;
 
-    public static synchronized BTUtil GetInstance()
+    public static synchronized BluetoothUtil GetInstance()
     {
         if(m_bleUtil == null)
         {
-            m_bleUtil = new BTUtil();
+            m_bleUtil = new BluetoothUtil();
         }
         return m_bleUtil;
     }
