@@ -309,7 +309,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         m_filterPopWindow = new PopupWindow(contentView, view.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
         //popWindow可点击,有些厂商的手机必须设置这个才行
         m_filterPopWindow.setTouchable(true);
-        //不知道为什么在7.1点击外部可以消失,在5.1上需要加上下面这句话才会消失
+        //在7.1点击外部可以消失,在5.1上需要加上下面这句话才行
         m_filterPopWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //popWindow外部点击消失
         m_filterPopWindow.setOutsideTouchable(true);
