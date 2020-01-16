@@ -75,31 +75,39 @@ public class BTUtil
         WRITE_UUID = map.get("WRITE_UUID");
         READ_UUID = map.get("READ_UUID");
         CONFIG_UUID = map.get("CONFIG_UUID");
-        if(_bluetoothGatt == null)
-        {
-            _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
-            //设备正在连接中,如果连接成功会执行回调函数discoverServices()
-            _listener.OnConnecting();
-        }
-        else
-        {
-            //设备没有连接过是调用connectGatt()来连接,已经连接过后因意外断开则调用connect()来连接.
-            _bluetoothGatt.connect();
-            //启用发现服务
-            _bluetoothGatt.discoverServices();
-        }
+        if(_bluetoothGatt != null)
+            _bluetoothGatt.close();
+        _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
+        //设备正在连接中，如果连接成功会执行回调函数discoverServices()
+        _listener.OnConnecting();
+
+        //        if(_bluetoothGatt == null)
+        //        {
+        //            _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
+        //            //设备正在连接中，如果连接成功会执行回调函数discoverServices()
+        //            _listener.OnConnecting();
+        //        }
+        //        else
+        //        {
+        //            _bluetoothGatt.close();
+        //            //设备没有连接过是调用connectGatt()来连接，已经连接过后因意外断开则调用connect()来连接.
+        //            _bluetoothGatt.connect();
+        //            //启用发现服务
+        //            _bluetoothGatt.discoverServices();
+        //        }
     }
 
     /**
      * 断开连接
+     * <p>
+     * 如果手动disconnect不要立即close，不然onConnectionStateChange里会抛空指针异常，因为手动断开时会回调onConnectionStateChange
+     * 方法，在这个方法中close释放资源。
      */
     public static void DisConnGatt()
     {
         if(_bluetoothGatt != null)
         {
             _bluetoothGatt.disconnect();
-            _bluetoothGatt.close();
-            _bluetoothGatt = null;
         }
     }
 
@@ -120,12 +128,12 @@ public class BTUtil
             if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
             {
                 //启用发现服务
-                gatt.discoverServices();
+                _bluetoothGatt.discoverServices();
             }
-            else
+            if(newState == BluetoothGatt.STATE_DISCONNECTED)
             {
-                gatt.close();
-                _listener.OnDisConnected();
+                if(_bluetoothGatt != null)
+                    _bluetoothGatt.close();
             }
         }
 
@@ -137,8 +145,8 @@ public class BTUtil
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status)
         {
-            //通过UUID找到服务,直到这里才是真正建立了可通信的连接
-            _bluetoothGattService = gatt.getService(SERVICE_UUID);
+            //通过UUID找到服务，直到这里才是真正建立了可通信的连接
+            _bluetoothGattService = _bluetoothGatt.getService(SERVICE_UUID);
             if(_bluetoothGattService != null)
             {
                 //读写数据的服务和特征
@@ -171,7 +179,7 @@ public class BTUtil
         }
 
         /**
-         * 收到硬件返回的数据时回调,如果是Notify的方式
+         * 收到硬件返回的数据时回调，如果是Notify的方式
          * @param gatt
          * @param characteristic
          */
