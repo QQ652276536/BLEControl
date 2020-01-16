@@ -1,324 +1,116 @@
 package com.zistone.bluetoothcontrol.util;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
-import java.util.UUID;
+import java.util.List;
 
-/**
- * 低功耗蓝牙
- */
 public class BLEUtil
 {
-    private static final String TAG = "BLEUtil";
-    //服务,写入,读取,配置
-    private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
-    private static Context m_context;
-    private static BLEUtil m_bleUtil;
-    private static BLEUtilCallback m_callback;
-    private static BluetoothGatt m_bluetoothGatt;
-    private static BluetoothGattService m_bluetoothGattService;
-    private static BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write, m_bluetoothGattCharacteristic_read;
-    private static UUID[] m_uuidArray;
-    //设备连接状态
-    private boolean m_connectionState = false;
-    //设备返回的数据
-    private String m_deviceReturnData;
+    private static Context _context;
+    private static BLEListener _listener;
+    private static BluetoothAdapter _bluetoothAdapter;
+    private static BluetoothLeScanner _bluetoothLeScanner;
 
-    public static synchronized BLEUtil GetInstance()
+    /**
+     * @param context
+     * @param listener           接口回调
+     * @param bluetoothAdapter   蓝牙适配器
+     * @param bluetoothLeScanner BLE设备扫描器
+     */
+    public static void Init(Context context, BLEListener listener, BluetoothAdapter bluetoothAdapter, BluetoothLeScanner bluetoothLeScanner)
     {
-        if(m_bleUtil == null)
-        {
-            m_bleUtil = new BLEUtil();
-        }
-        return m_bleUtil;
-    }
-
-    public static void Init(Context context, BLEUtilCallback callback, UUID[] uuidArray)
-    {
-        m_context = context;
-        m_callback = callback;
-        m_uuidArray = uuidArray;
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(bluetoothAdapter == null)
-        {
-            ShowWarning(-3);
-            ((Activity) m_context).finish();
-        }
-    }
-
-    //开始扫描
-    public void StartScan()
-    {
-        m_callback.OnLeScanStart();
-    }
-
-    //停止扫描
-    public void StopScan()
-    {
-        m_callback.OnLeScanStop();
+        _context = context;
+        _listener = listener;
+        _bluetoothAdapter = bluetoothAdapter;
+        _bluetoothLeScanner = bluetoothLeScanner;
     }
 
     /**
+     * 检查蓝牙适配器是否打开
+     * 在开始扫描和取消扫描的都时候都需要判断适配器的状态以及是否获取到扫描器,否则将抛出异常IllegalStateException: BT Adapter is not turned
+     * ON.
      *
+     * @return
      */
-    public BluetoothGattCallback m_bluetoothGattCallback = new BluetoothGattCallback()
+    private static boolean IsBluetoothAvailable()
     {
-        /**
-         * 连接状态改变时回调
-         * @param gatt
-         * @param status
-         * @param newState
-         */
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
-        {
-            if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
-            {
-                Log.d(TAG, ">>>成功建立连接!");
-                //启用发现服务
-                gatt.discoverServices();
-            }
-            else
-            {
-                Log.d(TAG, ">>>连接已断开!");
-                gatt.close();
-                m_callback.OnDisConnected();
-            }
-        }
-
-        /**
-         * 发现设备(真正建立连接)后回调
-         * @param gatt
-         * @param status
-         */
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status)
-        {
-            //直到这里才是真正建立了可通信的连接
-            //通过UUID找到服务
-            m_bluetoothGattService = gatt.getService(SERVICE_UUID);
-            if(m_bluetoothGattService != null)
-            {
-                //写数据的服务和特征
-                m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
-                if(m_bluetoothGattCharacteristic_write != null)
-                {
-                    Log.d(TAG, ">>>已找到写入数据的特征值!");
-                }
-                else
-                {
-                    Log.e(TAG, ">>>该UUID无写入数据的特征值!");
-                }
-                //读取数据的服务和特征
-                m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
-                if(m_bluetoothGattCharacteristic_read != null)
-                {
-                    Log.d(TAG, ">>>已找到读取数据的特征值!");
-                    //订阅读取通知
-                    m_bluetoothGatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_read, true);
-                    BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    m_bluetoothGatt.writeDescriptor(descriptor);
-                    //设备已连接
-                    m_callback.OnConnected();
-                }
-                else
-                {
-                    Log.e(TAG, ">>>该UUID无读取数据的特征值!");
-                }
-            }
-        }
-
-        /**
-         * 写入成功后回调
-         *
-         * @param gatt
-         * @param characteristic
-         * @param status
-         */
-        @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-        {
-            byte[] byteArray = characteristic.getValue();
-            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-            result = ConvertUtil.HexStrAddCharacter(result, " ");
-            String[] strArray = result.split(" ");
-            String indexStr = strArray[11];
-            switch(indexStr)
-            {
-                //发送开门指令
-                case "00":
-                {
-                    break;
-                }
-                //发送读卡指令
-                case "01":
-                    break;
-                //发送测量电池电压指令
-                case "02":
-                    break;
-                //发送测量磁场强度指令
-                case "03":
-                    break;
-                //发送测量门状态指令
-                case "04":
-                    break;
-                //发送综合测量指令
-                case "80":
-                    break;
-                //发送开一号门锁指令
-                case "81":
-                    break;
-                //发送开二号门锁指令
-                case "82":
-                    break;
-                //发送开全部门锁指令
-                case "83":
-                    break;
-                //发送查询内部控制参数指令
-                case "86":
-                {
-                    break;
-                }
-                //发送修改内部控制参数指令
-                case "87":
-                {
-                    break;
-                }
-            }
-        }
-
-        /**
-         * 收到硬件返回的数据时回调,如果是Notify的方式
-         * @param gatt
-         * @param characteristic
-         */
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
-        {
-            byte[] byteArray = characteristic.getValue();
-            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-            result = ConvertUtil.HexStrAddCharacter(result, " ");
-            Log.d(TAG, ">>>接收:" + result);
-            String[] strArray = result.split(" ");
-            StringBuffer stringBuffer = new StringBuffer();
-            //一个包(20个字节)
-            if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
-            {
-                //清空缓存
-                m_deviceReturnData = result;
-            }
-            //分包
-            else
-            {
-                if(!strArray[strArray.length - 1].equals("16"))
-                {
-                    stringBuffer.append(result + " ");
-                }
-                //最后一个包
-                else
-                {
-                    stringBuffer.append(result);
-                    m_deviceReturnData = stringBuffer.toString();
-                }
-            }
-        }
-    };
+        return (_bluetoothLeScanner != null && _bluetoothAdapter != null && _bluetoothAdapter.isEnabled() && _bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
+    }
 
     /**
-     * 连接设备
+     * 开始扫描BLE设备
      *
-     * @param device
+     * @return 蓝牙适配器是否打开、扫描器是否已获取到
      */
-    public void ConnectDevice(BluetoothDevice device)
+    public static int StartScanLe()
     {
-        if(m_bluetoothGatt == null)
+        if(IsBluetoothAvailable())
         {
-            m_bluetoothGatt = device.connectGatt(m_context, true, m_bluetoothGattCallback);
-            //设备正在连接中,如果连接成功会执行回调函数OnConnected()
-            m_callback.OnConnecting();
+            _bluetoothLeScanner.stopScan(_leScanCallback);
+            _bluetoothLeScanner.startScan(_leScanCallback);
+            return 1;
         }
         else
         {
-            //设备没有连接过是调用connectGatt()来连接,已经连接过后因意外断开则调用connect()来连接.
-            m_bluetoothGatt.connect();
-            //启用发现服务
-            m_bluetoothGatt.discoverServices();
+            return -1;
         }
     }
 
     /**
-     * 断开连接
+     * 停止扫描BLE设备
+     *
+     * @return 蓝牙适配器是否打开、扫描器是否已获取到
      */
-    public static void DisConnGatt()
+    public static int StopScanLe()
     {
-        if(m_bluetoothGatt != null)
+        if(IsBluetoothAvailable())
         {
-            m_bluetoothGatt.disconnect();
-            m_bluetoothGatt.close();
-            m_bluetoothGatt = null;
+            _bluetoothLeScanner.stopScan(_leScanCallback);
+            return 1;
+        }
+        else
+        {
+            return -1;
         }
     }
 
     /**
-     * 发送指令
+     * 扫描到的BLE设备的回调
      */
-    public static void SendComm(String data)
+    private static final ScanCallback _leScanCallback = new ScanCallback()
     {
-        if(m_bluetoothGatt != null && m_bluetoothGattCharacteristic_write != null && data != null && !data.equals(""))
+        @Override
+        public void onScanResult(int callbackType, ScanResult result)
         {
-            byte[] byteArray = ConvertUtil.HexStrToByteArray(data);
-            m_bluetoothGattCharacteristic_write.setValue(byteArray);
-            m_bluetoothGatt.writeCharacteristic(m_bluetoothGattCharacteristic_write);
+            super.onScanResult(callbackType, result);
+            _listener.OnScanLeResult(result);
         }
-    }
 
-    private static void ShowWarning(int param)
-    {
-        switch(param)
+        @Override
+        public void onBatchScanResults(List<ScanResult> results)
         {
-            case -1:
-                Toast.makeText(m_context, "蓝牙已断开", Toast.LENGTH_SHORT).show();
-                break;
-            case -2:
-                Toast.makeText(m_context, "未连接蓝牙", Toast.LENGTH_SHORT).show();
-                break;
-            case -3:
-            {
-                Toast.makeText(m_context, "该设备不支持BLE", Toast.LENGTH_SHORT).show();
-                break;
-            }
+            super.onBatchScanResults(results);
         }
-    }
 
-    /**
-     * 回调接口
-     */
-    public interface BLEUtilCallback
-    {
-        //扫描开始
-        void OnLeScanStart();
+        /**
+         * 扫描失败
+         *
+         * errorCode=1:已启动具有相同设置的BLE扫描
+         * errorCode=2:应用未注册
+         * errorCode=3:内部错误
+         * errorCode=4:设备不支持低功耗蓝牙
+         *
+         * @param errorCode
+         */
+        @Override
+        public void onScanFailed(int errorCode)
+        {
+            super.onScanFailed(errorCode);
+        }
+    };
 
-        //扫描停止
-        void OnLeScanStop();
-
-        //设备已连接
-        void OnConnected();
-
-        //设备已断开连接
-        void OnDisConnected();
-
-        //设备连接中
-        void OnConnecting();
-    }
 }
