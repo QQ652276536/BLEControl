@@ -20,14 +20,14 @@ public interface BTListener
     /**
      * 数据发送成功
      *
-     * @param data
+     * @param byteArray
      */
-    void OnWriteSuccess(String data);
+    void OnWriteSuccess(byte[] byteArray);
 
     /**
      * 收到数据
      *
-     * @param data
+     * @param byteArray
      */
-    void OnReadSuccess(String data);
+    void OnReadSuccess(byte[] byteArray);
 }

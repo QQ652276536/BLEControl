@@ -141,8 +141,7 @@ public class BTUtil
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
         {
             byte[] byteArray = characteristic.getValue();
-            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-            _listener.OnWriteSuccess(result);
+            _listener.OnWriteSuccess(byteArray);
         }
 
         /**
@@ -154,8 +153,7 @@ public class BTUtil
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
         {
             byte[] byteArray = characteristic.getValue();
-            String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-            _listener.OnReadSuccess(result);
+            _listener.OnReadSuccess(byteArray);
         }
     };
 
