@@ -70,9 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_List extends Fragment implements View.OnClickListener,
-        AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, TextWatcher,
-        SeekBar.OnSeekBarChangeListener, PopupWindow.OnDismissListener, BLEListener
+public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, PopupWindow.OnDismissListener, BLEListener
 {
     private static final String TAG = "BluetoothFragment_List";
     private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2";
@@ -769,10 +767,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //电力控制
             if(_radioButton3.isChecked())
             {
-                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(bluetoothDevice, map);
-                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                //                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(bluetoothDevice, map);
+                //                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                //                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
+                //                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //命令测试
             else if(_radioButton4.isChecked())
