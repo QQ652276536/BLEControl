@@ -1,5 +1,6 @@
 package com.zistone.bluetoothcontrol.util;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -8,6 +9,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.content.Intent;
 
 import java.util.Map;
 import java.util.UUID;
@@ -21,26 +23,50 @@ public class BTUtil
     private static BluetoothGatt _bluetoothGatt;
     private static BluetoothGattService _bluetoothGattService;
     private static BluetoothGattCharacteristic _bluetoothGattCharacteristic_write, _bluetoothGattCharacteristic_read;
-    private static BluetoothDevice _bluetoothDevice;
 
-    /**
-     * @param context
-     * @param listener         接口回调
-     * @param bluetoothAdapter 蓝牙适配器
-     * @param bluetoothDevice  BLE设备
-     */
-    public static void Init(Context context, BTListener listener, BluetoothAdapter bluetoothAdapter, BluetoothDevice bluetoothDevice)
+    public static int Init(Context context, BTListener listener)
     {
+        int result;
         _context = context;
         _listener = listener;
-        _bluetoothAdapter = bluetoothAdapter;
-        _bluetoothDevice = bluetoothDevice;
+        //打开手机蓝牙
+        _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(_bluetoothAdapter != null)
+        {
+            if(!_bluetoothAdapter.isEnabled())
+            {
+                Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                ((Activity) _context).startActivityForResult(intent, 1);
+                result = 1;
+            }
+            else
+            {
+                switch(_bluetoothAdapter.getState())
+                {
+                    //蓝牙已开启
+                    case BluetoothAdapter.STATE_ON:
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        result = 1;
+                        break;
+                    //蓝牙未开启
+                    case BluetoothAdapter.STATE_OFF:
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                    default:
+                        result = -1;
+                }
+            }
+        }
+        else
+        {
+            result = -2;
+        }
+        return result;
     }
 
     /**
      * 连接设备
      *
-     * @param map    UUID
+     * @param map
      * @param device
      */
     public static void ConnectDevice(BluetoothDevice device, Map<String, UUID> map)
@@ -51,7 +77,7 @@ public class BTUtil
         CONFIG_UUID = map.get("CONFIG_UUID");
         if(_bluetoothGatt == null)
         {
-            _bluetoothGatt = device.connectGatt(_context, true, _bluetoothGattCallback);
+            _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
             //设备正在连接中,如果连接成功会执行回调函数discoverServices()
             _listener.OnConnecting();
         }
