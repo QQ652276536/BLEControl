@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
@@ -55,6 +54,8 @@ import com.zistone.bluetoothcontrol.MainActivity;
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
 import com.zistone.bluetoothcontrol.pojo.MyBluetoothDevice;
+import com.zistone.bluetoothcontrol.util.BLEListener;
+import com.zistone.bluetoothcontrol.util.BLEUtil;
 import com.zistone.bluetoothcontrol.util.ConvertUtil;
 import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
@@ -69,46 +70,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_List extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener
+public class BluetoothFragment_List extends Fragment implements View.OnClickListener,
+        AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener, TextWatcher,
+        SeekBar.OnSeekBarChangeListener, PopupWindow.OnDismissListener, BLEListener
 {
     private static final String TAG = "BluetoothFragment_List";
     private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2";
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private BluetoothListAdapter m_bluetoothListAdapter;
-    private Context m_context;
-    private View m_view;
-    private Toolbar m_toolbar;
-    private ListView m_listView;
-    private BluetoothAdapter m_bluetoothAdapter;
-    private BluetoothFragment_CommandTest m_bluetoothFragment_commandTest;
-    private BluetoothFragment_PowerControl m_bluetoothFragment_powerControl;
-    private BluetoothFragment_OTA m_bluetoothFragment_ota;
-    private MaterialRefreshLayout m_materialRefreshLayout;
-    private RadioButton m_radioButton1, m_radioButton2, m_radioButton3, m_radioButton4, m_radioButton5;
-    private MaterialRefreshListener m_materialRefreshListener;
-    private OnFragmentInteractionListener m_onFragmentInteractionListener;
-    private BluetoothFragment_CommandTest.Listener m_commandTestListener;
-    private BluetoothFragment_PowerControl.Listener m_powerControlListener;
-    private SeekBar.OnSeekBarChangeListener m_onSeekBarChangeListener;
-    private PopupWindow.OnDismissListener m_onDismissListener;
-    private TextWatcher m_textWatcher;
-    private Button m_btn1, m_btnFilterContent;
-    private Drawable m_drawableUp;
-    private Drawable m_drawableDown;
-    private ImageButton m_btnClearContentFilter;
-    private ImageButton m_btnClearNameFilter;
-    private ImageButton m_btnClearAddressFilter;
-    private SeekBar m_seekBar;
-    private EditText m_editName;
-    private EditText m_editAddress;
-    private TextView m_textRssi;
-    private LinearLayout m_linearLayout1;
-    private CheckBox m_chkHideDevice;
+    private BluetoothListAdapter _bluetoothListAdapter;
+    private Context _context;
+    private View _view;
+    private Toolbar _toolbar;
+    private ListView _listView;
+    private BluetoothAdapter _bluetoothAdapter;
+    private BluetoothFragment_CommandTest _bluetoothFragment_commandTest;
+    private BluetoothFragment_PowerControl _bluetoothFragment_powerControl;
+    private BluetoothFragment_OTA _bluetoothFragment_ota;
+    private MaterialRefreshLayout _materialRefreshLayout;
+    private RadioButton _radioButton1, _radioButton2, _radioButton3, _radioButton4, _radioButton5;
+    private OnFragmentInteractionListener _onFragmentInteractionListener;
+    private MaterialRefreshListener _materialRefreshListener;
+    private Button _btn1, _btnFilterContent;
+    private Drawable _drawableUp;
+    private Drawable _drawableDown;
+    private ImageButton _btnClearContentFilter;
+    private ImageButton _btnClearNameFilter;
+    private ImageButton _btnClearAddressFilter;
+    private SeekBar _seekBar;
+    private EditText _editName;
+    private EditText _editAddress;
+    private TextView _textRssi;
+    private LinearLayout _linearLayout1;
+    private CheckBox _chkHideDevice;
     //BLE的扫描器
-    private BluetoothLeScanner m_bluetoothLeScanner;
+    private BluetoothLeScanner _bluetoothLeScanner;
     //筛选条件,可以设置名称、地址、UUID
-    private List<ScanFilter> m_scanFilterList = new ArrayList<ScanFilter>()
+    private List<ScanFilter> _scanFilterList = new ArrayList<ScanFilter>()
     {{
         ScanFilter.Builder filter = new ScanFilter.Builder();
         ParcelUuid parcelUuid = ParcelUuid.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
@@ -124,21 +122,172 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     //  SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
     //时间:
     //  扫描到设置时间后执行onBatchScanResults的回调
-    private ScanSettings m_scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+    private ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
     //记录点击返回键的时间
-    private long m_exitTime = 0;
+    private long _exitTime = 0;
     //当前连接的设备
-    private MyBluetoothDevice m_myBluetoothDevice;
+    private MyBluetoothDevice _myBluetoothDevice;
     //扫描到的设备,由Map转换,为保证和map数据的同步,不允许对该集合操作
-    private List<MyBluetoothDevice> m_deviceList = new ArrayList<>();
+    private List<MyBluetoothDevice> _deviceList = new ArrayList<>();
     //扫描到的设备、连接成功的设备
-    private Map<String, MyBluetoothDevice> m_deviceMap = new HashMap<>(), m_connectSuccessMap = new HashMap<>();
+    private Map<String, MyBluetoothDevice> _deviceMap = new HashMap<>(), _connectSuccessMap = new HashMap<>();
     //传递进来的参数1、传递进来的参数2、根据名称筛选设备、根据地址过滤设备
-    private String m_param1, m_param2, m_filterName, m_filterAddress, m_filterContent;
+    private String _param1, _param2, _filterName, _filterAddress, _filterContent;
     //根据信号强度筛选设备
-    private int m_filterRssi = 100;
-    private boolean m_isHideConnectSuccessDevice = false, m_isBtnUpDownFlag = false;
-    private PopupWindow m_filterPopWindow;
+    private int _filterRssi = 100;
+    private boolean _isHideConnectSuccessDevice = false, _isBtnUpDownFlag = false;
+    private PopupWindow _filterPopWindow;
+
+    /**
+     * 成功连接BLE设备
+     */
+    public void OnConnected()
+    {
+        String address = _myBluetoothDevice.get_address();
+        Log.i(TAG, String.format("设备%s连接成功", address));
+        //选择设备后会停止扫描,连接成功后再调用一次筛选
+        if(_isHideConnectSuccessDevice)
+        {
+            //根据条件筛选设备
+            _connectSuccessMap.put(address, _myBluetoothDevice);
+            Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(_deviceMap);
+            _deviceList = new ArrayList<>(map.values());
+            _bluetoothListAdapter.setM_deviceList(_deviceList);
+            //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+            _bluetoothListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 扫描到BLE设备
+     *
+     * @param result
+     */
+    @Override
+    public void OnScanLeResult(ScanResult result)
+    {
+        BluetoothDevice bluetoothDevice = result.getDevice();
+        String name = bluetoothDevice.getName();
+        String address = bluetoothDevice.getAddress();
+        int rssi = result.getRssi();
+        int state = bluetoothDevice.getBondState();
+        //设备去重
+        if(_deviceMap.containsKey(address))
+        {
+            MyBluetoothDevice device = _deviceMap.get(address);
+            device.set_name(name);
+            device.set_rssi(rssi);
+            device.set_boundState(state);
+            _deviceMap.put(address, device);
+        }
+        else
+        {
+            MyBluetoothDevice device = new MyBluetoothDevice();
+            device.set_name(name);
+            device.set_address(address);
+            device.set_rssi(rssi);
+            device.set_boundState(state);
+            device.set_bluetoothDevice(bluetoothDevice);
+            _deviceMap.put(address, device);
+        }
+        //根据条件筛选设备
+        Map<String, MyBluetoothDevice> map = FilterDeviceByCondition(_deviceMap);
+        _deviceList = new ArrayList<>(map.values());
+        //按照信号强度降序排序
+        Collections.sort(_deviceList, new Comparator<MyBluetoothDevice>()
+        {
+            @Override
+            public int compare(MyBluetoothDevice o1, MyBluetoothDevice o2)
+            {
+                if(o1.get_rssi() > o2.get_rssi())
+                    return -1;
+                if(o1.get_rssi() < o2.get_rssi())
+                    return 1;
+                return 0;
+            }
+        });
+        _bluetoothListAdapter.setM_deviceList(_deviceList);
+        Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
+        //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+        _bluetoothListAdapter.notifyDataSetChanged();
+        _listView.setOnItemClickListener(BluetoothFragment_List.this);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after)
+    {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count)
+    {
+    }
+
+    @Override
+    public void afterTextChanged(Editable s)
+    {
+        if(s == _editName.getEditableText())
+            _filterName = _editName.getText().toString();
+        else if(s == _editAddress.getEditableText())
+            _filterAddress = _editAddress.getText().toString();
+        ShowSetFilterContent();
+    }
+
+
+    /**
+     * 进度条发生改变
+     *
+     * @param seekBar
+     * @param progress
+     * @param fromUser
+     */
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+    {
+        _filterRssi = progress + 40;
+        _textRssi.setText(_filterRssi * -1 + "dBm");
+    }
+
+    /**
+     * 按住进度条
+     *
+     * @param seekBar
+     */
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar)
+    {
+    }
+
+    /**
+     * 放开进度条
+     *
+     * @param seekBar
+     */
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar)
+    {
+        ShowSetFilterContent();
+    }
+
+    /**
+     * PopupWidnow点击外部消失
+     */
+    @Override
+    public void onDismiss()
+    {
+        //隐藏键盘
+        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(_btnFilterContent.getApplicationWindowToken(), 0);
+        _filterName = _editName.getText().toString();
+        _filterAddress = _editAddress.getText().toString();
+        DeviceFilterShared.SetFilterName(_context, _filterName);
+        DeviceFilterShared.SetFilterAddress(_context, _filterAddress);
+        DeviceFilterShared.SetFilterRssi(_context, _filterRssi);
+        DeviceFilterShared.SetFilterDevie(_context, _isHideConnectSuccessDevice);
+        ShowSetFilterContent();
+        _btnFilterContent.setCompoundDrawables(null, null, _drawableDown, null);
+        _isBtnUpDownFlag = false;
+    }
 
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
@@ -158,85 +307,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return fragment;
     }
 
-    private final ScanCallback scanCallback = new ScanCallback()
-    {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result)
-        {
-            super.onScanResult(callbackType, result);
-            BluetoothDevice bluetoothDevice = result.getDevice();
-            String name = bluetoothDevice.getName();
-            String address = bluetoothDevice.getAddress();
-            int rssi = result.getRssi();
-            int state = bluetoothDevice.getBondState();
-            //设备去重
-            if(m_deviceMap.containsKey(address))
-            {
-                MyBluetoothDevice device = m_deviceMap.get(address);
-                device.set_name(name);
-                device.set_rssi(rssi);
-                device.set_boundState(state);
-                m_deviceMap.put(address, device);
-            }
-            else
-            {
-                MyBluetoothDevice device = new MyBluetoothDevice();
-                device.set_name(name);
-                device.set_address(address);
-                device.set_rssi(rssi);
-                device.set_boundState(state);
-                device.set_bluetoothDevice(bluetoothDevice);
-                m_deviceMap.put(address, device);
-            }
-            //根据条件筛选设备
-            Map<String, MyBluetoothDevice> map = FilterDeviceByCondition(m_deviceMap);
-            m_deviceList = new ArrayList<>(map.values());
-            //按照信号强度降序排序
-            Collections.sort(m_deviceList, new Comparator<MyBluetoothDevice>()
-            {
-                @Override
-                public int compare(MyBluetoothDevice o1, MyBluetoothDevice o2)
-                {
-                    if(o1.get_rssi() > o2.get_rssi())
-                        return -1;
-                    if(o1.get_rssi() < o2.get_rssi())
-                        return 1;
-                    return 0;
-                }
-            });
-            m_bluetoothListAdapter.setM_deviceList(m_deviceList);
-            Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
-            //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-            m_bluetoothListAdapter.notifyDataSetChanged();
-            m_listView.setOnItemClickListener(BluetoothFragment_List.this);
-        }
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results)
-        {
-            super.onBatchScanResults(results);
-        }
-
-        @Override
-        public void onScanFailed(int errorCode)
-        {
-            super.onScanFailed(errorCode);
-            //扫描失败返回的参数有4个
-            //errorCode=1:已启动具有相同设置的BLE扫描
-            //errorCode=2:应用未注册
-            //errorCode=3:内部错误
-            //errorCode=4:设备不支持低功耗蓝牙
-        }
-    };
-
     private final View.OnKeyListener backListener = (v, keyCode, event) ->
     {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
         {
-            if((System.currentTimeMillis() - m_exitTime) > 2000)
+            if((System.currentTimeMillis() - _exitTime) > 2000)
             {
                 Toast.makeText(getActivity(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
-                m_exitTime = System.currentTimeMillis();
+                _exitTime = System.currentTimeMillis();
             }
             else
             {
@@ -253,26 +331,26 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void ShowSetFilterContent()
     {
-        m_filterContent = "";
-        if(!m_filterName.trim().equals(""))
-            m_filterContent += m_filterName + ",";
-        if(!m_filterAddress.trim().equals(""))
-            m_filterContent += m_filterAddress + ",";
-        if(m_filterRssi != 100)
-            m_filterContent += m_filterRssi * -1 + "dBm,";
-        if(m_isHideConnectSuccessDevice)
-            m_filterContent += "Yes,";
-        m_filterContent = ConvertUtil.ReplaceLast(m_filterContent, ",", "");
-        if(m_filterContent.equals(""))
+        _filterContent = "";
+        if(!_filterName.trim().equals(""))
+            _filterContent += _filterName + ",";
+        if(!_filterAddress.trim().equals(""))
+            _filterContent += _filterAddress + ",";
+        if(_filterRssi != 100)
+            _filterContent += _filterRssi * -1 + "dBm,";
+        if(_isHideConnectSuccessDevice)
+            _filterContent += "Yes,";
+        _filterContent = ConvertUtil.ReplaceLast(_filterContent, ",", "");
+        if(_filterContent.equals(""))
         {
-            m_btnClearContentFilter.setVisibility(View.INVISIBLE);
-            m_filterContent = "No filter";
+            _btnClearContentFilter.setVisibility(View.INVISIBLE);
+            _filterContent = "No filter";
         }
         else
         {
-            m_btnClearContentFilter.setVisibility(View.VISIBLE);
+            _btnClearContentFilter.setVisibility(View.VISIBLE);
         }
-        m_btnFilterContent.setText(m_filterContent);
+        _btnFilterContent.setText(_filterContent);
     }
 
     /**
@@ -282,53 +360,41 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void ShowFilterPop(View view)
     {
-        View contentView = LayoutInflater.from(m_context).inflate(R.layout.popwindow_filter, null);
-        m_btnClearNameFilter = contentView.findViewById(R.id.btnClearName_filterPop);
-        m_btnClearNameFilter.setOnClickListener(this::onClick);
-        m_btnClearAddressFilter = contentView.findViewById(R.id.btnClearAddress_filterPop);
-        m_btnClearAddressFilter.setOnClickListener(this::onClick);
-        m_editName = contentView.findViewById(R.id.editName_filterPop);
-        if(!m_filterName.trim().equals(""))
-            m_editName.setText(m_filterName);
-        m_editName.addTextChangedListener(m_textWatcher);
-        m_editAddress = contentView.findViewById(R.id.editAddress_filterPop);
-        if(!m_filterAddress.trim().equals(""))
-            m_editAddress.setText(m_filterAddress);
-        m_editAddress.addTextChangedListener(m_textWatcher);
-        m_seekBar = contentView.findViewById(R.id.seekBar_filterPop);
+        View contentView = LayoutInflater.from(_context).inflate(R.layout.popwindow_filter, null);
+        _btnClearNameFilter = contentView.findViewById(R.id.btnClearName_filterPop);
+        _btnClearNameFilter.setOnClickListener(this::onClick);
+        _btnClearAddressFilter = contentView.findViewById(R.id.btnClearAddress_filterPop);
+        _btnClearAddressFilter.setOnClickListener(this::onClick);
+        _editName = contentView.findViewById(R.id.editName_filterPop);
+        if(!_filterName.trim().equals(""))
+            _editName.setText(_filterName);
+        _editName.addTextChangedListener(this);
+        _editAddress = contentView.findViewById(R.id.editAddress_filterPop);
+        if(!_filterAddress.trim().equals(""))
+            _editAddress.setText(_filterAddress);
+        _editAddress.addTextChangedListener(this);
+        _seekBar = contentView.findViewById(R.id.seekBar_filterPop);
         //进度条的最大数值为60,信号强度 = (数值+40) * -1
-        m_seekBar.setMax(60);
+        _seekBar.setMax(60);
         //进度条的数值 = Math.abs(信号强度) - 40
-        m_seekBar.setProgress(Math.abs(m_filterRssi) - 40);
-        m_seekBar.setOnSeekBarChangeListener(m_onSeekBarChangeListener);
-        m_textRssi = contentView.findViewById(R.id.tvRssi_filterPop);
-        m_textRssi.setText(m_filterRssi * -1 + "dBm");
-        m_chkHideDevice = contentView.findViewById(R.id.chk_filterPop);
-        m_chkHideDevice.setChecked(m_isHideConnectSuccessDevice);
-        m_chkHideDevice.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_filterPopWindow = new PopupWindow(contentView, view.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        _seekBar.setProgress(Math.abs(_filterRssi) - 40);
+        _seekBar.setOnSeekBarChangeListener(this);
+        _textRssi = contentView.findViewById(R.id.tvRssi_filterPop);
+        _textRssi.setText(_filterRssi * -1 + "dBm");
+        _chkHideDevice = contentView.findViewById(R.id.chk_filterPop);
+        _chkHideDevice.setChecked(_isHideConnectSuccessDevice);
+        _chkHideDevice.setOnCheckedChangeListener(this::onCheckedChanged);
+        _filterPopWindow = new PopupWindow(contentView, view.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
         //popWindow可点击,有些厂商的手机必须设置这个才行
-        m_filterPopWindow.setTouchable(true);
+        _filterPopWindow.setTouchable(true);
         //在7.1点击外部可以消失,在5.1上需要加上下面这句话才行
-        m_filterPopWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        _filterPopWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //popWindow外部点击消失
-        m_filterPopWindow.setOutsideTouchable(true);
-        m_filterPopWindow.setOnDismissListener(m_onDismissListener);
+        _filterPopWindow.setOutsideTouchable(true);
+        _filterPopWindow.setOnDismissListener(this::onDismiss);
         int[] location = new int[2];
         view.getLocationOnScreen(location);
-        m_filterPopWindow.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1] + view.getHeight());
-    }
-
-    /**
-     * 检查蓝牙适配器是否打开
-     * 在开始扫描和取消扫描的都时候都需要判断适配器的状态以及是否获取到扫描器,否则将抛出异常IllegalStateException: BT Adapter is not turned
-     * ON.
-     *
-     * @return
-     */
-    private boolean IsBluetoothAvailable()
-    {
-        return (m_bluetoothLeScanner != null && m_bluetoothAdapter != null && m_bluetoothAdapter.isEnabled() && m_bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
+        _filterPopWindow.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1] + view.getHeight());
     }
 
     /**
@@ -336,93 +402,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void InitListener()
     {
-        //EditText内容改变
-        m_textWatcher = new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
-            {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-                if(s == m_editName.getEditableText())
-                    m_filterName = m_editName.getText().toString();
-                else if(s == m_editAddress.getEditableText())
-                    m_filterAddress = m_editAddress.getText().toString();
-                ShowSetFilterContent();
-            }
-        };
-
-        //Pop隐藏
-        m_onDismissListener = new PopupWindow.OnDismissListener()
-        {
-            @Override
-            public void onDismiss()
-            {
-                //隐藏键盘
-                InputMethodManager imm = (InputMethodManager) m_context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(m_btnFilterContent.getApplicationWindowToken(), 0);
-                m_filterName = m_editName.getText().toString();
-                m_filterAddress = m_editAddress.getText().toString();
-                DeviceFilterShared.SetFilterName(m_context, m_filterName);
-                DeviceFilterShared.SetFilterAddress(m_context, m_filterAddress);
-                DeviceFilterShared.SetFilterRssi(m_context, m_filterRssi);
-                DeviceFilterShared.SetFilterDevie(m_context, m_isHideConnectSuccessDevice);
-                ShowSetFilterContent();
-                m_btnFilterContent.setCompoundDrawables(null, null, m_drawableDown, null);
-                m_isBtnUpDownFlag = false;
-            }
-        };
-
-        //进度条拖动
-        m_onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener()
-        {
-            /**
-             * 进度条发生改变
-             * @param seekBar
-             * @param progress
-             * @param fromUser
-             */
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-            {
-                m_filterRssi = progress + 40;
-                m_textRssi.setText(m_filterRssi * -1 + "dBm");
-            }
-
-            /**
-             * 按住进度条时
-             * @param seekBar
-             */
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar)
-            {
-            }
-
-            /**
-             * 放开进度条时
-             * @param seekBar
-             */
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar)
-            {
-                ShowSetFilterContent();
-            }
-        };
-
         //下拉刷新
-        m_materialRefreshListener = new MaterialRefreshListener()
+        _materialRefreshListener = new MaterialRefreshListener()
         {
             /**
              * 下拉刷新
              * 下拉刷新的时候需要清空ListView然后重新绑定
+             *
              * @param materialRefreshLayout
              */
             @Override
@@ -433,13 +419,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     @Override
                     public void run()
                     {
-                        m_deviceMap.clear();
-                        m_deviceList.clear();
-                        m_bluetoothListAdapter.setM_deviceList(m_deviceList);
+                        _deviceMap.clear();
+                        _deviceList.clear();
+                        _bluetoothListAdapter.setM_deviceList(_deviceList);
                         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                        m_bluetoothListAdapter.notifyDataSetChanged();
-                        m_listView.setAdapter(m_bluetoothListAdapter);
-                        BeginDiscovery();
+                        _bluetoothListAdapter.notifyDataSetChanged();
+                        _listView.setAdapter(_bluetoothListAdapter);
+                        BeginScan();
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
                     }
@@ -452,61 +438,18 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public void onfinish()
             {
-                //Toast.makeText(m_context, "完成", Toast.LENGTH_LONG).show();
+                //Toast.makeText(_context, "完成", Toast.LENGTH_LONG).show();
             }
 
             /**
              * 加载更多
+             *
              * @param materialRefreshLayout
              */
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout)
             {
-                Toast.makeText(m_context, "别滑了,到底了", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        //命令测试
-        m_commandTestListener = new BluetoothFragment_CommandTest.Listener()
-        {
-            @Override
-            public void ConnectSuccessListener()
-            {
-                String address = m_myBluetoothDevice.get_address();
-                Log.i(TAG, String.format("设备%s连接成功", address));
-                //选择设备后会停止扫描,连接成功后再调用一次筛选
-                if(m_isHideConnectSuccessDevice)
-                {
-                    //根据条件筛选设备
-                    m_connectSuccessMap.put(address, m_myBluetoothDevice);
-                    Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(m_deviceMap);
-                    m_deviceList = new ArrayList<>(map.values());
-                    m_bluetoothListAdapter.setM_deviceList(m_deviceList);
-                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                    m_bluetoothListAdapter.notifyDataSetChanged();
-                }
-            }
-        };
-
-        //电力控制
-        m_powerControlListener = new BluetoothFragment_PowerControl.Listener()
-        {
-            @Override
-            public void ConnectSuccessListener()
-            {
-                String address = m_myBluetoothDevice.get_address();
-                Log.i(TAG, String.format("设备%s连接成功", address));
-                //选择设备后会停止扫描,连接成功后再调用一次筛选
-                if(m_isHideConnectSuccessDevice)
-                {
-                    //根据条件筛选设备
-                    m_connectSuccessMap.put(address, m_myBluetoothDevice);
-                    Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(m_deviceMap);
-                    m_deviceList = new ArrayList<>(map.values());
-                    m_bluetoothListAdapter.setM_deviceList(m_deviceList);
-                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                    m_bluetoothListAdapter.notifyDataSetChanged();
-                }
+                Toast.makeText(_context, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -539,7 +482,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private Map<String, MyBluetoothDevice> HideConnectSuccessDevice(Map<String, MyBluetoothDevice> map)
     {
-        if(m_isHideConnectSuccessDevice)
+        if(_isHideConnectSuccessDevice)
         {
             Map<String, MyBluetoothDevice> resultMap = new HashMap<>();
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator1 = map.entrySet().iterator();
@@ -548,7 +491,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 MyBluetoothDevice tempDevice1 = iterator1.next().getValue();
                 String tempAddress1 = tempDevice1.get_address();
                 boolean flag = false;
-                Iterator<Map.Entry<String, MyBluetoothDevice>> iterator2 = m_connectSuccessMap.entrySet().iterator();
+                Iterator<Map.Entry<String, MyBluetoothDevice>> iterator2 = _connectSuccessMap.entrySet().iterator();
                 while(iterator2.hasNext())
                 {
                     MyBluetoothDevice tempDevice2 = iterator2.next().getValue();
@@ -578,13 +521,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private Map<String, MyBluetoothDevice> OnlyShowSetRssiSameDevice(Map<String, MyBluetoothDevice> map)
     {
-        if(m_filterRssi != 100)
+        if(_filterRssi != 100)
         {
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
                 MyBluetoothDevice device = iterator.next().getValue();
-                if(device.get_rssi() < m_filterRssi * (-1))
+                if(device.get_rssi() < _filterRssi * (-1))
                     iterator.remove();
             }
         }
@@ -599,13 +542,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private Map<String, MyBluetoothDevice> OnlyShowSetAddressSameDevice(Map<String, MyBluetoothDevice> map)
     {
-        if(!m_filterAddress.trim().equals(""))
+        if(!_filterAddress.trim().equals(""))
         {
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
                 String address = iterator.next().getValue().get_address();
-                if(address == null || !address.trim().contains(m_filterAddress))
+                if(address == null || !address.trim().contains(_filterAddress))
                     iterator.remove();
             }
         }
@@ -620,13 +563,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private Map<String, MyBluetoothDevice> OnlyShowSetNameSameDevice(Map<String, MyBluetoothDevice> map)
     {
-        if(!m_filterName.trim().equals(""))
+        if(!_filterName.trim().equals(""))
         {
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while(iterator.hasNext())
             {
                 String name = iterator.next().getValue().get_name();
-                if(name == null || !name.trim().contains(m_filterName))
+                if(name == null || !name.trim().contains(_filterName))
                     iterator.remove();
             }
         }
@@ -683,17 +626,17 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         {
             //OTA
             case R.id.menu_1_setting:
-                //                    m_bluetoothFragment_ota = BluetoothFragment_OTA.newInstance(m_bluetoothDevice, map);
+                //                    _bluetoothFragment_ota = BluetoothFragment_OTA.newInstance(_bluetoothDevice, map);
                 //                    //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                //                    getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_ota, "bluetoothFragment_ota").commitNow();
+                //                    getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_ota, "bluetoothFragment_ota").commitNow();
 
                 //启动第三方apk
                 //getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this)
                 // .commitNow();
-                Intent intent = GetAppOpenIntentByPackageName(m_context, "com.ambiqmicro.android.amota");
+                Intent intent = GetAppOpenIntentByPackageName(_context, "com.ambiqmicro.android.amota");
                 if(intent != null)
                 {
-                    m_context.startActivity(intent);
+                    _context.startActivity(intent);
                 }
                 else
                 {
@@ -722,7 +665,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         switch(buttonView.getId())
         {
             case R.id.chk_filterPop:
-                m_isHideConnectSuccessDevice = isChecked;
+                _isHideConnectSuccessDevice = isChecked;
                 ShowSetFilterContent();
                 break;
         }
@@ -740,50 +683,50 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         switch(v.getId())
         {
             case R.id.btn1_bluetoothList:
-                if(m_btn1.getText().toString().equals("SCAN"))
-                    BeginDiscovery();
+                if(_btn1.getText().toString().equals("SCAN"))
+                    BeginScan();
                 else
-                    CancelDiscovery();
+                    StopScan();
                 break;
             case R.id.btnClearFilterContent_bluetoothList:
-                m_btnClearContentFilter.setVisibility(View.INVISIBLE);
-                m_filterName = "";
-                m_filterAddress = "";
-                m_filterRssi = 100;
-                m_isHideConnectSuccessDevice = false;
-                m_filterContent = "No filter";
+                _btnClearContentFilter.setVisibility(View.INVISIBLE);
+                _filterName = "";
+                _filterAddress = "";
+                _filterRssi = 100;
+                _isHideConnectSuccessDevice = false;
+                _filterContent = "No filter";
                 //清空连接成功的设备
-                m_connectSuccessMap.clear();
-                DeviceFilterShared.SetFilterName(m_context, m_filterName);
-                DeviceFilterShared.SetFilterAddress(m_context, m_filterAddress);
-                DeviceFilterShared.SetFilterRssi(m_context, m_filterRssi);
-                DeviceFilterShared.SetFilterDevie(m_context, m_isHideConnectSuccessDevice);
-                m_btnFilterContent.setText(m_filterContent);
+                _connectSuccessMap.clear();
+                DeviceFilterShared.SetFilterName(_context, _filterName);
+                DeviceFilterShared.SetFilterAddress(_context, _filterAddress);
+                DeviceFilterShared.SetFilterRssi(_context, _filterRssi);
+                DeviceFilterShared.SetFilterDevie(_context, _isHideConnectSuccessDevice);
+                _btnFilterContent.setText(_filterContent);
                 break;
             case R.id.btnFilterContent_bluetoothList:
-                if(!m_isBtnUpDownFlag)
+                if(!_isBtnUpDownFlag)
                 {
-                    m_isBtnUpDownFlag = true;
-                    m_btnFilterContent.setCompoundDrawables(null, null, m_drawableUp, null);
-                    m_btnFilterContent.setText(m_filterContent);
-                    ShowFilterPop(m_linearLayout1);
+                    _isBtnUpDownFlag = true;
+                    _btnFilterContent.setCompoundDrawables(null, null, _drawableUp, null);
+                    _btnFilterContent.setText(_filterContent);
+                    ShowFilterPop(_linearLayout1);
                 }
                 //因为PopWindow的setOutsideTouchable事件,这里将不再会执行,里面的逻辑写在onDismiss里代替
                 else
                 {
-                    m_isBtnUpDownFlag = false;
+                    _isBtnUpDownFlag = false;
                     //隐藏键盘
-                    InputMethodManager imm = (InputMethodManager) m_context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(m_btnFilterContent.getApplicationWindowToken(), 0);
-                    m_btnFilterContent.setCompoundDrawables(null, null, m_drawableDown, null);
-                    m_filterPopWindow.dismiss();
+                    InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(_btnFilterContent.getApplicationWindowToken(), 0);
+                    _btnFilterContent.setCompoundDrawables(null, null, _drawableDown, null);
+                    _filterPopWindow.dismiss();
                 }
                 break;
             case R.id.btnClearName_filterPop:
-                m_editName.setText("");
+                _editName.setText("");
                 break;
             case R.id.btnClearAddress_filterPop:
-                m_editAddress.setText("");
+                _editAddress.setText("");
                 break;
         }
     }
@@ -791,26 +734,26 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        CancelDiscovery();
-        String address = m_deviceList.get(position).get_address();
-        BluetoothDevice bluetoothDevice = m_bluetoothAdapter.getRemoteDevice(address);
-        m_myBluetoothDevice = m_deviceMap.get(address);
+        StopScan();
+        String address = _deviceList.get(position).get_address();
+        BluetoothDevice bluetoothDevice = _bluetoothAdapter.getRemoteDevice(address);
+        _myBluetoothDevice = _deviceMap.get(address);
         //BlueNRG
-        if(m_radioButton1.isChecked())
+        if(_radioButton1.isChecked())
         {
             SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
             WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
         }
         //Amdtp
-        else if(m_radioButton2.isChecked())
+        else if(_radioButton2.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
         }
         //OTA
-        else if(m_radioButton5.isChecked())
+        else if(_radioButton5.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
@@ -824,25 +767,25 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         if(bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
             //电力控制
-            if(m_radioButton3.isChecked())
+            if(_radioButton3.isChecked())
             {
-                m_bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(m_powerControlListener, bluetoothDevice, map);
+                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //命令测试
-            else if(m_radioButton4.isChecked())
+            else if(_radioButton4.isChecked())
             {
-                m_bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(m_commandTestListener, bluetoothDevice, map);
+                _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, m_bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
         }
         else
         {
-            Toast.makeText(m_context, "请检查该设备是否被占用", Toast.LENGTH_SHORT);
+            Toast.makeText(_context, "请检查该设备是否被占用", Toast.LENGTH_SHORT);
         }
     }
 
@@ -851,31 +794,32 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void OpenBluetoothAdapter()
     {
-        m_bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(m_bluetoothAdapter != null)
+        _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(_bluetoothAdapter != null)
         {
             //未打开蓝牙,才需要打开蓝牙
             //会以Dialog样式显示一个Activity,我们可以在onActivityResult()方法去处理返回值
-            if(!m_bluetoothAdapter.isEnabled())
+            if(!_bluetoothAdapter.isEnabled())
             {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intent, 1);
             }
             else
             {
-                switch(m_bluetoothAdapter.getState())
+                switch(_bluetoothAdapter.getState())
                 {
                     //蓝牙已开启则直接开始扫描设备
                     case BluetoothAdapter.STATE_ON:
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        m_btn1.setText("STOP");
-                        m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
+                        _btn1.setText("STOP");
+                        _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
+                        BLEUtil.Init(_context, this, _bluetoothAdapter, _bluetoothLeScanner);
                         break;
                     //蓝牙未开启
                     case BluetoothAdapter.STATE_OFF:
                     case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        m_btn1.setText("SCAN");
+                        _btn1.setText("SCAN");
                         break;
                 }
             }
@@ -898,39 +842,26 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
 
     private void onButtonPressed(Uri uri)
     {
-        if(m_onFragmentInteractionListener != null)
-            m_onFragmentInteractionListener.onFragmentInteraction(uri);
+        if(_onFragmentInteractionListener != null)
+            _onFragmentInteractionListener.onFragmentInteraction(uri);
     }
 
-    /**
-     * 开始搜索蓝牙
-     * 开始扫描时候要确保蓝牙适配器处于开启状态
-     */
-    private void BeginDiscovery()
+    private void BeginScan()
     {
-        if(IsBluetoothAvailable())
+        if(BLEUtil.StartScanLe() == 1)
         {
-            m_btn1.setText("STOP");
-            m_bluetoothLeScanner.stopScan(scanCallback);
-            m_bluetoothLeScanner.startScan(scanCallback);
+            _btn1.setText("STOP");
         }
         else
         {
-            Toast.makeText(m_context, "请确认系统蓝牙是否开启", Toast.LENGTH_SHORT);
+            Toast.makeText(_context, "请确认系统蓝牙是否开启", Toast.LENGTH_SHORT);
         }
     }
 
-    /**
-     * 取消搜索蓝牙
-     * 取消扫描的时候要确保蓝牙适配器处于开启状态
-     */
-    private void CancelDiscovery()
+    private void StopScan()
     {
-        if(IsBluetoothAvailable())
-        {
-            m_btn1.setText("SCAN");
-            m_bluetoothLeScanner.stopScan(scanCallback);
-        }
+        _btn1.setText("SCAN");
+        BLEUtil.StopScanLe();
     }
 
     @Override
@@ -945,75 +876,75 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
         {
-            m_param1 = getArguments().getString(ARG_PARAM1);
-            m_param2 = getArguments().getString(ARG_PARAM2);
+            _param1 = getArguments().getString(ARG_PARAM1);
+            _param2 = getArguments().getString(ARG_PARAM2);
         }
-        m_context = getContext();
-        m_filterContent = "No filter";
-        m_filterName = DeviceFilterShared.GetFilterName(m_context);
-        m_filterAddress = DeviceFilterShared.GetFilterAddress(m_context);
-        m_filterRssi = DeviceFilterShared.GetFilterRssi(m_context);
-        m_isHideConnectSuccessDevice = DeviceFilterShared.GetFilterDevice(m_context);
+        _context = getContext();
+        _filterContent = "No filter";
+        _filterName = DeviceFilterShared.GetFilterName(_context);
+        _filterAddress = DeviceFilterShared.GetFilterAddress(_context);
+        _filterRssi = DeviceFilterShared.GetFilterRssi(_context);
+        _isHideConnectSuccessDevice = DeviceFilterShared.GetFilterDevice(_context);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        m_view = inflater.inflate(R.layout.fragment_bluetooth_list, container, false);
-        m_bluetoothListAdapter = new BluetoothListAdapter(m_context);
-        m_onFragmentInteractionListener.onFragmentInteraction(Uri.parse("content://com.zistone.bluetoothcontrol/list"));
+        _view = inflater.inflate(R.layout.fragment_bluetooth_list, container, false);
+        _bluetoothListAdapter = new BluetoothListAdapter(_context);
+        _onFragmentInteractionListener.onFragmentInteraction(Uri.parse("content://com.zistone.bluetoothcontrol/list"));
         //强制获得焦点
-        m_view.requestFocus();
-        m_view.setFocusable(true);
-        m_view.setFocusableInTouchMode(true);
-        m_view.setOnKeyListener(backListener);
-        m_toolbar = m_view.findViewById(R.id.toolbar_bluetoothList);
+        _view.requestFocus();
+        _view.setFocusable(true);
+        _view.setFocusableInTouchMode(true);
+        _view.setOnKeyListener(backListener);
+        _toolbar = _view.findViewById(R.id.toolbar_bluetoothList);
         //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
         setHasOptionsMenu(true);
         //去掉标题
-        m_toolbar.setTitle("");
+        _toolbar.setTitle("");
         //此处强转,必须是Activity才有这个方法
-        ((MainActivity) getActivity()).setSupportActionBar(m_toolbar);
+        ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
         //下拉刷新控件
-        m_materialRefreshLayout = m_view.findViewById(R.id.refresh_bluetoothList);
+        _materialRefreshLayout = _view.findViewById(R.id.refresh_bluetoothList);
         //启用加载更多
-        m_materialRefreshLayout.setLoadMore(false);
+        _materialRefreshLayout.setLoadMore(false);
         //自动刷新
-        m_materialRefreshLayout.autoRefresh();
+        _materialRefreshLayout.autoRefresh();
         //使用线性布局
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(m_context);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(_context);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         //强制获得焦点
-        m_view.requestFocus();
-        m_view.setFocusable(true);
-        m_view.setFocusableInTouchMode(true);
-        m_view.setOnKeyListener(backListener);
-        m_btn1 = m_view.findViewById(R.id.btn1_bluetoothList);
-        m_btn1.setOnClickListener(this::onClick);
-        m_radioButton1 = m_view.findViewById(R.id.radioButton1_bluetoothList);
-        m_radioButton2 = m_view.findViewById(R.id.radioButton2_bluetoothList);
-        m_radioButton3 = m_view.findViewById(R.id.radioButton3_bluetoothList);
-        m_radioButton4 = m_view.findViewById(R.id.radioButton4_bluetoothList);
-        m_radioButton5 = m_view.findViewById(R.id.radioButton5_bluetoothList);
-        m_listView = m_view.findViewById(R.id.lv_bluetoothList);
-        m_btnFilterContent = m_view.findViewById(R.id.btnFilterContent_bluetoothList);
-        m_btnFilterContent.setOnClickListener(this::onClick);
-        m_drawableUp = getResources().getDrawable(R.drawable.up1, null);
-        m_drawableUp.setBounds(0, 0, m_drawableUp.getMinimumWidth(), m_drawableUp.getMinimumHeight());
-        m_drawableDown = getResources().getDrawable(R.drawable.down1, null);
-        m_drawableDown.setBounds(0, 0, m_drawableDown.getMinimumWidth(), m_drawableDown.getMinimumHeight());
-        m_btnClearContentFilter = m_view.findViewById(R.id.btnClearFilterContent_bluetoothList);
-        m_btnClearContentFilter.setOnClickListener(this::onClick);
-        m_linearLayout1 = m_view.findViewById(R.id.ll1_bluetoothList);
+        _view.requestFocus();
+        _view.setFocusable(true);
+        _view.setFocusableInTouchMode(true);
+        _view.setOnKeyListener(backListener);
+        _btn1 = _view.findViewById(R.id.btn1_bluetoothList);
+        _btn1.setOnClickListener(this::onClick);
+        _radioButton1 = _view.findViewById(R.id.radioButton1_bluetoothList);
+        _radioButton2 = _view.findViewById(R.id.radioButton2_bluetoothList);
+        _radioButton3 = _view.findViewById(R.id.radioButton3_bluetoothList);
+        _radioButton4 = _view.findViewById(R.id.radioButton4_bluetoothList);
+        _radioButton5 = _view.findViewById(R.id.radioButton5_bluetoothList);
+        _listView = _view.findViewById(R.id.lv_bluetoothList);
+        _btnFilterContent = _view.findViewById(R.id.btnFilterContent_bluetoothList);
+        _btnFilterContent.setOnClickListener(this::onClick);
+        _drawableUp = getResources().getDrawable(R.drawable.up1, null);
+        _drawableUp.setBounds(0, 0, _drawableUp.getMinimumWidth(), _drawableUp.getMinimumHeight());
+        _drawableDown = getResources().getDrawable(R.drawable.down1, null);
+        _drawableDown.setBounds(0, 0, _drawableDown.getMinimumWidth(), _drawableDown.getMinimumHeight());
+        _btnClearContentFilter = _view.findViewById(R.id.btnClearFilterContent_bluetoothList);
+        _btnClearContentFilter.setOnClickListener(this::onClick);
+        _linearLayout1 = _view.findViewById(R.id.ll1_bluetoothList);
         ShowSetFilterContent();
         //所有的控件、对象都实例化后再初始化回调方法
         InitListener();
         //设置监听在后
-        m_materialRefreshLayout.setMaterialRefreshListener(m_materialRefreshListener);
+        _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
-        BeginDiscovery();
-        return m_view;
+        BeginScan();
+        return _view;
     }
 
     @Override
@@ -1025,8 +956,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 //用户授权开启蓝牙
                 if(requestCode != 0)
                 {
-                    m_bluetoothLeScanner = m_bluetoothAdapter.getBluetoothLeScanner();
-                    BeginDiscovery();
+                    _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
+                    BLEUtil.Init(_context, this, _bluetoothAdapter, _bluetoothLeScanner);
+                    BeginScan();
                 }
                 //用户拒绝开启蓝牙
                 else
@@ -1041,7 +973,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         super.onAttach(context);
         if(context instanceof OnFragmentInteractionListener)
-            m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
+            _onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         else
             throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
     }
@@ -1050,28 +982,28 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onDetach()
     {
         super.onDetach();
-        m_onFragmentInteractionListener = null;
-        m_deviceList.clear();
-        m_deviceMap.clear();
-        m_connectSuccessMap.clear();
+        _onFragmentInteractionListener = null;
+        _deviceList.clear();
+        _deviceMap.clear();
+        _connectSuccessMap.clear();
     }
 
     @Override
     public void onStop()
     {
         super.onStop();
-        CancelDiscovery();
+        StopScan();
     }
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
-        CancelDiscovery();
-        m_bluetoothAdapter.disable();
-        m_deviceList.clear();
-        m_deviceMap.clear();
-        m_connectSuccessMap.clear();
+        StopScan();
+        _bluetoothAdapter.disable();
+        _deviceList.clear();
+        _deviceMap.clear();
+        _connectSuccessMap.clear();
     }
 
     @Override
