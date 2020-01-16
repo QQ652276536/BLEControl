@@ -13,7 +13,7 @@ import android.util.Log;
 public class BluetoothReceiver extends BroadcastReceiver
 {
     private static final String TAG = "BluetoothReceiver";
-    private Listener m_listener;
+    private Listener _listener;
 
     public interface Listener
     {
@@ -45,7 +45,7 @@ public class BluetoothReceiver extends BroadcastReceiver
 
     public BluetoothReceiver(Listener listener)
     {
-        this.m_listener = listener;
+        this._listener = listener;
     }
 
     /**
@@ -61,7 +61,7 @@ public class BluetoothReceiver extends BroadcastReceiver
         //正在扫描设备
         if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED))
         {
-            m_listener.StartedScannListener();
+            _listener.StartedScannListener();
         }
         //扫描到一台设备
         else if(action.equals(BluetoothDevice.ACTION_FOUND))
@@ -76,7 +76,7 @@ public class BluetoothReceiver extends BroadcastReceiver
             {
                 rssi = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI);
             }
-            m_listener.FoundDeviceListener(device, rssi);
+            _listener.FoundDeviceListener(device, rssi);
         }
         //设备状态改变
         else if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
@@ -98,7 +98,7 @@ public class BluetoothReceiver extends BroadcastReceiver
         //扫描完成
         else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED))
         {
-            m_listener.ScannOverListener();
+            _listener.ScannOverListener();
             Log.d(TAG, "本次扫描完毕,停止扫描.");
         }
     }

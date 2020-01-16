@@ -41,20 +41,20 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
     private static UUID CONFIG_UUID;
-    private Context m_context;
-    private View m_view;
-    private Button m_button1;
-    private Button m_button2;
-    private ImageButton m_btnReturn;
-    private TextView m_textView1;
-    private TextView m_textView2;
-    private ProgressBar m_progressBar;
-    private BluetoothDevice m_bluetoothDevice;
-    private BluetoothGatt m_bluetoothGatt;
-    private BluetoothGattService m_bluetoothGattService;
-    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_write;
-    private BluetoothGattCharacteristic m_bluetoothGattCharacteristic_read;
-    private OnFragmentInteractionListener m_onFragmentInteractionListener;
+    private Context _context;
+    private View _view;
+    private Button _button1;
+    private Button _button2;
+    private ImageButton _btnReturn;
+    private TextView _textView1;
+    private TextView _textView2;
+    private ProgressBar _progressBar;
+    private BluetoothDevice _bluetoothDevice;
+    private BluetoothGatt _bluetoothGatt;
+    private BluetoothGattService _bluetoothGattService;
+    private BluetoothGattCharacteristic _bluetoothGattCharacteristic_write;
+    private BluetoothGattCharacteristic _bluetoothGattCharacteristic_read;
+    private OnFragmentInteractionListener _onFragmentInteractionListener;
 
     public static BluetoothFragment_OTA newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
     {
@@ -98,7 +98,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
 
     private void ShowWarning(int param)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setTitle("警告");
         switch(param)
         {
@@ -172,7 +172,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
         {
-            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
+            _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
             SERVICE_UUID = map.get("SERVICE_UUID");
             WRITE_UUID = map.get("WRITE_UUID");
@@ -184,29 +184,29 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        m_view = inflater.inflate(R.layout.fragment_bluetooth_ota, container, false);
+        _view = inflater.inflate(R.layout.fragment_bluetooth_ota, container, false);
         //强制获得焦点
-        m_view.requestFocus();
-        m_view.setFocusable(true);
-        m_view.setFocusableInTouchMode(true);
-        m_view.setOnKeyListener(backListener);
-        m_context = getContext();
-        m_btnReturn = m_view.findViewById(R.id.btn_return_ota);
-        m_btnReturn.setOnClickListener(this);
-        m_button1 = m_view.findViewById(R.id.btn1_ota);
-        m_button2 = m_view.findViewById(R.id.btn2_ota);
-        m_textView1 = m_view.findViewById(R.id.text1_ota);
-        m_textView2 = m_view.findViewById(R.id.text2_ota);
-        m_progressBar = m_view.findViewById(R.id.progressBar_ota);
-        m_button1.setOnClickListener(this::onClick);
-        m_button2.setOnClickListener(this::onClick);
-        m_progressBar = m_view.findViewById(R.id.progressBar_ota);
-        m_progressBar.setVisibility(View.VISIBLE);
-        if(m_bluetoothDevice != null)
+        _view.requestFocus();
+        _view.setFocusable(true);
+        _view.setFocusableInTouchMode(true);
+        _view.setOnKeyListener(backListener);
+        _context = getContext();
+        _btnReturn = _view.findViewById(R.id.btn_return_ota);
+        _btnReturn.setOnClickListener(this);
+        _button1 = _view.findViewById(R.id.btn1_ota);
+        _button2 = _view.findViewById(R.id.btn2_ota);
+        _textView1 = _view.findViewById(R.id.text1_ota);
+        _textView2 = _view.findViewById(R.id.text2_ota);
+        _progressBar = _view.findViewById(R.id.progressBar_ota);
+        _button1.setOnClickListener(this::onClick);
+        _button2.setOnClickListener(this::onClick);
+        _progressBar = _view.findViewById(R.id.progressBar_ota);
+        _progressBar.setVisibility(View.VISIBLE);
+        if(_bluetoothDevice != null)
         {
-            m_textView1.setText(m_bluetoothDevice.getAddress());
+            _textView1.setText(_bluetoothDevice.getAddress());
             Log.d(TAG, ">>>开始连接...");
-            m_bluetoothGatt = m_bluetoothDevice.connectGatt(m_context, false, new BluetoothGattCallback()
+            _bluetoothGatt = _bluetoothDevice.connectGatt(_context, false, new BluetoothGattCallback()
             {
                 /**
                  * 连接状态改变时回调
@@ -226,7 +226,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                     else
                     {
                         Log.d(TAG, ">>>连接已断开!");
-                        m_bluetoothGatt.close();
+                        _bluetoothGatt.close();
                         ShowWarning(1);
                     }
                 }
@@ -241,12 +241,12 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                 {
                     //直到这里才是真正建立了可通信的连接
                     //通过UUID找到服务
-                    m_bluetoothGattService = m_bluetoothGatt.getService(SERVICE_UUID);
-                    if(m_bluetoothGattService != null)
+                    _bluetoothGattService = _bluetoothGatt.getService(SERVICE_UUID);
+                    if(_bluetoothGattService != null)
                     {
                         //写数据的服务和特征
-                        m_bluetoothGattCharacteristic_write = m_bluetoothGattService.getCharacteristic(WRITE_UUID);
-                        if(m_bluetoothGattCharacteristic_write != null)
+                        _bluetoothGattCharacteristic_write = _bluetoothGattService.getCharacteristic(WRITE_UUID);
+                        if(_bluetoothGattCharacteristic_write != null)
                         {
                             Log.d(TAG, ">>>已找到写入数据的特征值!");
                             Message message = new Message();
@@ -258,13 +258,13 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                             Log.e(TAG, ">>>该UUID无写入数据的特征值!");
                         }
                         //读取数据的服务和特征
-                        m_bluetoothGattCharacteristic_read = m_bluetoothGattService.getCharacteristic(READ_UUID);
-                        if(m_bluetoothGattCharacteristic_read != null)
+                        _bluetoothGattCharacteristic_read = _bluetoothGattService.getCharacteristic(READ_UUID);
+                        if(_bluetoothGattCharacteristic_read != null)
                         {
                             Log.d(TAG, ">>>已找到读取数据的特征值!");
                             //订阅读取通知
-                            gatt.setCharacteristicNotification(m_bluetoothGattCharacteristic_read, true);
-                            BluetoothGattDescriptor descriptor = m_bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
+                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
+                            BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                             gatt.writeDescriptor(descriptor);
                         }
@@ -310,7 +310,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         {
             ShowWarning(2);
         }
-        return m_view;
+        return _view;
     }
 
     /**
@@ -323,9 +323,9 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
 
     public void onButtonPressed(Uri uri)
     {
-        if(m_onFragmentInteractionListener != null)
+        if(_onFragmentInteractionListener != null)
         {
-            m_onFragmentInteractionListener.onFragmentInteraction(uri);
+            _onFragmentInteractionListener.onFragmentInteraction(uri);
         }
     }
 
@@ -335,7 +335,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         super.onAttach(context);
         if(context instanceof BluetoothFragment_PowerControl.OnFragmentInteractionListener)
         {
-            m_onFragmentInteractionListener = (OnFragmentInteractionListener) context;
+            _onFragmentInteractionListener = (OnFragmentInteractionListener) context;
         }
         else
         {
@@ -347,8 +347,8 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     public void onDetach()
     {
         super.onDetach();
-        m_onFragmentInteractionListener = null;
-        if(m_bluetoothGatt != null)
-            m_bluetoothGatt.close();
+        _onFragmentInteractionListener = null;
+        if(_bluetoothGatt != null)
+            _bluetoothGatt.close();
     }
 }

@@ -17,8 +17,8 @@ public class BluetoothFragment extends Fragment
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
     private String mParam2;
-    private Context m_context;
-    private View m_userView;
+    private Context _context;
+    private View _userView;
     private OnFragmentInteractionListener mListener;
 
     public BluetoothFragment()
@@ -37,7 +37,7 @@ public class BluetoothFragment extends Fragment
 
     private void InitView()
     {
-        m_context = getContext();
+        _context = getContext();
         //注意:一个FragmentTransaction只能Commit一次,不要用全局或共享一个FragmentTransaction对象,多个Fragment则多次get
         BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
         getChildFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").show(bluetoothFragment_list).commitNow();
@@ -84,9 +84,9 @@ public class BluetoothFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        m_userView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
+        _userView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
         InitView();
-        return m_userView;
+        return _userView;
     }
 
     public void onButtonPressed(Uri uri)

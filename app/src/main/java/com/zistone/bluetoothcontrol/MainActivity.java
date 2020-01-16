@@ -22,17 +22,17 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     public static final int ACTIVITYRESULT_OTA = 3;
     public static final int ACTIVITYRESULT_FILTER = 4;
 
-    private boolean m_isPermissionRequested = false;
-    private BluetoothFragment m_bluetoothFragment;
+    private boolean _isPermissionRequested = false;
+    private BluetoothFragment _bluetoothFragment;
 
     /**
      * Android6.0之后需要动态申请权限
      */
     private void RequestPermission()
     {
-        if(Build.VERSION.SDK_INT >= 23 && !m_isPermissionRequested)
+        if(Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested)
         {
-            m_isPermissionRequested = true;
+            _isPermissionRequested = true;
             ArrayList<String> permissionsList = new ArrayList<>();
             String[] permissions = {
                     Manifest.permission.BLUETOOTH_ADMIN,
@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        m_bluetoothFragment = BluetoothFragment.newInstance("", "");
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, m_bluetoothFragment, "bluetoothFragment").show(m_bluetoothFragment).commitNow();
+        _bluetoothFragment = BluetoothFragment.newInstance("", "");
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, _bluetoothFragment, "bluetoothFragment").show(_bluetoothFragment).commitNow();
         RequestPermission();
     }
 

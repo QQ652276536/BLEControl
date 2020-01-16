@@ -15,47 +15,47 @@ import java.util.List;
 public class BluetoothListAdapter extends BaseAdapter
 {
     private static final String TAG = "BluetoothListAdapter";
-    private Context m_context;
-    private LayoutInflater m_layoutInflater;
-    private List<MyBluetoothDevice> m_deviceList;
-    private boolean m_isClick = false;
+    private Context _context;
+    private LayoutInflater _layoutInflater;
+    private List<MyBluetoothDevice> _deviceList;
+    private boolean _isClick = false;
 
     public BluetoothListAdapter(Context context)
     {
-        m_layoutInflater = LayoutInflater.from(context);
-        m_context = context;
+        _layoutInflater = LayoutInflater.from(context);
+        _context = context;
     }
 
     public List<MyBluetoothDevice> getM_deviceList()
     {
-        return m_deviceList;
+        return _deviceList;
     }
 
-    public void setM_deviceList(List<MyBluetoothDevice> m_deviceList)
+    public void setM_deviceList(List<MyBluetoothDevice> _deviceList)
     {
-        this.m_deviceList = m_deviceList;
+        this._deviceList = _deviceList;
     }
 
     public boolean isM_isClick()
     {
-        return m_isClick;
+        return _isClick;
     }
 
-    public void setM_isClick(boolean m_isClick)
+    public void setM_isClick(boolean _isClick)
     {
-        this.m_isClick = m_isClick;
+        this._isClick = _isClick;
     }
 
     @Override
     public int getCount()
     {
-        return m_deviceList.size();
+        return _deviceList.size();
     }
 
     @Override
     public Object getItem(int position)
     {
-        return m_deviceList.get(position);
+        return _deviceList.get(position);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class BluetoothListAdapter extends BaseAdapter
         if(convertView == null)
         {
             holder = new ViewHolder();
-            convertView = m_layoutInflater.inflate(R.layout.item_bluetooth, null);
+            convertView = _layoutInflater.inflate(R.layout.ite_bluetooth, null);
             holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
             holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
             holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
@@ -87,7 +87,7 @@ public class BluetoothListAdapter extends BaseAdapter
         {
             holder = (ViewHolder) convertView.getTag();
         }
-        MyBluetoothDevice device = m_deviceList.get(position);
+        MyBluetoothDevice device = _deviceList.get(position);
         String name = device.get_name();
         String address = device.get_address();
         int rssi = device.get_rssi();

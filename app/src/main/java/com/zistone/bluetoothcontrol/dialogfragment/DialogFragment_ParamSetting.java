@@ -29,18 +29,18 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
 {
     private static final String TAG = "DialogFragment_ParamSetting";
     private static final String ARG_PARAM1 = "param1";
-    private Context m_context;
-    private View m_view;
-    private Button m_button1;
-    private Button m_button2;
-    private CheckBox m_checkBox1;
-    private CheckBox m_checkBox2;
-    private CheckBox m_checkBox3;
-    private CheckBox m_checkBox4;
-    private CheckBox m_checkBox5;
-    private CheckBox m_checkBox6;
-    private CheckBox m_checkBox7;
-    private CheckBox m_checkBox8;
+    private Context _context;
+    private View _view;
+    private Button _button1;
+    private Button _button2;
+    private CheckBox _checkBox1;
+    private CheckBox _checkBox2;
+    private CheckBox _checkBox3;
+    private CheckBox _checkBox4;
+    private CheckBox _checkBox5;
+    private CheckBox _checkBox6;
+    private CheckBox _checkBox7;
+    private CheckBox _checkBox8;
 
     public static DialogFragment_ParamSetting newInstance(String[] strArray)
     {
@@ -61,14 +61,14 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 break;
             case R.id.btn2_paramsetting:
             {
-                String bitStr8 = m_checkBox8.isChecked() ? "1" : "0";
-                String bitStr7 = m_checkBox7.isChecked() ? "1" : "0";
-                String bitStr6 = m_checkBox6.isChecked() ? "1" : "0";
-                String bitStr5 = m_checkBox5.isChecked() ? "1" : "0";
-                String bitStr4 = m_checkBox4.isChecked() ? "1" : "0";
-                String bitStr3 = m_checkBox3.isChecked() ? "1" : "0";
-                String bitStr2 = m_checkBox2.isChecked() ? "1" : "0";
-                String bitStr1 = m_checkBox1.isChecked() ? "1" : "0";
+                String bitStr8 = _checkBox8.isChecked() ? "1" : "0";
+                String bitStr7 = _checkBox7.isChecked() ? "1" : "0";
+                String bitStr6 = _checkBox6.isChecked() ? "1" : "0";
+                String bitStr5 = _checkBox5.isChecked() ? "1" : "0";
+                String bitStr4 = _checkBox4.isChecked() ? "1" : "0";
+                String bitStr3 = _checkBox3.isChecked() ? "1" : "0";
+                String bitStr2 = _checkBox2.isChecked() ? "1" : "0";
+                String bitStr1 = _checkBox1.isChecked() ? "1" : "0";
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append(bitStr1);
                 stringBuffer.append(bitStr2);
@@ -96,18 +96,18 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        m_button1 = m_view.findViewById(R.id.btn1_paramsetting);
-        m_button2 = m_view.findViewById(R.id.btn2_paramsetting);
-        m_checkBox1 = m_view.findViewById(R.id.cbx1_paramsetting);
-        m_checkBox2 = m_view.findViewById(R.id.cbx2_paramsetting);
-        m_checkBox3 = m_view.findViewById(R.id.cbx3_paramsetting);
-        m_checkBox4 = m_view.findViewById(R.id.cbx4_paramsetting);
-        m_checkBox5 = m_view.findViewById(R.id.cbx5_paramsetting);
-        m_checkBox6 = m_view.findViewById(R.id.cbx6_paramsetting);
-        m_checkBox7 = m_view.findViewById(R.id.cbx7_paramsetting);
-        m_checkBox8 = m_view.findViewById(R.id.cbx8_paramsetting);
-        m_button1.setOnClickListener(this::onClick);
-        m_button2.setOnClickListener(this::onClick);
+        _button1 = _view.findViewById(R.id.btn1_paramsetting);
+        _button2 = _view.findViewById(R.id.btn2_paramsetting);
+        _checkBox1 = _view.findViewById(R.id.cbx1_paramsetting);
+        _checkBox2 = _view.findViewById(R.id.cbx2_paramsetting);
+        _checkBox3 = _view.findViewById(R.id.cbx3_paramsetting);
+        _checkBox4 = _view.findViewById(R.id.cbx4_paramsetting);
+        _checkBox5 = _view.findViewById(R.id.cbx5_paramsetting);
+        _checkBox6 = _view.findViewById(R.id.cbx6_paramsetting);
+        _checkBox7 = _view.findViewById(R.id.cbx7_paramsetting);
+        _checkBox8 = _view.findViewById(R.id.cbx8_paramsetting);
+        _button1.setOnClickListener(this::onClick);
+        _button2.setOnClickListener(this::onClick);
         String[] strArray = (String[]) getArguments().getSerializable(ARG_PARAM1);
         //启用DEBUG软串口
         String bitStr8 = strArray[7];
@@ -127,55 +127,55 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
         String bitStr1 = strArray[0];
         Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
         if(bitStr8.equals("1"))
-            m_checkBox8.setChecked(true);
+            _checkBox8.setChecked(true);
         else
-            m_checkBox8.setChecked(false);
+            _checkBox8.setChecked(false);
         if(bitStr7.equals("1"))
-            m_checkBox7.setChecked(true);
+            _checkBox7.setChecked(true);
         else
-            m_checkBox7.setChecked(false);
+            _checkBox7.setChecked(false);
         if(bitStr6.equals("1"))
-            m_checkBox6.setChecked(true);
+            _checkBox6.setChecked(true);
         else
-            m_checkBox6.setChecked(false);
+            _checkBox6.setChecked(false);
         if(bitStr5.equals("1"))
-            m_checkBox5.setChecked(true);
+            _checkBox5.setChecked(true);
         else
-            m_checkBox5.setChecked(false);
+            _checkBox5.setChecked(false);
         if(bitStr4.equals("1"))
-            m_checkBox4.setChecked(true);
+            _checkBox4.setChecked(true);
         else
-            m_checkBox4.setChecked(false);
+            _checkBox4.setChecked(false);
         if(bitStr3.equals("1"))
-            m_checkBox3.setChecked(true);
+            _checkBox3.setChecked(true);
         else
-            m_checkBox3.setChecked(false);
+            _checkBox3.setChecked(false);
         if(bitStr2.equals("1"))
-            m_checkBox2.setChecked(true);
+            _checkBox2.setChecked(true);
         else
-            m_checkBox2.setChecked(false);
+            _checkBox2.setChecked(false);
         if(bitStr1.equals("1"))
-            m_checkBox1.setChecked(true);
+            _checkBox1.setChecked(true);
         else
-            m_checkBox1.setChecked(false);
-        m_checkBox1.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox2.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox3.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox4.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox5.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox6.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox7.setOnCheckedChangeListener(this::onCheckedChanged);
-        m_checkBox8.setOnCheckedChangeListener(this::onCheckedChanged);
+            _checkBox1.setChecked(false);
+        _checkBox1.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox2.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox3.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox4.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox5.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox6.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox7.setOnCheckedChangeListener(this::onCheckedChanged);
+        _checkBox8.setOnCheckedChangeListener(this::onCheckedChanged);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_paramsetting, null);
-        m_context = getContext();
+        _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_paramsetting, null);
+        _context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(m_view);
+        builder.setView(_view);
         return builder.create();
     }
 

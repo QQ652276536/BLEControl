@@ -42,15 +42,15 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
     private static UUID CONFIG_UUID;
-    private Context m_context;
-    private View m_view;
-    private Button m_button1;
-    private Button m_button2;
-    private TextView m_textView1;
-    private TextView m_textView2;
-    private ProgressBar m_progressBar;
-    private BluetoothDevice m_bluetoothDevice;
-    private byte[] m_byteArray;
+    private Context _context;
+    private View _view;
+    private Button _button1;
+    private Button _button2;
+    private TextView _textView1;
+    private TextView _textView2;
+    private ProgressBar _progressBar;
+    private BluetoothDevice _bluetoothDevice;
+    private byte[] _byteArray;
 
     public static DialogFragment_OTA newInstance(BluetoothDevice bluetoothDevice)
     {
@@ -75,7 +75,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                     String[] projection = {"_data"};
                     try
                     {
-                        Cursor cursor = m_context.getContentResolver().query(uri, projection, null, null, null);
+                        Cursor cursor = _context.getContentResolver().query(uri, projection, null, null, null);
                         int column_index = cursor.getColumnIndexOrThrow("_data");
                         if(cursor.moveToFirst())
                         {
@@ -91,7 +91,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                 {
                     path = uri.getPath();
                 }
-                m_textView2.setText(path);
+                _textView2.setText(path);
                 File file = new File(path);
                 FileInputStream fileInputStream;
                 BufferedInputStream bufferedInputStream;
@@ -106,14 +106,14 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                         bufferedInputStream.read(bytes);
                         byteArrayOutputStream.write(bytes);
                     }
-                    m_byteArray = byteArrayOutputStream.toByteArray();
+                    _byteArray = byteArrayOutputStream.toByteArray();
                     fileInputStream.close();
                     byteArrayOutputStream.close();
                 }
                 catch(Exception e)
                 {
                     e.printStackTrace();
-                    Toast.makeText(m_context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -155,16 +155,16 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        m_button1 = m_view.findViewById(R.id.btn1_ota);
-        m_button2 = m_view.findViewById(R.id.btn2_ota);
-        m_textView1 = m_view.findViewById(R.id.text1_ota);
-        m_textView2 = m_view.findViewById(R.id.text2_ota);
-        m_progressBar = m_view.findViewById(R.id.progressBar_ota);
-        m_button1.setOnClickListener(this::onClick);
-        m_button2.setOnClickListener(this::onClick);
-        if(m_bluetoothDevice != null)
+        _button1 = _view.findViewById(R.id.btn1_ota);
+        _button2 = _view.findViewById(R.id.btn2_ota);
+        _textView1 = _view.findViewById(R.id.text1_ota);
+        _textView2 = _view.findViewById(R.id.text2_ota);
+        _progressBar = _view.findViewById(R.id.progressBar_ota);
+        _button1.setOnClickListener(this::onClick);
+        _button2.setOnClickListener(this::onClick);
+        if(_bluetoothDevice != null)
         {
-            m_textView1.setText(m_bluetoothDevice.getAddress());
+            _textView1.setText(_bluetoothDevice.getAddress());
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -172,10 +172,10 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        m_view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_ota, null);
-        m_context = getContext();
+        _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_ota, null);
+        _context = getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(m_view);
+        builder.setView(_view);
         return builder.create();
     }
 
@@ -185,7 +185,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
         {
-            m_bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
+            _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
             SERVICE_UUID = map.get("SERVICE_UUID");
             WRITE_UUID = map.get("WRITE_UUID");

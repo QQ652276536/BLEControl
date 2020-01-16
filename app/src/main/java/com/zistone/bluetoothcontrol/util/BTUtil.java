@@ -78,19 +78,19 @@ public class BTUtil
         if(_bluetoothGatt != null)
             _bluetoothGatt.close();
         _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
-        //设备正在连接中，如果连接成功会执行回调函数discoverServices()
+        //设备正在连接中,如果连接成功会执行回调函数discoverServices()
         _listener.OnConnecting();
 
         //        if(_bluetoothGatt == null)
         //        {
         //            _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
-        //            //设备正在连接中，如果连接成功会执行回调函数discoverServices()
+        //            //设备正在连接中,如果连接成功会执行回调函数discoverServices()
         //            _listener.OnConnecting();
         //        }
         //        else
         //        {
         //            _bluetoothGatt.close();
-        //            //设备没有连接过是调用connectGatt()来连接，已经连接过后因意外断开则调用connect()来连接.
+        //            //设备没有连接过是调用connectGatt()来连接,已经连接过后因意外断开则调用connect()来连接.
         //            _bluetoothGatt.connect();
         //            //启用发现服务
         //            _bluetoothGatt.discoverServices();
@@ -100,11 +100,12 @@ public class BTUtil
     /**
      * 断开连接
      * <p>
-     * 如果手动disconnect不要立即close，不然onConnectionStateChange里会抛空指针异常，因为手动断开时会回调onConnectionStateChange
-     * 方法，在这个方法中close释放资源。
+     * 如果手动disconnect不要立即close,不然onConnectionStateChange里会抛空指针异常,因为手动断开时会回调onConnectionStateChange
+     * 方法,在这个方法中close释放资源
      */
     public static void DisConnGatt()
     {
+        if(_bluetoothGatt != null)
         if(_bluetoothGatt != null)
         {
             _bluetoothGatt.disconnect();
@@ -145,7 +146,7 @@ public class BTUtil
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status)
         {
-            //通过UUID找到服务，直到这里才是真正建立了可通信的连接
+            //通过UUID找到服务,直到这里才是真正建立了可通信的连接
             _bluetoothGattService = _bluetoothGatt.getService(SERVICE_UUID);
             if(_bluetoothGattService != null)
             {
@@ -179,7 +180,7 @@ public class BTUtil
         }
 
         /**
-         * 收到硬件返回的数据时回调，如果是Notify的方式
+         * 收到硬件返回的数据时回调,如果是Notify的方式
          * @param gatt
          * @param characteristic
          */

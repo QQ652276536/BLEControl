@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ExampleUnitTest
 {
-    List<String> m_list = new ArrayList<String>()
+    List<String> _list = new ArrayList<String>()
     {
         {
             this.add("aaa");
@@ -32,7 +32,7 @@ public class ExampleUnitTest
     public void TestIterator()
     {
         System.out.println("=======TestIterator===========");
-        Iterator<String> iterator = m_list.iterator();
+        Iterator<String> iterator = _list.iterator();
         while(iterator.hasNext())
         {
             String temp = iterator.next();
@@ -41,8 +41,8 @@ public class ExampleUnitTest
                 iterator.remove();
             }
         }
-        m_list.add("ddd");
-        for(String temp : m_list)
+        _list.add("ddd");
+        for(String temp : _list)
         {
             System.out.println(temp);
         }
@@ -52,14 +52,14 @@ public class ExampleUnitTest
     public void TestList()
     {
         System.out.println("========TestList==========");
-        List<String> list = m_list;
+        List<String> list = _list;
         list.remove(0);
         for(String temp : list)
         {
             System.out.println(temp);
         }
         System.out.println("-------------------------");
-        for(String temp : m_list)
+        for(String temp : _list)
         {
             System.out.println(temp);
         }
