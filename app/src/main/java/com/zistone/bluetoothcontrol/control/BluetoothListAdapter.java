@@ -77,7 +77,7 @@ public class BluetoothListAdapter extends BaseAdapter
         if(convertView == null)
         {
             holder = new ViewHolder();
-            convertView = _layoutInflater.inflate(R.layout.ite_bluetooth, null);
+            convertView = _layoutInflater.inflate(R.layout.item_bluetooth, null);
             holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
             holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
             holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
