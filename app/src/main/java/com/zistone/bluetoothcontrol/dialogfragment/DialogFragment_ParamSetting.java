@@ -31,16 +31,16 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     private static final String ARG_PARAM1 = "param1";
     private Context _context;
     private View _view;
-    private Button _button1;
-    private Button _button2;
-    private CheckBox _checkBox1;
-    private CheckBox _checkBox2;
-    private CheckBox _checkBox3;
-    private CheckBox _checkBox4;
-    private CheckBox _checkBox5;
-    private CheckBox _checkBox6;
-    private CheckBox _checkBox7;
-    private CheckBox _checkBox8;
+    private Button _btn1;
+    private Button _btn2;
+    private CheckBox _chk1;
+    private CheckBox _chk2;
+    private CheckBox _chk3;
+    private CheckBox _chk4;
+    private CheckBox _chk5;
+    private CheckBox _chk6;
+    private CheckBox _chk7;
+    private CheckBox _chk8;
 
     public static DialogFragment_ParamSetting newInstance(String[] strArray)
     {
@@ -61,14 +61,14 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 break;
             case R.id.btn2_paramsetting:
             {
-                String bitStr8 = _checkBox8.isChecked() ? "1" : "0";
-                String bitStr7 = _checkBox7.isChecked() ? "1" : "0";
-                String bitStr6 = _checkBox6.isChecked() ? "1" : "0";
-                String bitStr5 = _checkBox5.isChecked() ? "1" : "0";
-                String bitStr4 = _checkBox4.isChecked() ? "1" : "0";
-                String bitStr3 = _checkBox3.isChecked() ? "1" : "0";
-                String bitStr2 = _checkBox2.isChecked() ? "1" : "0";
-                String bitStr1 = _checkBox1.isChecked() ? "1" : "0";
+                String bitStr8 = _chk8.isChecked() ? "1" : "0";
+                String bitStr7 = _chk7.isChecked() ? "1" : "0";
+                String bitStr6 = _chk6.isChecked() ? "1" : "0";
+                String bitStr5 = _chk5.isChecked() ? "1" : "0";
+                String bitStr4 = _chk4.isChecked() ? "1" : "0";
+                String bitStr3 = _chk3.isChecked() ? "1" : "0";
+                String bitStr2 = _chk2.isChecked() ? "1" : "0";
+                String bitStr1 = _chk1.isChecked() ? "1" : "0";
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append(bitStr1);
                 stringBuffer.append(bitStr2);
@@ -96,18 +96,18 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        _button1 = _view.findViewById(R.id.btn1_paramsetting);
-        _button2 = _view.findViewById(R.id.btn2_paramsetting);
-        _checkBox1 = _view.findViewById(R.id.cbx1_paramsetting);
-        _checkBox2 = _view.findViewById(R.id.cbx2_paramsetting);
-        _checkBox3 = _view.findViewById(R.id.cbx3_paramsetting);
-        _checkBox4 = _view.findViewById(R.id.cbx4_paramsetting);
-        _checkBox5 = _view.findViewById(R.id.cbx5_paramsetting);
-        _checkBox6 = _view.findViewById(R.id.cbx6_paramsetting);
-        _checkBox7 = _view.findViewById(R.id.cbx7_paramsetting);
-        _checkBox8 = _view.findViewById(R.id.cbx8_paramsetting);
-        _button1.setOnClickListener(this::onClick);
-        _button2.setOnClickListener(this::onClick);
+        _btn1 = _view.findViewById(R.id.btn1_paramsetting);
+        _btn2 = _view.findViewById(R.id.btn2_paramsetting);
+        _chk1 = _view.findViewById(R.id.cbx1_paramsetting);
+        _chk2 = _view.findViewById(R.id.cbx2_paramsetting);
+        _chk3 = _view.findViewById(R.id.cbx3_paramsetting);
+        _chk4 = _view.findViewById(R.id.cbx4_paramsetting);
+        _chk5 = _view.findViewById(R.id.cbx5_paramsetting);
+        _chk6 = _view.findViewById(R.id.cbx6_paramsetting);
+        _chk7 = _view.findViewById(R.id.cbx7_paramsetting);
+        _chk8 = _view.findViewById(R.id.cbx8_paramsetting);
+        _btn1.setOnClickListener(this::onClick);
+        _btn2.setOnClickListener(this::onClick);
         String[] strArray = (String[]) getArguments().getSerializable(ARG_PARAM1);
         //启用DEBUG软串口
         String bitStr8 = strArray[7];
@@ -127,45 +127,45 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
         String bitStr1 = strArray[0];
         Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
         if(bitStr8.equals("1"))
-            _checkBox8.setChecked(true);
+            _chk8.setChecked(true);
         else
-            _checkBox8.setChecked(false);
+            _chk8.setChecked(false);
         if(bitStr7.equals("1"))
-            _checkBox7.setChecked(true);
+            _chk7.setChecked(true);
         else
-            _checkBox7.setChecked(false);
+            _chk7.setChecked(false);
         if(bitStr6.equals("1"))
-            _checkBox6.setChecked(true);
+            _chk6.setChecked(true);
         else
-            _checkBox6.setChecked(false);
+            _chk6.setChecked(false);
         if(bitStr5.equals("1"))
-            _checkBox5.setChecked(true);
+            _chk5.setChecked(true);
         else
-            _checkBox5.setChecked(false);
+            _chk5.setChecked(false);
         if(bitStr4.equals("1"))
-            _checkBox4.setChecked(true);
+            _chk4.setChecked(true);
         else
-            _checkBox4.setChecked(false);
+            _chk4.setChecked(false);
         if(bitStr3.equals("1"))
-            _checkBox3.setChecked(true);
+            _chk3.setChecked(true);
         else
-            _checkBox3.setChecked(false);
+            _chk3.setChecked(false);
         if(bitStr2.equals("1"))
-            _checkBox2.setChecked(true);
+            _chk2.setChecked(true);
         else
-            _checkBox2.setChecked(false);
+            _chk2.setChecked(false);
         if(bitStr1.equals("1"))
-            _checkBox1.setChecked(true);
+            _chk1.setChecked(true);
         else
-            _checkBox1.setChecked(false);
-        _checkBox1.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox2.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox3.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox4.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox5.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox6.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox7.setOnCheckedChangeListener(this::onCheckedChanged);
-        _checkBox8.setOnCheckedChangeListener(this::onCheckedChanged);
+            _chk1.setChecked(false);
+        _chk1.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk2.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk3.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk4.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk5.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk6.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk7.setOnCheckedChangeListener(this::onCheckedChanged);
+        _chk8.setOnCheckedChangeListener(this::onCheckedChanged);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

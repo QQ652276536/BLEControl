@@ -44,10 +44,10 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     private static UUID CONFIG_UUID;
     private Context _context;
     private View _view;
-    private Button _button1;
-    private Button _button2;
-    private TextView _textView1;
-    private TextView _textView2;
+    private Button _btn1;
+    private Button _btn2;
+    private TextView _txt1;
+    private TextView _txt2;
     private ProgressBar _progressBar;
     private BluetoothDevice _bluetoothDevice;
     private byte[] _byteArray;
@@ -91,7 +91,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                 {
                     path = uri.getPath();
                 }
-                _textView2.setText(path);
+                _txt2.setText(path);
                 File file = new File(path);
                 FileInputStream fileInputStream;
                 BufferedInputStream bufferedInputStream;
@@ -155,16 +155,16 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        _button1 = _view.findViewById(R.id.btn1_ota);
-        _button2 = _view.findViewById(R.id.btn2_ota);
-        _textView1 = _view.findViewById(R.id.text1_ota);
-        _textView2 = _view.findViewById(R.id.text2_ota);
+        _btn1 = _view.findViewById(R.id.btn1_ota);
+        _btn2 = _view.findViewById(R.id.btn2_ota);
+        _txt1 = _view.findViewById(R.id.text1_ota);
+        _txt2 = _view.findViewById(R.id.text2_ota);
         _progressBar = _view.findViewById(R.id.progressBar_ota);
-        _button1.setOnClickListener(this::onClick);
-        _button2.setOnClickListener(this::onClick);
+        _btn1.setOnClickListener(this::onClick);
+        _btn2.setOnClickListener(this::onClick);
         if(_bluetoothDevice != null)
         {
-            _textView1.setText(_bluetoothDevice.getAddress());
+            _txt1.setText(_bluetoothDevice.getAddress());
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }

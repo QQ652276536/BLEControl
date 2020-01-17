@@ -17,13 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.zistone.bluetoothcontrol.R;
 import com.zistone.bluetoothcontrol.util.BTListener;
 import com.zistone.bluetoothcontrol.util.BTUtil;
 import com.zistone.bluetoothcontrol.util.ConvertUtil;
+import com.zistone.bluetoothcontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -41,9 +41,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private Context _context;
     private View _view;
     private ImageButton _btnReturn;
-    private TextView _textView;
-    private Button _button0, _button1, _button2, _button3, _button4, _button5, _button6, _button7, _button8, _button9, _button10, _button11;
-    private ProgressBar _progressBar;
+    private TextView _txt;
+    private Button _btn0, _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -189,45 +188,45 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             switch(message.what)
             {
                 case MESSAGE_ERROR_1:
-                    _progressBar.setVisibility(View.INVISIBLE);
+                    ProgressDialogUtil.Dismiss();
                     ShowWarning(1);
                     break;
                 case MESSAGE_1:
                 {
-                    _button1.setEnabled(true);
-                    _button2.setEnabled(true);
-                    _button3.setEnabled(true);
-                    _button4.setEnabled(true);
-                    _button5.setEnabled(true);
-                    _button6.setEnabled(true);
-                    _button7.setEnabled(true);
-                    _button8.setEnabled(true);
-                    _button9.setEnabled(true);
-                    _button10.setEnabled(true);
-                    _button11.setEnabled(true);
-                    _button1.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button2.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button3.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button4.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button5.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button6.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button7.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button8.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button9.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button10.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _button11.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _progressBar.setVisibility(View.INVISIBLE);
+                    _btn1.setEnabled(true);
+                    _btn2.setEnabled(true);
+                    _btn3.setEnabled(true);
+                    _btn4.setEnabled(true);
+                    _btn5.setEnabled(true);
+                    _btn6.setEnabled(true);
+                    _btn7.setEnabled(true);
+                    _btn8.setEnabled(true);
+                    _btn9.setEnabled(true);
+                    _btn10.setEnabled(true);
+                    _btn11.setEnabled(true);
+                    _btn1.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn2.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn3.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn4.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn5.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn6.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn7.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn8.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn9.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn10.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    _btn11.setBackgroundColor(Color.argb(255, 0, 133, 119));
+                    ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
                     break;
                 }
                 case MESSAGE_2:
                 {
-                    _textView.append("\r\n" + result);
+                    _txt.append("\r\n" + result);
                     //定位到最后一行
-                    int offset = _textView.getLineCount() * _textView.getLineHeight();
+                    int offset = _txt.getLineCount() * _txt.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if(offset > _textView.getHeight())
+                    if(offset > _txt.getHeight())
                     {
-                        _textView.scrollTo(0, offset - _textView.getHeight());
+                        _txt.scrollTo(0, offset - _txt.getHeight());
                     }
                     break;
                 }
@@ -481,7 +480,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             }
             //清屏
             case R.id.btn0:
-                _textView.setText("");
+                _txt.setText("");
                 break;
             //开门
             case R.id.button1:
@@ -604,34 +603,32 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _view.setOnKeyListener(backListener);
         _btnReturn = _view.findViewById(R.id.btn_return);
         _btnReturn.setOnClickListener(this);
-        _textView = _view.findViewById(R.id.textView);
-        _textView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        _button0 = _view.findViewById(R.id.btn0);
-        _button0.setOnClickListener(this);
-        _button1 = _view.findViewById(R.id.button1);
-        _button1.setOnClickListener(this);
-        _button2 = _view.findViewById(R.id.btn2);
-        _button2.setOnClickListener(this);
-        _button3 = _view.findViewById(R.id.btn3);
-        _button3.setOnClickListener(this);
-        _button4 = _view.findViewById(R.id.btn4);
-        _button4.setOnClickListener(this);
-        _button5 = _view.findViewById(R.id.btn5);
-        _button5.setOnClickListener(this);
-        _button6 = _view.findViewById(R.id.btn6);
-        _button6.setOnClickListener(this);
-        _button7 = _view.findViewById(R.id.btn7);
-        _button7.setOnClickListener(this);
-        _button8 = _view.findViewById(R.id.btn8);
-        _button8.setOnClickListener(this);
-        _button9 = _view.findViewById(R.id.btn9);
-        _button9.setOnClickListener(this);
-        _button10 = _view.findViewById(R.id.btn10);
-        _button10.setOnClickListener(this);
-        _button11 = _view.findViewById(R.id.btn11);
-        _button11.setOnClickListener(this);
-        _progressBar = _view.findViewById(R.id.progressBar);
-        _progressBar.setVisibility(View.VISIBLE);
+        _txt = _view.findViewById(R.id.textView);
+        _txt.setMovementMethod(ScrollingMovementMethod.getInstance());
+        _btn0 = _view.findViewById(R.id.btn0);
+        _btn0.setOnClickListener(this);
+        _btn1 = _view.findViewById(R.id.button1);
+        _btn1.setOnClickListener(this);
+        _btn2 = _view.findViewById(R.id.btn2);
+        _btn2.setOnClickListener(this);
+        _btn3 = _view.findViewById(R.id.btn3);
+        _btn3.setOnClickListener(this);
+        _btn4 = _view.findViewById(R.id.btn4);
+        _btn4.setOnClickListener(this);
+        _btn5 = _view.findViewById(R.id.btn5);
+        _btn5.setOnClickListener(this);
+        _btn6 = _view.findViewById(R.id.btn6);
+        _btn6.setOnClickListener(this);
+        _btn7 = _view.findViewById(R.id.btn7);
+        _btn7.setOnClickListener(this);
+        _btn8 = _view.findViewById(R.id.btn8);
+        _btn8.setOnClickListener(this);
+        _btn9 = _view.findViewById(R.id.btn9);
+        _btn9.setOnClickListener(this);
+        _btn10 = _view.findViewById(R.id.btn10);
+        _btn10.setOnClickListener(this);
+        _btn11 = _view.findViewById(R.id.btn11);
+        _btn11.setOnClickListener(this);
         if(_bluetoothDevice != null)
         {
             Log.d(TAG, ">>>开始连接...");

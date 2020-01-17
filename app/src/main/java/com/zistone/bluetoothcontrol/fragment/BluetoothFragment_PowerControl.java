@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +35,7 @@ import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_WriteValue;
 import com.zistone.bluetoothcontrol.util.BTListener;
 import com.zistone.bluetoothcontrol.util.BTUtil;
 import com.zistone.bluetoothcontrol.util.ConvertUtil;
+import com.zistone.bluetoothcontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -83,18 +83,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private TextView _debugView;
-    private Button _button1;
-    private Button _button2;
-    private Button _button3;
-    private Button _button4;
-    private Button _button5;
-    private TextView _textView1;
-    private TextView _textView2;
-    private TextView _textView3;
-    private TextView _textView4;
-    private TextView _textView5;
-    private TextView _textView6;
-    private ProgressBar _progressBar;
+    private Button _btn1, _btn2, _btn3, _btn4, _btn5;
+    private TextView _txt1;
+    private TextView _txt2;
+    private TextView _txt3;
+    private TextView _txt4;
+    private TextView _txt5;
+    private TextView _txt6;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
@@ -112,7 +107,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     @Override
     public void OnConnected()
     {
-
+        ProgressDialogUtil.Dismiss();
         Log.d(TAG, ">>>成功建立连接!");
         //轮询
         Message message = new Message();
@@ -126,7 +121,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     @Override
     public void OnConnecting()
     {
-
+        ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
     }
 
     @Override
@@ -258,9 +253,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private void DisConnect()
     {
         _connectionState = false;
-        _button2.setEnabled(false);
-        _button3.setEnabled(false);
-        _button4.setEnabled(false);
+        _btn2.setEnabled(false);
+        _btn3.setEnabled(false);
+        _btn4.setEnabled(false);
         if(_refreshTask != null)
         {
             _refreshTask.cancel();
@@ -270,16 +265,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             _refreshTimer.cancel();
         }
         BTUtil.DisConnGatt();
-        _textView1.setText("Null");
-        _textView1.setTextColor(Color.GRAY);
-        _textView2.setText("Null");
-        _textView2.setTextColor(Color.GRAY);
-        _textView3.setText("Null");
-        _textView3.setTextColor(Color.GRAY);
-        _textView4.setText("Null");
-        _textView4.setTextColor(Color.GRAY);
-        _textView5.setText("Null");
-        _textView6.setText("Null");
+        _txt1.setText("Null");
+        _txt1.setTextColor(Color.GRAY);
+        _txt2.setText("Null");
+        _txt2.setTextColor(Color.GRAY);
+        _txt3.setText("Null");
+        _txt3.setTextColor(Color.GRAY);
+        _txt4.setText("Null");
+        _txt4.setTextColor(Color.GRAY);
+        _txt5.setText("Null");
+        _txt6.setText("Null");
     }
 
     private Handler handler = new Handler()
@@ -297,9 +292,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     break;
                 case MESSAGE_1:
                 {
-                    _button2.setEnabled(true);
-                    _button3.setEnabled(true);
-                    _button4.setEnabled(true);
+                    _btn2.setEnabled(true);
+                    _btn3.setEnabled(true);
+                    _btn4.setEnabled(true);
                     _refreshTimer = new Timer();
                     _refreshTask = new TimerTask()
                     {
@@ -337,12 +332,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     else if(result.equalsIgnoreCase("doorisopen"))
                     {
                         _debugView.append("收到:门【已打开】\n");
-                        _textView1.setText("已开");
+                        _txt1.setText("已开");
                     }
                     else
                     {
                         _debugView.append("收到:门【未打开】\n");
-                        _textView1.setText("未开");
+                        _txt1.setText("未开");
                     }
                     //定位到最后一行
                     int offset = _debugView.getLineCount() * _debugView.getLineHeight();
@@ -355,15 +350,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 //电池电压
                 case RECEIVE_BATTERY:
-                    _textView5.setText(result + "mV");
+                    _txt5.setText(result + "mV");
                     break;
                 //磁场强度
                 case RECEIVE_MAGNETIC:
-                    _textView6.setText(result);
+                    _txt6.setText(result);
                     break;
                 //门状态
                 case RECEIVE_DOORSTATE:
-                    _textView1.setText(result);
+                    _txt1.setText(result);
                     break;
                 //综合测试
                 case RECEIVE_TESTA:
@@ -372,49 +367,49 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String doorState1 = strs[0];
                     if(doorState1.equalsIgnoreCase("1"))
                     {
-                        _textView1.setText("已开");
-                        _textView1.setTextColor(Color.GREEN);
+                        _txt1.setText("已开");
+                        _txt1.setTextColor(Color.GREEN);
                     }
                     else
                     {
-                        _textView1.setText("已关");
-                        _textView1.setTextColor(Color.RED);
+                        _txt1.setText("已关");
+                        _txt1.setTextColor(Color.RED);
                     }
                     String lockState1 = strs[1];
                     if(lockState1.equalsIgnoreCase("1"))
                     {
-                        _textView2.setText("已开");
-                        _textView2.setTextColor(Color.GREEN);
+                        _txt2.setText("已开");
+                        _txt2.setTextColor(Color.GREEN);
                     }
                     else
                     {
-                        _textView2.setText("已关");
-                        _textView2.setTextColor(Color.RED);
+                        _txt2.setText("已关");
+                        _txt2.setTextColor(Color.RED);
                     }
                     String doorState2 = strs[2];
                     if(doorState2.equalsIgnoreCase("1"))
                     {
-                        _textView3.setText("已开");
-                        _textView3.setTextColor(Color.GREEN);
+                        _txt3.setText("已开");
+                        _txt3.setTextColor(Color.GREEN);
                     }
                     else
                     {
-                        _textView3.setText("已关");
-                        _textView3.setTextColor(Color.RED);
+                        _txt3.setText("已关");
+                        _txt3.setTextColor(Color.RED);
                     }
                     String lockState2 = strs[3];
                     if(lockState2.equalsIgnoreCase("1"))
                     {
-                        _textView4.setText("已开");
-                        _textView4.setTextColor(Color.GREEN);
+                        _txt4.setText("已开");
+                        _txt4.setTextColor(Color.GREEN);
                     }
                     else
                     {
-                        _textView4.setText("已关");
-                        _textView4.setTextColor(Color.RED);
+                        _txt4.setText("已关");
+                        _txt4.setTextColor(Color.RED);
                     }
-                    _textView5.setText(strs[4] + "mV");
-                    _textView6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
+                    _txt5.setText(strs[4] + "mV");
+                    _txt6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
                     break;
                 }
                 //一号门锁
@@ -427,14 +422,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
                     if(doorState2.equalsIgnoreCase("1"))
-                        _textView3.setText("已开");
+                        _txt3.setText("已开");
                     else
-                        _textView3.setText("已关");
+                        _txt3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(6));
                     if(lockState2.equalsIgnoreCase("1"))
-                        _textView4.setText("已开");
+                        _txt4.setText("已开");
                     else
-                        _textView4.setText("已关");
+                        _txt4.setText("已关");
                     break;
                 }
                 //全部门锁
@@ -444,24 +439,24 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     if(doorState1.equalsIgnoreCase("1"))
-                        _textView1.setText("已开");
+                        _txt1.setText("已开");
                     else
-                        _textView1.setText("已关");
+                        _txt1.setText("已关");
                     String lockState1 = String.valueOf(bitStr.charAt(6));
                     if(lockState1.equalsIgnoreCase("1"))
-                        _textView2.setText("已开");
+                        _txt2.setText("已开");
                     else
-                        _textView2.setText("已关");
+                        _txt2.setText("已关");
                     String doorState2 = String.valueOf(bitStr.charAt(5));
                     if(doorState2.equalsIgnoreCase("1"))
-                        _textView3.setText("已开");
+                        _txt3.setText("已开");
                     else
-                        _textView3.setText("已关");
+                        _txt3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(4));
                     if(lockState2.equalsIgnoreCase("1"))
-                        _textView4.setText("已开");
+                        _txt4.setText("已开");
                     else
-                        _textView4.setText("已关");
+                        _txt4.setText("已关");
                     break;
                 }
                 //解析查询到的内部控制参数
@@ -893,15 +888,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 if(_bluetoothDevice != null)
                 {
-                    if(_button1.getText().toString().equals("连接"))
+                    if(_btn1.getText().toString().equals("连接"))
                     {
-                        _button1.setText("断开");
+                        _btn1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
                         BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
                     }
                     else
                     {
-                        _button1.setText("连接");
+                        _btn1.setText("连接");
                         DisConnect();
                     }
                 }
@@ -980,27 +975,27 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             _toolbar.setTitle("");
             //此处强转,必须是Activity才有这个方法
             ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
-            _textView1 = _view.findViewById(R.id.text1);
-            _textView2 = _view.findViewById(R.id.text2);
-            _textView3 = _view.findViewById(R.id.text3);
-            _textView4 = _view.findViewById(R.id.text4);
-            _textView5 = _view.findViewById(R.id.text5);
-            _textView6 = _view.findViewById(R.id.text6);
+            _txt1 = _view.findViewById(R.id.text1);
+            _txt2 = _view.findViewById(R.id.text2);
+            _txt3 = _view.findViewById(R.id.text3);
+            _txt4 = _view.findViewById(R.id.text4);
+            _txt5 = _view.findViewById(R.id.text5);
+            _txt6 = _view.findViewById(R.id.text6);
             _debugView = _view.findViewById(R.id.debug_view);
             _btnReturn = _view.findViewById(R.id.btn_return);
-            _button1 = _view.findViewById(R.id.button1);
-            _button2 = _view.findViewById(R.id.button2);
-            _button3 = _view.findViewById(R.id.button3);
-            _button4 = _view.findViewById(R.id.button4);
-            _button5 = _view.findViewById(R.id.button5);
+            _btn1 = _view.findViewById(R.id.button1);
+            _btn2 = _view.findViewById(R.id.button2);
+            _btn3 = _view.findViewById(R.id.button3);
+            _btn4 = _view.findViewById(R.id.button4);
+            _btn5 = _view.findViewById(R.id.button5);
             _scrollView = _view.findViewById(R.id.scrollView);
             _llPowerControl = _view.findViewById(R.id.fragment_bluetooth_powercontrol);
             _btnReturn.setOnClickListener(this::onClick);
-            _button1.setOnClickListener(this::onClick);
-            _button2.setOnClickListener(this::onClick);
-            _button3.setOnClickListener(this::onClick);
-            _button4.setOnClickListener(this::onClick);
-            _button5.setOnClickListener(this::onClick);
+            _btn1.setOnClickListener(this::onClick);
+            _btn2.setOnClickListener(this::onClick);
+            _btn3.setOnClickListener(this::onClick);
+            _btn4.setOnClickListener(this::onClick);
+            _btn5.setOnClickListener(this::onClick);
             _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         }
         catch(Exception e)

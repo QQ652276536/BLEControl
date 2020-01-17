@@ -43,11 +43,11 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     private static UUID CONFIG_UUID;
     private Context _context;
     private View _view;
-    private Button _button1;
-    private Button _button2;
+    private Button _btn1;
+    private Button _btn2;
     private ImageButton _btnReturn;
-    private TextView _textView1;
-    private TextView _textView2;
+    private TextView _txt1;
+    private TextView _txt2;
     private ProgressBar _progressBar;
     private BluetoothDevice _bluetoothDevice;
     private BluetoothGatt _bluetoothGatt;
@@ -193,18 +193,18 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         _context = getContext();
         _btnReturn = _view.findViewById(R.id.btn_return_ota);
         _btnReturn.setOnClickListener(this);
-        _button1 = _view.findViewById(R.id.btn1_ota);
-        _button2 = _view.findViewById(R.id.btn2_ota);
-        _textView1 = _view.findViewById(R.id.text1_ota);
-        _textView2 = _view.findViewById(R.id.text2_ota);
+        _btn1 = _view.findViewById(R.id.btn1_ota);
+        _btn2 = _view.findViewById(R.id.btn2_ota);
+        _txt1 = _view.findViewById(R.id.text1_ota);
+        _txt2 = _view.findViewById(R.id.text2_ota);
         _progressBar = _view.findViewById(R.id.progressBar_ota);
-        _button1.setOnClickListener(this::onClick);
-        _button2.setOnClickListener(this::onClick);
+        _btn1.setOnClickListener(this::onClick);
+        _btn2.setOnClickListener(this::onClick);
         _progressBar = _view.findViewById(R.id.progressBar_ota);
         _progressBar.setVisibility(View.VISIBLE);
         if(_bluetoothDevice != null)
         {
-            _textView1.setText(_bluetoothDevice.getAddress());
+            _txt1.setText(_bluetoothDevice.getAddress());
             Log.d(TAG, ">>>开始连接...");
             _bluetoothGatt = _bluetoothDevice.connectGatt(_context, false, new BluetoothGattCallback()
             {

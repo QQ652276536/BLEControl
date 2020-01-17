@@ -32,10 +32,10 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     private TabLayout _tabLayout;
     private View _view;
     private Context _context;
-    private Button _button1;
-    private Button _button2;
-    private Button _button3;
-    private Button _button4;
+    private Button _btn1;
+    private Button _btn2;
+    private Button _btn3;
+    private Button _btn4;
     private TableLayout _table;
 
     public static DialogFragment_ParamSetting newInstance(String[] strArray)
@@ -131,14 +131,14 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
         _tabLayout.getTabAt(0).setText("NEW");
         _tabLayout.getTabAt(1).setText("LOAD");
         _tabLayout.addOnTabSelectedListener(this);
-        _button1 = _view.findViewById(R.id.writevalue_btn_addvalue);
-        _button1.setOnClickListener(this::onClick);
-        _button2 = _view.findViewById(R.id.writevalue_btn_save);
-        _button2.setOnClickListener(this::onClick);
-        _button3 = _view.findViewById(R.id.writevalue_btn_cancel);
-        _button3.setOnClickListener(this::onClick);
-        _button4 = _view.findViewById(R.id.writevalue_btn_send);
-        _button4.setOnClickListener(this::onClick);
+        _btn1 = _view.findViewById(R.id.writevalue_btn_addvalue);
+        _btn1.setOnClickListener(this::onClick);
+        _btn2 = _view.findViewById(R.id.writevalue_btn_save);
+        _btn2.setOnClickListener(this::onClick);
+        _btn3 = _view.findViewById(R.id.writevalue_btn_cancel);
+        _btn3.setOnClickListener(this::onClick);
+        _btn4 = _view.findViewById(R.id.writevalue_btn_send);
+        _btn4.setOnClickListener(this::onClick);
         builder.setView(_view);
         return builder.create();
     }
