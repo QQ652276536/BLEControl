@@ -77,6 +77,7 @@ public class BTUtil
         CONFIG_UUID = map.get("CONFIG_UUID");
         if(_bluetoothGatt != null)
             _bluetoothGatt.close();
+        _bluetoothGatt = null;
         _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
         //设备正在连接中,如果连接成功会执行回调函数discoverServices()
         _listener.OnConnecting();
@@ -106,10 +107,10 @@ public class BTUtil
     public static void DisConnGatt()
     {
         if(_bluetoothGatt != null)
-        if(_bluetoothGatt != null)
-        {
-            _bluetoothGatt.disconnect();
-        }
+            if(_bluetoothGatt != null)
+            {
+                _bluetoothGatt.disconnect();
+            }
     }
 
     /**

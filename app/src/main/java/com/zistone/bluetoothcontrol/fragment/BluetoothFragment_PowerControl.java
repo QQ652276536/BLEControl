@@ -2,11 +2,6 @@ package com.zistone.bluetoothcontrol.fragment;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,6 +33,8 @@ import com.zistone.bluetoothcontrol.control.MyScrollView;
 import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.bluetoothcontrol.dialogfragment.DialogFragment_WriteValue;
+import com.zistone.bluetoothcontrol.util.BTListener;
+import com.zistone.bluetoothcontrol.util.BTUtil;
 import com.zistone.bluetoothcontrol.util.ConvertUtil;
 
 import java.io.Serializable;
@@ -46,7 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener
+public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener, BTListener
 {
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
@@ -77,16 +74,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
     private static final int SEND_SET_CONTROLPARAM = 87;
     private static final int RECEIVE_SET_CONTROLPARAM = 8702;
-    private static UUID SERVICE_UUID;
-    private static UUID WRITE_UUID;
-    private static UUID READ_UUID;
-    private static UUID CONFIG_UUID;
 
     private BluetoothDevice _bluetoothDevice;
-    private BluetoothGatt _bluetoothGatt;
-    private BluetoothGattService _bluetoothGattService;
-    private BluetoothGattCharacteristic _bluetoothGattCharacteristic_write;
-    private BluetoothGattCharacteristic _bluetoothGattCharacteristic_read;
 
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
@@ -118,6 +107,118 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private boolean _isOpenParamSettingDialog = false;
     private boolean _connectionState = false;
     private static Listener _listener;
+    private Map<String, UUID> _uuidMap;
+
+    @Override
+    public void OnConnected()
+    {
+
+        Log.d(TAG, ">>>成功建立连接!");
+        //轮询
+        Message message = new Message();
+        message.what = MESSAGE_1;
+        message.obj = "";
+        handler.sendMessage(message);
+        //连接成功的回调
+        _listener.ConnectSuccessListener();
+    }
+
+    @Override
+    public void OnConnecting()
+    {
+
+    }
+
+    @Override
+    public void OnDisConnected()
+    {
+        Log.d(TAG, ">>>连接已断开!");
+        Message message = new Message();
+        message.what = MESSAGE_ERROR_1;
+        handler.sendMessage(message);
+    }
+
+    @Override
+    public void OnWriteSuccess(byte[] byteArray)
+    {
+        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String[] strArray = result.split(" ");
+        String indexStr = strArray[11];
+        switch(indexStr)
+        {
+            //发送开门指令
+            case "00":
+                break;
+            //发送读卡指令
+            case "01":
+                break;
+            //发送测量电池电压指令
+            case "02":
+                break;
+            //发送测量磁场强度指令
+            case "03":
+                break;
+            //发送测量门状态指令
+            case "04":
+                break;
+            //发送综合测量指令
+            case "80":
+                break;
+            //发送开一号门锁指令
+            case "81":
+                break;
+            //发送开二号门锁指令
+            case "82":
+                break;
+            //发送开全部门锁指令
+            case "83":
+                break;
+            //发送查询内部控制参数指令
+            case "86":
+            {
+                break;
+            }
+            //发送修改内部控制参数指令
+            case "87":
+            {
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void OnReadSuccess(byte[] byteArray)
+    {
+        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        //Log.d(TAG, ">>>接收:" + result);
+        String[] strArray = result.split(" ");
+        //一个包(20个字节)
+        if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
+        {
+            Resolve(result);
+            //清空缓存
+            _stringBuffer = new StringBuffer();
+        }
+        //分包
+        else
+        {
+            if(!strArray[strArray.length - 1].equals("16"))
+            {
+                _stringBuffer.append(result + " ");
+            }
+            //最后一个包
+            else
+            {
+                _stringBuffer.append(result);
+                result = _stringBuffer.toString();
+                Resolve(result);
+                //清空缓存
+                _stringBuffer = new StringBuffer();
+            }
+        }
+    }
 
     public interface Listener
     {
@@ -157,7 +258,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private void DisConnect()
     {
         _connectionState = false;
-        _button1.setText("连接");
         _button2.setEnabled(false);
         _button3.setEnabled(false);
         _button4.setEnabled(false);
@@ -169,11 +269,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         {
             _refreshTimer.cancel();
         }
-        //先结束定时任务再关闭蓝牙
-        if(_bluetoothGatt != null)
-        {
-            _bluetoothGatt.disconnect();
-        }
+        BTUtil.DisConnGatt();
         _textView1.setText("Null");
         _textView1.setTextColor(Color.GRAY);
         _textView2.setText("Null");
@@ -184,19 +280,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         _textView4.setTextColor(Color.GRAY);
         _textView5.setText("Null");
         _textView6.setText("Null");
-    }
-
-    /**
-     * 发送指令
-     */
-    private void SendComm(String data)
-    {
-        if(_bluetoothGatt != null && _bluetoothGattCharacteristic_write != null && data != null && !data.equals(""))
-        {
-            byte[] byteArray = ConvertUtil.HexStrToByteArray(data);
-            _bluetoothGattCharacteristic_write.setValue(byteArray);
-            _bluetoothGatt.writeCharacteristic(_bluetoothGattCharacteristic_write);
-        }
     }
 
     private Handler handler = new Handler()
@@ -230,7 +313,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
                                     //Log.d(TAG, ">>>发送综合测试:" + hexStr);
-                                    SendComm(hexStr);
+                                    BTUtil.SendComm(hexStr);
                                     Thread.sleep(100);
                                 }
                                 catch(InterruptedException e)
@@ -494,7 +577,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case SEND_SET_CONTROLPARAM:
                 {
                     Log.d(TAG, ">>>发送参数设置:" + result);
-                    SendComm(result);
+                    BTUtil.SendComm(result);
                     _debugView.append("发送参数设置指令 ");
                     int offset = _debugView.getLineCount() * _debugView.getLineHeight();
                     if(offset > _scrollView.getHeight())
@@ -506,7 +589,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 //发送查询内部控制参数的指令
                 case SEND_SEARCH_CONTROLPARAM:
                 {
-                    SendComm(SEARCH_CONTROLPARAM_COMM);
+                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                     break;
                 }
             }
@@ -756,7 +839,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case R.id.menu_1_power:
                 {
                     //先查询参数,然后再显示修改参数的页面
-                    SendComm(SEARCH_CONTROLPARAM_COMM);
+                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                     _isOpenParamSettingDialog = true;
                     break;
                 }
@@ -814,182 +897,11 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         _button1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
-                        _bluetoothGatt = _bluetoothDevice.connectGatt(_context, false, new BluetoothGattCallback()
-                        {
-                            /**
-                             * 连接状态改变时回调
-                             * @param gatt
-                             * @param status
-                             * @param newState
-                             */
-                            @Override
-                            public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
-                            {
-                                if(status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED)
-                                {
-                                    Log.d(TAG, ">>>成功建立连接!");
-                                    //发现服务
-                                    gatt.discoverServices();
-                                }
-                                else
-                                {
-                                    Log.d(TAG, ">>>连接已断开!");
-                                    gatt.close();
-                                    Message message = new Message();
-                                    message.what = MESSAGE_ERROR_1;
-                                    handler.sendMessage(message);
-                                }
-                            }
-
-                            /**
-                             * 发现设备(真正建立连接)
-                             * @param gatt
-                             * @param status
-                             */
-                            @Override
-                            public void onServicesDiscovered(BluetoothGatt gatt, int status)
-                            {
-                                //直到这里才是真正建立了可通信的连接
-                                //通过UUID找到服务
-                                _bluetoothGattService = gatt.getService(SERVICE_UUID);
-                                if(_bluetoothGattService != null)
-                                {
-                                    //写数据的服务和特征
-                                    _bluetoothGattCharacteristic_write = _bluetoothGattService.getCharacteristic(WRITE_UUID);
-                                    if(_bluetoothGattCharacteristic_write != null)
-                                    {
-                                        Log.d(TAG, ">>>已找到写入数据的特征值!");
-                                    }
-                                    else
-                                    {
-                                        Log.e(TAG, ">>>该UUID无写入数据的特征值!");
-                                    }
-                                    //读取数据的服务和特征
-                                    _bluetoothGattCharacteristic_read = _bluetoothGattService.getCharacteristic(READ_UUID);
-                                    if(_bluetoothGattCharacteristic_read != null)
-                                    {
-                                        Log.d(TAG, ">>>已找到读取数据的特征值!");
-                                        //订阅读取通知
-                                        gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
-                                        BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
-                                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                        gatt.writeDescriptor(descriptor);
-                                        //轮询
-                                        Message message = new Message();
-                                        message.what = MESSAGE_1;
-                                        message.obj = "";
-                                        handler.sendMessage(message);
-                                        //连接成功的回调
-                                        _listener.ConnectSuccessListener();
-                                    }
-                                    else
-                                    {
-                                        Log.e(TAG, ">>>该UUID无读取数据的特征值!");
-                                    }
-                                }
-                            }
-
-                            /**
-                             * 写入成功后回调
-                             *
-                             * @param gatt
-                             * @param characteristic
-                             * @param status
-                             */
-                            @Override
-                            public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
-                            {
-                                byte[] byteArray = characteristic.getValue();
-                                String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                                result = ConvertUtil.HexStrAddCharacter(result, " ");
-                                String[] strArray = result.split(" ");
-                                String indexStr = strArray[11];
-                                switch(indexStr)
-                                {
-                                    //发送开门指令
-                                    case "00":
-                                    {
-                                        break;
-                                    }
-                                    //发送读卡指令
-                                    case "01":
-                                        break;
-                                    //发送测量电池电压指令
-                                    case "02":
-                                        break;
-                                    //发送测量磁场强度指令
-                                    case "03":
-                                        break;
-                                    //发送测量门状态指令
-                                    case "04":
-                                        break;
-                                    //发送综合测量指令
-                                    case "80":
-                                        break;
-                                    //发送开一号门锁指令
-                                    case "81":
-                                        break;
-                                    //发送开二号门锁指令
-                                    case "82":
-                                        break;
-                                    //发送开全部门锁指令
-                                    case "83":
-                                        break;
-                                    //发送查询内部控制参数指令
-                                    case "86":
-                                    {
-                                        break;
-                                    }
-                                    //发送修改内部控制参数指令
-                                    case "87":
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            /**
-                             * 收到硬件返回的数据时回调,如果是Notify的方式
-                             * @param gatt
-                             * @param characteristic
-                             */
-                            @Override
-                            public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
-                            {
-                                byte[] byteArray = characteristic.getValue();
-                                String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                                result = ConvertUtil.HexStrAddCharacter(result, " ");
-                                //Log.d(TAG, ">>>接收:" + result);
-                                String[] strArray = result.split(" ");
-                                //一个包(20个字节)
-                                if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
-                                {
-                                    Resolve(result);
-                                    //清空缓存
-                                    _stringBuffer = new StringBuffer();
-                                }
-                                //分包
-                                else
-                                {
-                                    if(!strArray[strArray.length - 1].equals("16"))
-                                    {
-                                        _stringBuffer.append(result + " ");
-                                    }
-                                    //最后一个包
-                                    else
-                                    {
-                                        _stringBuffer.append(result);
-                                        result = _stringBuffer.toString();
-                                        Resolve(result);
-                                        //清空缓存
-                                        _stringBuffer = new StringBuffer();
-                                    }
-                                }
-                            }
-                        });
+                        BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
                     }
                     else
                     {
+                        _button1.setText("连接");
                         DisConnect();
                     }
                 }
@@ -1004,7 +916,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 String hexStr = "680000000000006810000181E116";
                 Log.d(TAG, ">>>发送开一号门锁:" + hexStr);
-                SendComm(hexStr);
+                BTUtil.SendComm(hexStr);
             }
             break;
             //开二号门锁
@@ -1012,7 +924,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 String hexStr = "680000000000006810000182E716";
                 Log.d(TAG, ">>>发送开二号门锁:" + hexStr);
-                SendComm(hexStr);
+                BTUtil.SendComm(hexStr);
             }
             break;
             //开全部门锁
@@ -1020,7 +932,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 String hexStr = "680000000000006810000183E716";
                 Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
-                SendComm(hexStr);
+                BTUtil.SendComm(hexStr);
             }
             break;
             //清屏
@@ -1044,19 +956,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         if(getArguments() != null)
         {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
-            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
-            SERVICE_UUID = map.get("SERVICE_UUID");
-            WRITE_UUID = map.get("WRITE_UUID");
-            READ_UUID = map.get("READ_UUID");
-            CONFIG_UUID = map.get("CONFIG_UUID");
+            _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
         }
+        _context = getContext();
+        BTUtil.Init(_context, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         _view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
-        _context = getContext();
         try
         {
             //强制获得焦点
@@ -1122,14 +1031,12 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     {
         super.onDetach();
         _onFragmentInteractionListener = null;
-        if(_bluetoothGatt != null)
-            _bluetoothGatt.close();
         if(_refreshTimer != null)
             _refreshTimer.cancel();
         if(_refreshTask != null)
             _refreshTask.cancel();
-        if(_bluetoothDevice != null)
-            _bluetoothDevice = null;
+        BTUtil.DisConnGatt();
+        _bluetoothDevice = null;
     }
 
 }

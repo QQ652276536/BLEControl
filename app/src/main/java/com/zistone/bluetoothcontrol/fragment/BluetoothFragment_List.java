@@ -89,6 +89,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private RadioButton _radioButton1, _radioButton2, _radioButton3, _radioButton4, _radioButton5;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private MaterialRefreshListener _materialRefreshListener;
+    private BluetoothFragment_PowerControl.Listener _powerControlListener;
     private Button _btn1, _btnFilterContent;
     private Drawable _drawableUp;
     private Drawable _drawableDown;
@@ -143,7 +144,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         String address = _myBluetoothDevice.get_address();
         Log.i(TAG, String.format("设备%s连接成功", address));
-        //选择设备后会停止扫描,连接成功后再调用一次筛选
+        //选择设备后会停止扫描,隐藏连接成功的设备后再调用一次筛选
         if(_isHideConnectSuccessDevice)
         {
             //根据条件筛选设备
@@ -400,6 +401,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     private void InitListener()
     {
+        _powerControlListener = new BluetoothFragment_PowerControl.Listener()
+        {
+            @Override
+            public void ConnectSuccessListener()
+            {
+                OnConnected();
+            }
+        };
         //下拉刷新
         _materialRefreshListener = new MaterialRefreshListener()
         {
@@ -767,10 +776,10 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //电力控制
             if(_radioButton3.isChecked())
             {
-                //                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(bluetoothDevice, map);
-                //                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                //                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
-                //                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(_powerControlListener, bluetoothDevice, map);
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //命令测试
             else if(_radioButton4.isChecked())
