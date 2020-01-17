@@ -59,6 +59,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     @Override
     public void OnConnecting()
     {
+        ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
     }
 
     @Override
@@ -595,7 +596,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        _view = inflater.inflate(R.layout.fragment_bluetooth_read_write, container, false);
+        _view = inflater.inflate(R.layout.fragment_bluetooth_cmd, container, false);
         //强制获得焦点
         _view.requestFocus();
         _view.setFocusable(true);

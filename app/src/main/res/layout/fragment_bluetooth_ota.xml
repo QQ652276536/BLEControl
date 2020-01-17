@@ -99,11 +99,5 @@
                 android:text="START OTA" />
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progressBar_ota"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     </LinearLayout>
 </LinearLayout>

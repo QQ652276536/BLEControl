@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +47,6 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     private Button _btn2;
     private TextView _txt1;
     private TextView _txt2;
-    private ProgressBar _progressBar;
     private BluetoothDevice _bluetoothDevice;
     private byte[] _byteArray;
 
@@ -159,7 +157,6 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         _btn2 = _view.findViewById(R.id.btn2_ota);
         _txt1 = _view.findViewById(R.id.text1_ota);
         _txt2 = _view.findViewById(R.id.text2_ota);
-        _progressBar = _view.findViewById(R.id.progressBar_ota);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         if(_bluetoothDevice != null)

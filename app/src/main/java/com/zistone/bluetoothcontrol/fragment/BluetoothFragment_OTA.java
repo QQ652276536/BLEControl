@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.zistone.bluetoothcontrol.R;
@@ -48,7 +47,6 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
     private ImageButton _btnReturn;
     private TextView _txt1;
     private TextView _txt2;
-    private ProgressBar _progressBar;
     private BluetoothDevice _bluetoothDevice;
     private BluetoothGatt _bluetoothGatt;
     private BluetoothGattService _bluetoothGattService;
@@ -197,11 +195,8 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         _btn2 = _view.findViewById(R.id.btn2_ota);
         _txt1 = _view.findViewById(R.id.text1_ota);
         _txt2 = _view.findViewById(R.id.text2_ota);
-        _progressBar = _view.findViewById(R.id.progressBar_ota);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
-        _progressBar = _view.findViewById(R.id.progressBar_ota);
-        _progressBar.setVisibility(View.VISIBLE);
         if(_bluetoothDevice != null)
         {
             _txt1.setText(_bluetoothDevice.getAddress());
