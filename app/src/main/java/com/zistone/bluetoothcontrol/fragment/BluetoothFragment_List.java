@@ -4,9 +4,7 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,7 +16,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -104,24 +101,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private CheckBox _chkHideDevice;
     //BLE的扫描器
     private BluetoothLeScanner _bluetoothLeScanner;
-    //筛选条件,可以设置名称、地址、UUID
-    private List<ScanFilter> _scanFilterList = new ArrayList<ScanFilter>()
-    {{
-        ScanFilter.Builder filter = new ScanFilter.Builder();
-        ParcelUuid parcelUuid = ParcelUuid.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
-        filter.setServiceUuid(parcelUuid);
-        this.add(filter.build());
-
-    }};
-    //扫描设置,可以设置扫描模式、时间、类型、结果等
-    //模式:
-    //  SCAN_MODE_LOW_LATENCY:扫描优先
-    //  SCAN_MODE_LOW_POWER:省电优先
-    //  SCAN_MODE_BALANCED:平衡模式
-    //  SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
-    //时间:
-    //  扫描到设置时间后执行onBatchScanResults的回调
-    private ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
     //记录点击返回键的时间
     private long _exitTime = 0;
     //当前连接的设备
