@@ -1,6 +1,7 @@
 package com.zistone.bluetoothcontrol.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,13 +11,13 @@ import com.zistone.bluetoothcontrol.R;
 
 public class ProgressDialogUtil
 {
+    private static AlertDialog _alertDialog;
+    private static Listener _listener;
+
     public interface Listener
     {
         void OnDismiss();
     }
-
-    private static AlertDialog _alertDialog;
-    private static Listener _listener;
 
     public static void ShowProgressDialog(Context context, Listener listener, String str)
     {
@@ -29,6 +30,15 @@ public class ProgressDialogUtil
         TextView textView = loadView.findViewById(R.id.text_dialog);
         textView.setText(str);
         _alertDialog.show();
+        _alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener()
+        {
+            @Override
+            public void onDismiss(DialogInterface dialog)
+            {
+                if(_listener != null)
+                    _listener.OnDismiss();
+            }
+        });
     }
 
     public static void ShowProgressDialog(Context context, String str)
@@ -48,8 +58,6 @@ public class ProgressDialogUtil
         if(_alertDialog != null && _alertDialog.isShowing())
         {
             _alertDialog.dismiss();
-            if(_listener != null)
-                _listener.OnDismiss();
         }
     }
 

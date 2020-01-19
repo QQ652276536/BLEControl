@@ -100,9 +100,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private DialogFragment_OTA _ota;
     //发送查询结果用来初始化界面的开关
     private boolean _isOpenParamSettingDialog = false;
-    private boolean _connectionState = false;
+    private boolean _connectedSuccess = false;
     private static Listener _listener;
     private Map<String, UUID> _uuidMap;
+    private ProgressDialogUtil.Listener _progressDialogUtilListener;
 
     @Override
     public void OnConnected()
@@ -121,7 +122,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     @Override
     public void OnConnecting()
     {
-        ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(_context, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -215,6 +216,22 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
     }
 
+    private void InitListener()
+    {
+        _progressDialogUtilListener = new ProgressDialogUtil.Listener()
+        {
+            @Override
+            public void OnDismiss()
+            {
+                if(_btn1.getText().toString().equals("断开") && !_connectedSuccess)
+                {
+                    _btn1.setText("连接");
+                    DisConnect();
+                }
+            }
+        };
+    }
+
     public interface Listener
     {
         void ConnectSuccessListener();
@@ -252,7 +269,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 
     private void DisConnect()
     {
-        _connectionState = false;
+        _connectedSuccess = false;
         _btn2.setEnabled(false);
         _btn3.setEnabled(false);
         _btn4.setEnabled(false);
@@ -320,7 +337,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
                     _refreshTimer.schedule(_refreshTask, 0, 2 * 1000);
-                    _connectionState = true;
+                    _connectedSuccess = true;
                     break;
                 }
                 case RECEIVE_OPENDOOR:
@@ -790,7 +807,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(_connectionState)
+        if(_connectedSuccess)
         {
             switch(requestCode)
             {
@@ -826,7 +843,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public boolean onOptionsItemSelected(MenuItem item)
     {
         super.onOptionsItemSelected(item);
-        if(_connectionState)
+        if(_connectedSuccess)
         {
             switch(item.getItemId())
             {
@@ -961,49 +978,41 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         _view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
-        try
-        {
-            //强制获得焦点
-            _view.requestFocus();
-            _view.setFocusable(true);
-            _view.setFocusableInTouchMode(true);
-            _view.setOnKeyListener(backListener);
-            _toolbar = _view.findViewById(R.id.toolbar_powercontrol);
-            //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
-            setHasOptionsMenu(true);
-            //去掉标题
-            _toolbar.setTitle("");
-            //此处强转,必须是Activity才有这个方法
-            ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
-            _txt1 = _view.findViewById(R.id.text1);
-            _txt2 = _view.findViewById(R.id.text2);
-            _txt3 = _view.findViewById(R.id.text3);
-            _txt4 = _view.findViewById(R.id.text4);
-            _txt5 = _view.findViewById(R.id.text5);
-            _txt6 = _view.findViewById(R.id.text6);
-            _debugView = _view.findViewById(R.id.debug_view);
-            _btnReturn = _view.findViewById(R.id.btn_return);
-            _btn1 = _view.findViewById(R.id.button1);
-            _btn2 = _view.findViewById(R.id.button2);
-            _btn3 = _view.findViewById(R.id.button3);
-            _btn4 = _view.findViewById(R.id.button4);
-            _btn5 = _view.findViewById(R.id.button5);
-            _scrollView = _view.findViewById(R.id.scrollView);
-            _llPowerControl = _view.findViewById(R.id.fragment_bluetooth_powercontrol);
-            _btnReturn.setOnClickListener(this::onClick);
-            _btn1.setOnClickListener(this::onClick);
-            _btn2.setOnClickListener(this::onClick);
-            _btn3.setOnClickListener(this::onClick);
-            _btn4.setOnClickListener(this::onClick);
-            _btn5.setOnClickListener(this::onClick);
-            _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            Toast.makeText(_context, "配对异常", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, e.getMessage());
-        }
+        //强制获得焦点
+        _view.requestFocus();
+        _view.setFocusable(true);
+        _view.setFocusableInTouchMode(true);
+        _view.setOnKeyListener(backListener);
+        _toolbar = _view.findViewById(R.id.toolbar_powercontrol);
+        //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
+        setHasOptionsMenu(true);
+        //去掉标题
+        _toolbar.setTitle("");
+        //此处强转,必须是Activity才有这个方法
+        ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
+        _txt1 = _view.findViewById(R.id.text1);
+        _txt2 = _view.findViewById(R.id.text2);
+        _txt3 = _view.findViewById(R.id.text3);
+        _txt4 = _view.findViewById(R.id.text4);
+        _txt5 = _view.findViewById(R.id.text5);
+        _txt6 = _view.findViewById(R.id.text6);
+        _debugView = _view.findViewById(R.id.debug_view);
+        _btnReturn = _view.findViewById(R.id.btn_return);
+        _btn1 = _view.findViewById(R.id.button1);
+        _btn2 = _view.findViewById(R.id.button2);
+        _btn3 = _view.findViewById(R.id.button3);
+        _btn4 = _view.findViewById(R.id.button4);
+        _btn5 = _view.findViewById(R.id.button5);
+        _scrollView = _view.findViewById(R.id.scrollView);
+        _llPowerControl = _view.findViewById(R.id.fragment_bluetooth_powercontrol);
+        _btnReturn.setOnClickListener(this::onClick);
+        _btn1.setOnClickListener(this::onClick);
+        _btn2.setOnClickListener(this::onClick);
+        _btn3.setOnClickListener(this::onClick);
+        _btn4.setOnClickListener(this::onClick);
+        _btn5.setOnClickListener(this::onClick);
+        _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        InitListener();
         return _view;
     }
 
