@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol;
+package com.zistone.blecontrol;
 
 import org.junit.Test;
 

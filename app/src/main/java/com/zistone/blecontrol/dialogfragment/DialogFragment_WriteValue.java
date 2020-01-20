@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.dialogfragment;
+package com.zistone.blecontrol.dialogfragment;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -22,8 +22,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.zistone.bluetoothcontrol.MainActivity;
-import com.zistone.bluetoothcontrol.R;
+import com.zistone.blecontrol.MainActivity;
+import com.zistone.blecontrol.R;
 
 public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener
 {

@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol;
+package com.zistone.blecontrol;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -23,6 +23,6 @@ public class ExampleInstrumentedTest
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.zistone.bluetoothcontrol", appContext.getPackageName());
+        assertEquals("com.zistone.blecontrol", appContext.getPackageName());
     }
 }

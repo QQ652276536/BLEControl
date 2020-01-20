@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.dialogfragment;
+package com.zistone.blecontrol.dialogfragment;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zistone.bluetoothcontrol.R;
+import com.zistone.blecontrol.R;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

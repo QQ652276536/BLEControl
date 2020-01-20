@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.pojo;
+package com.zistone.blecontrol.pojo;
 
 import android.bluetooth.BluetoothDevice;
 

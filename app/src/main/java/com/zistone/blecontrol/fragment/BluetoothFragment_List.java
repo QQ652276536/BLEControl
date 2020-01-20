@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.fragment;
+package com.zistone.blecontrol.fragment;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -47,14 +47,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zistone.bluetoothcontrol.MainActivity;
-import com.zistone.bluetoothcontrol.R;
-import com.zistone.bluetoothcontrol.control.BluetoothListAdapter;
-import com.zistone.bluetoothcontrol.pojo.MyBluetoothDevice;
-import com.zistone.bluetoothcontrol.util.BLEListener;
-import com.zistone.bluetoothcontrol.util.BLEUtil;
-import com.zistone.bluetoothcontrol.util.ConvertUtil;
-import com.zistone.bluetoothcontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.MainActivity;
+import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.control.BluetoothListAdapter;
+import com.zistone.blecontrol.pojo.MyBluetoothDevice;
+import com.zistone.blecontrol.util.BLEListener;
+import com.zistone.blecontrol.util.BLEUtil;
+import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
@@ -878,7 +878,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     {
         _view = inflater.inflate(R.layout.fragment_bluetooth_list, container, false);
         _bluetoothListAdapter = new BluetoothListAdapter(_context);
-        _onFragmentInteractionListener.onFragmentInteraction(Uri.parse("content://com.zistone.bluetoothcontrol/list"));
+        _onFragmentInteractionListener.onFragmentInteraction(Uri.parse("content://com.zistone.blecontrol/list"));
         //强制获得焦点
         _view.requestFocus();
         _view.setFocusable(true);

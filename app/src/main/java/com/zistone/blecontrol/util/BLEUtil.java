@@ -1,15 +1,11 @@
-package com.zistone.bluetoothcontrol.util;
+package com.zistone.blecontrol.util;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.os.ParcelUuid;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BLEUtil
@@ -18,22 +14,22 @@ public class BLEUtil
     private static BLEListener _listener;
     private static BluetoothAdapter _bluetoothAdapter;
     private static BluetoothLeScanner _bluetoothLeScanner;
-    //筛选条件,可以设置名称、地址、UUID
-    private static List<ScanFilter> _scanFilterList = new ArrayList<ScanFilter>()
-    {{
-        ScanFilter.Builder filter = new ScanFilter.Builder();
-        ParcelUuid parcelUuidMask = ParcelUuid.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
-        ParcelUuid parcelUuid = ParcelUuid.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
-        filter.setServiceUuid(parcelUuid, parcelUuidMask);
-        this.add(filter.build());
-    }};
-    //扫描设置,可以设置扫描模式、时间、类型、结果等
-    //SCAN_MODE_LOW_LATENCY:扫描优先
-    //SCAN_MODE_LOW_POWER:省电优先
-    //SCAN_MODE_BALANCED:平衡模式
-    //SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
-    //时间:扫描到设置时间后执行onBatchScanResults的回调
-    private static ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
+    //    //筛选条件,可以设置名称、地址、UUID
+    //    private static List<ScanFilter> _scanFilterList = new ArrayList<ScanFilter>()
+    //    {{
+    //        ScanFilter.Builder filter = new ScanFilter.Builder();
+    //        ParcelUuid parcelUuidMask = ParcelUuid.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+    //        ParcelUuid parcelUuid = ParcelUuid.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
+    //        filter.setServiceUuid(parcelUuid, parcelUuidMask);
+    //        this.add(filter.build());
+    //    }};
+    //    //扫描设置,可以设置扫描模式、时间、类型、结果等
+    //    //SCAN_MODE_LOW_LATENCY:扫描优先
+    //    //SCAN_MODE_LOW_POWER:省电优先
+    //    //SCAN_MODE_BALANCED:平衡模式
+    //    //SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
+    //    //时间:扫描到设置时间后执行onBatchScanResults的回调
+    //    private static ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
 
     /**
      * @param context

@@ -26,7 +26,7 @@
  * These are more or less constants of the OTAFU protocol. If you changed these IDs in the FW, use the ones the FW uses.
  **********************************************************************************************************************/
 
-package com.zistone.bluetoothcontrol;
+package com.zistone.blecontrol;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.fragment;
+package com.zistone.blecontrol.fragment;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
@@ -23,8 +23,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.bluetoothcontrol.R;
-import com.zistone.bluetoothcontrol.util.ConvertUtil;
+import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.ConvertUtil;
 
 import java.io.Serializable;
 import java.util.Map;

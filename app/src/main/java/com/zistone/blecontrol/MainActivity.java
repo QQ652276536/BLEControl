@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol;
+package com.zistone.blecontrol;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -7,11 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.zistone.bluetoothcontrol.fragment.BluetoothFragment;
-import com.zistone.bluetoothcontrol.fragment.BluetoothFragment_CommandTest;
-import com.zistone.bluetoothcontrol.fragment.BluetoothFragment_List;
-import com.zistone.bluetoothcontrol.fragment.BluetoothFragment_OTA;
-import com.zistone.bluetoothcontrol.fragment.BluetoothFragment_PowerControl;
+import com.zistone.blecontrol.fragment.BluetoothFragment;
+import com.zistone.blecontrol.fragment.BluetoothFragment_CommandTest;
+import com.zistone.blecontrol.fragment.BluetoothFragment_List;
+import com.zistone.blecontrol.fragment.BluetoothFragment_OTA;
+import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.util;
+package com.zistone.blecontrol.util;
 
 import java.io.UnsupportedEncodingException;
 

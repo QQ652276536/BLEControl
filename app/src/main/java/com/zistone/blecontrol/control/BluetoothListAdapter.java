@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.control;
+package com.zistone.blecontrol.control;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.zistone.bluetoothcontrol.R;
-import com.zistone.bluetoothcontrol.pojo.MyBluetoothDevice;
+import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 
 import java.util.List;
 

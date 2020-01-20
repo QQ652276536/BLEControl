@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.control;
+package com.zistone.blecontrol.control;
 
 import android.content.Context;
 import android.util.AttributeSet;

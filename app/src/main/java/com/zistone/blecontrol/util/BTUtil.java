@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.util;
+package com.zistone.blecontrol.util;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

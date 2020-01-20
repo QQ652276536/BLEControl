@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.util;
+package com.zistone.blecontrol.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

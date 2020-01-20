@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.dialogfragment;
+package com.zistone.blecontrol.dialogfragment;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -17,8 +17,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.zistone.bluetoothcontrol.MainActivity;
-import com.zistone.bluetoothcontrol.R;
+import com.zistone.blecontrol.MainActivity;
+import com.zistone.blecontrol.R;
 
 /**
  * 修改内部控制参数

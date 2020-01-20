@@ -1,4 +1,4 @@
-package com.zistone.bluetoothcontrol.fragment;
+package com.zistone.blecontrol.fragment;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zistone.bluetoothcontrol.R;
+import com.zistone.blecontrol.R;
 
 public class BluetoothFragment extends Fragment
 {
