@@ -58,7 +58,7 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radioButton1_bluetoothList"
+                android:id="@+id/rdo1_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
@@ -67,7 +67,7 @@
                 android:textColor="@color/gray" />
 
             <RadioButton
-                android:id="@+id/radioButton2_bluetoothList"
+                android:id="@+id/rdo2_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/rad_selector"
@@ -75,12 +75,20 @@
                 android:textColor="@color/gray" />
 
             <RadioButton
-                android:id="@+id/radioButton5_bluetoothList"
+                android:id="@+id/rdo5_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/rad_selector"
                 android:checked="true"
                 android:text="OTA"
+                android:textColor="@color/gray" />
+
+            <RadioButton
+                android:id="@+id/rdo6_bluetoothList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/rad_selector"
+                android:text="TAG"
                 android:textColor="@color/gray" />
         </RadioGroup>
     </LinearLayout>
@@ -109,7 +117,7 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radioButton3_bluetoothList"
+                android:id="@+id/rdo3_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/rad_selector"
@@ -118,7 +126,7 @@
                 android:textColor="@color/gray" />
 
             <RadioButton
-                android:id="@+id/radioButton4_bluetoothList"
+                android:id="@+id/rdo4_bluetoothList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/rad_selector"
@@ -140,10 +148,10 @@
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="4"
-            android:lines="1"
             android:background="@color/transparent"
             android:drawableRight="@drawable/down1"
             android:gravity="center_vertical"
+            android:lines="1"
             android:text="No Filter"
             android:textAllCaps="false"
             android:textColor="@color/gray" />

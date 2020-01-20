@@ -83,7 +83,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private BluetoothFragment_PowerControl _bluetoothFragment_powerControl;
     private BluetoothFragment_OTA _bluetoothFragment_ota;
     private MaterialRefreshLayout _materialRefreshLayout;
-    private RadioButton _radioButton1, _radioButton2, _radioButton3, _radioButton4, _radioButton5;
+    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4, _rdo5, _rdo6;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private MaterialRefreshListener _materialRefreshListener;
     private BluetoothFragment_PowerControl.Listener _powerControlListener;
@@ -725,25 +725,31 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         BluetoothDevice bluetoothDevice = _bluetoothAdapter.getRemoteDevice(address);
         _myBluetoothDevice = _deviceMap.get(address);
         //BlueNRG
-        if(_radioButton1.isChecked())
+        if(_rdo1.isChecked())
         {
             SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
             WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
         }
         //Amdtp
-        else if(_radioButton2.isChecked())
+        else if(_rdo2.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
         }
         //OTA
-        else if(_radioButton5.isChecked())
+        else if(_rdo5.isChecked())
         {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
+        }
+        else if(_rdo6.isChecked())
+        {
+            SERVICE_UUID = UUID.fromString("");
+            WRITE_UUID = UUID.fromString("");
+            READ_UUID = UUID.fromString("");
         }
         Map<String, UUID> map = new HashMap<>();
         map.put("SERVICE_UUID", SERVICE_UUID);
@@ -753,7 +759,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         if(bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE)
         {
             //电力控制
-            if(_radioButton3.isChecked())
+            if(_rdo3.isChecked())
             {
                 _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(_powerControlListener, bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
@@ -761,7 +767,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //命令测试
-            else if(_radioButton4.isChecked())
+            else if(_rdo4.isChecked())
             {
                 _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
@@ -907,11 +913,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         _view.setOnKeyListener(backListener);
         _btn1 = _view.findViewById(R.id.btn1_bluetoothList);
         _btn1.setOnClickListener(this::onClick);
-        _radioButton1 = _view.findViewById(R.id.radioButton1_bluetoothList);
-        _radioButton2 = _view.findViewById(R.id.radioButton2_bluetoothList);
-        _radioButton3 = _view.findViewById(R.id.radioButton3_bluetoothList);
-        _radioButton4 = _view.findViewById(R.id.radioButton4_bluetoothList);
-        _radioButton5 = _view.findViewById(R.id.radioButton5_bluetoothList);
+        _rdo1 = _view.findViewById(R.id.rdo1_bluetoothList);
+        _rdo2 = _view.findViewById(R.id.rdo2_bluetoothList);
+        _rdo3 = _view.findViewById(R.id.rdo3_bluetoothList);
+        _rdo4 = _view.findViewById(R.id.rdo4_bluetoothList);
+        _rdo5 = _view.findViewById(R.id.rdo5_bluetoothList);
+        _rdo6 = _view.findViewById(R.id.rdo6_bluetoothList);
         _listView = _view.findViewById(R.id.lv_bluetoothList);
         _btnFilterContent = _view.findViewById(R.id.btnFilterContent_bluetoothList);
         _btnFilterContent.setOnClickListener(this::onClick);
