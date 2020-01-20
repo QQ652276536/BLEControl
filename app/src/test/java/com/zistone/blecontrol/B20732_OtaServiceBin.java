@@ -28,6 +28,12 @@
 
 package com.zistone.blecontrol;
 
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.os.Environment;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -35,12 +41,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.UUID;
-
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import android.os.Environment;
-import android.util.Log;
 
 public class B20732_OtaServiceBin
 {
@@ -59,7 +59,8 @@ public class B20732_OtaServiceBin
     private String burnimg_path; // The path of the burn image that will be
     // generated when updating.
 
-    private BluetoothGatt mGattService = null;
+    private BluetoothGattService mGattService = null;
+    private BluetoothGatt mGatt = null;
     private BluetoothGattCharacteristic mUpdateValueCharact = null;
     private BluetoothGattCharacteristic mUpdateResultCharact = null;
 
@@ -96,14 +97,15 @@ public class B20732_OtaServiceBin
 
     // private long new_offset = 0, new_pack_id = 0, new_patch_size = 0;
 
-    public B20732_OtaServiceBin(BluetoothGatt Service, BluetoothGattCharacteristic Characteristic)
+    public B20732_OtaServiceBin(BluetoothGattService Service, BluetoothGattCharacteristic Characteristic)
     {
         mGattService = Service;
         mUpdateValueCharact = Characteristic;
 
         if(mGattService != null)
         {
-            mUpdateResultCharact = mGattService.getCharacteristic(OTA_SERVICE_UUID, OTA_RESULT_CHARACTER_UUID);
+            //            mUpdateResultCharact = mGattService.getCharacteristic(OTA_SERVICE_UUID, OTA_RESULT_CHARACTER_UUID);
+            mUpdateResultCharact = mGattService.getCharacteristic(OTA_SERVICE_UUID);
         }
 
         array_fail_packet = new short[2000];
@@ -258,7 +260,7 @@ public class B20732_OtaServiceBin
             {
                 // mUpdateValueCharact.setWriteType(
                 // BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE );
-                result = mGattService.writeCharacteristic(mUpdateValueCharact);
+                result = mGatt.writeCharacteristic(mUpdateValueCharact);
             }
         }
 
@@ -676,7 +678,7 @@ public class B20732_OtaServiceBin
 
         if(mUpdateResultCharact != null)
         {
-            result = mGattService.readCharacteristic(mUpdateResultCharact);
+            result = mGatt.readCharacteristic(mUpdateResultCharact);
         }
 
         return result;

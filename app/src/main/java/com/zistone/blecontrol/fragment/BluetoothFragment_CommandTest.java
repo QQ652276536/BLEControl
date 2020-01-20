@@ -54,6 +54,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         Message message = new Message();
         message.what = MESSAGE_1;
         handler.sendMessage(message);
+        ProgressDialogUtil.Dismiss();
     }
 
     @Override
