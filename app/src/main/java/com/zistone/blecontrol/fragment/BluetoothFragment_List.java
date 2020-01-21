@@ -753,18 +753,6 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //Tag
         else if(_rdo6.isChecked())
         {
-            //           SERVICE_UUID = UUID.fromString("e2c56db5-dffb-48d2-b060-d0f5a71096e0");
-
-
-            SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
-            //            SERVICE_UUID = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
-            //            SERVICE_UUID = UUID.fromString("00001803-0000-1000-8000-00805f9b34fb");
-            //            SERVICE_UUID = UUID.fromString("00001802-0000-1000-8000-00805f9b34fb");
-            //            SERVICE_UUID = UUID.fromString("00001804-0000-1000-8000-00805f9b34fb");
-            WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-            READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-
-            CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
         }
         Map<String, UUID> map = new HashMap<>();
         map.put("SERVICE_UUID", SERVICE_UUID);
@@ -790,9 +778,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //设备绑定入库
-            else if(_rdo7.isChecked())
+            else if(_rdo6.isChecked() && _rdo7.isChecked())
             {
-                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map);
+                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();

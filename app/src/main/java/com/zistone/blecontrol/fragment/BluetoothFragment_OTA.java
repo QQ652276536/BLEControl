@@ -181,6 +181,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
             READ_UUID = map.get("READ_UUID");
             CONFIG_UUID = map.get("CONFIG_UUID");
         }
+        _context = getContext();
     }
 
     @Override
@@ -192,7 +193,6 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         _view.setFocusable(true);
         _view.setFocusableInTouchMode(true);
         _view.setOnKeyListener(backListener);
-        _context = getContext();
         _btnReturn = _view.findViewById(R.id.btn_return_ota);
         _btnReturn.setOnClickListener(this);
         _btn1 = _view.findViewById(R.id.btn1_ota);
