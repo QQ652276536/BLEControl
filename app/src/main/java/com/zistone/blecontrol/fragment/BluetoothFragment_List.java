@@ -286,23 +286,27 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         return fragment;
     }
 
-    private final View.OnKeyListener backListener = (v, keyCode, event) ->
+    private View.OnKeyListener backListener = new View.OnKeyListener()
     {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event)
         {
-            if((System.currentTimeMillis() - _exitTime) > 2000)
+            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             {
-                Toast.makeText(getActivity(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
-                _exitTime = System.currentTimeMillis();
+                if((System.currentTimeMillis() - _exitTime) > 2000)
+                {
+                    Toast.makeText(getActivity(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                    _exitTime = System.currentTimeMillis();
+                }
+                else
+                {
+                    getActivity().finish();
+                    System.exit(0);
+                }
+                return true;
             }
-            else
-            {
-                getActivity().finish();
-                System.exit(0);
-            }
-            return true;
+            return false;
         }
-        return false;
     };
 
     /**

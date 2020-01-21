@@ -64,16 +64,20 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         return fragment;
     }
 
-    private View.OnKeyListener backListener = (v, keyCode, event) ->
+    private View.OnKeyListener backListener = new View.OnKeyListener()
     {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event)
         {
-            BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-            getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-            getFragmentManager().beginTransaction().remove(BluetoothFragment_OTA.this).commitNow();
-            return true;
+            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+            {
+                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
+                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_OTA.this).commitNow();
+                return true;
+            }
+            return false;
         }
-        return false;
     };
 
     private Handler handler = new Handler()
