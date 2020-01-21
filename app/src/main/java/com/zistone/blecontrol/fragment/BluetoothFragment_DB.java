@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -38,13 +39,10 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
     private View _view;
-    private Button _btn1;
-    private Button _btn2;
+    private Button _btn1, _btn2;
     private ImageButton _btnReturn;
-    private TextView _txt1;
-    private TextView _txt2;
-    private TextView _txt3;
-    private TextView _txt4;
+    private TextView _txt1, _txt2, _txt3, _txt4;
+    private EditText _edt1;
     private BluetoothDevice _bluetoothDevice;
     private Map<String, UUID> _uuidMap;
 
@@ -175,7 +173,6 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         _view.setFocusable(true);
         _view.setFocusableInTouchMode(true);
         _view.setOnKeyListener(backListener);
-        _context = getContext();
         _btnReturn = _view.findViewById(R.id.btn_return_db);
         _btnReturn.setOnClickListener(this);
         _btn1 = _view.findViewById(R.id.btn1_db);
@@ -186,6 +183,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         _txt4 = _view.findViewById(R.id.text4_db);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
+        _edt1 = _view.findViewById(R.id.edt1_db);
         if(_bluetoothDevice != null)
         {
             _txt1.setText(_bluetoothDevice.getAddress());

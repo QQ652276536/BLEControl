@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer-array name="db_row_column">
+    <string-array name="db_row_column">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -13,5 +13,5 @@
         <item>10</item>
         <item>11</item>
         <item>12</item>
-    </integer-array>
+    </string-array>
 </resources>
