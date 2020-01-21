@@ -86,12 +86,10 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     ShowWarning(1);
                     break;
                 case MESSAGE_1:
-                {
                     _btn1.setEnabled(true);
                     _btn1.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     ProgressDialogUtil.Dismiss();
                     break;
-                }
                 default:
                     break;
             }
@@ -188,8 +186,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         {
             _txt1.setText(_bluetoothDevice.getAddress());
             _txt2.setText(_bluetoothDevice.getName());
-            _txt3.setText("");
-            _txt4.setText("");
+            //电池电量在连接成功后通过UUID获取
             Log.d(TAG, ">>>开始连接...");
             BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         }
@@ -238,6 +235,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
         Log.d(TAG, ">>>接收:" + result);
+        _txt4.setText(result);
     }
 
     /**
