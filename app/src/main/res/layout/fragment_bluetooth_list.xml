@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
-                    android:text="TAG"
+                    android:text="Tag"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </HorizontalScrollView>
