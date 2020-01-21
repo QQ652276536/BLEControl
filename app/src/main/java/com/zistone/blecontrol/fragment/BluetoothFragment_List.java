@@ -82,8 +82,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private BluetoothFragment_CommandTest _bluetoothFragment_commandTest;
     private BluetoothFragment_PowerControl _bluetoothFragment_powerControl;
     private BluetoothFragment_OTA _bluetoothFragment_ota;
+    private BluetoothFragment_DB _bluetoothFragment_db;
     private MaterialRefreshLayout _materialRefreshLayout;
-    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4, _rdo5, _rdo6;
+    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4, _rdo5, _rdo6, _rdo7;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private MaterialRefreshListener _materialRefreshListener;
     private BluetoothFragment_PowerControl.Listener _powerControlListener;
@@ -747,9 +748,18 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else if(_rdo6.isChecked())
         {
-            SERVICE_UUID = UUID.fromString("");
-            WRITE_UUID = UUID.fromString("");
-            READ_UUID = UUID.fromString("");
+            //           SERVICE_UUID = UUID.fromString("e2c56db5-dffb-48d2-b060-d0f5a71096e0");
+
+
+            SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
+            //            SERVICE_UUID = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
+            //            SERVICE_UUID = UUID.fromString("00001803-0000-1000-8000-00805f9b34fb");
+            //            SERVICE_UUID = UUID.fromString("00001802-0000-1000-8000-00805f9b34fb");
+            //            SERVICE_UUID = UUID.fromString("00001804-0000-1000-8000-00805f9b34fb");
+            WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+            READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+
+            CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
         }
         Map<String, UUID> map = new HashMap<>();
         map.put("SERVICE_UUID", SERVICE_UUID);
@@ -772,6 +782,14 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
+                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+            }
+            //设备绑定入库
+            else if(_rdo7.isChecked())
+            {
+                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map);
+                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
+                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
         }
@@ -919,6 +937,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         _rdo4 = _view.findViewById(R.id.rdo4_bluetoothList);
         _rdo5 = _view.findViewById(R.id.rdo5_bluetoothList);
         _rdo6 = _view.findViewById(R.id.rdo6_bluetoothList);
+        _rdo7 = _view.findViewById(R.id.rdo7_bluetoothList);
         _listView = _view.findViewById(R.id.lv_bluetoothList);
         _btnFilterContent = _view.findViewById(R.id.btnFilterContent_bluetoothList);
         _btnFilterContent.setOnClickListener(this::onClick);

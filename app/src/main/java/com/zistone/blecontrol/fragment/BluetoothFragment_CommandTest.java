@@ -54,7 +54,6 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         Message message = new Message();
         message.what = MESSAGE_1;
         handler.sendMessage(message);
-        ProgressDialogUtil.Dismiss();
     }
 
     @Override
@@ -113,7 +112,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 sendResult = "修改内部控制参数";
                 break;
         }
-        Log.d(TAG, ">>>" + sendResult);
+        Log.d(TAG, ">>>发送:" + sendResult);
         Message message = new Message();
         message.what = MESSAGE_2;
         //                    message.obj = sendResult;
@@ -217,7 +216,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     _btn9.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     _btn10.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     _btn11.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
+                    ProgressDialogUtil.Dismiss();
                     break;
                 }
                 case MESSAGE_2:

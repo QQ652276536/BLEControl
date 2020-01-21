@@ -9,13 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.zistone.blecontrol.fragment.BluetoothFragment;
 import com.zistone.blecontrol.fragment.BluetoothFragment_CommandTest;
+import com.zistone.blecontrol.fragment.BluetoothFragment_DB;
 import com.zistone.blecontrol.fragment.BluetoothFragment_List;
 import com.zistone.blecontrol.fragment.BluetoothFragment_OTA;
 import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener, BluetoothFragment_OTA.OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener, BluetoothFragment_OTA.OnFragmentInteractionListener, BluetoothFragment_DB.OnFragmentInteractionListener
 {
     public static final int ACTIVITYRESULT_WRITEVALUE = 1;
     public static final int ACTIVITYRESULT_PARAMSETTING = 2;
@@ -36,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
             ArrayList<String> permissionsList = new ArrayList<>();
             String[] permissions = {
                     Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,

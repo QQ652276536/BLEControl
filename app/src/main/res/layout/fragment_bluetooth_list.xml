@@ -50,48 +50,57 @@
             android:text="UUID："
             android:textSize="16sp" />
 
-        <RadioGroup
-            android:id="@+id/radioGroup1_bluetoothList"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <RadioButton
-                android:id="@+id/rdo1_bluetoothList"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radioGroup1_bluetoothList"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:button="@drawable/rad_selector"
-                android:text="BlueNRG"
-                android:textColor="@color/gray" />
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/rdo2_bluetoothList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/rad_selector"
-                android:text="Amdtp"
-                android:textColor="@color/gray" />
+                <RadioButton
+                    android:id="@+id/rdo1_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="BlueNRG"
+                    android:textColor="@color/gray" />
 
-            <RadioButton
-                android:id="@+id/rdo5_bluetoothList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/rad_selector"
-                android:checked="true"
-                android:text="OTA"
-                android:textColor="@color/gray" />
+                <RadioButton
+                    android:id="@+id/rdo2_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="Amdtp"
+                    android:textColor="@color/gray" />
 
-            <RadioButton
-                android:id="@+id/rdo6_bluetoothList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/rad_selector"
-                android:text="TAG"
-                android:textColor="@color/gray" />
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/rdo5_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:checked="true"
+                    android:text="OTA"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/rdo6_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="TAG"
+                    android:textColor="@color/gray" />
+            </RadioGroup>
+        </HorizontalScrollView>
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -109,30 +118,46 @@
             android:text="Function："
             android:textSize="16sp" />
 
-        <RadioGroup
-            android:id="@+id/radioGroup2_bluetoothList"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <RadioButton
-                android:id="@+id/rdo3_bluetoothList"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radioGroup2_bluetoothList"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:button="@drawable/rad_selector"
-                android:checked="true"
-                android:text="Power Control"
-                android:textColor="@color/gray" />
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/rdo4_bluetoothList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:button="@drawable/rad_selector"
-                android:text="Command Test"
-                android:textColor="@color/gray" />
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/rdo3_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:checked="true"
+                    android:text="PowerControl"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/rdo4_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="CommandTest"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/rdo7_bluetoothList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="In DB"
+                    android:textColor="@color/gray" />
+            </RadioGroup>
+        </HorizontalScrollView>
     </LinearLayout>
 
     <LinearLayout
