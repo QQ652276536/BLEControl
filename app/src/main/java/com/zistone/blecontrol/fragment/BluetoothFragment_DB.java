@@ -5,13 +5,13 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -39,10 +39,6 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_ERROR_1 = -1;
-    private static UUID SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
-    private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static UUID READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-    private static UUID WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
     private View _view;
@@ -172,6 +168,12 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         _context = getContext();
     }
 
+    private static UUID SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
+    private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+    private static UUID READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+    private static UUID WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -244,7 +246,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         {
                             Log.d(TAG, ">>>已找到写入数据的特征值!");
                             Message message = new Message();
-                            message.what = 1;
+                            message.what = MESSAGE_1;
                             handler.sendMessage(message);
                         }
                         else
@@ -257,10 +259,30 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         {
                             Log.d(TAG, ">>>已找到读取数据的特征值!");
                             //订阅读取通知
-                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
-                            BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            gatt.writeDescriptor(descriptor);
+                            //                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
+                            //                            BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
+                            //                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                            //                            gatt.writeDescriptor(descriptor);
+
+
+                            new Thread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    Looper.prepare();
+                                    try
+                                    {
+                                        Thread.sleep(2000);
+                                        _bluetoothGatt.readCharacteristic(_bluetoothGattCharacteristic_read);
+                                    }
+                                    catch(InterruptedException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    Looper.loop();
+                                }
+                            }).start();
 
                             ProgressDialogUtil.Dismiss();
                         }
@@ -269,6 +291,15 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                             Log.e(TAG, ">>>该UUID无读取数据的特征值!");
                         }
                     }
+                }
+
+                @Override
+                public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
+                {
+                    byte[] byteArray = characteristic.getValue();
+                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    Log.d(TAG, ">>>接收:" + result);
                 }
 
                 /**
