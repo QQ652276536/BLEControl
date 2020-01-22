@@ -221,7 +221,9 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         Log.d(TAG, ">>>连接已断开!");
                         _bluetoothGatt.close();
                         ProgressDialogUtil.Dismiss();
-                        ShowWarning(1);
+                        Message message = new Message();
+                        message.what = MESSAGE_ERROR_1;
+                        handler.sendMessage(message);
                     }
                 }
 

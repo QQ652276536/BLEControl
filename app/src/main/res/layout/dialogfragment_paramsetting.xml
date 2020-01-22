@@ -173,9 +173,9 @@
 
         <Button
             android:id="@+id/btn1_paramsetting"
-            style="@style/ButtonStyleB"
+            style="@style/ButtonStyleA"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="CANCEL" />
 
         <TextView
@@ -186,9 +186,9 @@
 
         <Button
             android:id="@+id/btn2_paramsetting"
-            style="@style/ButtonStyleB"
+            style="@style/ButtonStyleA"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="SAVE" />
     </LinearLayout>
 

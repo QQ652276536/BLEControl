@@ -64,9 +64,10 @@
 
             <Button
                 android:id="@+id/btn1_ota"
-                style="@style/ButtonStyleB"
+                style="@style/ButtonStyleA"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:enabled="false"
                 android:text="LOAD" />
 
             <TextView
@@ -77,9 +78,10 @@
 
             <Button
                 android:id="@+id/btn2_ota"
-                style="@style/ButtonStyleB"
+                style="@style/ButtonStyleA"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:enabled="false"
                 android:text="START OTA" />
         </LinearLayout>
 

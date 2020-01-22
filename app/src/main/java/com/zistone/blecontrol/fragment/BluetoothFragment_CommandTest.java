@@ -3,7 +3,6 @@ package com.zistone.blecontrol.fragment;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -205,17 +204,6 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     _btn9.setEnabled(true);
                     _btn10.setEnabled(true);
                     _btn11.setEnabled(true);
-                    _btn1.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn2.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn3.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn4.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn5.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn6.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn7.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn8.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn9.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn10.setBackgroundColor(Color.argb(255, 0, 133, 119));
-                    _btn11.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     ProgressDialogUtil.Dismiss();
                     break;
                 }

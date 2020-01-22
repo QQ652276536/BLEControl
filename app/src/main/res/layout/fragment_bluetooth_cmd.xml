@@ -56,6 +56,7 @@
 
             <Button
                 android:id="@+id/btn0"
+                style="@style/ButtonStyleA"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:layout_gravity="right"
@@ -63,9 +64,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:background="@color/colorPrimary"
                 android:text="@string/btn_clear"
-                android:textColor="@color/white"
                 android:textSize="16sp" />
 
             <LinearLayout
@@ -75,44 +74,41 @@
 
                 <Button
                     android:id="@+id/button1"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_openDoor"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn2"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_readCar"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn3"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_batteryVol"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -123,44 +119,41 @@
 
                 <Button
                     android:id="@+id/btn4"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_magStr"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn5"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_doorState"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn6"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="@string/btn_test1"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -172,44 +165,41 @@
 
                 <Button
                     android:id="@+id/btn7"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="开一号门锁"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn8"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="开二号门锁"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn9"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="开全部门锁"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -222,30 +212,28 @@
 
                 <Button
                     android:id="@+id/btn10"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="查询内部控制参数"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn11"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
                     android:enabled="false"
                     android:text="修改内部控制参数"
-                    android:textColor="@color/white"
                     android:textSize="16sp" />
             </LinearLayout>
 

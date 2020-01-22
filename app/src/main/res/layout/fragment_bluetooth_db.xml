@@ -165,9 +165,8 @@
             <Button
                 android:id="@+id/btn1_db"
                 style="@style/ButtonStyleA"
-                android:background="@drawable/btn_shape_a"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:enabled="false"
                 android:text="UPDATE" />
 
@@ -181,7 +180,7 @@
                 android:id="@+id/btn2_db"
                 style="@style/ButtonStyleA"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="CANCEL" />
         </LinearLayout>
 

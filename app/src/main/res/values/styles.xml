@@ -26,13 +26,8 @@
     </style>
 
     <style name="ButtonStyleA" parent="@android:style/Widget.Button">
-        <item name="android:background">@drawable/btn_enable_a</item>
+        <item name="android:background">@drawable/btn_enable</item>
         <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="ButtonStyleB" parent="@android:style/Widget.Button">
-        <item name="android:background">@color/transparent</item>
-        <item name="android:textColor">@drawable/btn_enable_b</item>
     </style>
 
     <!--自定义耗时对话框-->

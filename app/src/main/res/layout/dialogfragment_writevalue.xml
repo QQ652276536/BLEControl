@@ -98,13 +98,13 @@
 
             </TableLayout>
 
-            <Button
+            <ImageButton
                 android:id="@+id/writevalue_btn_addvalue"
-                style="@style/ButtonStyleB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="ADD VALUE" />
+                android:background="@color/transparent"
+                android:src="@drawable/add" />
 
             <EditText
                 android:id="@+id/writevalue_edit_save"
@@ -123,9 +123,9 @@
 
                 <Button
                     android:id="@+id/writevalue_btn_save"
-                    style="@style/ButtonStyleB"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:text="SAVE" />
 
                 <TextView
@@ -136,9 +136,9 @@
 
                 <Button
                     android:id="@+id/writevalue_btn_cancel"
-                    style="@style/ButtonStyleB"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:text="CANCEL" />
 
                 <TextView
@@ -149,9 +149,9 @@
 
                 <Button
                     android:id="@+id/writevalue_btn_send"
-                    style="@style/ButtonStyleB"
+                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:text="SEND" />
             </LinearLayout>
         </LinearLayout>
