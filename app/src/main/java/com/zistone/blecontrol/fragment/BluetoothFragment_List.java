@@ -98,7 +98,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private EditText _editName;
     private EditText _editAddress;
     private TextView _textRssi;
-    private LinearLayout _linearLayout1;
+    private LinearLayout _llayout1;
     private CheckBox _chkHideDevice;
     //BLE的扫描器
     private BluetoothLeScanner _bluetoothLeScanner;
@@ -700,7 +700,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                     _isBtnUpDownFlag = true;
                     _btnFilterContent.setCompoundDrawables(null, null, _drawableUp, null);
                     _btnFilterContent.setText(_filterContent);
-                    ShowFilterPop(_linearLayout1);
+                    ShowFilterPop(_llayout1);
                 }
                 //因为PopWindow的setOutsideTouchable事件,这里将不再会执行,里面的逻辑写在onDismiss里代替
                 else
@@ -940,7 +940,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         _drawableDown.setBounds(0, 0, _drawableDown.getMinimumWidth(), _drawableDown.getMinimumHeight());
         _btnClearContentFilter = _view.findViewById(R.id.btnClearFilterContent_bluetoothList);
         _btnClearContentFilter.setOnClickListener(this::onClick);
-        _linearLayout1 = _view.findViewById(R.id.ll1_bluetoothList);
+        _llayout1 = _view.findViewById(R.id.ll1_bluetoothList);
         ShowSetFilterContent();
         //所有的控件、对象都实例化后再初始化回调方法
         InitListener();

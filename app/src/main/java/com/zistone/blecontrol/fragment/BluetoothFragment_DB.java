@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -94,7 +93,6 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     break;
                 case MESSAGE_1:
                     _btn1.setEnabled(true);
-                    _btn1.setBackgroundColor(Color.argb(255, 0, 133, 119));
                     ProgressDialogUtil.Dismiss();
                     break;
                 default:
@@ -273,7 +271,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                                     Looper.prepare();
                                     try
                                     {
-                                        Thread.sleep(2000);
+                                        Thread.sleep(1000);
                                         _bluetoothGatt.readCharacteristic(_bluetoothGattCharacteristic_read);
                                     }
                                     catch(InterruptedException e)
