@@ -753,6 +753,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         //Tag
         else if(_rdo6.isChecked())
         {
+            SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
+            READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
+            WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
         }
         Map<String, UUID> map = new HashMap<>();
         map.put("SERVICE_UUID", SERVICE_UUID);

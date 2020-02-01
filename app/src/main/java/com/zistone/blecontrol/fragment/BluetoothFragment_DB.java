@@ -40,6 +40,10 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
     private static final int MESSAGE_ERROR_1 = -1;
+    private static UUID SERVICE_UUID;
+    private static UUID WRITE_UUID;
+    private static UUID READ_UUID;
+    private static UUID CONFIG_UUID;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
     private View _view;
@@ -169,16 +173,14 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+            SERVICE_UUID = _uuidMap.get("SERVICE_UUID");
+            WRITE_UUID = _uuidMap.get("WRITE_UUID");
+            READ_UUID = _uuidMap.get("READ_UUID");
+            CONFIG_UUID = _uuidMap.get("CONFIG_UUID");
             _rssi = getArguments().getInt(ARG_PARAM3);
         }
         _context = getContext();
     }
-
-    private static UUID SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
-    private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
-    private static UUID READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-    private static UUID WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
