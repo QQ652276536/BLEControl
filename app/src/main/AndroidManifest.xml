@@ -17,7 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:windowSoftInputMode="stateAlwaysHidden">
-        <!-- Activity无标题 -->
         <!-- 启动界面 -->
         <activity android:name=".BootActivity">
             <intent-filter>
