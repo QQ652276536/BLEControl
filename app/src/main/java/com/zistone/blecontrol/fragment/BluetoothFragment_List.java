@@ -780,7 +780,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //设备绑定入库
             else if(_rdo6.isChecked() && _rdo7.isChecked())
             {
-                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice);
+                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).get_rssi());
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();

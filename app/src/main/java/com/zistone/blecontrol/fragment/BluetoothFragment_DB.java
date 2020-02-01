@@ -36,7 +36,9 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private static final String TAG = "BluetoothFragment_DB";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
+    private static final int MESSAGE_2 = 2;
     private static final int MESSAGE_ERROR_1 = -1;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
@@ -51,13 +53,15 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private BluetoothGattCharacteristic _bluetoothGattCharacteristic_write;
     private BluetoothGattCharacteristic _bluetoothGattCharacteristic_read;
     private Map<String, UUID> _uuidMap;
+    private int _rssi;
 
-    public static BluetoothFragment_DB newInstance(BluetoothDevice bluetoothDevice)
+    public static BluetoothFragment_DB newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> uuidMap, int rssi)
     {
         BluetoothFragment_DB fragment = new BluetoothFragment_DB();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
-        args.putSerializable(ARG_PARAM2, (Serializable) null);
+        args.putSerializable(ARG_PARAM2, (Serializable) uuidMap);
+        args.putInt(ARG_PARAM3, rssi);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,6 +98,9 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                 case MESSAGE_1:
                     _btn1.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
+                    break;
+                case MESSAGE_2:
+                    _txt4.setText(result + "%");
                     break;
                 default:
                     break;
@@ -162,6 +169,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+            _rssi = getArguments().getInt(ARG_PARAM3);
         }
         _context = getContext();
     }
@@ -188,6 +196,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         _txt1 = _view.findViewById(R.id.text1_db);
         _txt2 = _view.findViewById(R.id.text2_db);
         _txt3 = _view.findViewById(R.id.text3_db);
+        _txt3.setText(String.valueOf(_rssi));
         _txt4 = _view.findViewById(R.id.text4_db);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
@@ -258,7 +267,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         if(_bluetoothGattCharacteristic_read != null)
                         {
                             Log.d(TAG, ">>>已找到读取数据的特征值!");
-                            //订阅读取通知
+                            //                            订阅读取通知
                             //                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
                             //                            BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                             //                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -300,6 +309,10 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
                     Log.d(TAG, ">>>接收:" + result);
+                    Message message = new Message();
+                    message.what = MESSAGE_2;
+                    message.obj = result;
+                    handler.sendMessage(message);
                 }
 
                 /**

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:insetBottom="@dimen/abc_edit_text_inset_bottom_material">
-    <selector>
-        <item android:drawable="@color/colorPrimary"/>
-    </selector>
-
-</inset>

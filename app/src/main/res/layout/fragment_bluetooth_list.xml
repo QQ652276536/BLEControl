@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center"
-            android:text="UUID："
+            android:text="UUID:"
             android:textSize="16sp" />
 
         <HorizontalScrollView
@@ -115,7 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center"
-            android:text="Function："
+            android:text="Function:"
             android:textSize="16sp" />
 
         <HorizontalScrollView
