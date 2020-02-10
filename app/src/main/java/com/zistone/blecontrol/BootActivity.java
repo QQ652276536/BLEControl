@@ -19,7 +19,7 @@ public class BootActivity extends AppCompatActivity
             {
                 try
                 {
-                    sleep(1000);
+                    sleep(2500);
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();

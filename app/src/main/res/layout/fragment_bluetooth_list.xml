@@ -33,7 +33,6 @@
 
     </android.support.v7.widget.Toolbar>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,7 +100,6 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -160,37 +158,172 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll1_bluetoothList"
+    <TableLayout
+        android:id="@+id/table_filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/WhiteSmoke"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:background="@color/WhiteSmoke">
 
-        <Button
-            android:id="@+id/btnFilterContent_bluetoothList"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_weight="4"
-            android:background="@color/transparent"
-            android:drawableRight="@drawable/down1"
-            android:gravity="center_vertical"
-            android:lines="1"
-            android:text="No Filter"
-            android:textAllCaps="false"
-            android:textColor="@color/gray" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnClearFilterContent_bluetoothList"
-            android:layout_width="0dp"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/setting_1" />
+
+            <Button
+                android:id="@+id/btnFilterContent_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5"
+                android:background="@color/transparent"
+                android:drawableRight="@drawable/down1"
+                android:gravity="center_vertical"
+                android:text=" No Filter"
+                android:textAllCaps="false"
+                android:textColor="@color/gray" />
+
+            <ImageButton
+                android:id="@+id/btnClearFilterContent_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/close1" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row2_filter"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="2"
-            android:background="@color/transparent"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/close1" />
-    </LinearLayout>
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/device_name1" />
+
+            <EditText
+                android:id="@+id/editName_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="10"
+                android:hint="Fileter by name"
+                android:inputType="textPostalAddress"
+                android:textSize="14dp" />
+
+            <ImageButton
+                android:id="@+id/btnClearName_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/close1" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row3_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/mac1" />
+
+            <EditText
+                android:id="@+id/editAddress_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="10"
+                android:hint="Filter by address"
+                android:inputType="textPostalAddress"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnClearAddress_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/close1" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row4_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/rssi2" />
+
+            <SeekBar
+                android:id="@+id/seekBar_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5" />
+
+            <TextView
+                android:id="@+id/tvRssi_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:text="-100dBm" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row5_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/hide1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5"
+                android:text=" Hide connect success device"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/chk_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0.5"
+                android:button="@drawable/chk_selector" />
+
+        </TableRow>
+    </TableLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
