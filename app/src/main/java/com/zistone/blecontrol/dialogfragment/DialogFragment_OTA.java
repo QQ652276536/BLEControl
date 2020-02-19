@@ -170,8 +170,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_ota, null);
-        _context = getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setView(_view);
         return builder.create();
     }
@@ -189,6 +188,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
             READ_UUID = map.get("READ_UUID");
             CONFIG_UUID = map.get("CONFIG_UUID");
         }
+        _context = getContext();
     }
 
 }

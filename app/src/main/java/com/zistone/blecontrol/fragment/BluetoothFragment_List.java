@@ -579,7 +579,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 }
                 else
                 {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(_context);
                     builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
                     {
                         @Override
@@ -792,7 +792,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(_context);
             builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
             {
                 @Override

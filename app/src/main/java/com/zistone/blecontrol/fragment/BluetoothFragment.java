@@ -37,7 +37,6 @@ public class BluetoothFragment extends Fragment
 
     private void InitView()
     {
-        _context = getContext();
         //注意:一个FragmentTransaction只能Commit一次,不要用全局或共享一个FragmentTransaction对象,多个Fragment则多次get
         BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
         getChildFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").show(bluetoothFragment_list).commitNow();
@@ -71,6 +70,7 @@ public class BluetoothFragment extends Fragment
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        _context = getContext();
     }
 
     /**

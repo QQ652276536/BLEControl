@@ -105,22 +105,15 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         switch(param)
         {
             case 1:
-                builder.setMessage("该设备的连接已断开!,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
+                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
                 break;
             case 2:
                 builder.setMessage("未获取到蓝牙,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
                 break;
         }
+        builder.setPositiveButton("知道了", (dialog, which) ->
+        {
+        });
         builder.show();
     }
 

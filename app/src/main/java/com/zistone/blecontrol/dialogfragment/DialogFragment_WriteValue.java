@@ -124,8 +124,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_writevalue, null);
-        _context = getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         _tabLayout = _view.findViewById(R.id.tablayout);
         _table = _view.findViewById(R.id.writevalue_table);
         _tabLayout.getTabAt(0).setText("NEW");
@@ -141,6 +140,16 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
         _btn4.setOnClickListener(this::onClick);
         builder.setView(_view);
         return builder.create();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+        {
+        }
+        _context = getContext();
     }
 
     @Override

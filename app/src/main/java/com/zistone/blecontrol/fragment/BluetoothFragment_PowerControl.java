@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zistone.blecontrol.MainActivity;
 import com.zistone.blecontrol.R;
@@ -51,7 +50,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
-    private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
     private static final int RECEIVE_OPENDOOR = 0;
     private static final int SEND_READCAR = 1;
@@ -111,7 +109,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         ProgressDialogUtil.Dismiss();
         Log.d(TAG, ">>>成功建立连接!");
         //轮询
-        Message message = handler.obtainMessage(MESSAGE_1,"");
+        Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
         //连接成功的回调
         _listener.ConnectSuccessListener();
@@ -127,7 +125,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void OnDisConnected()
     {
         Log.d(TAG, ">>>连接已断开!");
-        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
+        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
         handler.sendMessage(message);
     }
 
@@ -776,28 +774,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         switch(param)
         {
             case MESSAGE_ERROR_1:
-                builder.setMessage("该设备的连接已断开!请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                });
-                builder.show();
+                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
                 break;
             case MESSAGE_ERROR_2:
-                Toast.makeText(_context, "未连接蓝牙", Toast.LENGTH_SHORT).show();
-                break;
-            case MESSAGE_ERROR_3:
-            {
                 builder.setMessage("未获取到蓝牙,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                    getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
-                });
-                builder.show();
                 break;
-            }
         }
+        builder.setPositiveButton("知道了", (dialog, which) ->
+        {
+        });
+        builder.show();
     }
 
     @Override
@@ -816,7 +802,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case MainActivity.ACTIVITYRESULT_PARAMSETTING:
                 {
                     String hexStr = data.getStringExtra("ParamSetting");
-                    Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM,hexStr);
+                    Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, hexStr);
                     handler.sendMessage(message);
                     break;
                 }
@@ -914,7 +900,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 else
                 {
-                    ShowWarning(MESSAGE_ERROR_3);
+                    ShowWarning(MESSAGE_ERROR_2);
                 }
                 break;
             }

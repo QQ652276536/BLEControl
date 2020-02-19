@@ -50,7 +50,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     public void OnConnected()
     {
         Log.d(TAG, ">>>成功建立连接!");
-        Message message = handler.obtainMessage(MESSAGE_1,"");
+        Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
     }
 
@@ -64,7 +64,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     public void OnDisConnected()
     {
         Log.d(TAG, ">>>连接已断开!");
-        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
+        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
         handler.sendMessage(message);
     }
 
@@ -110,7 +110,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 break;
         }
         Log.d(TAG, ">>>发送:" + sendResult);
-        Message message = handler.obtainMessage(MESSAGE_2,"发送:" + ConvertUtil.StrArrayToStr(strArray));
+        Message message = handler.obtainMessage(MESSAGE_2, "发送:" + ConvertUtil.StrArrayToStr(strArray));
         handler.sendMessage(message);
     }
 
@@ -414,7 +414,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 break;
             }
         }
-        Message message = handler.obtainMessage(MESSAGE_2,"接收:" + receive);
+        Message message = handler.obtainMessage(MESSAGE_2, "接收:" + receive);
         handler.sendMessage(message);
     }
 
@@ -425,26 +425,15 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         switch(param)
         {
             case 1:
-                builder.setMessage("该设备的连接已断开!请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-
-                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                    getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
-                });
+                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
                 break;
             case 2:
                 builder.setMessage("未获取到蓝牙,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-
-                    BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                    getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                    getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
-                });
                 break;
         }
+        builder.setPositiveButton("知道了", (dialog, which) ->
+        {
+        });
         builder.show();
     }
 

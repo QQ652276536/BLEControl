@@ -173,8 +173,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_paramsetting, null);
-        _context = getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setView(_view);
         return builder.create();
     }
@@ -201,5 +200,15 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
             case R.id.cbx8_paramsetting:
                 break;
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+        {
+        }
+        _context = getContext();
     }
 }

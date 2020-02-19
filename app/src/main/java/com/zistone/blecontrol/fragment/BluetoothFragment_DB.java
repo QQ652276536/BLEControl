@@ -134,34 +134,21 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         switch(param)
         {
             case 1:
-                builder.setMessage("该设备的连接已断开!,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
+                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
                 break;
             case 2:
                 builder.setMessage("未获取到蓝牙,请重试!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                    BluetoothFragment_List bluetoothFragment_list = BluetoothFragment_List.newInstance("", "");
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
-                });
                 break;
             case 3:
                 builder.setMessage("服务连接异常,请与管理员联系!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                });
                 break;
             case 4:
                 builder.setMessage("物料绑定成功!");
-                builder.setPositiveButton("知道了", (dialog, which) ->
-                {
-                });
                 break;
         }
+        builder.setPositiveButton("知道了", (dialog, which) ->
+        {
+        });
         builder.show();
     }
 
@@ -269,7 +256,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         Log.d(TAG, ">>>连接已断开!");
                         _bluetoothGatt.disconnect();
                         ProgressDialogUtil.Dismiss();
-                        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
+                        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
                         handler.sendMessage(message);
                     }
                 }
@@ -292,7 +279,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         if(_bluetoothGattCharacteristic_write != null)
                         {
                             Log.d(TAG, ">>>已找到写入数据的特征值!");
-                            Message message = handler.obtainMessage(MESSAGE_1,"");
+                            Message message = handler.obtainMessage(MESSAGE_1, "");
                             handler.sendMessage(message);
                         }
                         else
@@ -346,7 +333,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
                     Log.d(TAG, ">>>接收:" + result);
-                    Message message = handler.obtainMessage(MESSAGE_2,result);
+                    Message message = handler.obtainMessage(MESSAGE_2, result);
                     handler.sendMessage(message);
                 }
 
