@@ -88,9 +88,9 @@ public class BluetoothListAdapter extends BaseAdapter
             holder = (ViewHolder) convertView.getTag();
         }
         MyBluetoothDevice device = _deviceList.get(position);
-        String name = device.get_name();
-        String address = device.get_address();
-        int rssi = device.get_rssi();
+        String name = device.getName();
+        String address = device.getAddress();
+        int rssi = device.getRssi();
         if(name != null)
             holder.tv_blue_name.setText(name);
         else

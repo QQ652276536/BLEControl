@@ -11,8 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +22,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,12 +36,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -126,7 +120,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
      */
     public void OnConnected()
     {
-        String address = _myBluetoothDevice.get_address();
+        String address = _myBluetoothDevice.getAddress();
         Log.i(TAG, String.format("设备%s连接成功", address));
         //选择设备后会停止扫描,隐藏连接成功的设备后再调用一次筛选
         if (_isHideConnectSuccessDevice)
@@ -158,19 +152,19 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         if (_deviceMap.containsKey(address))
         {
             MyBluetoothDevice device = _deviceMap.get(address);
-            device.set_name(name);
-            device.set_rssi(rssi);
-            device.set_boundState(state);
+            device.setName(name);
+            device.setRssi(rssi);
+            device.setBoundState(state);
             _deviceMap.put(address, device);
         }
         else
         {
             MyBluetoothDevice device = new MyBluetoothDevice();
-            device.set_name(name);
-            device.set_address(address);
-            device.set_rssi(rssi);
-            device.set_boundState(state);
-            device.set_bluetoothDevice(bluetoothDevice);
+            device.setName(name);
+            device.setAddress(address);
+            device.setRssi(rssi);
+            device.setBoundState(state);
+            device.setBluetoothDevice(bluetoothDevice);
             _deviceMap.put(address, device);
         }
         //根据条件筛选设备
@@ -182,9 +176,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             @Override
             public int compare(MyBluetoothDevice o1, MyBluetoothDevice o2)
             {
-                if (o1.get_rssi() > o2.get_rssi())
+                if (o1.getRssi() > o2.getRssi())
                     return -1;
-                if (o1.get_rssi() < o2.get_rssi())
+                if (o1.getRssi() < o2.getRssi())
                     return 1;
                 return 0;
             }
@@ -434,13 +428,13 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             while (iterator1.hasNext())
             {
                 MyBluetoothDevice tempDevice1 = iterator1.next().getValue();
-                String tempAddress1 = tempDevice1.get_address();
+                String tempAddress1 = tempDevice1.getAddress();
                 boolean flag = false;
                 Iterator<Map.Entry<String, MyBluetoothDevice>> iterator2 = _connectSuccessMap.entrySet().iterator();
                 while (iterator2.hasNext())
                 {
                     MyBluetoothDevice tempDevice2 = iterator2.next().getValue();
-                    String tempAddress2 = tempDevice2.get_address();
+                    String tempAddress2 = tempDevice2.getAddress();
                     if (tempAddress1.equals(tempAddress2))
                     {
                         flag = true;
@@ -472,7 +466,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             while (iterator.hasNext())
             {
                 MyBluetoothDevice device = iterator.next().getValue();
-                if (device.get_rssi() < _filterRssi * (-1))
+                if (device.getRssi() < _filterRssi * (-1))
                     iterator.remove();
             }
         }
@@ -492,7 +486,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while (iterator.hasNext())
             {
-                String address = iterator.next().getValue().get_address();
+                String address = iterator.next().getValue().getAddress();
                 if (address == null || !address.trim().contains(_filterAddress))
                     iterator.remove();
             }
@@ -513,7 +507,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             Iterator<Map.Entry<String, MyBluetoothDevice>> iterator = map.entrySet().iterator();
             while (iterator.hasNext())
             {
-                String name = iterator.next().getValue().get_name();
+                String name = iterator.next().getValue().getName();
                 if (name == null || !name.trim().contains(_filterName))
                     iterator.remove();
             }
@@ -692,7 +686,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
         StopScan();
-        String address = _deviceList.get(position).get_address();
+        String address = _deviceList.get(position).getAddress();
         BluetoothDevice bluetoothDevice = _bluetoothAdapter.getRemoteDevice(address);
         _myBluetoothDevice = _deviceMap.get(address);
         //BlueNRG
@@ -749,7 +743,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
             //设备绑定入库
             else if (_rdo6.isChecked() && _rdo7.isChecked())
             {
-                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).get_rssi());
+                _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).getRssi());
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();

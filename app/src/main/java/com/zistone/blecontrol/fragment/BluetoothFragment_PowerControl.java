@@ -111,9 +111,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         ProgressDialogUtil.Dismiss();
         Log.d(TAG, ">>>成功建立连接!");
         //轮询
-        Message message = new Message();
-        message.what = MESSAGE_1;
-        message.obj = "";
+        Message message = handler.obtainMessage(MESSAGE_1,"");
         handler.sendMessage(message);
         //连接成功的回调
         _listener.ConnectSuccessListener();
@@ -129,8 +127,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     public void OnDisConnected()
     {
         Log.d(TAG, ">>>连接已断开!");
-        Message message = new Message();
-        message.what = MESSAGE_ERROR_1;
+        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
         handler.sendMessage(message);
     }
 
@@ -819,9 +816,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case MainActivity.ACTIVITYRESULT_PARAMSETTING:
                 {
                     String hexStr = data.getStringExtra("ParamSetting");
-                    Message message = new Message();
-                    message.what = SEND_SET_CONTROLPARAM;
-                    message.obj = hexStr;
+                    Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM,hexStr);
                     handler.sendMessage(message);
                     break;
                 }

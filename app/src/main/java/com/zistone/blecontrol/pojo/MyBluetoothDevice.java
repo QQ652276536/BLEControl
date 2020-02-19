@@ -4,59 +4,87 @@ import android.bluetooth.BluetoothDevice;
 
 public class MyBluetoothDevice
 {
-    private String _name;
-    private String _address;
-    private int _rssi;
-    private int _boundState;
-    private BluetoothDevice _bluetoothDevice;
+    private int id;
+    private String name;
+    private String address;
+    private int rssi;
+    private int boundState;
+    private BluetoothDevice bluetoothDevice;
+    private int materialId;
 
-    public String get_name()
+    @Override
+    public String toString()
     {
-        return _name;
+        return "MyBluetoothDevice{" + "id=" + id + ", name='" + name + '\'' + ", address='" + address + '\'' + ", rssi=" + rssi + ", boundState=" + boundState + ", bluetoothDevice=" + bluetoothDevice + ", materialId=" + materialId + '}';
     }
 
-    public void set_name(String _name)
+    public int getId()
     {
-        this._name = _name;
+        return id;
     }
 
-    public String get_address()
+    public void setId(int id)
     {
-        return _address;
+        this.id = id;
     }
 
-    public void set_address(String _address)
+    public String getName()
     {
-        this._address = _address;
+        return name;
     }
 
-    public int get_rssi()
+    public void setName(String name)
     {
-        return _rssi;
+        this.name = name;
     }
 
-    public void set_rssi(int _rssi)
+    public String getAddress()
     {
-        this._rssi = _rssi;
+        return address;
     }
 
-    public int get_boundState()
+    public void setAddress(String address)
     {
-        return _boundState;
+        this.address = address;
     }
 
-    public void set_boundState(int _boundState)
+    public int getRssi()
     {
-        this._boundState = _boundState;
+        return rssi;
     }
 
-    public BluetoothDevice get_bluetoothDevice()
+    public void setRssi(int rssi)
     {
-        return _bluetoothDevice;
+        this.rssi = rssi;
     }
 
-    public void set_bluetoothDevice(BluetoothDevice _bluetoothDevice)
+    public int getBoundState()
     {
-        this._bluetoothDevice = _bluetoothDevice;
+        return boundState;
+    }
+
+    public void setBoundState(int boundState)
+    {
+        this.boundState = boundState;
+    }
+
+    public BluetoothDevice getBluetoothDevice()
+    {
+        return bluetoothDevice;
+    }
+
+    public void setBluetoothDevice(BluetoothDevice bluetoothDevice)
+    {
+        this.bluetoothDevice = bluetoothDevice;
+    }
+
+    public int getMaterialId()
+    {
+        return materialId;
+    }
+
+    public void setMaterialId(int materialId)
+    {
+        this.materialId = materialId;
     }
 }

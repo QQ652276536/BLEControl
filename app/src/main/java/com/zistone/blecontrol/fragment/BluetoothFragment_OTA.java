@@ -225,7 +225,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                     else
                     {
                         Log.d(TAG, ">>>连接已断开!");
-                        _bluetoothGatt.close();
+                        _bluetoothGatt.disconnect();
                         ShowWarning(1);
                     }
                 }
@@ -248,8 +248,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                         if(_bluetoothGattCharacteristic_write != null)
                         {
                             Log.d(TAG, ">>>已找到写入数据的特征值!");
-                            Message message = new Message();
-                            message.what = 1;
+                            Message message = handler.obtainMessage(1, "");
                             handler.sendMessage(message);
                         }
                         else
@@ -348,6 +347,6 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         super.onDetach();
         _onFragmentInteractionListener = null;
         if(_bluetoothGatt != null)
-            _bluetoothGatt.close();
+            _bluetoothGatt.disconnect();
     }
 }

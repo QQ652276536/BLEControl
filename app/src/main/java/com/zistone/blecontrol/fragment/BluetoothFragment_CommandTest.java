@@ -50,8 +50,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     public void OnConnected()
     {
         Log.d(TAG, ">>>成功建立连接!");
-        Message message = new Message();
-        message.what = MESSAGE_1;
+        Message message = handler.obtainMessage(MESSAGE_1,"");
         handler.sendMessage(message);
     }
 
@@ -65,8 +64,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     public void OnDisConnected()
     {
         Log.d(TAG, ">>>连接已断开!");
-        Message message = new Message();
-        message.what = MESSAGE_ERROR_1;
+        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
         handler.sendMessage(message);
     }
 
@@ -112,10 +110,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 break;
         }
         Log.d(TAG, ">>>发送:" + sendResult);
-        Message message = new Message();
-        message.what = MESSAGE_2;
-        //                    message.obj = sendResult;
-        message.obj = "发送:" + ConvertUtil.StrArrayToStr(strArray);
+        Message message = handler.obtainMessage(MESSAGE_2,"发送:" + ConvertUtil.StrArrayToStr(strArray));
         handler.sendMessage(message);
     }
 
@@ -419,9 +414,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 break;
             }
         }
-        Message message = new Message();
-        message.what = MESSAGE_2;
-        message.obj = "接收:" + receive;
+        Message message = handler.obtainMessage(MESSAGE_2,"接收:" + receive);
         handler.sendMessage(message);
     }
 

@@ -1,6 +1,5 @@
 package com.zistone.blecontrol.util;
 
-import android.nfc.Tag;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,40 +16,45 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class OkHttpUtil implements Callback
+public class MyOkHttpUtil implements Callback
 {
-    private static final String TAG = "OkHttpUtil";
+    private static final String TAG = "MyOkHttpUtil";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
+    private static MyOkHttpUtil _myOkHttpUtil;
+    private static MyOkHttpListener _myOkHttpListener;
+    private static String _url = "";
+    private static String _jsonData = "";
 
-    private static OkHttpListener _okHttpListener;
-
-    public static String _url = "";
-    public static String _jsonData = "";
     public static String _mediaType = "application/json; charset=utf-8";
     public static long _readTimeout = 10;
     public static long _writeTimeout = 10;
     public static long _connectTimeout = 10;
 
-    public interface OkHttpListener
+    public interface MyOkHttpListener
     {
         void AsyOkHttpResult(int result, String content);
     }
 
-    public void Init(OkHttpListener okHttpListener) throws Exception
+    public static MyOkHttpUtil Init()
     {
-        if (_url.equals("") && _jsonData.equals("") && _mediaType.equals("") && _connectTimeout <= 0 && _readTimeout <= 0 && _writeTimeout <= 0)
-        {
-            throw new Exception("实例化OkHttp失败,参数异常!");
-        }
-        _okHttpListener = okHttpListener;
+        if(_myOkHttpUtil == null)
+            _myOkHttpUtil = new MyOkHttpUtil();
+        return _myOkHttpUtil;
+    }
+
+    public static void AsySend(String url, String data, MyOkHttpListener listener)
+    {
+        _url = url;
+        _jsonData = data;
+        _myOkHttpListener = listener;
         OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(_connectTimeout, TimeUnit.SECONDS).readTimeout(_readTimeout, TimeUnit.SECONDS).writeTimeout(_writeTimeout, TimeUnit.SECONDS).build();
         RequestBody requestBody = FormBody.create(_jsonData, MediaType.parse(_mediaType));
         Request request = new Request.Builder().post(requestBody).url(_url).build();
         Call call = okHttpClient.newCall(request);
         //异步请求
-        call.enqueue(this);
+        call.enqueue(_myOkHttpUtil);
     }
 
     /**
@@ -64,7 +68,7 @@ public class OkHttpUtil implements Callback
     {
         String content = e.toString();
         Log.e(TAG, "网络请求失败:" + content);
-        _okHttpListener.AsyOkHttpResult(MESSAGE_ERROR_1, content);
+        _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_1, content);
     }
 
     /**
@@ -82,15 +86,15 @@ public class OkHttpUtil implements Callback
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
     {
         String result = response.body().string();
-        if (response.isSuccessful())
+        if(response.isSuccessful())
         {
             Log.i(TAG, "响应成功:" + result);
-            _okHttpListener.AsyOkHttpResult(MESSAGE_1, result);
+            _myOkHttpListener.AsyOkHttpResult(MESSAGE_1, result);
         }
         else
         {
             Log.e(TAG, "响应失败:" + result);
-            _okHttpListener.AsyOkHttpResult(MESSAGE_ERROR_2, result);
+            _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_2, result);
         }
     }
 }

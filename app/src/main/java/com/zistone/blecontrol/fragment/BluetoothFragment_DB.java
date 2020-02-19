@@ -21,17 +21,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.pojo.Materiel;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
+import com.zistone.blecontrol.util.PropertiesUtil;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_DB extends Fragment implements View.OnClickListener
+public class BluetoothFragment_DB extends Fragment implements View.OnClickListener, MyOkHttpUtil.MyOkHttpListener
 {
     private static final String TAG = "BluetoothFragment_DB";
     private static final String ARG_PARAM1 = "param1";
@@ -39,7 +44,9 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private static final String ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
+    private static final int MESSAGE_3 = 3;
     private static final int MESSAGE_ERROR_1 = -1;
+    private static final int MESSAGE_ERROR_2 = -2;
     private static UUID SERVICE_UUID;
     private static UUID WRITE_UUID;
     private static UUID READ_UUID;
@@ -47,6 +54,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
     private View _view;
+    private Spinner _spinner1, _spinner2;
     private Button _btn1, _btn2;
     private ImageButton _btnReturn;
     private TextView _txt1, _txt2, _txt3, _txt4;
@@ -67,6 +75,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         args.putSerializable(ARG_PARAM2, (Serializable) uuidMap);
         args.putInt(ARG_PARAM3, rssi);
         fragment.setArguments(args);
+        MyOkHttpUtil.Init();
         return fragment;
     }
 
@@ -99,12 +108,18 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     ProgressDialogUtil.Dismiss();
                     ShowWarning(1);
                     break;
+                case MESSAGE_ERROR_2:
+                    ShowWarning(3);
+                    break;
                 case MESSAGE_1:
                     _btn1.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
                     break;
                 case MESSAGE_2:
                     _txt4.setText(result + "%");
+                    break;
+                case MESSAGE_3:
+                    ShowWarning(4);
                     break;
                 default:
                     break;
@@ -134,6 +149,18 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     getFragmentManager().beginTransaction().replace(R.id.fragment_bluetooth, bluetoothFragment_list, "bluetoothFragment_list").commitNow();
                 });
                 break;
+            case 3:
+                builder.setMessage("服务连接异常,请与管理员联系!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                });
+                break;
+            case 4:
+                builder.setMessage("物料绑定成功!");
+                builder.setPositiveButton("知道了", (dialog, which) ->
+                {
+                });
+                break;
         }
         builder.show();
     }
@@ -154,6 +181,14 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
             }
             case R.id.btn1_db:
             {
+                String url = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/DeviceInfo/InsertByDeviceId";
+                Materiel materiel = new Materiel();
+                materiel.setName(_edt1.getText().toString());
+                materiel.setBindDeviceAddress(_bluetoothDevice.getAddress());
+                materiel.setRow(Integer.valueOf(_spinner1.getSelectedItem().toString()));
+                materiel.setColumn(Integer.valueOf(_spinner2.getSelectedItem().toString()));
+                String jsonData = JSON.toJSONString(materiel);
+                MyOkHttpUtil.AsySend(url, jsonData, this::AsyOkHttpResult);
                 break;
             }
         }
@@ -193,6 +228,8 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         _view.setOnKeyListener(backListener);
         _btnReturn = _view.findViewById(R.id.btn_return_db);
         _btnReturn.setOnClickListener(this);
+        _spinner1 = _view.findViewById(R.id.spinner1_db);
+        _spinner2 = _view.findViewById(R.id.spinner2_db);
         _btn1 = _view.findViewById(R.id.btn1_db);
         _btn2 = _view.findViewById(R.id.btn2_db);
         _txt1 = _view.findViewById(R.id.text1_db);
@@ -230,10 +267,9 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     else
                     {
                         Log.d(TAG, ">>>连接已断开!");
-                        _bluetoothGatt.close();
+                        _bluetoothGatt.disconnect();
                         ProgressDialogUtil.Dismiss();
-                        Message message = new Message();
-                        message.what = MESSAGE_ERROR_1;
+                        Message message = handler.obtainMessage(MESSAGE_ERROR_1,"");
                         handler.sendMessage(message);
                     }
                 }
@@ -256,8 +292,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         if(_bluetoothGattCharacteristic_write != null)
                         {
                             Log.d(TAG, ">>>已找到写入数据的特征值!");
-                            Message message = new Message();
-                            message.what = MESSAGE_1;
+                            Message message = handler.obtainMessage(MESSAGE_1,"");
                             handler.sendMessage(message);
                         }
                         else
@@ -311,9 +346,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
                     Log.d(TAG, ">>>接收:" + result);
-                    Message message = new Message();
-                    message.what = MESSAGE_2;
-                    message.obj = result;
+                    Message message = handler.obtainMessage(MESSAGE_2,result);
                     handler.sendMessage(message);
                 }
 
@@ -391,7 +424,22 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         super.onDetach();
         _onFragmentInteractionListener = null;
         if(_bluetoothGatt != null)
-            _bluetoothGatt.close();
+            _bluetoothGatt.disconnect();
         _bluetoothDevice = null;
+    }
+
+    @Override
+    public void AsyOkHttpResult(int result, String content)
+    {
+        if(result == 1)
+        {
+            Message message = handler.obtainMessage(MESSAGE_3, content);
+            handler.sendMessage(message);
+        }
+        else
+        {
+            Message message = handler.obtainMessage(MESSAGE_ERROR_2, content);
+            handler.sendMessage(message);
+        }
     }
 }
