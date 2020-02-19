@@ -185,8 +185,8 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                 Materiel materiel = new Materiel();
                 materiel.setName(_edt1.getText().toString());
                 materiel.setBindDeviceAddress(_bluetoothDevice.getAddress());
-                materiel.setRow(Integer.valueOf(_spinner1.getSelectedItem().toString()));
-                materiel.setColumn(Integer.valueOf(_spinner2.getSelectedItem().toString()));
+                materiel.setColumn(Integer.valueOf(_spinner1.getSelectedItem().toString()));
+                materiel.setRow(Integer.valueOf(_spinner2.getSelectedItem().toString()));
                 String jsonData = JSON.toJSONString(materiel);
                 MyOkHttpUtil.AsySend(url, jsonData, this::AsyOkHttpResult);
                 break;
