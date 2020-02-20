@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.pojo.Materiel;
+import com.zistone.blecontrol.pojo.Material;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
@@ -168,12 +168,13 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
             }
             case R.id.btn1_db:
             {
-                String url = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/DeviceInfo/InsertByDeviceId";
-                Materiel materiel = new Materiel();
-                materiel.setName(_edt1.getText().toString());
-                materiel.setBindDeviceAddress(_bluetoothDevice.getAddress());
-                materiel.setColumn(Integer.valueOf(_spinner1.getSelectedItem().toString()));
-                materiel.setRow(Integer.valueOf(_spinner2.getSelectedItem().toString()));
+                String url = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/Material/Update";
+                Material materiel = new Material();
+                materiel.setDeviceName(_txt2.getText().toString());
+                materiel.setMaterialName(_edt1.getText().toString());
+                materiel.setDeviceAddress(_bluetoothDevice.getAddress());
+                materiel.setDepotColumn(Integer.valueOf(_spinner1.getSelectedItem().toString()));
+                materiel.setDepotRow(Integer.valueOf(_spinner2.getSelectedItem().toString()));
                 String jsonData = JSON.toJSONString(materiel);
                 MyOkHttpUtil.AsySend(url, jsonData, this::AsyOkHttpResult);
                 break;
@@ -429,4 +430,5 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
             handler.sendMessage(message);
         }
     }
+
 }
