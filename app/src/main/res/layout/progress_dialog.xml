@@ -23,7 +23,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:text="加载中..."
+        android:text="......"
         android:textColor="@android:color/white"
         android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"

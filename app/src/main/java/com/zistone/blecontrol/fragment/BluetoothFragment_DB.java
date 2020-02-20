@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -155,6 +156,10 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v)
     {
+        //隐藏键盘
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+        _edt1.clearFocus();
         switch(v.getId())
         {
             case R.id.btn_return_db:
@@ -168,6 +173,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
             }
             case R.id.btn1_db:
             {
+                ProgressDialogUtil.ShowProgressDialog(_context, "正在绑定物料...");
                 String url = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/Material/Update";
                 Material materiel = new Material();
                 materiel.setDeviceName(_txt2.getText().toString());
@@ -419,6 +425,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
     @Override
     public void AsyOkHttpResult(int result, String content)
     {
+        ProgressDialogUtil.Dismiss();
         if(result == 1)
         {
             Message message = handler.obtainMessage(MESSAGE_3, content);
