@@ -5,6 +5,7 @@ import android.util.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -44,7 +45,37 @@ public class MyOkHttpUtil implements Callback
         return _myOkHttpUtil;
     }
 
-    public static void AsySend(String url, String data, MyOkHttpListener listener)
+    /**
+     * Post请求异步发送键值对数据
+     *
+     * @param url
+     * @param map
+     * @param listener
+     */
+    public static void AsySendMap(String url, Map<String, String> map, MyOkHttpListener listener)
+    {
+        _url = url;
+        _myOkHttpListener = listener;
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(_connectTimeout, TimeUnit.SECONDS).readTimeout(_readTimeout, TimeUnit.SECONDS).writeTimeout(_writeTimeout, TimeUnit.SECONDS).build();
+        FormBody.Builder builder = new FormBody.Builder();
+        for(String key : map.keySet())
+        {
+            builder.add(key, map.get(key));
+        }
+        Request request = new Request.Builder().post(builder.build()).url(_url).build();
+        Call call = okHttpClient.newCall(request);
+        //异步请求
+        call.enqueue(_myOkHttpUtil);
+    }
+
+    /**
+     * Post请求异步发送Json数据
+     *
+     * @param url
+     * @param data
+     * @param listener
+     */
+    public static void AsySendBody(String url, String data, MyOkHttpListener listener)
     {
         _url = url;
         _jsonData = data;
@@ -67,8 +98,8 @@ public class MyOkHttpUtil implements Callback
     public void onFailure(@NotNull Call call, @NotNull IOException e)
     {
         String content = e.toString();
-        Log.e(TAG, "网络请求失败:" + content);
-        _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_1, content);
+        Log.e(TAG, "网络连接失败:" + content);
+        _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_2, content);
     }
 
     /**
@@ -94,7 +125,7 @@ public class MyOkHttpUtil implements Callback
         else
         {
             Log.e(TAG, "响应失败:" + result);
-            _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_2, result);
+            _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_1, result);
         }
     }
 }

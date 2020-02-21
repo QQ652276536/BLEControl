@@ -110,7 +110,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="库位（列）：" />
+                android:text="库位（行）：" />
 
             <Spinner
                 android:id="@+id/spinner1_db"
@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="库位（行）：" />
+                android:text="库位（列）：" />
 
             <Spinner
                 android:id="@+id/spinner2_db"
@@ -134,54 +134,143 @@
 
         </LinearLayout>
 
-        <LinearLayout
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.zistone.material_refresh_layout.MaterialRefreshLayout
+            android:id="@+id/refresh_bluetoothDB"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="绑定物料：" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/edt1_db"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textEmailAddress" />
+            <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:stretchColumns="*">
 
-        </LinearLayout>
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_span="4"
+                            android:text="绑定物料"
+                            android:textSize="18dp" />
+                    </TableRow>
 
-            <Button
-                android:id="@+id/btn1_db"
-                style="@style/ButtonStyleA"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:enabled="false"
-                android:text="UPDATE" />
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:visibility="invisible" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="物料编号" />
 
-            <Button
-                android:id="@+id/btn2_db"
-                style="@style/ButtonStyleA"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="CANCEL" />
-        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="物料名称" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="库(行)" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="库(列)" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/text5_db"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textSize="16dp" />
+
+                        <EditText
+                            android:id="@+id/edt1_db"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:ems="7"
+                            android:inputType="textPostalAddress"
+                            android:textSize="16dp" />
+
+                        <TextView
+                            android:id="@+id/text7_db"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textSize="16dp" />
+
+                        <TextView
+                            android:id="@+id/text8_db"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textSize="16dp" />
+                    </TableRow>
+
+                </TableLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn1_db"
+                        style="@style/ButtonStyleA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:enabled="false"
+                        android:text="UPDATE" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:visibility="invisible" />
+
+                    <Button
+                        android:id="@+id/btn2_db"
+                        style="@style/ButtonStyleA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="EDIT" />
+                </LinearLayout>
+
+            </LinearLayout>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.zistone.material_refresh_layout.MaterialRefreshLayout>
 
     </LinearLayout>
 </LinearLayout>

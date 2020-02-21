@@ -79,9 +79,9 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private BluetoothFragment_PowerControl _bluetoothFragment_powerControl;
     private BluetoothFragment_OTA _bluetoothFragment_ota;
     private BluetoothFragment_DB _bluetoothFragment_db;
-    private MaterialRefreshLayout _materialRefreshLayout;
     private RadioButton _rdo1, _rdo2, _rdo3, _rdo4, _rdo5, _rdo6, _rdo7;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
+    private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
     private BluetoothFragment_PowerControl.Listener _powerControlListener;
     private Button _btn1, _btnFilterContent;
