@@ -264,11 +264,11 @@
                         android:layout_height="40dp"
                         android:text="EDIT" />
                 </LinearLayout>
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </LinearLayout>
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
         </com.zistone.material_refresh_layout.MaterialRefreshLayout>
 

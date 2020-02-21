@@ -747,9 +747,6 @@ public class B20732_OtaServiceBin
                     result = UPDATE_STATUS_CONTINUE;
                 }
                 break;
-
-            default:
-                break;
         }
 
         return result;
@@ -820,9 +817,6 @@ public class B20732_OtaServiceBin
                 {
                     result = UPDATE_STATUS_COMPLETE_SUCCESS;
                 }
-                break;
-
-            default:
                 break;
         }
 

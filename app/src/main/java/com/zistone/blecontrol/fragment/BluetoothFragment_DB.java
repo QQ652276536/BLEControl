@@ -207,14 +207,15 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         switch(v.getId())
         {
             case R.id.btn_return_db:
-            case R.id.btn2_db:
             {
                 ProgressDialogUtil.Dismiss();
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_DB.this).commitNow();
-                break;
             }
+            break;
+            case R.id.btn2_db:
+                break;
             case R.id.btn1_db:
             {
                 ProgressDialogUtil.ShowProgressDialog(_context, "正在绑定物料...");
@@ -227,8 +228,8 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                 materiel.setDepotColumn(Integer.valueOf(_spinner2.getSelectedItem().toString()));
                 String jsonData = JSON.toJSONString(materiel);
                 MyOkHttpUtil.AsySendBody(URL, jsonData, this::AsyOkHttpResult);
-                break;
             }
+            break;
         }
     }
 

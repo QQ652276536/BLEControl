@@ -167,14 +167,10 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 break;
             //发送查询内部控制参数指令
             case "86":
-            {
                 break;
-            }
             //发送修改内部控制参数指令
             case "87":
-            {
                 break;
-            }
         }
     }
 
@@ -333,8 +329,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
                     _refreshTimer.schedule(_refreshTask, 0, 2 * 1000);
                     _connectedSuccess = true;
-                    break;
                 }
+                break;
                 case RECEIVE_OPENDOOR:
                 {
                     if(result.equalsIgnoreCase("opendoor"))
@@ -358,8 +354,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         _debugView.scrollTo(0, offset - _scrollView.getHeight());
                     }
-                    break;
                 }
+                break;
                 //电池电压
                 case RECEIVE_BATTERY:
                     _txt5.setText(result + "mV");
@@ -422,8 +418,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     }
                     _txt5.setText(strs[4] + "mV");
                     _txt6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
-                    break;
                 }
+                break;
                 //一号门锁
                 case RECEIVE_OPENDOORS1:
                     break;
@@ -442,8 +438,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         _txt4.setText("已开");
                     else
                         _txt4.setText("已关");
-                    break;
                 }
+                break;
                 //全部门锁
                 case RECEIVE_OPENALLDOORS:
                 {
@@ -469,8 +465,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                         _txt4.setText("已开");
                     else
                         _txt4.setText("已关");
-                    break;
                 }
+                break;
                 //解析查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM:
                 {
@@ -497,8 +493,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     if(_isOpenParamSettingDialog)
                     {
                         _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
-                                bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7,
-                                bitStr8
+                                bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
                         });
                         _paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
                         _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
@@ -578,8 +573,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         _debugView.scrollTo(0, offset - _debugView.getHeight());
                     }
-                    break;
                 }
+                break;
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM:
                 {
@@ -591,14 +586,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     {
                         _debugView.scrollTo(0, offset - _scrollView.getHeight());
                     }
-                    break;
                 }
+                break;
                 //发送查询内部控制参数的指令
                 case SEND_SEARCH_CONTROLPARAM:
                 {
                     BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
-                    break;
                 }
+                break;
             }
         }
     };
@@ -649,18 +644,14 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     message.obj = "";
                 }
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //读卡
             case "01":
-            {
                 break;
-            }
             //电池电压
             case "02":
-            {
                 break;
-            }
             //磁场强度
             case "03":
             {
@@ -671,8 +662,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_MAGNETIC;
                 message.obj = "收到:磁场强度【" + responseValue2 + "】 ";
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //测量门状态
             case "04":
             {
@@ -687,8 +678,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     message.obj = "已开";
                 }
                 handler.sendMessage(message);
-                break;
             }
+            break;
             case "80":
             {
                 //全部门锁状态
@@ -716,8 +707,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_TESTA;
                 message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //一号门锁
             case "81":
             {
@@ -725,8 +716,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_OPENDOORS1;
                 message.obj = "";
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //二号门锁
             case "82":
             {
@@ -734,8 +725,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_OPENDOORS2;
                 message.obj = strArray[13];
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //全部门锁
             case "83":
             {
@@ -743,8 +734,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_OPENALLDOORS;
                 message.obj = strArray[13];
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //查询内部控制参数
             case "86":
             {
@@ -752,8 +743,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = RECEIVE_SEARCH_CONTROLPARAM;
                 message.obj = strArray[13];
                 handler.sendMessage(message);
-                break;
             }
+            break;
             //修改内部控制参数
             case "87":
             {
@@ -762,8 +753,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 message.what = SEND_SEARCH_CONTROLPARAM;
                 message.obj = "";
                 handler.sendMessage(message);
-                break;
             }
+            break;
         }
     }
 
@@ -797,20 +788,20 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 case MainActivity.ACTIVITYRESULT_WRITEVALUE:
                 {
                     String hexStr = data.getStringExtra("WriteValue");
-                    break;
                 }
+                break;
                 case MainActivity.ACTIVITYRESULT_PARAMSETTING:
                 {
                     String hexStr = data.getStringExtra("ParamSetting");
                     Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, hexStr);
                     handler.sendMessage(message);
-                    break;
                 }
+                break;
                 case MainActivity.ACTIVITYRESULT_OTA:
                 {
                     String hexStr = data.getStringExtra("OTA");
-                    break;
                 }
+                break;
             }
         }
         else
@@ -834,24 +825,24 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //先查询参数,然后再显示修改参数的页面
                     BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                     _isOpenParamSettingDialog = true;
-                    break;
                 }
+                break;
                 //写入指令
                 case R.id.menu_2_power:
                 {
                     _writeValue = new DialogFragment_WriteValue();
                     _writeValue.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
                     _writeValue.show(getFragmentManager(), "DialogFragment_WriteValue");
-                    break;
                 }
+                break;
                 //OTA
                 case R.id.menu_3_power:
                 {
                     _ota = DialogFragment_OTA.newInstance(_bluetoothDevice);
                     _ota.setTargetFragment(BluetoothFragment_PowerControl.this, 3);
                     _ota.show(getFragmentManager(), "DialogFragment_OTA");
-                    break;
                 }
+                break;
             }
         }
         else
@@ -879,8 +870,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
-                break;
             }
+            break;
             //连接
             case R.id.button1:
             {
@@ -902,8 +893,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 {
                     ShowWarning(MESSAGE_ERROR_2);
                 }
-                break;
             }
+            break;
             //开一号门锁
             case R.id.button2:
             {

@@ -53,9 +53,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
         switch(v.getId())
         {
             case R.id.btn1_devlceFilter:
-            {
                 break;
-            }
             case R.id.writevalue_btn_addvalue:
             {
                 TableRow row = new TableRow(_context);
@@ -87,12 +85,10 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                 row.addView(textView3);
                 row.addView(imageButton);
                 _table.addView(row, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
-                break;
             }
+            break;
             case R.id.writevalue_btn_save:
-            {
                 break;
-            }
             case R.id.writevalue_btn_cancel:
                 dismiss();
                 break;
@@ -108,8 +104,8 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                 Intent intent = new Intent();
                 intent.putExtra("WriteValue", data);
                 getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_WRITEVALUE, Activity.RESULT_OK, intent);
-                break;
             }
+            break;
         }
     }
 

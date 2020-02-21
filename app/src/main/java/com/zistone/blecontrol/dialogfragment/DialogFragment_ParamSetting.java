@@ -87,8 +87,8 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 Intent intent = new Intent();
                 intent.putExtra("ParamSetting", data);
                 getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_PARAMSETTING, Activity.RESULT_OK, intent);
-                break;
             }
+            break;
         }
     }
 

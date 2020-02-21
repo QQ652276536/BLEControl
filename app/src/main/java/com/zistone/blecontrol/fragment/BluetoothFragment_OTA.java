@@ -90,10 +90,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
             switch(message.what)
             {
                 case 1:
-                {
-
                     break;
-                }
             }
         }
     };
@@ -127,8 +124,8 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_OTA.this).commitNow();
-                break;
             }
+            break;
             case R.id.btn1_ota:
             {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -146,12 +143,10 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                 intent.setType("*/*");
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(intent, FILE_SELECTOR_CODE);
-                break;
             }
+            break;
             case R.id.btn2_ota:
-            {
                 break;
-            }
         }
     }
 

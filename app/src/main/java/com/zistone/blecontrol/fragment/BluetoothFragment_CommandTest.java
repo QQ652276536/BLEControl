@@ -200,8 +200,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     _btn10.setEnabled(true);
                     _btn11.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
-                    break;
                 }
+                break;
                 case MESSAGE_2:
                 {
                     _txt.append("\r\n" + result);
@@ -212,10 +212,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     {
                         _txt.scrollTo(0, offset - _txt.getHeight());
                     }
-                    break;
                 }
-                default:
-                    break;
+                break;
             }
         }
     };
@@ -285,8 +283,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
                 //前端磁强
                 int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                break;
             }
+            break;
             //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
             case "81":
             {
@@ -295,8 +293,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                 String doorState1 = String.valueOf(bitStr.charAt(7));
                 String lockState1 = String.valueOf(bitStr.charAt(6));
-                break;
             }
+            break;
             //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
             case "82":
             {
@@ -305,8 +303,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                 String doorState1 = String.valueOf(bitStr.charAt(7));
                 String lockState1 = String.valueOf(bitStr.charAt(6));
-                break;
             }
+            break;
             //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
             case "83":
             {
@@ -317,8 +315,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 String lockState1 = String.valueOf(bitStr.charAt(6));
                 String doorState2 = String.valueOf(bitStr.charAt(5));
                 String lockState2 = String.valueOf(bitStr.charAt(4));
-                break;
             }
+            break;
             //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
             case "86":
             {
@@ -406,13 +404,11 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     stringBuffer.append("启用DEBUG软串口【禁用】\n");
                 }
                 receive = stringBuffer.toString() + "\r\n";
-                break;
             }
+            break;
             //修改内部控制参数:68,00,00,00,00,00,01,68,10,00,02,00,87,E3,16
             case "87":
-            {
                 break;
-            }
         }
         Message message = handler.obtainMessage(MESSAGE_2, "接收:" + receive);
         handler.sendMessage(message);
@@ -447,8 +443,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
-                break;
             }
+            break;
             //清屏
             case R.id.btn0:
                 _txt.setText("");
@@ -459,88 +455,88 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //读卡
             case R.id.btn2:
             {
                 String hexStr = "680000000000006810000101E216";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //测量电池电压
             case R.id.btn3:
             {
                 String hexStr = "680000000000006810000102E316";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //测量磁场强度
             case R.id.btn4:
             {
                 String hexStr = "680000000000006810000103E416";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //测量门状态
             case R.id.btn5:
             {
                 String hexStr = "680000000000006810000104E516";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //综合测试A
             case R.id.btn6:
             {
                 String hexStr = "680000000000006810000180E616";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //开一号门锁
             case R.id.btn7:
             {
                 String hexStr = "680000000000006810000181E716";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //开二号门锁
             case R.id.btn8:
             {
                 String hexStr = "680000000000006810000182E816";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //开全部门锁
             case R.id.btn9:
             {
                 String hexStr = "680000000000006810000183E916";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //查询内部控制参数
             case R.id.btn10:
             {
                 String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
             //修改内部控制参数
             case R.id.btn11:
             {
                 String hexStr = "6800000000000068100005877F000000EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
-                break;
             }
+            break;
         }
     }
 

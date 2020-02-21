@@ -113,8 +113,8 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                     e.printStackTrace();
                     Toast.makeText(_context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                break;
             }
+            break;
         }
     }
 
@@ -140,12 +140,10 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                 intent.setType("*/*");
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(intent, FILE_SELECTOR_CODE);
-                break;
             }
+            break;
             case R.id.btn2_ota:
-            {
-                break;
-            }
+            break;
         }
     }
 
