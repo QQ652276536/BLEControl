@@ -129,12 +129,17 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                 case MESSAGE_3:
                     _materialRefreshLayout.finishRefresh();
                     Material material = JSON.parseObject(result, Material.class);
-                    _txt5.setText(String.valueOf(material.getId()));
-                    _edt1.setText(material.getMaterialName());
-                    _txt7.setText(String.valueOf(material.getDepotRow()));
-                    _txt8.setText(String.valueOf(material.getDepotColumn()));
                     if(material != null)
                     {
+                        int row = material.getDepotRow();
+                        int column = material.getDepotColumn();
+                        _txt5.setText(String.valueOf(material.getId()));
+                        _edt1.setText(material.getMaterialName());
+                        //这里可通过Spinner的选中事件进行赋值
+                        //_txt7.setText(String.valueOf(row));
+                        //_txt8.setText(String.valueOf(column));
+                        _spinner1.setSelection(row--, true);
+                        _spinner2.setSelection(column--, true);
                         if(URL.contains("FindByDeviceAddress"))
                         {
                         }
