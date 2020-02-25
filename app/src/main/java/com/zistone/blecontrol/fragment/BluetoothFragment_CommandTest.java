@@ -3,6 +3,7 @@ package com.zistone.blecontrol.fragment;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +19,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.zistone.blecontrol.MainActivity;
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BTListener;
 import com.zistone.blecontrol.util.BTUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
@@ -36,6 +39,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_2 = 2;
     private static final int MESSAGE_ERROR_1 = -1;
+    private static final int SEND_SET_CONTROLPARAM = 87;
+    private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
+
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
     private View _view;
@@ -45,6 +51,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
+    private DialogFragment_ParamSetting _paramSetting;
+    //是否连接成功、是否打开参数设置界面
+    private boolean _connectedSuccess = false, _isOpenParamSetting = false;
 
     @Override
     public void OnConnected()
@@ -182,7 +191,56 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             String result = (String) message.obj;
             switch(message.what)
             {
+                //解析查询到的内部控制参数
+                case RECEIVE_SEARCH_CONTROLPARAM:
+                {
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    //启用DEBUG软串口
+                    String bitStr8 = String.valueOf(bitStr.charAt(7));
+                    //使用低磁检测阀值
+                    String bitStr7 = String.valueOf(bitStr.charAt(6));
+                    //不检测强磁
+                    String bitStr6 = String.valueOf(bitStr.charAt(5));
+                    //启用软关机
+                    String bitStr5 = String.valueOf(bitStr.charAt(4));
+                    //有外电可以进入维护方式
+                    String bitStr4 = String.valueOf(bitStr.charAt(3));
+                    //正常开锁不告警
+                    String bitStr3 = String.valueOf(bitStr.charAt(2));
+                    //锁检测开关(锁上开路)
+                    String bitStr2 = String.valueOf(bitStr.charAt(1));
+                    //门检测开关(关门开路)
+                    String bitStr1 = String.valueOf(bitStr.charAt(0));
+                    Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                    //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
+                    if(_isOpenParamSetting)
+                    {
+                        if(_paramSetting == null)
+                        {
+                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
+                                    bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
+                            });
+                            _paramSetting.setTargetFragment(BluetoothFragment_CommandTest.this, 1);
+                        }
+                        _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
+                    }
+                }
+                break;
+                //修改内部控制参数
+                case SEND_SET_CONTROLPARAM:
+                {
+                    Log.d(TAG, ">>>发送参数设置:" + result);
+                    BTUtil.SendComm(result);
+                    int offset = _txt.getLineCount() * _txt.getLineHeight();
+                    if(offset > _txt.getHeight())
+                    {
+                        _txt.scrollTo(0, offset - _txt.getHeight());
+                    }
+                }
+                break;
                 case MESSAGE_ERROR_1:
+                    _connectedSuccess = false;
                     ProgressDialogUtil.Dismiss();
                     ShowWarning(1);
                     break;
@@ -200,6 +258,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     _btn10.setEnabled(true);
                     _btn11.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
+                    _connectedSuccess = true;
                 }
                 break;
                 case MESSAGE_2:
@@ -320,8 +379,16 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
             case "86":
             {
-                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
+                if(_isOpenParamSetting)
+                {
+                    Message message = handler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
+                    handler.sendMessage(message);
+                    _isOpenParamSetting = false;
+                    return;
+                }
+                byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
+                String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                 //门检测开关(关门开路)
                 String str1 = String.valueOf(bitStr.charAt(7));
                 //锁检测开关(锁上开路)
@@ -532,12 +599,54 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             //修改内部控制参数
             case R.id.btn11:
             {
-                String hexStr = "6800000000000068100005877F000000EA16";
+                //先查询内部控制参数,再打开修改参数的界面
+                String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
+                _isOpenParamSetting = true;
+
+                //                String hexStr = "6800000000000068100005877F000000EA16";
+                //                Log.d(TAG, ">>>发送:" + hexStr);
+                //                BTUtil.SendComm(hexStr);
             }
             break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(_connectedSuccess)
+        {
+            switch(requestCode)
+            {
+                case MainActivity.ACTIVITYRESULT_WRITEVALUE:
+                {
+                    String hexStr = data.getStringExtra("WriteValue");
+                }
+                break;
+                case MainActivity.ACTIVITYRESULT_PARAMSETTING:
+                {
+                    String hexStr = data.getStringExtra("ParamSetting");
+                    Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, hexStr);
+                    handler.sendMessage(message);
+                }
+                break;
+                case MainActivity.ACTIVITYRESULT_OTA:
+                {
+                    String hexStr = data.getStringExtra("OTA");
+                }
+                break;
+            }
+        }
+        else
+        {
+            ShowWarning(MESSAGE_ERROR_1);
+        }
+        //发送内部参数以后关闭设置窗口
+        _paramSetting.dismiss();
+        _paramSetting = null;
     }
 
     @Override
@@ -629,5 +738,10 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _onFragmentInteractionListener = null;
         BTUtil.DisConnGatt();
         _bluetoothDevice = null;
+        if(_paramSetting != null)
+        {
+            _paramSetting.dismiss();
+            _paramSetting = null;
+        }
     }
 }

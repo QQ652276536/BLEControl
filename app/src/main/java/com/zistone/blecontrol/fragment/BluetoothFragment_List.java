@@ -575,6 +575,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 Intent intent = GetAppOpenIntentByPackageName(_context, "com.ambiqmicro.android.amota");
                 if (intent != null)
                 {
+                    BLEUtil.StopScanLe();
                     _context.startActivity(intent);
                 }
                 else
