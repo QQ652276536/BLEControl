@@ -11,17 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary">
-
-        <Button
-            android:id="@+id/btn1_bluetoothList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:gravity="center_vertical"
-            android:text="SCAN"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
+        android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/start1"
+        app:titleTextColor="@color/white">
 
         <TextView
             android:layout_width="wrap_content"
@@ -30,6 +22,14 @@
             android:text="@string/title_bluetooth_control"
             android:textColor="@color/white"
             android:textSize="28sp" />
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/toolbar_gifView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="start"
+            android:src="@drawable/scaning1"
+            android:visibility="invisible" />
 
     </android.support.v7.widget.Toolbar>
 
