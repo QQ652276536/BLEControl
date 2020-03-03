@@ -1,6 +1,5 @@
 package com.zistone.blecontrol.fragment;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -25,6 +24,7 @@ import android.widget.TextView;
 
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -94,25 +94,6 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
             }
         }
     };
-
-    private void ShowWarning(int param)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setTitle("警告");
-        switch(param)
-        {
-            case 1:
-                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
-                break;
-            case 2:
-                builder.setMessage("未获取到蓝牙,请重试!");
-                break;
-        }
-        builder.setPositiveButton("知道了", (dialog, which) ->
-        {
-        });
-        builder.show();
-    }
 
     @Override
     public void onClick(View v)
@@ -214,7 +195,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                     {
                         Log.d(TAG, ">>>连接已断开!");
                         _bluetoothGatt.disconnect();
-                        ShowWarning(1);
+                        ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     }
                 }
 
@@ -294,7 +275,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         }
         else
         {
-            ShowWarning(2);
+            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
         return _view;
     }

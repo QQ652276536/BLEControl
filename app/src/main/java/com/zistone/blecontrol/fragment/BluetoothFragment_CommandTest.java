@@ -1,6 +1,5 @@
 package com.zistone.blecontrol.fragment;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
@@ -242,7 +241,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 case MESSAGE_ERROR_1:
                     _connectedSuccess = false;
                     ProgressDialogUtil.Dismiss();
-                    ShowWarning(1);
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 case MESSAGE_1:
                 {
@@ -481,25 +480,6 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         handler.sendMessage(message);
     }
 
-    private void ShowWarning(int param)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setTitle("警告");
-        switch(param)
-        {
-            case 1:
-                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
-                break;
-            case 2:
-                builder.setMessage("未获取到蓝牙,请重试!");
-                break;
-        }
-        builder.setPositiveButton("知道了", (dialog, which) ->
-        {
-        });
-        builder.show();
-    }
-
     @Override
     public void onClick(View v)
     {
@@ -642,7 +622,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         }
         else
         {
-            ShowWarning(MESSAGE_ERROR_1);
+            ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
         }
         //发送内部参数以后关闭设置窗口
         _paramSetting.dismiss();
@@ -712,7 +692,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         }
         else
         {
-            ShowWarning(2);
+            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
         return _view;
     }

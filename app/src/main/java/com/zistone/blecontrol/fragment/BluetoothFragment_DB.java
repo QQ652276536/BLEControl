@@ -1,6 +1,5 @@
 package com.zistone.blecontrol.fragment;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -145,62 +144,31 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
                         }
                         else if(URL.contains("UPDATE"))
                         {
-                            ShowWarning(MESSAGE_3);
+                            ProgressDialogUtil.ShowWarning(_context, "提示", "物料绑定成功");
                         }
                     }
                     //物料绑定失败
                     else
                     {
-                        ShowWarning(MESSAGE_ERROR_5);
+                        ProgressDialogUtil.ShowWarning(_context, "错误", "物料绑定失败,请重试!");
                     }
                     break;
                 //与蓝牙设备的连接已断开
                 case MESSAGE_ERROR_2:
-                    ShowWarning(MESSAGE_ERROR_2);
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 //网络异常
                 case MESSAGE_ERROR_3:
                     _materialRefreshLayout.finishRefresh();
-                    ShowWarning(MESSAGE_ERROR_3);
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "网络连接失败,请检查!");
                     break;
                 //服务异常
                 case MESSAGE_ERROR_4:
-                    ShowWarning(MESSAGE_ERROR_4);
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "服务异常,请与管理员联系!");
                     break;
             }
         }
     };
-
-    private void ShowWarning(int param)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setTitle("警告");
-        switch(param)
-        {
-            case MESSAGE_3:
-                builder.setMessage("物料绑定成功!");
-                break;
-            case MESSAGE_ERROR_1:
-                builder.setMessage("未获取到蓝牙设备,请重试!");
-                break;
-            case MESSAGE_ERROR_2:
-                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
-                break;
-            case MESSAGE_ERROR_3:
-                builder.setMessage("网络连接失败,请检查!");
-                break;
-            case MESSAGE_ERROR_4:
-                builder.setMessage("服务异常,请与管理员联系!");
-                break;
-            case MESSAGE_ERROR_5:
-                builder.setMessage("物料绑定失败,请重试!");
-                break;
-        }
-        builder.setPositiveButton("知道了", (dialog, which) ->
-        {
-        });
-        builder.show();
-    }
 
     @Override
     public void onClick(View v)
@@ -436,7 +404,7 @@ public class BluetoothFragment_DB extends Fragment implements View.OnClickListen
         {
             _btn1.setEnabled(false);
             ProgressDialogUtil.Dismiss();
-            ShowWarning(MESSAGE_ERROR_1);
+            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙设备,请重试!");
         }
         //下拉刷新的监听
         _materialRefreshListener = new MaterialRefreshListener()

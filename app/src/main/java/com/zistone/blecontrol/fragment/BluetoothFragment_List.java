@@ -7,7 +7,6 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanResult;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -51,6 +49,7 @@ import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.material_refresh_layout.MaterialRefreshLayout;
 import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
@@ -583,16 +582,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
                 }
                 else
                 {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-                    builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                        }
-                    });
-                    builder.setMessage("未安装OTA_ZM301,无法使用该功能!");
-                    builder.show();
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "未安装OTA_ZM301,无法使用该功能!");
                 }
                 break;
             //...
@@ -790,17 +780,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-            builder.setPositiveButton("知道了", new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    System.exit(0);
-                }
-            });
-            builder.setMessage("设备不支持蓝牙");
-            builder.show();
+            ProgressDialogUtil.ShowWarning(_context, "错误", "该设备不支持BLE");
         }
     }
 

@@ -19,6 +19,17 @@ public class ProgressDialogUtil
         void OnDismiss();
     }
 
+    public static void ShowWarning(Context context, String title, String content)
+    {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(content);
+        builder.setPositiveButton("知道了", (dialog, which) ->
+        {
+        });
+        builder.show();
+    }
+
     public static void ShowProgressDialog(Context context, Listener listener, String str)
     {
         _alertDialog = new AlertDialog.Builder(context, R.style.CustomProgressDialog).create();

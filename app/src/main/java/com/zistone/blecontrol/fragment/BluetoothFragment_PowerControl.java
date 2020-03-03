@@ -1,6 +1,5 @@
 package com.zistone.blecontrol.fragment;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
@@ -296,7 +295,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             {
                 case MESSAGE_ERROR_1:
                     DisConnect();
-                    ShowWarning(MESSAGE_ERROR_1);
+                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 case MESSAGE_1:
                 {
@@ -745,28 +744,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         handler.sendMessage(message);
     }
 
-    private void ShowWarning(int param)
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setTitle("警告");
-        switch(param)
-        {
-            case MESSAGE_ERROR_1:
-                builder.setMessage("该设备的连接已断开,如需再次连接请重试!");
-                break;
-            case MESSAGE_ERROR_2:
-                builder.setMessage("未获取到蓝牙,请重试!");
-                break;
-            case MESSAGE_ERROR_3:
-                builder.setMessage("请连接蓝牙设备!");
-                break;
-        }
-        builder.setPositiveButton("知道了", (dialog, which) ->
-        {
-        });
-        builder.show();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -796,7 +773,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
         else
         {
-            ShowWarning(MESSAGE_ERROR_1);
+            ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
         }
         //发送内部参数以后关闭设置窗口
         _paramSetting.dismiss();
@@ -839,7 +816,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         }
         else
         {
-            ShowWarning(MESSAGE_ERROR_3);
+            ProgressDialogUtil.ShowWarning(_context, "提示", "请连接蓝牙设备!");
         }
         return true;
     }
@@ -883,7 +860,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
                 else
                 {
-                    ShowWarning(MESSAGE_ERROR_2);
+                    ProgressDialogUtil.ShowWarning(_context, "提示", "未获取到蓝牙,请重试!");
                 }
             }
             break;
