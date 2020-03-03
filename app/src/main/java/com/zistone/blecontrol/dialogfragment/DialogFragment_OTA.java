@@ -17,9 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -111,7 +111,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                 catch(Exception e)
                 {
                     e.printStackTrace();
-                    Toast.makeText(_context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    ProgressDialogUtil.ShowWarning(_context, "错误", e.getMessage());
                 }
             }
             break;
@@ -143,7 +143,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
             }
             break;
             case R.id.btn2_ota:
-            break;
+                break;
         }
     }
 

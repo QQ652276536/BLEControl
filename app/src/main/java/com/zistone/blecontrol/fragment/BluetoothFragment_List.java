@@ -739,7 +739,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            Toast.makeText(_context, "请检查该设备是否被占用", Toast.LENGTH_SHORT);
+            ProgressDialogUtil.ShowWarning(_context, "错误", "请检查该设备是否被占用");
         }
     }
 
@@ -800,7 +800,7 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
         }
         else
         {
-            Toast.makeText(_context, "请确认系统蓝牙是否开启", Toast.LENGTH_SHORT);
+            ProgressDialogUtil.ShowWarning(_context, "提示", "请确认系统蓝牙是否开启");
         }
     }
 
