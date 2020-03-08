@@ -19,14 +19,14 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <!-- 启动界面 -->
-        <activity android:name=".BootActivity">
+        <activity android:name="com.zistone.BootActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Activity启动时默认隐藏软键盘 -->
-        <activity android:name=".MainActivity">
+        <activity android:name="com.zistone.MainActivity">
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
 

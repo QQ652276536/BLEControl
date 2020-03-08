@@ -41,7 +41,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zistone.blecontrol.MainActivity;
+import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.control.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;

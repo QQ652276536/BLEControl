@@ -24,7 +24,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.MainActivity;
+import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.control.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;

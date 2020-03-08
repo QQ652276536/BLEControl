@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.MainActivity;
+import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BTListener;

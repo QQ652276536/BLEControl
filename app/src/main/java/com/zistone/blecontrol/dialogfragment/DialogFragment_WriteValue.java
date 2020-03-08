@@ -22,7 +22,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.MainActivity;
+import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 
 public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener

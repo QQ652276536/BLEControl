@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.zistone.blecontrol.MainActivity;
+import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 
 /**
