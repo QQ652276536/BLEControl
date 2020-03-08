@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zistone.blecontrol">
+
     <uses-permission android:name="android.permission.INTERNET" /><!-- 网络权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /><!-- 蓝牙权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 位置权限 -->
@@ -33,6 +34,18 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
+        <activity
+            android:name="com.zistone.tts.MainActivity_TTS"
+            android:label="百度语音离在线合成Demo" />
+        <activity
+            android:name="com.zistone.tts.SynthActivity"
+            android:label="离在线语音合成" />
+        <activity
+            android:name="com.zistone.tts.MiniActivity"
+            android:label="精简版合成" />
+        <activity
+            android:name="com.zistone.tts.SaveFileActivity"
+            android:label="保存合成后的音频" />
     </application>
 
 </manifest>
