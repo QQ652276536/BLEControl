@@ -21,7 +21,7 @@ public class ProgressDialogUtil
 
     public static void ShowWarning(Context context, String title, String content)
     {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title);
         builder.setMessage(content);
         builder.setPositiveButton("知道了", (dialog, which) ->

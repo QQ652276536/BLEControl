@@ -86,19 +86,12 @@ public class BluetoothFragment_List extends Fragment implements View.OnClickList
     private MaterialRefreshListener _materialRefreshListener;
     private BluetoothFragment_PowerControl.Listener _powerControlListener;
     private Button _btnFilterContent;
-    private Drawable _drawableUp;
-    private Drawable _drawableDown;
-    private ImageButton _btnClearContentFilter;
-    private ImageButton _btnClearNameFilter;
-    private ImageButton _btnClearAddressFilter;
+    private Drawable _drawableUp, _drawableDown;
+    private ImageButton _btnClearContentFilter, _btnClearNameFilter, _btnClearAddressFilter;
     private SeekBar _seekBar;
-    private EditText _editName;
-    private EditText _editAddress;
+    private EditText _editName, _editAddress;
     private TextView _textRssi;
-    private TableRow _row2;
-    private TableRow _row3;
-    private TableRow _row4;
-    private TableRow _row5;
+    private TableRow _row2, _row3, _row4, _row5;
     private CheckBox _chkHideDevice;
     private GifImageView _gifImageView;
     //BLE的扫描器
