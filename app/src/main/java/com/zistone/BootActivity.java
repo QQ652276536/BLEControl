@@ -5,29 +5,24 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.zistone.blecontrol.R;
+import com.zistone.opencv.FaceDetectActivity;
 
-public class BootActivity extends AppCompatActivity
-{
+public class BootActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_boot);
-        Thread thread = new Thread()
-        {
+        Thread thread = new Thread() {
             @Override
-            public void run()
-            {
-                try
-                {
+            public void run() {
+                try {
                     sleep(2500);
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), FaceDetectActivity.class);
                     startActivity(intent);
                     finish();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

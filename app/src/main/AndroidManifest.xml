@@ -45,17 +45,10 @@
         <activity android:name="com.zistone.BootActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Activity启动时默认隐藏软键盘 -->
-        <activity android:name="com.zistone.MainActivity">
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+        <activity android:name="com.zistone.MainActivity" />
         <activity
             android:name="com.zistone.tts.MainActivity_TTS"
             android:label="百度语音离在线合成Demo" />
@@ -67,6 +60,9 @@
             android:label="精简版合成" />
         <activity
             android:name="com.zistone.tts.SaveFileActivity"
+            android:label="保存合成后的音频" />
+        <activity
+            android:name="com.zistone.opencv.FaceDetectActivity"
             android:label="保存合成后的音频" />
     </application>
 
