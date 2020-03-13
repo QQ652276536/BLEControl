@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zistone.blecontrol">
-
-    <uses-permission android:name="android.permission.INTERNET" /><!-- 网络权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /><!-- 蓝牙权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 位置权限 -->
+    <!-- 摄像头权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!--
+        required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
+        required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
+     -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front.autofocus"
+        android:required="false" />
+    <!-- 网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- 位置权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" /> <!-- 往SDCard写入数据权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
+    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" />
+    <!-- 往SDCard写入数据权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--  从SDCard读取数据权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application

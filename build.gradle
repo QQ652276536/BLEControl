@@ -1,5 +1,4 @@
 //顶级构建文件,您可以在其中添加所有子项目/模块共有的配置选项
-
 buildscript {
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
