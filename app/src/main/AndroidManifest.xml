@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zistone.blecontrol">
-    <!-- 摄像头权限 -->
-    <uses-permission android:name="android.permission.CAMERA" />
     <!--
-        required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
-        required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
+    摄像头权限
+    required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
+    required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
      -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
