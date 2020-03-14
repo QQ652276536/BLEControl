@@ -572,7 +572,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _view.setOnKeyListener(backListener);
         _btnReturn = _view.findViewById(R.id.btn_return);
         _btnReturn.setOnClickListener(this);
-        _txt = _view.findViewById(R.id.txtView);
+        _txt = _view.findViewById(R.id.txt);
         _txt.setMovementMethod(ScrollingMovementMethod.getInstance());
         _btn0 = _view.findViewById(R.id.btn0);
         _btn0.setOnClickListener(this);
