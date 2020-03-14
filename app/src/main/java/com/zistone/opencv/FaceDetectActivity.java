@@ -173,7 +173,6 @@ public class FaceDetectActivity extends AppCompatActivity implements CameraBridg
         } else {
             Log.e(TAG, "Detection method is not selected!");
         }
-
         Rect[] facesArray = faces.toArray();
         // 绘制检测框
         for (int i = 0; i < facesArray.length; i++) {

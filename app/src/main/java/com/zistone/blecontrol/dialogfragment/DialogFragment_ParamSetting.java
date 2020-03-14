@@ -98,14 +98,14 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         _btn1 = _view.findViewById(R.id.btn1_paramsetting);
         _btn2 = _view.findViewById(R.id.btn2_paramsetting);
-        _chk1 = _view.findViewById(R.id.cbx1_paramsetting);
-        _chk2 = _view.findViewById(R.id.cbx2_paramsetting);
-        _chk3 = _view.findViewById(R.id.cbx3_paramsetting);
-        _chk4 = _view.findViewById(R.id.cbx4_paramsetting);
-        _chk5 = _view.findViewById(R.id.cbx5_paramsetting);
-        _chk6 = _view.findViewById(R.id.cbx6_paramsetting);
-        _chk7 = _view.findViewById(R.id.cbx7_paramsetting);
-        _chk8 = _view.findViewById(R.id.cbx8_paramsetting);
+        _chk1 = _view.findViewById(R.id.chk1_paramsetting);
+        _chk2 = _view.findViewById(R.id.chk2_paramsetting);
+        _chk3 = _view.findViewById(R.id.chk3_paramsetting);
+        _chk4 = _view.findViewById(R.id.chk4_paramsetting);
+        _chk5 = _view.findViewById(R.id.chk5_paramsetting);
+        _chk6 = _view.findViewById(R.id.chk6_paramsetting);
+        _chk7 = _view.findViewById(R.id.chk7_paramsetting);
+        _chk8 = _view.findViewById(R.id.chk8_paramsetting);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         String[] strArray = (String[]) getArguments().getSerializable(ARG_PARAM1);
@@ -183,21 +183,21 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     {
         switch(buttonView.getId())
         {
-            case R.id.cbx1_paramsetting:
+            case R.id.chk1_paramsetting:
                 break;
-            case R.id.cbx2_paramsetting:
+            case R.id.chk2_paramsetting:
                 break;
-            case R.id.cbx3_paramsetting:
+            case R.id.chk3_paramsetting:
                 break;
-            case R.id.cbx4_paramsetting:
+            case R.id.chk4_paramsetting:
                 break;
-            case R.id.cbx5_paramsetting:
+            case R.id.chk5_paramsetting:
                 break;
-            case R.id.cbx6_paramsetting:
+            case R.id.chk6_paramsetting:
                 break;
-            case R.id.cbx7_paramsetting:
+            case R.id.chk7_paramsetting:
                 break;
-            case R.id.cbx8_paramsetting:
+            case R.id.chk8_paramsetting:
                 break;
         }
     }

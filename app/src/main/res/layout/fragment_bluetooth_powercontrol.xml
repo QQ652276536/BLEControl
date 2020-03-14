@@ -81,7 +81,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text1"
+                        android:id="@+id/txt1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.4"
@@ -96,7 +96,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text2"
+                        android:id="@+id/txt2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.4"
@@ -119,7 +119,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text3"
+                        android:id="@+id/txt3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.4"
@@ -134,7 +134,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text4"
+                        android:id="@+id/txt4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.4"
@@ -156,7 +156,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text5"
+                        android:id="@+id/txt5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Null"
@@ -177,7 +177,7 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/text6"
+                        android:id="@+id/txt6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:singleLine="false"

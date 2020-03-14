@@ -52,4 +52,5 @@
     <string name="title_bluetooth_control">BLE Control</string>
     <string name="title_ota">设备升级</string>
     <string name="title_db">设备入库</string>
+    <string name="title_temperature">体温检测</string>
 </resources>

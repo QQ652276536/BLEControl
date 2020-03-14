@@ -51,7 +51,7 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/text1_db"
+                    android:id="@+id/txt1_db"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp" />
@@ -64,7 +64,7 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/text2_db"
+                    android:id="@+id/txt2_db"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp" />
@@ -81,7 +81,7 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/text3_db"
+                    android:id="@+id/txt3_db"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp" />
@@ -94,7 +94,7 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/text4_db"
+                    android:id="@+id/txt4_db"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp" />
@@ -151,7 +151,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-            <TableLayout
+                <TableLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
@@ -204,7 +204,7 @@
                         android:layout_height="match_parent">
 
                         <TextView
-                            android:id="@+id/text5_db"
+                            android:id="@+id/txt5_db"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -220,14 +220,14 @@
                             android:textSize="16dp" />
 
                         <TextView
-                            android:id="@+id/text7_db"
+                            android:id="@+id/txt7_db"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:textSize="16dp" />
 
                         <TextView
-                            android:id="@+id/text8_db"
+                            android:id="@+id/txt8_db"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -264,6 +264,7 @@
                         android:layout_height="40dp"
                         android:text="EDIT" />
                 </LinearLayout>
+
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

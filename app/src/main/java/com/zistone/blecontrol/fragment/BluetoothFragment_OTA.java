@@ -119,7 +119,7 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
                 //同时选择视频和图片
                 //intent.setType("video/*;image/*");
                 //选择bin文件
-                //intent.setType("application/octet-stream");
+                //intent.setType("application/octxt-stream");
                 //无类型限制
                 intent.setType("*/*");
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -166,8 +166,8 @@ public class BluetoothFragment_OTA extends Fragment implements View.OnClickListe
         _btnReturn.setOnClickListener(this);
         _btn1 = _view.findViewById(R.id.btn1_ota);
         _btn2 = _view.findViewById(R.id.btn2_ota);
-        _txt1 = _view.findViewById(R.id.text1_ota);
-        _txt2 = _view.findViewById(R.id.text2_ota);
+        _txt1 = _view.findViewById(R.id.txt1_ota);
+        _txt2 = _view.findViewById(R.id.txt2_ota);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         if(_bluetoothDevice != null)

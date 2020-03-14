@@ -14,11 +14,15 @@ import com.zistone.blecontrol.fragment.BluetoothFragment_DB;
 import com.zistone.blecontrol.fragment.BluetoothFragment_List;
 import com.zistone.blecontrol.fragment.BluetoothFragment_OTA;
 import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
+import com.zistone.blecontrol.fragment.BluetoothFragment_Temperature;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener, BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener, BluetoothFragment_OTA.OnFragmentInteractionListener, BluetoothFragment_DB.OnFragmentInteractionListener
-{
+public class MainActivity extends AppCompatActivity
+        implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener,
+        BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener,
+        BluetoothFragment_OTA.OnFragmentInteractionListener, BluetoothFragment_DB.OnFragmentInteractionListener,
+        BluetoothFragment_Temperature.OnFragmentInteractionListener {
     public static final int ACTIVITYRESULT_WRITEVALUE = 1;
     public static final int ACTIVITYRESULT_PARAMSETTING = 2;
     public static final int ACTIVITYRESULT_OTA = 3;
@@ -30,10 +34,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     /**
      * Android6.0之后需要动态申请权限
      */
-    private void RequestPermission()
-    {
-        if(Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested)
-        {
+    private void RequestPermission() {
+        if (Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested) {
             _isPermissionRequested = true;
             ArrayList<String> permissionsList = new ArrayList<>();
             String[] permissions = {
@@ -48,26 +50,23 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
                     Manifest.permission.MODIFY_AUDIO_SETTINGS,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.CHANGE_WIFI_STATE
+                    Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.CAMERA
             };
-            for(String perm : permissions)
-            {
-                if(PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm))
-                {
+            for (String perm : permissions) {
+                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
                     //进入到这里代表没有权限
                     permissionsList.add(perm);
                 }
             }
-            if(!permissionsList.isEmpty())
-            {
+            if (!permissionsList.isEmpty()) {
                 requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), 1);
             }
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         _bluetoothFragment = BluetoothFragment.newInstance("", "");
@@ -81,8 +80,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
      * @param uri
      */
     @Override
-    public void onFragmentInteraction(Uri uri)
-    {
+    public void onFragmentInteraction(Uri uri) {
         //Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
     }
 }

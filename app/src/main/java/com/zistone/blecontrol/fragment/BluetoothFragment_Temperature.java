@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,8 +42,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener, BTListener {
-    private static final String TAG = "BluetoothFragment_PowerControl";
+public class BluetoothFragment_Temperature extends Fragment implements View.OnClickListener, BTListener {
+    private static final String TAG = "BluetoothFragment_Temperature";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
@@ -79,21 +80,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private View _view;
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
-    private TextView _debugView;
-    private Button _btn1, _btn2, _btn3, _btn4, _btn5;
-    private TextView _txt1, _txt2, _txt3, _txt4, _txt5, _txt6;
+    private Button _btn1, _btn2;
+    private TextView _txt1, _txt2, _txt3;
+    private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
-    private MyScrollView _scrollView;
-    private LinearLayout _llPowerControl;
-    private DialogFragment_WriteValue _writeValue;
-    private DialogFragment_ParamSetting _paramSetting;
-    private DialogFragment_OTA _ota;
-    //是否连接成功、是否打开参数设置界面
-    private boolean _connectedSuccess = false, _isOpenParamSetting = false;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
+    //是否连接成功
+    private boolean _connectedSuccess = false;
 
     @Override
     public void OnConnected() {
@@ -205,8 +201,8 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         void ConnectSuccessListener();
     }
 
-    public static BluetoothFragment_PowerControl newInstance(Listener listener, BluetoothDevice bluetoothDevice, Map<String, UUID> map) {
-        BluetoothFragment_PowerControl fragment = new BluetoothFragment_PowerControl();
+    public static BluetoothFragment_Temperature newInstance(Listener listener, BluetoothDevice bluetoothDevice, Map<String, UUID> map) {
+        BluetoothFragment_Temperature fragment = new BluetoothFragment_Temperature();
         _listener = listener;
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
@@ -224,7 +220,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_Temperature.this).commitNow();
                 return true;
             }
             return false;
@@ -233,9 +229,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
 
     private void DisConnect() {
         _connectedSuccess = false;
-        _btn2.setEnabled(false);
-        _btn3.setEnabled(false);
-        _btn4.setEnabled(false);
+        _btn1.setEnabled(false);
         if (_refreshTask != null) {
             _refreshTask.cancel();
         }
@@ -249,10 +243,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         _txt2.setTextColor(Color.GRAY);
         _txt3.setText("Null");
         _txt3.setTextColor(Color.GRAY);
-        _txt4.setText("Null");
-        _txt4.setTextColor(Color.GRAY);
-        _txt5.setText("Null");
-        _txt6.setText("Null");
     }
 
     private Handler handler = new Handler() {
@@ -266,9 +256,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 case MESSAGE_1: {
-                    _btn2.setEnabled(true);
-                    _btn3.setEnabled(true);
-                    _btn4.setEnabled(true);
+                    _btn1.setEnabled(true);
                     _refreshTimer = new Timer();
                     _refreshTask = new TimerTask() {
                         @Override
@@ -292,215 +280,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     _connectedSuccess = true;
                 }
                 break;
-                case RECEIVE_OPENDOOR: {
-                    if (result.equalsIgnoreCase("opendoor")) {
-                        _debugView.append("发送开门指令 ");
-                    } else if (result.equalsIgnoreCase("doorisopen")) {
-                        _debugView.append("收到:门【已打开】\n");
-                        _txt1.setText("已开");
-                    } else {
-                        _debugView.append("收到:门【未打开】\n");
-                        _txt1.setText("未开");
-                    }
-                    //定位到最后一行
-                    int offset = _debugView.getLineCount() * _debugView.getLineHeight();
-                    //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _scrollView.getHeight()) {
-                        _debugView.scrollTo(0, offset - _scrollView.getHeight());
-                    }
-                }
-                break;
-                //电池电压
-                case RECEIVE_BATTERY:
-                    _txt5.setText(result + "mV");
-                    break;
-                //磁场强度
-                case RECEIVE_MAGNETIC:
-                    _txt6.setText(result);
-                    break;
-                //门状态
-                case RECEIVE_DOORSTATE:
-                    _txt1.setText(result);
-                    break;
-                //综合测试
+                //
                 case RECEIVE_TESTA: {
                     String strs[] = result.split(",");
-                    String doorState1 = strs[0];
-                    if (doorState1.equalsIgnoreCase("1")) {
-                        _txt1.setText("已开");
-                        _txt1.setTextColor(Color.GREEN);
-                    } else {
-                        _txt1.setText("已关");
-                        _txt1.setTextColor(Color.RED);
-                    }
-                    String lockState1 = strs[1];
-                    if (lockState1.equalsIgnoreCase("1")) {
-                        _txt2.setText("已开");
-                        _txt2.setTextColor(Color.GREEN);
-                    } else {
-                        _txt2.setText("已关");
-                        _txt2.setTextColor(Color.RED);
-                    }
-                    String doorState2 = strs[2];
-                    if (doorState2.equalsIgnoreCase("1")) {
-                        _txt3.setText("已开");
-                        _txt3.setTextColor(Color.GREEN);
-                    } else {
-                        _txt3.setText("已关");
-                        _txt3.setTextColor(Color.RED);
-                    }
-                    String lockState2 = strs[3];
-                    if (lockState2.equalsIgnoreCase("1")) {
-                        _txt4.setText("已开");
-                        _txt4.setTextColor(Color.GREEN);
-                    } else {
-                        _txt4.setText("已关");
-                        _txt4.setTextColor(Color.RED);
-                    }
-                    _txt5.setText(strs[4] + "mV");
-                    _txt6.setText(String.format("下端:%sGs 上端:%sGs 前端:%sGs", strs[5], strs[6], strs[7]));
-                }
-                break;
-                //一号门锁
-                case RECEIVE_OPENDOORS1:
-                    break;
-                //二号门锁
-                case RECEIVE_OPENDOORS2: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if (doorState2.equalsIgnoreCase("1"))
-                        _txt3.setText("已开");
-                    else
-                        _txt3.setText("已关");
-                    String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if (lockState2.equalsIgnoreCase("1"))
-                        _txt4.setText("已开");
-                    else
-                        _txt4.setText("已关");
-                }
-                break;
-                //全部门锁
-                case RECEIVE_OPENALLDOORS: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    String doorState1 = String.valueOf(bitStr.charAt(7));
-                    if (doorState1.equalsIgnoreCase("1"))
-                        _txt1.setText("已开");
-                    else
-                        _txt1.setText("已关");
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
-                    if (lockState1.equalsIgnoreCase("1"))
-                        _txt2.setText("已开");
-                    else
-                        _txt2.setText("已关");
-                    String doorState2 = String.valueOf(bitStr.charAt(5));
-                    if (doorState2.equalsIgnoreCase("1"))
-                        _txt3.setText("已开");
-                    else
-                        _txt3.setText("已关");
-                    String lockState2 = String.valueOf(bitStr.charAt(4));
-                    if (lockState2.equalsIgnoreCase("1"))
-                        _txt4.setText("已开");
-                    else
-                        _txt4.setText("已关");
-                }
-                break;
-                //解析查询到的内部控制参数
-                case RECEIVE_SEARCH_CONTROLPARAM: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    //启用DEBUG软串口
-                    String bitStr8 = String.valueOf(bitStr.charAt(7));
-                    //使用低磁检测阀值
-                    String bitStr7 = String.valueOf(bitStr.charAt(6));
-                    //不检测强磁
-                    String bitStr6 = String.valueOf(bitStr.charAt(5));
-                    //启用软关机
-                    String bitStr5 = String.valueOf(bitStr.charAt(4));
-                    //有外电可以进入维护方式
-                    String bitStr4 = String.valueOf(bitStr.charAt(3));
-                    //正常开锁不告警
-                    String bitStr3 = String.valueOf(bitStr.charAt(2));
-                    //锁检测开关(锁上开路)
-                    String bitStr2 = String.valueOf(bitStr.charAt(1));
-                    //门检测开关(关门开路)
-                    String bitStr1 = String.valueOf(bitStr.charAt(0));
-                    Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
-                    //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
-                    if (_isOpenParamSetting) {
-                        if (_paramSetting == null) {
-                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
-                                    bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
-                            });
-                            _paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
-                        }
-                        _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
-                        _isOpenParamSetting = false;
-                    } else {
-                        if (bitStr8.equalsIgnoreCase("1")) {
-                            _debugView.append("\n收到:\n启用DEBUG软串口【启用】\n");
-                        } else {
-                            _debugView.append("\n收到:\n启用DEBUG软串口【禁用】\n");
-                        }
-                        if (bitStr7.equalsIgnoreCase("1")) {
-                            _debugView.append("使用低磁检测阀值【启用】\n");
-                        } else {
-                            _debugView.append("使用低磁检测阀值【禁用】\n");
-                        }
-                        if (bitStr6.equalsIgnoreCase("1")) {
-                            _debugView.append("不检测强磁【启用】\n");
-                        } else {
-                            _debugView.append("不检测强磁【禁用】\n");
-                        }
-                        if (bitStr5.equalsIgnoreCase("1")) {
-                            _debugView.append("启用软关机【启用】\n");
-                        } else {
-                            _debugView.append("启用软关机【禁用】\n");
-                        }
-                        if (bitStr4.equalsIgnoreCase("1")) {
-                            _debugView.append("有外电可以进入维护方式【启用】\n");
-                        } else {
-                            _debugView.append("有外电可以进入维护方式【禁用】\n");
-                        }
-                        if (bitStr3.equalsIgnoreCase("1")) {
-                            _debugView.append("正常开锁不告警【启用】\n");
-                        } else {
-                            _debugView.append("正常开锁不告警【禁用】\n");
-                        }
-                        if (bitStr2.equalsIgnoreCase("1")) {
-                            _debugView.append("锁检测开关(锁上开路)【启用】\n");
-                        } else {
-                            _debugView.append("锁检测开关(锁上开路)【禁用】\n");
-                        }
-                        if (bitStr1.equalsIgnoreCase("1")) {
-                            _debugView.append("门检测开关(关门开路)【启用】\n");
-                        } else {
-                            _debugView.append("门检测开关(关门开路)【禁用】\n");
-                        }
-                    }
-                    //定位到最后一行
-                    int offset = _debugView.getLineCount() * _debugView.getLineHeight();
-                    //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _debugView.getHeight()) {
-                        _debugView.scrollTo(0, offset - _debugView.getHeight());
-                    }
-                }
-                break;
-                //修改内部控制参数
-                case SEND_SET_CONTROLPARAM: {
-                    Log.d(TAG, ">>>发送参数设置:" + result);
-                    BTUtil.SendComm(result);
-                    _debugView.append("发送参数设置指令 ");
-                    int offset = _debugView.getLineCount() * _debugView.getLineHeight();
-                    if (offset > _scrollView.getHeight()) {
-                        _debugView.scrollTo(0, offset - _scrollView.getHeight());
-                    }
-                }
-                break;
-                //发送查询内部控制参数的指令
-                case SEND_SEARCH_CONTROLPARAM: {
-                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                    Log.d(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 平均温度:%s℃", strs[5], strs[6], strs[7]));
+                    _txt1.setText(strs[5] + "℃");
+                    _txt1.setTextColor(Color.RED);
+                    _txt2.setText(strs[6] + "℃");
+                    _txt2.setTextColor(Color.BLUE);
+                    _txt3.setText(strs[7] + "℃");
+                    _txt3.setTextColor(Color.GREEN);
                 }
                 break;
             }
@@ -652,40 +441,13 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
         }
-        //发送内部参数以后关闭设置窗口
-        _paramSetting.dismiss();
-        _paramSetting = null;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         if (_connectedSuccess) {
-            switch (item.getItemId()) {
-                //内部控制参数设置
-                case R.id.menu_1_power: {
-                    //先查询内部控制参数,再打开修改参数的界面
-                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
-                    _isOpenParamSetting = true;
-                }
-                break;
-                //写入指令
-                case R.id.menu_2_power: {
-                    _writeValue = new DialogFragment_WriteValue();
-                    _writeValue.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
-                    _writeValue.show(getFragmentManager(), "DialogFragment_WriteValue");
-                }
-                break;
-                //OTA
-                case R.id.menu_3_power: {
-                    _ota = DialogFragment_OTA.newInstance(_bluetoothDevice);
-                    _ota.setTargetFragment(BluetoothFragment_PowerControl.this, 3);
-                    _ota.show(getFragmentManager(), "DialogFragment_OTA");
-                }
-                break;
-            }
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "提示", "请连接蓝牙设备!");
         }
         return true;
     }
@@ -703,7 +465,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case R.id.btn_return: {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
+                getFragmentManager().beginTransaction().remove(BluetoothFragment_Temperature.this).commitNow();
             }
             break;
             //连接
@@ -743,10 +505,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 BTUtil.SendComm(hexStr);
             }
             break;
-            //清屏
-            case R.id.button5:
-                _debugView.setText("");
-                break;
         }
 
     }
@@ -782,28 +540,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         _toolbar.setTitle("");
         //此处强转,必须是Activity才有这个方法
         ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
-        _txt1 = _view.findViewById(R.id.txt1);
-        _txt2 = _view.findViewById(R.id.txt2);
-        _txt3 = _view.findViewById(R.id.txt3);
-        _txt4 = _view.findViewById(R.id.txt4);
-        _txt5 = _view.findViewById(R.id.txt5);
-        _txt6 = _view.findViewById(R.id.txt6);
-        _debugView = _view.findViewById(R.id.debug_view);
+        _txt1 = _view.findViewById(R.id.txt1_temperature);
+        _txt2 = _view.findViewById(R.id.txt2_temperature);
+        _txt3 = _view.findViewById(R.id.txt3_temperature);
         _btnReturn = _view.findViewById(R.id.btn_return);
         _btn1 = _view.findViewById(R.id.button1);
         _btn2 = _view.findViewById(R.id.button2);
-        _btn3 = _view.findViewById(R.id.button3);
-        _btn4 = _view.findViewById(R.id.button4);
-        _btn5 = _view.findViewById(R.id.button5);
-        _scrollView = _view.findViewById(R.id.scrollView);
-        _llPowerControl = _view.findViewById(R.id.fragment_bluetooth_powercontrol);
         _btnReturn.setOnClickListener(this::onClick);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
-        _btn3.setOnClickListener(this::onClick);
-        _btn4.setOnClickListener(this::onClick);
-        _btn5.setOnClickListener(this::onClick);
-        _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         InitListener();
         return _view;
     }

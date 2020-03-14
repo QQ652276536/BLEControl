@@ -35,7 +35,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/txt"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:fadeScrollbars="false"

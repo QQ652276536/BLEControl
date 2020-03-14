@@ -30,8 +30,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_CommandTest extends Fragment implements View.OnClickListener, BTListener
-{
+public class BluetoothFragment_CommandTest extends Fragment implements View.OnClickListener, BTListener {
     private static final String TAG = "BluetoothFragment_CommandTest";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -55,37 +54,32 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     private boolean _connectedSuccess = false, _isOpenParamSetting = false;
 
     @Override
-    public void OnConnected()
-    {
+    public void OnConnected() {
         Log.d(TAG, ">>>成功建立连接!");
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
     }
 
     @Override
-    public void OnConnecting()
-    {
+    public void OnConnecting() {
         ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
     }
 
     @Override
-    public void OnDisConnected()
-    {
+    public void OnDisConnected() {
         Log.d(TAG, ">>>连接已断开!");
         Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
         handler.sendMessage(message);
     }
 
     @Override
-    public void OnWriteSuccess(byte[] byteArray)
-    {
+    public void OnWriteSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String sendResult = "";
         String indexStr = strArray[11];
-        switch(indexStr)
-        {
+        switch (indexStr) {
             case "00":
                 sendResult = "开门";
                 break;
@@ -123,29 +117,24 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public void OnReadSuccess(byte[] byteArray)
-    {
+    public void OnReadSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
         Log.d(TAG, ">>>接收:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
-        if(strArray[0].equals("68") && strArray[strArray.length - 1].equals("16"))
-        {
+        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
             Resolve(result);
             //清空缓存
             _stringBuffer = new StringBuffer();
         }
         //分包
-        else
-        {
-            if(!strArray[strArray.length - 1].equals("16"))
-            {
+        else {
+            if (!strArray[strArray.length - 1].equals("16")) {
                 _stringBuffer.append(result + " ");
             }
             //最后一个包
-            else
-            {
+            else {
                 _stringBuffer.append(result);
                 result = _stringBuffer.toString();
                 Resolve(result);
@@ -155,8 +144,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         }
     }
 
-    public static BluetoothFragment_CommandTest newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map)
-    {
+    public static BluetoothFragment_CommandTest newInstance(BluetoothDevice bluetoothDevice, Map<String, UUID> map) {
         BluetoothFragment_CommandTest fragment = new BluetoothFragment_CommandTest();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
@@ -165,13 +153,10 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         return fragment;
     }
 
-    private View.OnKeyListener backListener = new View.OnKeyListener()
-    {
+    private View.OnKeyListener backListener = new View.OnKeyListener() {
         @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event)
-        {
-            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
-            {
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
@@ -181,18 +166,14 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         }
     };
 
-    private Handler handler = new Handler()
-    {
+    private Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message message)
-        {
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             String result = (String) message.obj;
-            switch(message.what)
-            {
+            switch (message.what) {
                 //解析查询到的内部控制参数
-                case RECEIVE_SEARCH_CONTROLPARAM:
-                {
+                case RECEIVE_SEARCH_CONTROLPARAM: {
                     byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
@@ -213,10 +194,8 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
-                    if(_isOpenParamSetting)
-                    {
-                        if(_paramSetting == null)
-                        {
+                    if (_isOpenParamSetting) {
+                        if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
                                     bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
                             });
@@ -227,13 +206,11 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 }
                 break;
                 //修改内部控制参数
-                case SEND_SET_CONTROLPARAM:
-                {
+                case SEND_SET_CONTROLPARAM: {
                     Log.d(TAG, ">>>发送参数设置:" + result);
                     BTUtil.SendComm(result);
                     int offset = _txt.getLineCount() * _txt.getLineHeight();
-                    if(offset > _txt.getHeight())
-                    {
+                    if (offset > _txt.getHeight()) {
                         _txt.scrollTo(0, offset - _txt.getHeight());
                     }
                 }
@@ -243,8 +220,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     ProgressDialogUtil.Dismiss();
                     ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
-                case MESSAGE_1:
-                {
+                case MESSAGE_1: {
                     _btn1.setEnabled(true);
                     _btn2.setEnabled(true);
                     _btn3.setEnabled(true);
@@ -260,14 +236,12 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     _connectedSuccess = true;
                 }
                 break;
-                case MESSAGE_2:
-                {
+                case MESSAGE_2: {
                     _txt.append("\r\n" + result);
                     //定位到最后一行
                     int offset = _txt.getLineCount() * _txt.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if(offset > _txt.getHeight())
-                    {
+                    if (offset > _txt.getHeight()) {
                         _txt.scrollTo(0, offset - _txt.getHeight());
                     }
                 }
@@ -279,27 +253,22 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     /**
      * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
      */
-    public interface OnFragmentInteractionListener
-    {
+    public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void onButtonPressed(Uri uri)
-    {
-        if(_onFragmentInteractionListener != null)
-        {
+    public void onButtonPressed(Uri uri) {
+        if (_onFragmentInteractionListener != null) {
             _onFragmentInteractionListener.onFragmentInteraction(uri);
         }
     }
 
-    private void Resolve(String data)
-    {
+    private void Resolve(String data) {
         Log.d(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
         String receive = ConvertUtil.StrArrayToStr(strArray);
-        switch(indexStr)
-        {
+        switch (indexStr) {
             //开门
             case "00":
                 break;
@@ -318,8 +287,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             case "04":
                 break;
             //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
-            case "80":
-            {
+            case "80": {
                 //全部门锁状态
                 byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
                 String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
@@ -344,8 +312,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             }
             break;
             //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
-            case "81":
-            {
+            case "81": {
                 String result = strArray[13];
                 byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                 String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -354,8 +321,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             }
             break;
             //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
-            case "82":
-            {
+            case "82": {
                 String result = strArray[13];
                 byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                 String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -364,8 +330,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             }
             break;
             //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
-            case "83":
-            {
+            case "83": {
                 String result = strArray[13];
                 byte[] bytes = ConvertUtil.HexStrToByteArray(result);
                 String bitStr = ConvertUtil.ByteToBit(bytes[0]);
@@ -376,11 +341,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             }
             break;
             //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
-            case "86":
-            {
+            case "86": {
                 //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
-                if(_isOpenParamSetting)
-                {
+                if (_isOpenParamSetting) {
                     Message message = handler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
                     handler.sendMessage(message);
                     _isOpenParamSetting = false;
@@ -405,68 +368,44 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 //启用DEBUG软串口
                 String str8 = String.valueOf(bitStr.charAt(0));
                 StringBuffer stringBuffer = new StringBuffer();
-                if(str1.equalsIgnoreCase("1"))
-                {
+                if (str1.equalsIgnoreCase("1")) {
                     stringBuffer.append("\r\n门检测开关(关门开路)【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("\r\n门检测开关(关门开路)【禁用】\n");
                 }
-                if(str2.equalsIgnoreCase("1"))
-                {
+                if (str2.equalsIgnoreCase("1")) {
                     stringBuffer.append("锁检测开关(锁上开路)【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("锁检测开关(锁上开路)【禁用】\n");
                 }
-                if(str3.equalsIgnoreCase("1"))
-                {
+                if (str3.equalsIgnoreCase("1")) {
                     stringBuffer.append("正常开锁不告警【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("正常开锁不告警【禁用】\n");
                 }
-                if(str4.equalsIgnoreCase("1"))
-                {
+                if (str4.equalsIgnoreCase("1")) {
                     stringBuffer.append("有外电可以进入维护方式【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("有外电可以进入维护方式【禁用】\n");
                 }
-                if(str5.equalsIgnoreCase("1"))
-                {
+                if (str5.equalsIgnoreCase("1")) {
                     stringBuffer.append("启用软关机【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("启用软关机【禁用】\n");
                 }
-                if(str6.equalsIgnoreCase("1"))
-                {
+                if (str6.equalsIgnoreCase("1")) {
                     stringBuffer.append("不检测强磁【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("不检测强磁【禁用】\n");
                 }
-                if(str7.equalsIgnoreCase("1"))
-                {
+                if (str7.equalsIgnoreCase("1")) {
                     stringBuffer.append("使用低磁检测阀值【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("使用低磁检测阀值【禁用】\n");
                 }
-                if(str8.equalsIgnoreCase("1"))
-                {
+                if (str8.equalsIgnoreCase("1")) {
                     stringBuffer.append("启用DEBUG软串口【启用】\n");
-                }
-                else
-                {
+                } else {
                     stringBuffer.append("启用DEBUG软串口【禁用】\n");
                 }
                 receive = stringBuffer.toString() + "\r\n";
@@ -481,12 +420,9 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public void onClick(View v)
-    {
-        switch(v.getId())
-        {
-            case R.id.btn_return:
-            {
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_return: {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_CommandTest.this).commitNow();
@@ -497,88 +433,77 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 _txt.setText("");
                 break;
             //开门
-            case R.id.button1:
-            {
+            case R.id.button1: {
                 String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //读卡
-            case R.id.btn2:
-            {
+            case R.id.btn2: {
                 String hexStr = "680000000000006810000101E216";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //测量电池电压
-            case R.id.btn3:
-            {
+            case R.id.btn3: {
                 String hexStr = "680000000000006810000102E316";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //测量磁场强度
-            case R.id.btn4:
-            {
+            case R.id.btn4: {
                 String hexStr = "680000000000006810000103E416";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //测量门状态
-            case R.id.btn5:
-            {
+            case R.id.btn5: {
                 String hexStr = "680000000000006810000104E516";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //综合测试A
-            case R.id.btn6:
-            {
+            case R.id.btn6: {
                 String hexStr = "680000000000006810000180E616";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //开一号门锁
-            case R.id.btn7:
-            {
+            case R.id.btn7: {
                 String hexStr = "680000000000006810000181E716";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //开二号门锁
-            case R.id.btn8:
-            {
+            case R.id.btn8: {
                 String hexStr = "680000000000006810000182E816";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //开全部门锁
-            case R.id.btn9:
-            {
+            case R.id.btn9: {
                 String hexStr = "680000000000006810000183E916";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //查询内部控制参数
-            case R.id.btn10:
-            {
+            case R.id.btn10: {
                 String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
                 BTUtil.SendComm(hexStr);
             }
             break;
             //修改内部控制参数
-            case R.id.btn11:
-            {
+            case R.id.btn11: {
                 //先查询内部控制参数,再打开修改参数的界面
                 String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
@@ -594,34 +519,26 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(_connectedSuccess)
-        {
-            switch(requestCode)
-            {
-                case MainActivity.ACTIVITYRESULT_WRITEVALUE:
-                {
+        if (_connectedSuccess) {
+            switch (requestCode) {
+                case MainActivity.ACTIVITYRESULT_WRITEVALUE: {
                     String hexStr = data.getStringExtra("WriteValue");
                 }
                 break;
-                case MainActivity.ACTIVITYRESULT_PARAMSETTING:
-                {
+                case MainActivity.ACTIVITYRESULT_PARAMSETTING: {
                     String hexStr = data.getStringExtra("ParamSetting");
                     Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, hexStr);
                     handler.sendMessage(message);
                 }
                 break;
-                case MainActivity.ACTIVITYRESULT_OTA:
-                {
+                case MainActivity.ACTIVITYRESULT_OTA: {
                     String hexStr = data.getStringExtra("OTA");
                 }
                 break;
             }
-        }
-        else
-        {
+        } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
         }
         //发送内部参数以后关闭设置窗口
@@ -630,17 +547,14 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-        {
+        if (getArguments() != null) {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
         }
@@ -649,8 +563,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         _view = inflater.inflate(R.layout.fragment_bluetooth_cmd, container, false);
         //强制获得焦点
         _view.requestFocus();
@@ -659,7 +572,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _view.setOnKeyListener(backListener);
         _btnReturn = _view.findViewById(R.id.btn_return);
         _btnReturn.setOnClickListener(this);
-        _txt = _view.findViewById(R.id.textView);
+        _txt = _view.findViewById(R.id.txtView);
         _txt.setMovementMethod(ScrollingMovementMethod.getInstance());
         _btn0 = _view.findViewById(R.id.btn0);
         _btn0.setOnClickListener(this);
@@ -685,41 +598,32 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _btn10.setOnClickListener(this);
         _btn11 = _view.findViewById(R.id.btn11);
         _btn11.setOnClickListener(this);
-        if(_bluetoothDevice != null)
-        {
+        if (_bluetoothDevice != null) {
             Log.d(TAG, ">>>开始连接...");
             BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-        }
-        else
-        {
+        } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
         return _view;
     }
 
     @Override
-    public void onAttach(Context context)
-    {
+    public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof OnFragmentInteractionListener)
-        {
+        if (context instanceof OnFragmentInteractionListener) {
             _onFragmentInteractionListener = (OnFragmentInteractionListener) context;
-        }
-        else
-        {
+        } else {
             throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
         }
     }
 
     @Override
-    public void onDetach()
-    {
+    public void onDetach() {
         super.onDetach();
         _onFragmentInteractionListener = null;
         BTUtil.DisConnGatt();
         _bluetoothDevice = null;
-        if(_paramSetting != null)
-        {
+        if (_paramSetting != null) {
             _paramSetting.dismiss();
             _paramSetting = null;
         }
