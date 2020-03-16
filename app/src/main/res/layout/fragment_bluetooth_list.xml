@@ -61,7 +61,7 @@
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/rdo1_bluetoothList"
+                    android:id="@+id/rdo_uuid1_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -70,7 +70,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo2_bluetoothList"
+                    android:id="@+id/rdo_uuid2_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -79,7 +79,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo5_bluetoothList"
+                    android:id="@+id/rdo_uuid3_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -89,7 +89,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo6_bluetoothList"
+                    android:id="@+id/rdo_uuid4_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -128,7 +128,7 @@
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/rdo3_bluetoothList"
+                    android:id="@+id/rdo_func1_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -138,7 +138,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo4_bluetoothList"
+                    android:id="@+id/rdo_func2_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -147,7 +147,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo7_bluetoothList"
+                    android:id="@+id/rdo_func3_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -156,7 +156,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo8_bluetoothList"
+                    android:id="@+id/rdo_func4_bluetoothList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"

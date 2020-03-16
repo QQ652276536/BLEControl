@@ -7,14 +7,14 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_readwrite"
+        android:id="@+id/toolbar_temperature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/colorPrimary">
 
         <ImageButton
-            android:id="@+id/btn_return_db"
+            android:id="@+id/btn_return_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
@@ -115,6 +115,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="5dp"
                         android:button="@drawable/rad_selector"
+                        android:checked="true"
                         android:text="男声"
                         android:textColor="@color/gray" />
 

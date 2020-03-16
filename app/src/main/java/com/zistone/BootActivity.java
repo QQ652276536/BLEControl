@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.zistone.blecontrol.R;
-import com.zistone.opencv.FaceDetectActivity;
 
 public class BootActivity extends AppCompatActivity {
 
