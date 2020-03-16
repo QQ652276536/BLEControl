@@ -458,14 +458,15 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_return: {
+            case R.id.btn2_temperature:
+            case R.id.btn_return_temperature: {
                 BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
                 getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_Temperature.this).commitNow();
             }
             break;
             //连接
-            case R.id.button1: {
+            case R.id.btn1_temperature: {
                 if (_bluetoothDevice != null) {
                     if (_btn1.getText().toString().equals("连接")) {
                         _btn1.setText("断开");
@@ -478,27 +479,6 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                 } else {
                     ProgressDialogUtil.ShowWarning(_context, "提示", "未获取到蓝牙,请重试!");
                 }
-            }
-            break;
-            //开一号门锁
-            case R.id.button2: {
-                String hexStr = "680000000000006810000181E116";
-                Log.d(TAG, ">>>发送开一号门锁:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
-            }
-            break;
-            //开二号门锁
-            case R.id.button3: {
-                String hexStr = "680000000000006810000182E716";
-                Log.d(TAG, ">>>发送开二号门锁:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
-            }
-            break;
-            //开全部门锁
-            case R.id.button4: {
-                String hexStr = "680000000000006810000183E716";
-                Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
             }
             break;
         }
@@ -523,13 +503,13 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        _view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
+        _view = inflater.inflate(R.layout.fragment_bluetooth_temperature, container, false);
         //强制获得焦点
         _view.requestFocus();
         _view.setFocusable(true);
         _view.setFocusableInTouchMode(true);
         _view.setOnKeyListener(backListener);
-        _toolbar = _view.findViewById(R.id.toolbar_powercontrol);
+        _toolbar = _view.findViewById(R.id.toolbar_temperature);
         //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
         setHasOptionsMenu(true);
         //去掉标题
@@ -539,9 +519,9 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         _txt1 = _view.findViewById(R.id.txt1_temperature);
         _txt2 = _view.findViewById(R.id.txt2_temperature);
         _txt3 = _view.findViewById(R.id.txt3_temperature);
-        _btnReturn = _view.findViewById(R.id.btn_return);
-        _btn1 = _view.findViewById(R.id.button1);
-        _btn2 = _view.findViewById(R.id.button2);
+        _btnReturn = _view.findViewById(R.id.btn_return_temperature);
+        _btn1 = _view.findViewById(R.id.btn1_temperature);
+        _btn2 = _view.findViewById(R.id.btn2_temperature);
         _btnReturn.setOnClickListener(this::onClick);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
