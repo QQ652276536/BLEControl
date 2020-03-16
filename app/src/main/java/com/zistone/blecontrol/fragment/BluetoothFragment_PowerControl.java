@@ -30,8 +30,8 @@ import com.zistone.blecontrol.control.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
-import com.zistone.blecontrol.util.BTListener;
-import com.zistone.blecontrol.util.BTUtil;
+import com.zistone.blecontrol.util.BluetoothListener;
+import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -41,7 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener, BTListener {
+public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener, BluetoothListener {
     private static final String TAG = "BluetoothFragment_PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -242,7 +242,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         if (_refreshTimer != null) {
             _refreshTimer.cancel();
         }
-        BTUtil.DisConnGatt();
+        BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
@@ -279,7 +279,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
                                     //Log.d(TAG, ">>>发送综合测试:" + hexStr);
-                                    BTUtil.SendComm(hexStr);
+                                    BluetoothUtil.SendComm(hexStr);
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -490,7 +490,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
                     Log.d(TAG, ">>>发送参数设置:" + result);
-                    BTUtil.SendComm(result);
+                    BluetoothUtil.SendComm(result);
                     _debugView.append("发送参数设置指令 ");
                     int offset = _debugView.getLineCount() * _debugView.getLineHeight();
                     if (offset > _scrollView.getHeight()) {
@@ -500,7 +500,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 break;
                 //发送查询内部控制参数的指令
                 case SEND_SEARCH_CONTROLPARAM: {
-                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                 }
                 break;
             }
@@ -665,7 +665,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 //内部控制参数设置
                 case R.id.menu_1_power: {
                     //先查询内部控制参数,再打开修改参数的界面
-                    BTUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                     _isOpenParamSetting = true;
                 }
                 break;
@@ -712,7 +712,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     if (_btn1.getText().toString().equals("连接")) {
                         _btn1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
-                        BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
+                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
                     } else {
                         _btn1.setText("连接");
                         DisConnect();
@@ -726,21 +726,21 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             case R.id.button2: {
                 String hexStr = "680000000000006810000181E116";
                 Log.d(TAG, ">>>发送开一号门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开二号门锁
             case R.id.button3: {
                 String hexStr = "680000000000006810000182E716";
                 Log.d(TAG, ">>>发送开二号门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开全部门锁
             case R.id.button4: {
                 String hexStr = "680000000000006810000183E716";
                 Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //清屏
@@ -764,7 +764,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
         }
         _context = getContext();
-        BTUtil.Init(_context, this);
+        BluetoothUtil.Init(_context, this);
     }
 
     @Override
@@ -819,15 +819,20 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        _onFragmentInteractionListener = null;
+    public void onDestroy() {
         if (_refreshTimer != null)
             _refreshTimer.cancel();
         if (_refreshTask != null)
             _refreshTask.cancel();
-        BTUtil.DisConnGatt();
+        BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        _onFragmentInteractionListener = null;
+        super.onDetach();
     }
 
 }

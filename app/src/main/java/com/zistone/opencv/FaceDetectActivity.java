@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
+
 import com.zistone.blecontrol.R;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -15,6 +16,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -74,7 +76,7 @@ public class FaceDetectActivity extends AppCompatActivity implements CameraBridg
                         } else {
                             Log.d(TAG, "Loaded cascade classifier from " + mCascadeFile.getAbsolutePath());
                         }
-                        mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(),"", 0);
+                        mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(), "", 0);
                         cascadeDir.delete();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -178,6 +180,9 @@ public class FaceDetectActivity extends AppCompatActivity implements CameraBridg
         for (int i = 0; i < facesArray.length; i++) {
             Imgproc.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
         }
+        Point point = new Point(10, 10);
+        // 绘制文字
+        Imgproc.putText(mRgba, "36.5℃", point, 1, 1, FACE_RECT_COLOR);
         return mRgba;
     }
 }

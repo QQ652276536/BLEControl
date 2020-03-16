@@ -21,8 +21,8 @@ import android.widget.TextView;
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
-import com.zistone.blecontrol.util.BTListener;
-import com.zistone.blecontrol.util.BTUtil;
+import com.zistone.blecontrol.util.BluetoothListener;
+import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -30,7 +30,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 
-public class BluetoothFragment_CommandTest extends Fragment implements View.OnClickListener, BTListener {
+public class BluetoothFragment_CommandTest extends Fragment implements View.OnClickListener, BluetoothListener {
     private static final String TAG = "BluetoothFragment_CommandTest";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -208,7 +208,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
                     Log.d(TAG, ">>>发送参数设置:" + result);
-                    BTUtil.SendComm(result);
+                    BluetoothUtil.SendComm(result);
                     int offset = _txt.getLineCount() * _txt.getLineHeight();
                     if (offset > _txt.getHeight()) {
                         _txt.scrollTo(0, offset - _txt.getHeight());
@@ -346,7 +346,6 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                 if (_isOpenParamSetting) {
                     Message message = handler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
                     handler.sendMessage(message);
-                    _isOpenParamSetting = false;
                     return;
                 }
                 byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
@@ -436,83 +435,80 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             case R.id.button1: {
                 String hexStr = "680000000000006810000100E116";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //读卡
             case R.id.btn2: {
                 String hexStr = "680000000000006810000101E216";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //测量电池电压
             case R.id.btn3: {
                 String hexStr = "680000000000006810000102E316";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //测量磁场强度
             case R.id.btn4: {
                 String hexStr = "680000000000006810000103E416";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //测量门状态
             case R.id.btn5: {
                 String hexStr = "680000000000006810000104E516";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //综合测试A
             case R.id.btn6: {
                 String hexStr = "680000000000006810000180E616";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开一号门锁
             case R.id.btn7: {
                 String hexStr = "680000000000006810000181E716";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开二号门锁
             case R.id.btn8: {
                 String hexStr = "680000000000006810000182E816";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开全部门锁
             case R.id.btn9: {
                 String hexStr = "680000000000006810000183E916";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //查询内部控制参数
             case R.id.btn10: {
+                _isOpenParamSetting = false;
                 String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //修改内部控制参数
             case R.id.btn11: {
+                _isOpenParamSetting = true;
                 //先查询内部控制参数,再打开修改参数的界面
                 String hexStr = "680000000000006810000186EA16";
                 Log.d(TAG, ">>>发送:" + hexStr);
-                BTUtil.SendComm(hexStr);
-                _isOpenParamSetting = true;
-
-                //                String hexStr = "6800000000000068100005877F000000EA16";
-                //                Log.d(TAG, ">>>发送:" + hexStr);
-                //                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
         }
@@ -559,7 +555,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
         }
         _context = getContext();
-        BTUtil.Init(_context, this);
+        BluetoothUtil.Init(_context, this);
     }
 
     @Override
@@ -600,7 +596,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
         _btn11.setOnClickListener(this);
         if (_bluetoothDevice != null) {
             Log.d(TAG, ">>>开始连接...");
-            BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
+            BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
@@ -618,14 +614,19 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        _onFragmentInteractionListener = null;
-        BTUtil.DisConnGatt();
+    public void onDestroy() {
+        BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         if (_paramSetting != null) {
             _paramSetting.dismiss();
             _paramSetting = null;
         }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        _onFragmentInteractionListener = null;
+        super.onDetach();
     }
 }

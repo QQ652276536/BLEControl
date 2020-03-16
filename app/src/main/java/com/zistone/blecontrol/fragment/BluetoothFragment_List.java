@@ -82,7 +82,7 @@ public class BluetoothFragment_List extends Fragment
     private BluetoothFragment_OTA _bluetoothFragment_ota;
     private BluetoothFragment_DB _bluetoothFragment_db;
     private BluetoothFragment_Temperature _bluetoothFragment_temperature;
-    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4, _rdo5, _rdo6, _rdo7, _rdo8;
+    private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4;
     private OnFragmentInteractionListener _onFragmentInteractionListener;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
@@ -144,21 +144,13 @@ public class BluetoothFragment_List extends Fragment
         int rssi = result.getRssi();
         int state = bluetoothDevice.getBondState();
         //设备去重
-        if (_deviceMap.containsKey(address)) {
-            MyBluetoothDevice device = _deviceMap.get(address);
-            device.setName(name);
-            device.setRssi(rssi);
-            device.setBoundState(state);
-            _deviceMap.put(address, device);
-        } else {
-            MyBluetoothDevice device = new MyBluetoothDevice();
-            device.setName(name);
-            device.setAddress(address);
-            device.setRssi(rssi);
-            device.setBoundState(state);
-            device.setBluetoothDevice(bluetoothDevice);
-            _deviceMap.put(address, device);
-        }
+        MyBluetoothDevice device = new MyBluetoothDevice();
+        device.setName(name);
+        device.setAddress(address);
+        device.setRssi(rssi);
+        device.setBoundState(state);
+        device.setBluetoothDevice(bluetoothDevice);
+        _deviceMap.put(address, device);
         //根据条件筛选设备
         Map<String, MyBluetoothDevice> map = FilterDeviceByCondition(_deviceMap);
         _deviceList = new ArrayList<>(map.values());
@@ -599,25 +591,25 @@ public class BluetoothFragment_List extends Fragment
         BluetoothDevice bluetoothDevice = _bluetoothAdapter.getRemoteDevice(address);
         _myBluetoothDevice = _deviceMap.get(address);
         //BlueNRG
-        if (_rdo1.isChecked()) {
+        if (_rdoUUID1.isChecked()) {
             SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
             WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
         }
         //Amdtp
-        else if (_rdo2.isChecked()) {
+        else if (_rdoUUID2.isChecked()) {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
         }
         //OTA
-        else if (_rdo5.isChecked()) {
+        else if (_rdoUUID3.isChecked()) {
             SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
             WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
             READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
         }
         //Tag
-        else if (_rdo6.isChecked()) {
+        else if (_rdoUUID4.isChecked()) {
             SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
             READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
             WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
@@ -629,22 +621,22 @@ public class BluetoothFragment_List extends Fragment
         map.put("CONFIG_UUID", CONFIG_UUID);
         if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
             //电力控制
-            if (_rdo3.isChecked()) {
+            if (_rdoFunc1.isChecked()) {
                 _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(_powerControlListener, bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //命令测试
-            else if (_rdo4.isChecked()) {
+            else if (_rdoFunc2.isChecked()) {
                 _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
             //设备绑定入库
-            else if (_rdo7.isChecked()) {
-                if (_rdo6.isChecked()) {
+            else if (_rdoFunc3.isChecked()) {
+                if (_rdoUUID4.isChecked()) {
                     _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).getRssi());
                     //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                     getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
@@ -654,7 +646,7 @@ public class BluetoothFragment_List extends Fragment
                 }
             }
             //测量体温
-            else if (_rdo8.isChecked()) {
+            else if (_rdoFunc4.isChecked()) {
                 _bluetoothFragment_temperature = BluetoothFragment_Temperature.newInstance(_temperatureListener, bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_temperature, "bluetoothFragment_temperature").commitNow();
@@ -783,14 +775,14 @@ public class BluetoothFragment_List extends Fragment
         _view.setFocusable(true);
         _view.setFocusableInTouchMode(true);
         _view.setOnKeyListener(backListener);
-        _rdo1 = _view.findViewById(R.id.rdo1_bluetoothList);
-        _rdo2 = _view.findViewById(R.id.rdo2_bluetoothList);
-        _rdo3 = _view.findViewById(R.id.rdo3_bluetoothList);
-        _rdo4 = _view.findViewById(R.id.rdo4_bluetoothList);
-        _rdo5 = _view.findViewById(R.id.rdo5_bluetoothList);
-        _rdo6 = _view.findViewById(R.id.rdo6_bluetoothList);
-        _rdo7 = _view.findViewById(R.id.rdo7_bluetoothList);
-        _rdo8 = _view.findViewById(R.id.rdo8_bluetoothList);
+        _rdoUUID1 = _view.findViewById(R.id.rdo_uuid1_bluetoothList);
+        _rdoUUID2 = _view.findViewById(R.id.rdo_uuid2_bluetoothList);
+        _rdoUUID3 = _view.findViewById(R.id.rdo_uuid3_bluetoothList);
+        _rdoUUID4 = _view.findViewById(R.id.rdo_uuid4_bluetoothList);
+        _rdoFunc1 = _view.findViewById(R.id.rdo_func1_bluetoothList);
+        _rdoFunc2 = _view.findViewById(R.id.rdo_func2_bluetoothList);
+        _rdoFunc3 = _view.findViewById(R.id.rdo_func3_bluetoothList);
+        _rdoFunc4 = _view.findViewById(R.id.rdo_func4_bluetoothList);
         _listView = _view.findViewById(R.id.lv_bluetoothList);
         _btnFilterContent = _view.findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
@@ -865,15 +857,6 @@ public class BluetoothFragment_List extends Fragment
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        _onFragmentInteractionListener = null;
-        _deviceList.clear();
-        _deviceMap.clear();
-        _connectSuccessMap.clear();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         StopScan();
@@ -881,12 +864,21 @@ public class BluetoothFragment_List extends Fragment
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         StopScan();
         _bluetoothAdapter.disable();
-        _deviceList.clear();
-        _deviceMap.clear();
-        _connectSuccessMap.clear();
+        if (_deviceList != null)
+            _deviceList.clear();
+        if (_deviceMap != null)
+            _deviceMap.clear();
+        if (_connectSuccessMap != null)
+            _connectSuccessMap.clear();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        _onFragmentInteractionListener = null;
+        super.onDetach();
     }
 
     @Override

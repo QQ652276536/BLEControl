@@ -27,12 +27,8 @@ import android.widget.TextView;
 
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.control.MyScrollView;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
-import com.zistone.blecontrol.util.BTListener;
-import com.zistone.blecontrol.util.BTUtil;
+import com.zistone.blecontrol.util.BluetoothListener;
+import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -42,7 +38,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_Temperature extends Fragment implements View.OnClickListener, BTListener {
+public class BluetoothFragment_Temperature extends Fragment implements View.OnClickListener, BluetoothListener {
     private static final String TAG = "BluetoothFragment_Temperature";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -236,7 +232,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         if (_refreshTimer != null) {
             _refreshTimer.cancel();
         }
-        BTUtil.DisConnGatt();
+        BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
@@ -267,7 +263,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
                                     //Log.d(TAG, ">>>发送综合测试:" + hexStr);
-                                    BTUtil.SendComm(hexStr);
+                                    BluetoothUtil.SendComm(hexStr);
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -474,7 +470,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                     if (_btn1.getText().toString().equals("连接")) {
                         _btn1.setText("断开");
                         Log.d(TAG, ">>>开始连接...");
-                        BTUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
+                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
                     } else {
                         _btn1.setText("连接");
                         DisConnect();
@@ -488,21 +484,21 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
             case R.id.button2: {
                 String hexStr = "680000000000006810000181E116";
                 Log.d(TAG, ">>>发送开一号门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开二号门锁
             case R.id.button3: {
                 String hexStr = "680000000000006810000182E716";
                 Log.d(TAG, ">>>发送开二号门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
             //开全部门锁
             case R.id.button4: {
                 String hexStr = "680000000000006810000183E716";
                 Log.d(TAG, ">>>发送开全部门锁:" + hexStr);
-                BTUtil.SendComm(hexStr);
+                BluetoothUtil.SendComm(hexStr);
             }
             break;
         }
@@ -522,7 +518,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
             _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
         }
         _context = getContext();
-        BTUtil.Init(_context, this);
+        BluetoothUtil.Init(_context, this);
     }
 
     @Override
@@ -571,7 +567,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
             _refreshTimer.cancel();
         if (_refreshTask != null)
             _refreshTask.cancel();
-        BTUtil.DisConnGatt();
+        BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
     }
 
