@@ -690,10 +690,10 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_device_list);
+        _context = getApplicationContext();
         Intent intent = getIntent();
         _param1 = intent.getStringExtra(ARG_PARAM1);
         _param2 = intent.getStringExtra(ARG_PARAM2);
-        _context = getApplicationContext();
         //扫描的过滤条件
         _filterContent = " No filter";
         _filterName = DeviceFilterShared.GetFilterName(_context);

@@ -715,10 +715,11 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_power_control);
+        _context = getApplicationContext();
+        _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
-        _context = getApplicationContext();
         //Toolbar
         _toolbar = findViewById(R.id.toolbar_powercontrol);
         _toolbar.setTitle("");
@@ -747,7 +748,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         InitListener();
         BluetoothUtil.Init(_context, this);
-        _fragmentManager = getSupportFragmentManager();
     }
 
     @Override

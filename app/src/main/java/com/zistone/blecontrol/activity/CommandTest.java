@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -18,8 +19,6 @@ import android.widget.TextView;
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
-import com.zistone.blecontrol.fragment.BluetoothFragment_CommandTest;
-import com.zistone.blecontrol.fragment.BluetoothFragment_List;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
@@ -49,6 +48,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private DialogFragment_ParamSetting _paramSetting;
     //是否连接成功、是否打开参数设置界面
     private boolean _connectedSuccess = false, _isOpenParamSetting = false;
+    private FragmentManager _fragmentManager;
 
     private Handler handler = new Handler() {
         @Override
@@ -81,9 +81,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8});
-                            _paramSetting.setTargetFragment(BluetoothFragment_CommandTest.this, 1);
+                            _paramSetting.setCancelable(false);
                         }
-                        _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
+                        _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
                     }
                 }
                 break;
@@ -528,10 +528,11 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command_test);
+        _context = getApplicationContext();
+        _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
-        _context = getApplicationContext();
         _btnReturn = findViewById(R.id.btn_return);
         _btnReturn.setOnClickListener(this);
         _txt = findViewById(R.id.txt);
