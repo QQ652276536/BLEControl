@@ -41,6 +41,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cjj.MaterialRefreshLayout;
+import com.cjj.MaterialRefreshListener;
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.control.BluetoothListAdapter;
@@ -50,8 +52,6 @@ import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
-import com.zistone.material_refresh_layout.MaterialRefreshLayout;
-import com.zistone.material_refresh_layout.MaterialRefreshListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
