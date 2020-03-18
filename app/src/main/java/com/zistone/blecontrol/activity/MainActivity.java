@@ -38,7 +38,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
         if (Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested) {
             _isPermissionRequested = true;
             ArrayList<String> permissionsList = new ArrayList<>();
-            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA};
+            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.CAMERA};
             for (String perm : permissions) {
                 if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
                     //进入到这里代表没有权限
@@ -54,17 +58,24 @@ public class MainActivity extends AppCompatActivity implements BluetoothFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
         //        _bluetoothFragment = BluetoothFragment.newInstance("", "");
         //        getSupportFragmentManager().beginTransaction().add(R.id.fragment_current, _bluetoothFragment, "bluetoothFragment").show(_bluetoothFragment).commitNow();
-        setContentView(R.layout.activity_boot);
         RequestPermission();
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        startActivity(new Intent(MainActivity.this, BleDeviceList.class));
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(2500);
+                    Intent intent = new Intent(getApplicationContext(), BleDeviceList.class);
+                    startActivity(intent);
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
     }
 
     /**

@@ -68,13 +68,9 @@
         <activity
             android:name="com.zistone.opencv.FaceDetectActivity"
             android:label="保存合成后的音频" />
-        <activity android:name=".activity.MainActivity" />
-        <activity
-            android:name=".activity.BootActivity"
-            android:label="开机动画">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
