@@ -666,7 +666,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
         _bluetoothListAdapter.notifyDataSetChanged();
-        _listView.setOnItemClickListener(BluetoothFragment_List.this);
+        _listView.setOnItemClickListener(this);
     }
 
     @Override

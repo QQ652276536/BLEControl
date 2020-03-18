@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
@@ -20,7 +21,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
@@ -28,8 +28,6 @@ import com.zistone.blecontrol.control.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
-import com.zistone.blecontrol.fragment.BluetoothFragment_List;
-import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
@@ -91,6 +89,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private boolean _connectedSuccess = false, _isOpenParamSetting = false;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
+    private FragmentManager _fragmentManager;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -279,9 +278,9 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8});
-                            _paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
+                            _paramSetting.setCancelable(false);
                         }
-                        _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
+                        _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
                         _isOpenParamSetting = false;
                     } else {
                         if (bitStr8.equalsIgnoreCase("1")) {
@@ -538,15 +537,15 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //写入指令
                 case R.id.menu_2_power: {
                     _writeValue = new DialogFragment_WriteValue();
-                    _writeValue.setTargetFragment(BluetoothFragment_PowerControl.this, 2);
-                    _writeValue.show(getFragmentManager(), "DialogFragment_WriteValue");
+                    _writeValue.setCancelable(false);
+                    _writeValue.show(_fragmentManager, "DialogFragment_WriteValue");
                 }
                 break;
                 //OTA
                 case R.id.menu_3_power: {
                     _ota = DialogFragment_OTA.newInstance(_bluetoothDevice);
-                    _ota.setTargetFragment(BluetoothFragment_PowerControl.this, 3);
-                    _ota.show(getFragmentManager(), "DialogFragment_OTA");
+                    _ota.setCancelable(false);
+                    _ota.show(_fragmentManager, "DialogFragment_OTA");
                 }
                 break;
             }
@@ -748,6 +747,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         InitListener();
         BluetoothUtil.Init(_context, this);
+        _fragmentManager = getSupportFragmentManager();
     }
 
     @Override
