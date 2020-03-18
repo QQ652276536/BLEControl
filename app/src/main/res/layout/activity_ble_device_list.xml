@@ -340,7 +340,7 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <com.zistone.material_refresh_layout.MaterialRefreshLayout
+        <com.cjj.MaterialRefreshLayout
             android:id="@+id/refresh_bluetoothList"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -349,7 +349,7 @@
                 android:id="@+id/lv_bluetoothList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </com.zistone.material_refresh_layout.MaterialRefreshLayout>
+        </com.cjj.MaterialRefreshLayout>
 
     </LinearLayout>
 </LinearLayout>

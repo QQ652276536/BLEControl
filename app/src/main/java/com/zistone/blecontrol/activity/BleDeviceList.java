@@ -39,11 +39,6 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.control.BluetoothListAdapter;
-import com.zistone.blecontrol.fragment.BluetoothFragment_CommandTest;
-import com.zistone.blecontrol.fragment.BluetoothFragment_DB;
-import com.zistone.blecontrol.fragment.BluetoothFragment_OTA;
-import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
-import com.zistone.blecontrol.fragment.BluetoothFragment_Temperature;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
@@ -51,6 +46,7 @@ import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,7 +62,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
 
     private static final String TAG = "BleDeviceList";
-    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param2";
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private BluetoothListAdapter _bluetoothListAdapter;
@@ -74,11 +70,6 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     private Toolbar _toolbar;
     private ListView _listView;
     private BluetoothAdapter _bluetoothAdapter;
-    private BluetoothFragment_CommandTest _bluetoothFragment_commandTest;
-    private BluetoothFragment_PowerControl _bluetoothFragment_powerControl;
-    private BluetoothFragment_OTA _bluetoothFragment_ota;
-    private BluetoothFragment_DB _bluetoothFragment_db;
-    private BluetoothFragment_Temperature _bluetoothFragment_temperature;
     private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
@@ -548,39 +539,39 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         map.put("READ_UUID", READ_UUID);
         map.put("WRITE_UUID", WRITE_UUID);
         map.put("CONFIG_UUID", CONFIG_UUID);
+        Intent intent = null;
         if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
             //电力控制
             if (_rdoFunc1.isChecked()) {
-                _bluetoothFragment_powerControl = BluetoothFragment_PowerControl.newInstance(_powerControlListener, bluetoothDevice, map);
-                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                intent = new Intent(BleDeviceList.this, PowerControl.class);
+                intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
-            //命令测试
+            //指令测试
             else if (_rdoFunc2.isChecked()) {
-                _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
-                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                intent = new Intent(BleDeviceList.this, CommandTest.class);
+                intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
-            //设备绑定入库
+            //物料绑定
             else if (_rdoFunc3.isChecked()) {
                 if (_rdoUUID4.isChecked()) {
-                    _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).getRssi());
-                    //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                    getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_db, "bluetoothFragment_db").commitNow();
-                    getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                    intent = new Intent(BleDeviceList.this, MaterialsInDB.class);
+                    intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                    intent.putExtra(ARG_PARAM2, (Serializable) map);
+                    intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
                 } else {
                     ProgressDialogUtil.ShowWarning(_context, "错误", "【物料入库】的功能仅支持【Tag】模块");
                 }
             }
             //测量体温
             else if (_rdoFunc4.isChecked()) {
-                _bluetoothFragment_temperature = BluetoothFragment_Temperature.newInstance(_temperatureListener, bluetoothDevice, map);
-                //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
-                getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_temperature, "bluetoothFragment_temperature").commitNow();
-                getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
+                intent = new Intent(BleDeviceList.this, TemperatureMeasure.class);
+                intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
+            if (intent != null)
+                startActivity(intent);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "错误", "请检查该设备是否被占用");
         }

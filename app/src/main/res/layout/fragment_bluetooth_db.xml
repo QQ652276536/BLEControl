@@ -141,7 +141,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.zistone.material_refresh_layout.MaterialRefreshLayout
+        <com.cjj.MaterialRefreshLayout
             android:id="@+id/refresh_bluetoothDB"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -271,7 +271,7 @@
 
             </LinearLayout>
 
-        </com.zistone.material_refresh_layout.MaterialRefreshLayout>
+        </com.cjj.MaterialRefreshLayout>
 
     </LinearLayout>
 </LinearLayout>

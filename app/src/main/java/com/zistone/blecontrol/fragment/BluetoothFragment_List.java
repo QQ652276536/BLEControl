@@ -627,14 +627,14 @@ public class BluetoothFragment_List extends Fragment
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_powerControl, "bluetoothFragment_powerControl").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
-            //命令测试
+            //指令测试
             else if (_rdoFunc2.isChecked()) {
                 _bluetoothFragment_commandTest = BluetoothFragment_CommandTest.newInstance(bluetoothDevice, map);
                 //不要使用replace,不然前面的Fragment被释放了会连蓝牙也关掉
                 getFragmentManager().beginTransaction().add(R.id.fragment_bluetooth, _bluetoothFragment_commandTest, "bluetoothFragment_commandTest").commitNow();
                 getFragmentManager().beginTransaction().hide(BluetoothFragment_List.this).commitNow();
             }
-            //设备绑定入库
+            //物料绑定
             else if (_rdoFunc3.isChecked()) {
                 if (_rdoUUID4.isChecked()) {
                     _bluetoothFragment_db = BluetoothFragment_DB.newInstance(bluetoothDevice, map, _deviceMap.get(address).getRssi());
