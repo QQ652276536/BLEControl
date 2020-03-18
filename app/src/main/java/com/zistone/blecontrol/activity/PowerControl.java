@@ -1,28 +1,26 @@
-package com.zistone.blecontrol.fragment;
+package com.zistone.blecontrol.activity;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zistone.MainActivity;
 import com.zistone.blecontrol.R;
@@ -30,19 +28,21 @@ import com.zistone.blecontrol.control.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
+import com.zistone.blecontrol.fragment.BluetoothFragment_List;
+import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothFragment_PowerControl extends Fragment implements View.OnClickListener, BluetoothListener {
-    private static final String TAG = "BluetoothFragment_PowerControl";
+public class PowerControl extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+
+    private static final String TAG = "PowerControl";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
@@ -71,12 +71,9 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
     private static final int SEND_SET_CONTROLPARAM = 87;
     private static final int RECEIVE_SET_CONTROLPARAM = 8702;
-    private static Listener _listener;
 
     private BluetoothDevice _bluetoothDevice;
-    private OnFragmentInteractionListener _onFragmentInteractionListener;
     private Context _context;
-    private View _view;
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private TextView _debugView;
@@ -95,100 +92,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
 
-    @Override
-    public void OnConnected() {
-        ProgressDialogUtil.Dismiss();
-        Log.d(TAG, ">>>成功建立连接!");
-        //轮询
-        Message message = handler.obtainMessage(MESSAGE_1, "");
-        handler.sendMessage(message);
-        //连接成功的回调
-        _listener.ConnectSuccessListener();
-    }
-
-    @Override
-    public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(_context, _progressDialogUtilListener, "正在连接...");
-    }
-
-    @Override
-    public void OnDisConnected() {
-        Log.d(TAG, ">>>连接已断开!");
-        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
-        handler.sendMessage(message);
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
-        String[] strArray = result.split(" ");
-        String indexStr = strArray[11];
-        switch (indexStr) {
-            //发送开门指令
-            case "00":
-                break;
-            //发送读卡指令
-            case "01":
-                break;
-            //发送测量电池电压指令
-            case "02":
-                break;
-            //发送测量磁场强度指令
-            case "03":
-                break;
-            //发送测量门状态指令
-            case "04":
-                break;
-            //发送综合测量指令
-            case "80":
-                break;
-            //发送开一号门锁指令
-            case "81":
-                break;
-            //发送开二号门锁指令
-            case "82":
-                break;
-            //发送开全部门锁指令
-            case "83":
-                break;
-            //发送查询内部控制参数指令
-            case "86":
-                break;
-            //发送修改内部控制参数指令
-            case "87":
-                break;
-        }
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
-        //Log.d(TAG, ">>>接收:" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
-        }
-    }
-
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
             @Override
@@ -199,60 +102,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                 }
             }
         };
-    }
-
-    public interface Listener {
-        void ConnectSuccessListener();
-    }
-
-    public static BluetoothFragment_PowerControl newInstance(Listener listener, BluetoothDevice bluetoothDevice, Map<String, UUID> map) {
-        BluetoothFragment_PowerControl fragment = new BluetoothFragment_PowerControl();
-        _listener = listener;
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1, bluetoothDevice);
-        args.putSerializable(ARG_PARAM2, (Serializable) map);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    /**
-     * 返回键的监听
-     */
-    private View.OnKeyListener backListener = new View.OnKeyListener() {
-        @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
-                return true;
-            }
-            return false;
-        }
-    };
-
-    private void DisConnect() {
-        _connectedSuccess = false;
-        _btn2.setEnabled(false);
-        _btn3.setEnabled(false);
-        _btn4.setEnabled(false);
-        if (_refreshTask != null) {
-            _refreshTask.cancel();
-        }
-        if (_refreshTimer != null) {
-            _refreshTimer.cancel();
-        }
-        BluetoothUtil.DisConnGatt();
-        _txt1.setText("Null");
-        _txt1.setTextColor(Color.GRAY);
-        _txt2.setText("Null");
-        _txt2.setTextColor(Color.GRAY);
-        _txt3.setText("Null");
-        _txt3.setTextColor(Color.GRAY);
-        _txt4.setText("Null");
-        _txt4.setTextColor(Color.GRAY);
-        _txt5.setText("Null");
-        _txt6.setText("Null");
     }
 
     private Handler handler = new Handler() {
@@ -273,8 +122,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     _refreshTask = new TimerTask() {
                         @Override
                         public void run() {
-                            getActivity().runOnUiThread(() ->
-                            {
+                            runOnUiThread(() -> {
                                 try {
                                     //综合测试
                                     String hexStr = "680000000000006810000180E616";
@@ -430,9 +278,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
-                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
-                                    bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8
-                            });
+                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8});
                             _paramSetting.setTargetFragment(BluetoothFragment_PowerControl.this, 1);
                         }
                         _paramSetting.show(getFragmentManager(), "DialogFragment_ParamSetting");
@@ -506,19 +352,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
             }
         }
     };
-
-    public void onButtonPressed(Uri uri) {
-        if (_onFragmentInteractionListener != null) {
-            _onFragmentInteractionListener.onFragmentInteraction(uri);
-        }
-    }
-
-    /**
-     * Activity中加载Fragment时会要求实现onFragmentInteraction(Uri uri)方法,此方法主要作用是从fragment向activity传递数据
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 
     /**
      * 解析硬件返回的数据
@@ -629,6 +462,30 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         handler.sendMessage(message);
     }
 
+    private void DisConnect() {
+        _connectedSuccess = false;
+        _btn2.setEnabled(false);
+        _btn3.setEnabled(false);
+        _btn4.setEnabled(false);
+        if (_refreshTask != null) {
+            _refreshTask.cancel();
+        }
+        if (_refreshTimer != null) {
+            _refreshTimer.cancel();
+        }
+        BluetoothUtil.DisConnGatt();
+        _txt1.setText("Null");
+        _txt1.setTextColor(Color.GRAY);
+        _txt2.setText("Null");
+        _txt2.setTextColor(Color.GRAY);
+        _txt3.setText("Null");
+        _txt3.setTextColor(Color.GRAY);
+        _txt4.setText("Null");
+        _txt4.setTextColor(Color.GRAY);
+        _txt5.setText("Null");
+        _txt6.setText("Null");
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -655,6 +512,15 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         //发送内部参数以后关闭设置窗口
         _paramSetting.dismiss();
         _paramSetting = null;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            this.finish();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -691,19 +557,16 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //Activity的onCreateOptionsMenu会在之前调用,即先Clear一下,这样就只有Fragment自己设置的了
-        menu.clear();
-        inflater.inflate(R.menu.powercontrol_menu_setting, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.powercontrol_menu_setting, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_return: {
-                BluetoothFragment_List bluetoothFragment_list = (BluetoothFragment_List) getFragmentManager().findFragmentByTag("bluetoothFragment_list");
-                getFragmentManager().beginTransaction().show(bluetoothFragment_list).commitNow();
-                getFragmentManager().beginTransaction().remove(BluetoothFragment_PowerControl.this).commitNow();
+                this.finish();
             }
             break;
             //连接
@@ -752,51 +615,130 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void OnConnected() {
+        ProgressDialogUtil.Dismiss();
+        Log.d(TAG, ">>>成功建立连接!");
+        //轮询
+        Message message = handler.obtainMessage(MESSAGE_1, "");
+        handler.sendMessage(message);
+        //连接成功的回调
+        //TODO:
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
-            _uuidMap = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
+    public void OnConnecting() {
+        ProgressDialogUtil.ShowProgressDialog(_context, _progressDialogUtilListener, "正在连接...");
+    }
+
+    @Override
+    public void OnDisConnected() {
+        Log.d(TAG, ">>>连接已断开!");
+        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
+        handler.sendMessage(message);
+    }
+
+    @Override
+    public void OnWriteSuccess(byte[] byteArray) {
+        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String[] strArray = result.split(" ");
+        String indexStr = strArray[11];
+        switch (indexStr) {
+            //发送开门指令
+            case "00":
+                break;
+            //发送读卡指令
+            case "01":
+                break;
+            //发送测量电池电压指令
+            case "02":
+                break;
+            //发送测量磁场强度指令
+            case "03":
+                break;
+            //发送测量门状态指令
+            case "04":
+                break;
+            //发送综合测量指令
+            case "80":
+                break;
+            //发送开一号门锁指令
+            case "81":
+                break;
+            //发送开二号门锁指令
+            case "82":
+                break;
+            //发送开全部门锁指令
+            case "83":
+                break;
+            //发送查询内部控制参数指令
+            case "86":
+                break;
+            //发送修改内部控制参数指令
+            case "87":
+                break;
         }
-        _context = getContext();
-        BluetoothUtil.Init(_context, this);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        _view = inflater.inflate(R.layout.fragment_bluetooth_powercontrol, container, false);
-        //强制获得焦点
-        _view.requestFocus();
-        _view.setFocusable(true);
-        _view.setFocusableInTouchMode(true);
-        _view.setOnKeyListener(backListener);
-        _toolbar = _view.findViewById(R.id.toolbar_powercontrol);
-        //加上这句,才会调用Fragment的ToolBar,否则调用的是Activity传递过来的
-        setHasOptionsMenu(true);
-        //去掉标题
+    public void OnReadSuccess(byte[] byteArray) {
+        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        //Log.d(TAG, ">>>接收:" + result);
+        String[] strArray = result.split(" ");
+        //一个包(20个字节)
+        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+            Resolve(result);
+            //清空缓存
+            _stringBuffer = new StringBuffer();
+        }
+        //分包
+        else {
+            if (!strArray[strArray.length - 1].equals("16")) {
+                _stringBuffer.append(result + " ");
+            }
+            //最后一个包
+            else {
+                _stringBuffer.append(result);
+                result = _stringBuffer.toString();
+                Resolve(result);
+                //清空缓存
+                _stringBuffer = new StringBuffer();
+            }
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_power_control);
+        Intent intent = getIntent();
+        _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
+        _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
+        _context = getApplicationContext();
+        //Toolbar
+        _toolbar = findViewById(R.id.toolbar_powercontrol);
         _toolbar.setTitle("");
-        //此处强转,必须是Activity才有这个方法
-        ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
-        _txt1 = _view.findViewById(R.id.txt1);
-        _txt2 = _view.findViewById(R.id.txt2);
-        _txt3 = _view.findViewById(R.id.txt3);
-        _txt4 = _view.findViewById(R.id.txt4);
-        _txt5 = _view.findViewById(R.id.txt5);
-        _txt6 = _view.findViewById(R.id.txt6);
-        _debugView = _view.findViewById(R.id.debug_view);
-        _btnReturn = _view.findViewById(R.id.btn_return);
-        _btn1 = _view.findViewById(R.id.button1);
-        _btn2 = _view.findViewById(R.id.button2);
-        _btn3 = _view.findViewById(R.id.button3);
-        _btn4 = _view.findViewById(R.id.button4);
-        _btn5 = _view.findViewById(R.id.button5);
-        _scrollView = _view.findViewById(R.id.scrollView);
-        _llPowerControl = _view.findViewById(R.id.fragment_bluetooth_powercontrol);
+        setSupportActionBar(_toolbar);
+        _txt1 = findViewById(R.id.txt1);
+        _txt2 = findViewById(R.id.txt2);
+        _txt3 = findViewById(R.id.txt3);
+        _txt4 = findViewById(R.id.txt4);
+        _txt5 = findViewById(R.id.txt5);
+        _txt6 = findViewById(R.id.txt6);
+        _debugView = findViewById(R.id.debug_view);
+        _btnReturn = findViewById(R.id.btn_return);
+        _btn1 = findViewById(R.id.button1);
+        _btn2 = findViewById(R.id.button2);
+        _btn3 = findViewById(R.id.button3);
+        _btn4 = findViewById(R.id.button4);
+        _btn5 = findViewById(R.id.button5);
+        _scrollView = findViewById(R.id.scrollView);
+        _llPowerControl = findViewById(R.id.fragment_bluetooth_powercontrol);
         _btnReturn.setOnClickListener(this::onClick);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
@@ -805,17 +747,7 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         _btn5.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         InitListener();
-        return _view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            _onFragmentInteractionListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
-        }
+        BluetoothUtil.Init(_context, this);
     }
 
     @Override
@@ -827,12 +759,6 @@ public class BluetoothFragment_PowerControl extends Fragment implements View.OnC
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         super.onDestroy();
-    }
-
-    @Override
-    public void onDetach() {
-        _onFragmentInteractionListener = null;
-        super.onDetach();
     }
 
 }

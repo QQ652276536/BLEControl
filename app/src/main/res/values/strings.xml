@@ -49,8 +49,11 @@
     <string name="btn_test2">综合测试B</string>
     <string name="title_ep_control">电力控制</string>
     <string name="btn_conn">连接</string>
-    <string name="title_bluetooth_control">BLE Control</string>
+    <string name="title_bluetooth_control">蓝牙控制</string>
     <string name="title_ota">设备升级</string>
     <string name="title_db">设备入库</string>
     <string name="title_temperature">体温检测</string>
+    <string name="commandTest">指令测试</string>
+    <string name="inDB">物料绑定</string>
+    <string name="temperature">体温测量</string>
 </resources>

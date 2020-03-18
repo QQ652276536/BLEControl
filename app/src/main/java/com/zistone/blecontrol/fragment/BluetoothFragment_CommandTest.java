@@ -193,7 +193,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
                     //门检测开关(关门开路)
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
-                    //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
+                    //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{
@@ -342,7 +342,7 @@ public class BluetoothFragment_CommandTest extends Fragment implements View.OnCl
             break;
             //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
             case "86": {
-                //打开控制参数修改页面的时候将查询结果传递过去,此时可以不输出调试信息
+                //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                 if (_isOpenParamSetting) {
                     Message message = handler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
                     handler.sendMessage(message);
