@@ -28,8 +28,6 @@ import com.alibaba.fastjson.JSON;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.fragment.BluetoothFragment_DB;
-import com.zistone.blecontrol.fragment.BluetoothFragment_List;
 import com.zistone.blecontrol.pojo.Material;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
@@ -387,7 +385,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                     Map<String, String> map = new HashMap<String, String>() {{
                         this.put("deviceAddress", _bluetoothDevice.getAddress());
                     }};
-                    MyOkHttpUtil.AsySendMap(URL, map, BluetoothFragment_DB.this::AsyOkHttpResult);
+                    MyOkHttpUtil.AsySendMap(URL, map, MaterialsInDB.this::AsyOkHttpResult);
                     Looper.loop();
                 }).start(), 500);
             }
