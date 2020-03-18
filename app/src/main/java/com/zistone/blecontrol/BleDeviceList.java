@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -37,8 +37,7 @@ import android.widget.Toast;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.control.BluetoothListAdapter;
+import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
@@ -65,7 +64,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param2";
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private BluetoothListAdapter _bluetoothListAdapter;
+    private BluetoothListAdapter _bleListAdapter;
     private Context _context;
     private Toolbar _toolbar;
     private ListView _listView;
@@ -79,7 +78,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     private SeekBar _seekBar;
     private EditText _editName, _editAddress;
     private TextView _txtRssi;
-    private TableRow _row2, _row3, _row4, _row5;
+    private TableRow _row1, _row2, _row3, _row4;
     private CheckBox _chkHideDevice;
     private GifImageView _gifImageView;
     //BLE的扫描器
@@ -117,10 +116,10 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     public void run() {
                         _deviceMap.clear();
                         _deviceList.clear();
-                        _bluetoothListAdapter.setM_deviceList(_deviceList);
+                        _bleListAdapter.setM_deviceList(_deviceList);
                         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                        _bluetoothListAdapter.notifyDataSetChanged();
-                        _listView.setAdapter(_bluetoothListAdapter);
+                        _bleListAdapter.notifyDataSetChanged();
+                        _listView.setAdapter(_bleListAdapter);
                         BeginScan();
                         //结束下拉刷新
                         materialRefreshLayout.finishRefresh();
@@ -338,15 +337,15 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
      */
     private void ShowHideFilter() {
         if (!_isBtnUpDownFlag) {
+            _row1.setVisibility(View.VISIBLE);
             _row2.setVisibility(View.VISIBLE);
             _row3.setVisibility(View.VISIBLE);
             _row4.setVisibility(View.VISIBLE);
-            _row5.setVisibility(View.VISIBLE);
         } else {
+            _row1.setVisibility(View.GONE);
             _row2.setVisibility(View.GONE);
             _row3.setVisibility(View.GONE);
             _row4.setVisibility(View.GONE);
-            _row5.setVisibility(View.GONE);
         }
     }
 
@@ -381,9 +380,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
             _connectSuccessMap.put(address, _myBluetoothDevice);
             Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(_deviceMap);
             _deviceList = new ArrayList<>(map.values());
-            _bluetoothListAdapter.setM_deviceList(_deviceList);
+            _bleListAdapter.setM_deviceList(_deviceList);
             //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-            _bluetoothListAdapter.notifyDataSetChanged();
+            _bleListAdapter.notifyDataSetChanged();
         }
     }
 
@@ -653,10 +652,10 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 return 0;
             }
         });
-        _bluetoothListAdapter.setM_deviceList(_deviceList);
-        Log.i(TAG, String.format("设备%s的信号强度%d", address, rssi));
+        _bleListAdapter.setM_deviceList(_deviceList);
+        Log.i(TAG, String.format("扫描到设备%s的信号强度%d", address, rssi));
         //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-        _bluetoothListAdapter.notifyDataSetChanged();
+        _bleListAdapter.notifyDataSetChanged();
         _listView.setOnItemClickListener(this);
     }
 
@@ -679,7 +678,6 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_device_list);
         _context = getApplicationContext();
         Intent intent = getIntent();
@@ -692,9 +690,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _filterRssi = DeviceFilterShared.GetFilterRssi(_context);
         _isHideConnectSuccessDevice = DeviceFilterShared.GetFilterDevice(_context);
         //BLE设备列表的适配器
-        _bluetoothListAdapter = new BluetoothListAdapter(_context);
+        _bleListAdapter = new BluetoothListAdapter(_context);
         //Toolbar
-        _toolbar = findViewById(R.id.toolbar_bluetoothList);
+        _toolbar = findViewById(R.id.toolbar_bleList);
         _toolbar.setTitle("");
         setSupportActionBar(_toolbar);
         //Toolbar的icon点击事件要设置在setSupportActionBar()的后面
@@ -710,23 +708,19 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         });
         _gifImageView = _toolbar.findViewById(R.id.toolbar_gifView);
         //下拉刷新控件
-        _materialRefreshLayout = findViewById(R.id.refresh_bluetoothList);
-        //启用加载更多
-        _materialRefreshLayout.setLoadMore(false);
-        //自动刷新
-        _materialRefreshLayout.autoRefresh();
+        _materialRefreshLayout = findViewById(R.id.refresh_bleList);
         //使用线性布局
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(_context);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        _rdoUUID1 = findViewById(R.id.rdo_uuid1_bluetoothList);
-        _rdoUUID2 = findViewById(R.id.rdo_uuid2_bluetoothList);
-        _rdoUUID3 = findViewById(R.id.rdo_uuid3_bluetoothList);
-        _rdoUUID4 = findViewById(R.id.rdo_uuid4_bluetoothList);
-        _rdoFunc1 = findViewById(R.id.rdo_func1_bluetoothList);
-        _rdoFunc2 = findViewById(R.id.rdo_func2_bluetoothList);
-        _rdoFunc3 = findViewById(R.id.rdo_func3_bluetoothList);
-        _rdoFunc4 = findViewById(R.id.rdo_func4_bluetoothList);
-        _listView = findViewById(R.id.lv_bluetoothList);
+        _rdoUUID1 = findViewById(R.id.rdo_uuid1_bleList);
+        _rdoUUID2 = findViewById(R.id.rdo_uuid2_bleList);
+        _rdoUUID3 = findViewById(R.id.rdo_uuid3_bleList);
+        _rdoUUID4 = findViewById(R.id.rdo_uuid4_bleList);
+        _rdoFunc1 = findViewById(R.id.rdo_func1_bleList);
+        _rdoFunc2 = findViewById(R.id.rdo_func2_bleList);
+        _rdoFunc3 = findViewById(R.id.rdo_func3_bleList);
+        _rdoFunc4 = findViewById(R.id.rdo_func4_bleList);
+        _listView = findViewById(R.id.lv_bleList);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
         _drawableUp = getResources().getDrawable(R.drawable.up1, null);
@@ -735,10 +729,14 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _drawableDown.setBounds(0, 0, _drawableDown.getMinimumWidth(), _drawableDown.getMinimumHeight());
         _btnClearContentFilter = findViewById(R.id.btnClearFilterContent_filter);
         _btnClearContentFilter.setOnClickListener(this::onClick);
-        _row2 = findViewById(R.id.row2_filter);
-        _row3 = findViewById(R.id.row3_filter);
-        _row4 = findViewById(R.id.row4_filter);
-        _row5 = findViewById(R.id.row5_filter);
+        _row1 = findViewById(R.id.row2_filter);
+        _row1.setVisibility(View.GONE);
+        _row2 = findViewById(R.id.row3_filter);
+        _row2.setVisibility(View.GONE);
+        _row3 = findViewById(R.id.row4_filter);
+        _row3.setVisibility(View.GONE);
+        _row4 = findViewById(R.id.row5_filter);
+        _row4.setVisibility(View.GONE);
         _btnClearNameFilter = findViewById(R.id.btnClearName_filter);
         _btnClearNameFilter.setOnClickListener(this::onClick);
         _btnClearAddressFilter = findViewById(R.id.btnClearAddress_filter);
@@ -769,6 +767,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
+        super.onCreate(savedInstanceState);
     }
 
 }

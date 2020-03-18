@@ -8,7 +8,6 @@
     required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
     -->
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -27,7 +26,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" /> <!-- 往SDCard写入数据权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />    <!-- 读写权限 -->
+
 
     <application
         android:allowBackup="true"
@@ -39,19 +39,19 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
-            android:name=".activity.TemperatureMeasure"
+            android:name=".TemperatureMeasure"
             android:label="体温测量"></activity>
         <activity
-            android:name=".activity.MaterialsInDB"
+            android:name=".MaterialsInDB"
             android:label="物料绑定" />
         <activity
-            android:name=".activity.CommandTest"
+            android:name=".CommandTest"
             android:label="指令测试" />
         <activity
-            android:name=".activity.PowerControl"
+            android:name=".PowerControl"
             android:label="电力控制" />
         <activity
-            android:name=".activity.BleDeviceList"
+            android:name=".BleDeviceList"
             android:label="低功耗蓝牙设备列表" />
         <activity
             android:name="com.zistone.tts.MainActivity_TTS"
@@ -68,7 +68,7 @@
         <activity
             android:name="com.zistone.opencv.FaceDetectActivity"
             android:label="保存合成后的音频" />
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

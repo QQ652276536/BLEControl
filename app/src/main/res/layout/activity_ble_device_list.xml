@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_bluetooth_list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_bluetoothList"
+        android:id="@+id/toolbar_bleList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -28,8 +27,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="start"
-            android:src="@drawable/scaning1"
-            android:visibility="invisible" />
+            android:src="@drawable/scaning1" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -54,14 +52,14 @@
             android:layout_height="wrap_content">
 
             <RadioGroup
-                android:id="@+id/radioGroup1_bluetoothList"
+                android:id="@+id/radioGroup1_bleList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/rdo_uuid1_bluetoothList"
+                    android:id="@+id/rdo_uuid1_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -70,7 +68,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_uuid2_bluetoothList"
+                    android:id="@+id/rdo_uuid2_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -79,7 +77,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_uuid3_bluetoothList"
+                    android:id="@+id/rdo_uuid3_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -89,7 +87,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_uuid4_bluetoothList"
+                    android:id="@+id/rdo_uuid4_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -121,14 +119,14 @@
             android:layout_height="wrap_content">
 
             <RadioGroup
-                android:id="@+id/radioGroup2_bluetoothList"
+                android:id="@+id/radioGroup2_bleList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/rdo_func1_bluetoothList"
+                    android:id="@+id/rdo_func1_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -138,7 +136,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_func2_bluetoothList"
+                    android:id="@+id/rdo_func2_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -147,7 +145,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_func3_bluetoothList"
+                    android:id="@+id/rdo_func3_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -156,7 +154,7 @@
                     android:textColor="@color/gray" />
 
                 <RadioButton
-                    android:id="@+id/rdo_func4_bluetoothList"
+                    android:id="@+id/rdo_func4_bleList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
@@ -182,7 +180,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/setting_1" />
+                android:src="@drawable/setting_1" />
 
             <Button
                 android:id="@+id/btnFilterContent_filter"
@@ -204,21 +202,20 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
                 android:background="@color/transparent"
-                app:srcCompat="@drawable/close1" />
+                android:src="@drawable/close1" />
         </TableRow>
 
         <TableRow
             android:id="@+id/row2_filter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/device_name1" />
+                android:src="@drawable/device_name1" />
 
             <EditText
                 android:id="@+id/editName_filter"
@@ -237,21 +234,20 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
                 android:background="@color/transparent"
-                app:srcCompat="@drawable/close1" />
+                android:src="@drawable/close1" />
         </TableRow>
 
         <TableRow
             android:id="@+id/row3_filter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/mac1" />
+                android:src="@drawable/mac1" />
 
             <EditText
                 android:id="@+id/editAddress_filter"
@@ -270,21 +266,20 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
                 android:background="@color/transparent"
-                app:srcCompat="@drawable/close1" />
+                android:src="@drawable/close1" />
         </TableRow>
 
         <TableRow
             android:id="@+id/row4_filter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/rssi2" />
+                android:src="@drawable/rssi2" />
 
             <SeekBar
                 android:id="@+id/seekBar_filter"
@@ -305,15 +300,14 @@
         <TableRow
             android:id="@+id/row5_filter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/hide1" />
+                android:src="@drawable/hide1" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -341,12 +335,12 @@
         android:orientation="vertical">
 
         <com.cjj.MaterialRefreshLayout
-            android:id="@+id/refresh_bluetoothList"
+            android:id="@+id/refresh_bleList"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ListView
-                android:id="@+id/lv_bluetoothList"
+                android:id="@+id/lv_bleList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </com.cjj.MaterialRefreshLayout>

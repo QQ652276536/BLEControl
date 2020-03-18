@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.control;
+package com.zistone.blecontrol.controls;
 
 import android.content.Context;
 import android.view.LayoutInflater;

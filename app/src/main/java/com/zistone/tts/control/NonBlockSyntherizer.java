@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
-import com.zistone.tts.control.MySyntherizer;
-
 /**
  * 在新线程中调用initTTs方法。防止UI柱塞
  * <p>

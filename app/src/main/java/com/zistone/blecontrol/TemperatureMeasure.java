@@ -1,9 +1,7 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
-import com.zistone.blecontrol.R;
 
 public class TemperatureMeasure extends AppCompatActivity {
 

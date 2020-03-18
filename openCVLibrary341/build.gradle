@@ -5,6 +5,7 @@ android {
     buildToolsVersion = '28.0.3'
     defaultConfig {
         minSdkVersion 22
+        targetSdkVersion 28
     }
 
     buildTypes {
@@ -12,5 +13,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }

@@ -10,7 +10,6 @@ import com.baidu.tts.client.SpeechSynthesizeBag;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.zistone.tts.MainHandlerConstant;
-import com.zistone.tts.control.InitConfig;
 
 import java.util.ArrayList;
 import java.util.List;

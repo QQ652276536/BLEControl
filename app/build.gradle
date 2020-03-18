@@ -6,6 +6,7 @@ android {
     defaultConfig {
         applicationId "com.zistone.blecontrol"
         minSdkVersion 22
+        targetSdkVersion 28
         versionName "2.5.2"
         externalNativeBuild {
             cmake {
