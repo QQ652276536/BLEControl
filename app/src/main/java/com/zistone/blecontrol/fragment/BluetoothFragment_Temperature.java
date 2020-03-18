@@ -42,32 +42,12 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
     private static final String TAG = "BluetoothFragment_Temperature";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
     private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
-    private static final int RECEIVE_OPENDOOR = 0;
-    private static final int SEND_READCAR = 1;
-    private static final int RECEIVE_READCAR = 102;
-    private static final int SEND_BATTERY = 2;
-    private static final int RECEIVE_BATTERY = 202;
-    private static final int SEND_MAGNETIC = 3;
-    private static final int RECEIVE_MAGNETIC = 302;
-    private static final int SEND_DOORSTATE = 4;
-    private static final int RECEIVE_DOORSTATE = 402;
-    private static final int SEND_TESTA = 80;
     private static final int RECEIVE_TESTA = 8002;
-    private static final int SEND_OPENDOORS1 = 81;
-    private static final int RECEIVE_OPENDOORS1 = 8102;
-    private static final int SEND_OPENDOORS2 = 82;
-    private static final int RECEIVE_OPENDOORS2 = 8202;
-    private static final int SEND_OPENALLDOORS = 83;
-    private static final int RECEIVE_OPENALLDOORS = 8302;
-    private static final int SEND_SEARCH_CONTROLPARAM = 86;
-    private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
     private static final int SEND_SET_CONTROLPARAM = 87;
-    private static final int RECEIVE_SET_CONTROLPARAM = 8702;
     private static Listener _listener;
 
     private BluetoothDevice _bluetoothDevice;
@@ -77,7 +57,7 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private Button _btn1, _btn2;
-    private TextView _txt1, _txt2, _txt3;
+    private TextView _txt1, _txt2;
     private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
@@ -117,39 +97,6 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
         switch (indexStr) {
-            //发送开门指令
-            case "00":
-                break;
-            //发送读卡指令
-            case "01":
-                break;
-            //发送测量电池电压指令
-            case "02":
-                break;
-            //发送测量磁场强度指令
-            case "03":
-                break;
-            //发送测量门状态指令
-            case "04":
-                break;
-            //发送综合测量指令
-            case "80":
-                break;
-            //发送开一号门锁指令
-            case "81":
-                break;
-            //发送开二号门锁指令
-            case "82":
-                break;
-            //发送开全部门锁指令
-            case "83":
-                break;
-            //发送查询内部控制参数指令
-            case "86":
-                break;
-            //发送修改内部控制参数指令
-            case "87":
-                break;
         }
     }
 
@@ -185,10 +132,8 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
             @Override
             public void OnDismiss() {
-                if (_btn1.getText().toString().equals("断开") && !_connectedSuccess) {
-                    _btn1.setText("连接");
-                    DisConnect();
-                }
+                DisConnect();
+                Log.d(TAG, ">>>连接已断开!");
             }
         };
     }
@@ -237,8 +182,6 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
         _txt2.setTextColor(Color.GRAY);
-        _txt3.setText("Null");
-        _txt3.setTextColor(Color.GRAY);
     }
 
     private Handler handler = new Handler() {
@@ -260,9 +203,8 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                             getActivity().runOnUiThread(() ->
                             {
                                 try {
-                                    //综合测试
-                                    String hexStr = "680000000000006810000180E616";
-                                    //Log.d(TAG, ">>>发送综合测试:" + hexStr);
+                                    String hexStr = "680000000000006810000181E116";
+                                    Log.d(TAG, ">>>发送测量体温:" + hexStr);
                                     BluetoothUtil.SendComm(hexStr);
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
@@ -272,20 +214,18 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _refreshTimer.schedule(_refreshTask, 0, 2 * 1000);
+                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
                     _connectedSuccess = true;
                 }
                 break;
                 //
                 case RECEIVE_TESTA: {
                     String strs[] = result.split(",");
-                    Log.d(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 平均温度:%s℃", strs[5], strs[6], strs[7]));
-                    _txt1.setText(strs[5] + "℃");
-                    _txt1.setTextColor(Color.RED);
-                    _txt2.setText(strs[6] + "℃");
-                    _txt2.setTextColor(Color.BLUE);
-                    _txt3.setText(strs[7] + "℃");
-                    _txt3.setTextColor(Color.GREEN);
+                    Log.d(TAG, String.format("环境温度:%s℃ 人体温度:%s℃", strs[0], strs[1]));
+                    _txt1.setText(strs[0] + "℃");
+                    _txt1.setTextColor(Color.BLUE);
+                    _txt2.setText(strs[1] + "℃");
+                    _txt2.setTextColor(Color.GREEN);
                 }
                 break;
             }
@@ -316,98 +256,26 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         String indexStr = strArray[12];
         Message message = new Message();
         switch (indexStr) {
-            //开门
-            case "00": {
-                message.what = RECEIVE_OPENDOOR;
-                if (strArray[14].equalsIgnoreCase("00")) {
-                    message.obj = "doorisopen";
-                } else if (ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK")) {
-                    message.obj = "doorisopen";
-                } else {
-                    message.obj = "";
-                }
-            }
-            break;
-            //读卡
-            case "01":
-                break;
-            //电池电压
-            case "02":
-                break;
-            //磁场强度
-            case "03": {
-                String responseValue1 = strArray[9].equals("00") ? "OK" : "Fail";
-                //                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]);
-                message.what = RECEIVE_MAGNETIC;
-                message.obj = "收到:磁场强度【" + responseValue2 + "】 ";
-            }
-            break;
-            //测量门状态
-            case "04": {
-                message.what = RECEIVE_DOORSTATE;
-                if (strArray[13].equals("01")) {
-                    message.obj = "已关";
-                } else {
-                    message.obj = "已开";
-                }
-            }
-            break;
-            //全部门锁状态
             case "80": {
                 byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
                 String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                String doorState2 = String.valueOf(bitStr.charAt(5));
-                String lockState2 = String.valueOf(bitStr.charAt(4));
-                //强磁开关状态
-                String magneticState = String.valueOf(bitStr.charAt(3));
-                //外接电源状态
-                String outsideState = String.valueOf(bitStr.charAt(2));
-                //内部电池充电状态
-                String insideState = String.valueOf(bitStr.charAt(1));
-                //电池电量
-                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                String str1 = String.valueOf(bitStr.charAt(7));
+                String str2 = String.valueOf(bitStr.charAt(6));
+                String str3 = String.valueOf(bitStr.charAt(5));
+                String str4 = String.valueOf(bitStr.charAt(4));
+                String str5 = String.valueOf(bitStr.charAt(3));
+                String str6 = String.valueOf(bitStr.charAt(2));
+                String str7 = String.valueOf(bitStr.charAt(1));
+                //电池容量（环境温度）
+                int value1 = Integer.parseInt(strArray[14] + strArray[15], 16);
                 //下端磁强
-                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                //上端磁强
-                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                int value2 = Integer.parseInt(strArray[16] + strArray[17], 16);
+                //上端磁强(人体温度)
+                int value3 = Integer.parseInt(strArray[2] + strArray[3], 16);
                 //前端磁强
-                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
+                int value4 = Integer.parseInt(strArray[4] + strArray[5], 16);
                 message.what = RECEIVE_TESTA;
-                message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
-            }
-            break;
-            //开一号门锁
-            case "81": {
-                message.what = RECEIVE_OPENDOORS1;
-                message.obj = "";
-            }
-            break;
-            //开二号门锁
-            case "82": {
-                message.what = RECEIVE_OPENDOORS2;
-                message.obj = strArray[13];
-            }
-            break;
-            //开全部门锁
-            case "83": {
-                message.what = RECEIVE_OPENALLDOORS;
-                message.obj = strArray[13];
-            }
-            break;
-            //查询内部控制参数
-            case "86": {
-                message.what = RECEIVE_SEARCH_CONTROLPARAM;
-                message.obj = strArray[13];
-            }
-            break;
-            //修改内部控制参数
-            case "87": {
-                //发送查询内部控制参数的指令
-                message.what = SEND_SEARCH_CONTROLPARAM;
-                message.obj = "";
+                message.obj = value1 + "," + value3;
             }
             break;
         }
@@ -465,24 +333,16 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
                 getFragmentManager().beginTransaction().remove(BluetoothFragment_Temperature.this).commitNow();
             }
             break;
-            //连接
+            //开启OpenCV
             case R.id.btn1_temperature: {
                 if (_bluetoothDevice != null) {
-                    if (_btn1.getText().toString().equals("连接")) {
-                        _btn1.setText("断开");
-                        Log.d(TAG, ">>>开始连接...");
-                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-                    } else {
-                        _btn1.setText("连接");
-                        DisConnect();
-                    }
+
                 } else {
                     ProgressDialogUtil.ShowWarning(_context, "提示", "未获取到蓝牙,请重试!");
                 }
             }
             break;
         }
-
     }
 
     @Override
@@ -518,7 +378,6 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
         ((MainActivity) getActivity()).setSupportActionBar(_toolbar);
         _txt1 = _view.findViewById(R.id.txt1_temperature);
         _txt2 = _view.findViewById(R.id.txt2_temperature);
-        _txt3 = _view.findViewById(R.id.txt3_temperature);
         _btnReturn = _view.findViewById(R.id.btn_return_temperature);
         _btn1 = _view.findViewById(R.id.btn1_temperature);
         _btn2 = _view.findViewById(R.id.btn2_temperature);
@@ -540,15 +399,20 @@ public class BluetoothFragment_Temperature extends Fragment implements View.OnCl
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        _onFragmentInteractionListener = null;
+    public void onDestroy() {
         if (_refreshTimer != null)
             _refreshTimer.cancel();
         if (_refreshTask != null)
             _refreshTask.cancel();
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        _onFragmentInteractionListener = null;
+        super.onDetach();
     }
 
 }

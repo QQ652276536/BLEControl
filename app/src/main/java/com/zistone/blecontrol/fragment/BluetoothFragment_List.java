@@ -826,7 +826,6 @@ public class BluetoothFragment_List extends Fragment
         _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
-        BeginScan();
         return _view;
     }
 

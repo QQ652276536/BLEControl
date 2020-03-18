@@ -40,13 +40,13 @@
             android:layout_height="match_parent">
 
             <TableRow
-                android:layout_width="159dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="最高温度："
+                    android:text="环境温度："
                     android:textSize="16dp" />
 
                 <LinearLayout
@@ -64,26 +64,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="最低温度："
+                        android:layout_marginLeft="20dp"
+                        android:text="人体温度："
                         android:textSize="16dp" />
 
                     <TextView
                         android:id="@+id/txt2_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="16dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="平均温度："
-                        android:textSize="16dp" />
-
-                    <TextView
-                        android:id="@+id/txt3_temperature"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Null"

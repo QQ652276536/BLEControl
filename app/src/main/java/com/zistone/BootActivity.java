@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.zistone.blecontrol.R;
 
 public class BootActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,4 +26,5 @@ public class BootActivity extends AppCompatActivity {
         };
         thread.start();
     }
+
 }
