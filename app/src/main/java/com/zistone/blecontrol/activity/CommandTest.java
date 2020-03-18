@@ -423,6 +423,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_return: {
+                ProgressDialogUtil.Dismiss();
                 this.finish();
             }
             break;

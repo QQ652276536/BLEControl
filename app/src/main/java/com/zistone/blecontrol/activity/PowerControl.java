@@ -565,6 +565,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_return: {
+                ProgressDialogUtil.Dismiss();
                 this.finish();
             }
             break;
