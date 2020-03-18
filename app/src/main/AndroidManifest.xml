@@ -2,19 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zistone.blecontrol">
-    <!-- 静默安装 -->
-    <uses-permission
-        android:name="android.permission.READ_NETWORK_USAGE_HISTORY"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.INSTALL_PACKAGES"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.DELETE_PACKAGES"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
-        tools:ignore="ProtectedPermissions" />
     <!--
     摄像头权限
     required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
@@ -51,7 +38,18 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
-        <activity android:name=".activity.PowerControl"></activity>
+        <activity
+            android:name=".activity.TemperatureMeasure"
+            android:label="体温测量"></activity>
+        <activity
+            android:name=".activity.MaterialsInDB"
+            android:label="物料绑定" />
+        <activity
+            android:name=".activity.CommandTest"
+            android:label="指令测试" />
+        <activity
+            android:name=".activity.PowerControl"
+            android:label="电力控制" />
         <activity
             android:name=".activity.BleDeviceList"
             android:label="低功耗蓝牙设备列表" />
@@ -70,9 +68,9 @@
         <activity
             android:name="com.zistone.opencv.FaceDetectActivity"
             android:label="保存合成后的音频" />
-        <activity android:name="com.zistone.MainActivity" />
+        <activity android:name=".activity.MainActivity" />
         <activity
-            android:name="com.zistone.BootActivity"
+            android:name=".activity.BootActivity"
             android:label="开机动画">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

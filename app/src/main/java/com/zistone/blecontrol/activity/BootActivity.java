@@ -1,4 +1,4 @@
-package com.zistone;
+package com.zistone.blecontrol.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

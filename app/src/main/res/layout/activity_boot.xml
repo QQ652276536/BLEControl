@@ -4,7 +4,7 @@
     android:id="@+id/rlayout_boot"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.zistone.BootActivity">
+    tools:context=".activity.BootActivity">
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/imageView"

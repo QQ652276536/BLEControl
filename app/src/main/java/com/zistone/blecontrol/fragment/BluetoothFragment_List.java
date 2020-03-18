@@ -43,7 +43,7 @@ import android.widget.Toast;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.zistone.MainActivity;
+import com.zistone.blecontrol.activity.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.control.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;

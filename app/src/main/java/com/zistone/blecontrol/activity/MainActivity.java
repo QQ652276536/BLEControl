@@ -1,4 +1,4 @@
-package com.zistone;
+package com.zistone.blecontrol.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -11,7 +11,6 @@ import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.fragment.BluetoothFragment;
 import com.zistone.blecontrol.fragment.BluetoothFragment_CommandTest;
 import com.zistone.blecontrol.fragment.BluetoothFragment_DB;
-import com.zistone.blecontrol.fragment.BluetoothFragment_List;
 import com.zistone.blecontrol.fragment.BluetoothFragment_OTA;
 import com.zistone.blecontrol.fragment.BluetoothFragment_PowerControl;
 import com.zistone.blecontrol.fragment.BluetoothFragment_Temperature;
@@ -19,7 +18,7 @@ import com.zistone.blecontrol.fragment.BluetoothFragment_Temperature;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements BluetoothFragment.OnFragmentInteractionListener, BluetoothFragment_List.OnFragmentInteractionListener,
+        implements BluetoothFragment.OnFragmentInteractionListener,
         BluetoothFragment_CommandTest.OnFragmentInteractionListener, BluetoothFragment_PowerControl.OnFragmentInteractionListener,
         BluetoothFragment_OTA.OnFragmentInteractionListener, BluetoothFragment_DB.OnFragmentInteractionListener,
         BluetoothFragment_Temperature.OnFragmentInteractionListener {
