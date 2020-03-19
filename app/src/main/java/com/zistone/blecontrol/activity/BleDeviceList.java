@@ -1,4 +1,4 @@
-package com.zistone.blecontrol;
+package com.zistone.blecontrol.activity;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -36,12 +36,14 @@ import android.widget.Toast;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
+import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
@@ -678,7 +680,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_ble_device_list);
-        _context = getApplicationContext();
+        _context = MyActivityManager.getInstance().GetCurrentActivity();
         Intent intent = getIntent();
         _param1 = intent.getStringExtra(ARG_PARAM1);
         _param2 = intent.getStringExtra(ARG_PARAM2);

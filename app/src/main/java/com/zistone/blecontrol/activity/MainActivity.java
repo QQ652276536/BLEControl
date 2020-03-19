@@ -1,4 +1,4 @@
-package com.zistone.blecontrol;
+package com.zistone.blecontrol.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.zistone.blecontrol.R;
 
 import java.util.ArrayList;
 

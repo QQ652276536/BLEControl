@@ -1,4 +1,4 @@
-package com.zistone.blecontrol;
+package com.zistone.blecontrol.activity;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.controls.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
@@ -29,6 +30,7 @@ import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.util.Map;
@@ -714,7 +716,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_power_control);
-        _context = getApplicationContext();
+        _context = MyActivityManager.getInstance().GetCurrentActivity();
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);

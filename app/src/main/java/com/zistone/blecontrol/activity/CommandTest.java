@@ -1,4 +1,4 @@
-package com.zistone.blecontrol;
+package com.zistone.blecontrol.activity;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -16,10 +16,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.util.Map;
@@ -78,7 +80,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
-                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8});
+                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6,
+                                    bitStr7, bitStr8});
                             _paramSetting.setCancelable(false);
                         }
                         _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
@@ -527,7 +530,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command_test);
-        _context = getApplicationContext();
+        _context = MyActivityManager.getInstance().GetCurrentActivity();
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
@@ -560,13 +563,13 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn10.setOnClickListener(this);
         _btn11 = findViewById(R.id.btn11);
         _btn11.setOnClickListener(this);
+        BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
             Log.d(TAG, ">>>开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
-        BluetoothUtil.Init(_context, this);
     }
 
 }

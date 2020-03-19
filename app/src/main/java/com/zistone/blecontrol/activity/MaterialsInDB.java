@@ -1,4 +1,4 @@
-package com.zistone.blecontrol;
+package com.zistone.blecontrol.activity;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -27,8 +27,10 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
+import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.pojo.Material;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.blecontrol.util.PropertiesUtil;
@@ -213,7 +215,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_materials_in_d_b);
-        _context = getApplicationContext();
+        _context = MyActivityManager.getInstance().GetCurrentActivity();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
