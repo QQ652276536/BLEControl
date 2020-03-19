@@ -172,7 +172,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (_bluetoothAdapter != null) {
             //未打开蓝牙,才需要打开蓝牙
-            //会以Dialog样式显示一个Activity,我们可以在onActivityResult()方法去处理返回值
+            //会以Dialog样式显示一个Activity,在onActivityResult()方法去处理返回值
             if (!_bluetoothAdapter.isEnabled()) {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intent, 1);
@@ -666,6 +666,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onDestroy() {
+        ProgressDialogUtil.Dismiss();
         StopScan();
         _bluetoothAdapter.disable();
         if (_deviceList != null)

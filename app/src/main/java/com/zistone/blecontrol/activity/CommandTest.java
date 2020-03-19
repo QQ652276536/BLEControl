@@ -517,6 +517,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onDestroy() {
+        ProgressDialogUtil.Dismiss();
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         if (_paramSetting != null) {

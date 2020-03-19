@@ -421,6 +421,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onDestroy() {
+        ProgressDialogUtil.Dismiss();
         _materialRefreshLayout.finishRefresh();
         if (_bluetoothGatt != null)
             _bluetoothGatt.disconnect();

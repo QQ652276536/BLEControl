@@ -76,4 +76,10 @@ public class MyApplication extends Application {
         registerActivityLifecycleCallbacks(_activityLifecycleCallbacks);
         super.onCreate();
     }
+
+    @Override
+    public void onTerminate() {
+        unregisterActivityLifecycleCallbacks(_activityLifecycleCallbacks);
+        super.onTerminate();
+    }
 }

@@ -753,6 +753,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDestroy() {
+        ProgressDialogUtil.Dismiss();
         if (_refreshTimer != null)
             _refreshTimer.cancel();
         if (_refreshTask != null)

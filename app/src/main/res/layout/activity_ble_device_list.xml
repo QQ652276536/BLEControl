@@ -169,7 +169,7 @@
         android:id="@+id/table_filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/WhiteSmoke">
+        android:background="@color/darkgray">
 
         <TableRow
             android:layout_width="match_parent"
