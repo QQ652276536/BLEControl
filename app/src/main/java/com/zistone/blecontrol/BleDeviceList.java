@@ -13,7 +13,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -709,9 +708,6 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _gifImageView = _toolbar.findViewById(R.id.toolbar_gifView);
         //下拉刷新控件
         _materialRefreshLayout = findViewById(R.id.refresh_bleList);
-        //使用线性布局
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(_context);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         _rdoUUID1 = findViewById(R.id.rdo_uuid1_bleList);
         _rdoUUID2 = findViewById(R.id.rdo_uuid2_bleList);
         _rdoUUID3 = findViewById(R.id.rdo_uuid3_bleList);
@@ -763,8 +759,8 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         ShowSetFilterContent();
         //所有的控件、对象都实例化后再初始化回调方法
         InitListener();
-        //设置监听在后
         _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
+        _materialRefreshLayout.autoRefresh();
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
         super.onCreate(savedInstanceState);
