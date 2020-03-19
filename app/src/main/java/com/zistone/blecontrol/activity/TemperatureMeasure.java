@@ -52,8 +52,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private TimerTask _refreshTask;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
-    //是否连接成功
-    private boolean _connectedSuccess = false;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -65,7 +63,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     }
 
     private void DisConnect() {
-        _connectedSuccess = false;
         _btn1.setEnabled(false);
         if (_refreshTask != null) {
             _refreshTask.cancel();
@@ -142,6 +139,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                                 try {
                                     String hexStr = "680000000000006810000180E616";
                                     BluetoothUtil.SendComm(hexStr);
+                                    Log.d(TAG, ">>>查询体温:" + hexStr);
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -151,7 +149,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
                     _refreshTimer.schedule(_refreshTask, 0, 2 * 1000);
-                    _connectedSuccess = true;
                 }
                 break;
                 case RECEIVE: {
@@ -176,8 +173,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //轮询
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
-        //连接成功的回调
-        startActivityForResult(null, 2);
+        //返回时告知该设备已成功连接
+        setResult(2, new Intent());
     }
 
     @Override
@@ -290,6 +287,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _btn2.setOnClickListener(this::onClick);
         InitListener();
         BluetoothUtil.Init(_context, this);
+        if (_bluetoothDevice != null) {
+            Log.d(TAG, ">>>开始连接...");
+            BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
+        } else {
+            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
+        }
     }
 
     @Override

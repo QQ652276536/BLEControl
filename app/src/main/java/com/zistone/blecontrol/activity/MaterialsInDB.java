@@ -318,8 +318,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                                 }
                             }).start();
                             ProgressDialogUtil.Dismiss();
-                            //连接成功的回调
-                            startActivityForResult(null, 2);
+                            //返回时告知该设备已成功连接
+                            setResult(2, new Intent());
                         } else {
                             Log.e(TAG, ">>>该UUID无读取数据的特征值!");
                         }

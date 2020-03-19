@@ -622,8 +622,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         //轮询
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
-        //连接成功的回调
-        startActivityForResult(null, 2);
+        //返回时告知该设备已成功连接
+        setResult(2, new Intent());
     }
 
     @Override

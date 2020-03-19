@@ -402,6 +402,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 1:
                 //用户授权开启蓝牙
@@ -574,7 +575,8 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
             if (intent != null)
-                startActivity(intent);
+                //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据
+                startActivityForResult(intent, 2);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "错误", "请检查该设备是否被占用");
         }

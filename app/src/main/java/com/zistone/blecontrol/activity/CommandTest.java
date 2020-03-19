@@ -302,8 +302,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         Log.d(TAG, ">>>成功建立连接!");
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
-        //连接成功的回调
-        startActivityForResult(null, 2);
+        //返回时告知该设备已成功连接
+        setResult(2, new Intent());
     }
 
     @Override
