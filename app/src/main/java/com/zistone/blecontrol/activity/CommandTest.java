@@ -292,7 +292,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             this.finish();
-            return true;
         }
         return false;
     }

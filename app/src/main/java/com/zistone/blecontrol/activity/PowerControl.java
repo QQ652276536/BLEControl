@@ -518,7 +518,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             this.finish();
-            return true;
         }
         return false;
     }

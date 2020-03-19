@@ -12,6 +12,7 @@ import com.zistone.blecontrol.R;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
     public static final int ACTIVITYRESULT_WRITEVALUE = 1;
     public static final int ACTIVITYRESULT_PARAMSETTING = 2;
     public static final int ACTIVITYRESULT_OTA = 3;

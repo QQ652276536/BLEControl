@@ -30,10 +30,12 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+
     private static final String TAG = "TemperatureMeasure";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
+    private static final String SEARCH_TEMPERATURE_COMM1 = "680000000000006810000181E116";
+    private static final String SEARCH_TEMPERATURE_COMM2 = "680000000000006810000180E616";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
     private static final int MESSAGE_ERROR_3 = -3;
@@ -45,19 +47,22 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private Button _btn1, _btn2;
-    private TextView _txt1, _txt2, _txt3;
+    private TextView _txt1, _txt2, _txt3, _txt4;
     private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
+    //是否连接成功
+    private boolean _connectedSuccess = false;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
             @Override
             public void OnDismiss() {
-                DisConnect();
+                if (!_connectedSuccess)
+                    DisConnect();
             }
         };
     }
@@ -77,6 +82,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt2.setTextColor(Color.GRAY);
         _txt3.setText("Null");
         _txt3.setTextColor(Color.GRAY);
+        _txt4.setText("Null");
+        _txt4.setTextColor(Color.GRAY);
     }
 
     /**
@@ -103,16 +110,16 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 String outsideState = String.valueOf(bitStr.charAt(2));
                 //内部电池充电状态
                 String insideState = String.valueOf(bitStr.charAt(1));
-                //电池电量
+                //电池电量(环境温度)
                 int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
-                //下端磁强
+                //下端磁强(最低温度)
                 int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                //上端磁强
+                //上端磁强(测量温度)
                 int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
-                //前端磁强
+                //前端磁强(最高温度)
                 int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                 message.what = RECEIVE;
-                message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
+                message.obj = battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
             }
             break;
         }
@@ -137,9 +144,11 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         public void run() {
                             runOnUiThread(() -> {
                                 try {
-                                    String hexStr = "680000000000006810000180E616";
-                                    BluetoothUtil.SendComm(hexStr);
-                                    Log.d(TAG, ">>>查询体温:" + hexStr);
+                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                                    Log.d(TAG, ">>>发送查询温度的指令...");
+                                    Thread.sleep(100);
+                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM2);
+                                    Log.d(TAG, ">>>发送接收温度的指令...");
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -148,18 +157,28 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _refreshTimer.schedule(_refreshTask, 0, 2 * 1000);
+                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
                 }
                 break;
                 case RECEIVE: {
                     String strs[] = result.split(",");
-                    Log.d(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 平均温度:%s℃", strs[5], strs[6], strs[7]));
-                    _txt1.setText(strs[5] + "℃");
+                    Log.d(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", strs[0], strs[1], strs[2], strs[3]));
+                    //环境温度
+                    double battery = Double.valueOf(strs[0]) / 100;
+                    //最低温度
+                    double magneticDown = Double.valueOf(strs[1]) / 100;
+                    //测量温度
+                    double magneticUp = Double.valueOf(strs[2]) / 100;
+                    //最高温度
+                    double magneticBefore = Double.valueOf(strs[3]) / 100;
+                    _txt1.setText(magneticBefore + "℃");
                     _txt1.setTextColor(Color.RED);
-                    _txt2.setText(strs[6] + "℃");
+                    _txt2.setText(magneticDown + "℃");
                     _txt2.setTextColor(Color.BLUE);
-                    _txt3.setText(strs[7] + "℃");
+                    _txt3.setText(battery + "℃");
                     _txt3.setTextColor(Color.GREEN);
+                    _txt4.setText(magneticUp + "℃");
+                    _txt4.setTextColor(Color.CYAN);
                 }
                 break;
             }
@@ -175,6 +194,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         handler.sendMessage(message);
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
+        _connectedSuccess = true;
     }
 
     @Override
@@ -185,6 +205,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     @Override
     public void OnDisConnected() {
         Log.d(TAG, ">>>连接已断开!");
+        _connectedSuccess = false;
         Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
         handler.sendMessage(message);
     }
@@ -231,7 +252,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             this.finish();
-            return true;
         }
         return false;
     }
@@ -261,7 +281,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             }
             break;
         }
-
     }
 
     @Override
@@ -279,6 +298,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt1 = findViewById(R.id.txt1_temperature);
         _txt2 = findViewById(R.id.txt2_temperature);
         _txt3 = findViewById(R.id.txt3_temperature);
+        _txt4 = findViewById(R.id.txt4_temperature);
         _btnReturn = findViewById(R.id.btn_return_temperature);
         _btn1 = findViewById(R.id.btn1_temperature);
         _btn2 = findViewById(R.id.btn2_temperature);

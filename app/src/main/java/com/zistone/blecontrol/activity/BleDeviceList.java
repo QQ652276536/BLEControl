@@ -431,7 +431,6 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 this.finish();
                 System.exit(0);
             }
-            return true;
         }
         return false;
     }

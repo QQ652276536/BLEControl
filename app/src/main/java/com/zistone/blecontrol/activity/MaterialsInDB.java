@@ -176,7 +176,6 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             this.finish();
-            return true;
         }
         return false;
     }

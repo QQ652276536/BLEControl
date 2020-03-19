@@ -35,158 +35,164 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <TableRow
-                android:layout_width="159dp"
-                android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="最高温度："
+                android:textSize="16dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="最高温度："
-                    android:textSize="16dp" />
+            <TextView
+                android:id="@+id/txt1_temperature"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:textSize="16dp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="最低温度："
+                android:textSize="16dp" />
 
-                    <TextView
-                        android:id="@+id/txt1_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="16dp" />
+            <TextView
+                android:id="@+id/txt2_temperature"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:textSize="16dp" />
+        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="最低温度："
-                        android:textSize="16dp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/txt2_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="16dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="环境温度："
+                android:textSize="16dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="平均温度："
-                        android:textSize="16dp" />
+            <TextView
+                android:id="@+id/txt3_temperature"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:textSize="16dp" />
 
-                    <TextView
-                        android:id="@+id/txt3_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="16dp" />
-                </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测量温度："
+                android:textSize="16dp" />
 
-            </TableRow>
+            <TextView
+                android:id="@+id/txt4_temperature"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:text="Null"
+                android:textSize="16dp" />
+        </LinearLayout>
 
-            <TableRow
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="发音人："
+                android:textSize="16dp" />
+
+            <RadioGroup
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
+                <RadioButton
+                    android:id="@+id/rdo1_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="发音人："
-                    android:textSize="16dp" />
+                    android:button="@drawable/rad_selector"
+                    android:checked="true"
+                    android:text="男声"
+                    android:textColor="@color/gray" />
 
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rdo1_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:button="@drawable/rad_selector"
-                        android:checked="true"
-                        android:text="男声"
-                        android:textColor="@color/gray" />
-
-                    <RadioButton
-                        android:id="@+id/rdo2_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:button="@drawable/rad_selector"
-                        android:text="女声"
-                        android:textColor="@color/gray" />
-
-                    <RadioButton
-                        android:id="@+id/rdo3_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:button="@drawable/rad_selector"
-                        android:text="度逍遥"
-                        android:textColor="@color/gray" />
-
-                    <RadioButton
-                        android:id="@+id/rdo4_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:button="@drawable/rad_selector"
-                        android:text="度丫丫"
-                        android:textColor="@color/gray" />
-                </RadioGroup>
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
+                <RadioButton
+                    android:id="@+id/rdo2_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="语音："
-                    android:textSize="16dp" />
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:text="女声"
+                    android:textColor="@color/gray" />
 
-                <CheckBox
-                    android:id="@+id/chk1_temperature"
+                <RadioButton
+                    android:id="@+id/rdo3_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@drawable/chk_selector"
-                    android:checked="true" />
-            </TableRow>
+                    android:button="@drawable/rad_selector"
+                    android:text="度逍遥"
+                    android:textColor="@color/gray" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
+                <RadioButton
+                    android:id="@+id/rdo4_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="人脸检测："
-                    android:textSize="16dp" />
+                    android:button="@drawable/rad_selector"
+                    android:text="度丫丫"
+                    android:textColor="@color/gray" />
+            </RadioGroup>
 
-                <CheckBox
-                    android:id="@+id/chk2_temperature"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/chk_selector"
-                    android:checked="true" />
+        </LinearLayout>
 
-            </TableRow>
 
-        </TableLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="语音："
+                android:textSize="16dp" />
+
+            <CheckBox
+                android:id="@+id/chk1_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/chk_selector"
+                android:checked="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="人脸检测："
+                android:textSize="16dp" />
+
+            <CheckBox
+                android:id="@+id/chk2_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/chk_selector"
+                android:checked="true" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
