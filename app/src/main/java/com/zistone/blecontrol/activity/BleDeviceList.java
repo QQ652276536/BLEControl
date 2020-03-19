@@ -414,6 +414,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 else {
                 }
                 break;
+            case 2:
+                OnConnected();
+                break;
         }
     }
 

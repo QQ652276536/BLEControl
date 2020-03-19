@@ -277,7 +277,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
-                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8});
+                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6,
+                                    bitStr7, bitStr8});
                             _paramSetting.setCancelable(false);
                         }
                         _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
@@ -622,7 +623,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
         //连接成功的回调
-        //TODO:
+        startActivityForResult(null, 2);
     }
 
     @Override
