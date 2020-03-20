@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.baidutts;
+package com.zistone.blecontrol.baidutts.util;
 
 public interface MainHandlerConstant {
     static final int PRINT = 0;

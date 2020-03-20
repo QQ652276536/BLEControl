@@ -7,22 +7,15 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static android.content.ContentValues.TAG;
-
-
-/**
- * Created by fujiayi on 2017/5/19.
- */
-
 public class OfflineResource implements IOfflineResourceConst {
+
+    private static final String TAG = "OfflineResource";
+    private static HashMap<String, Boolean> mapInitied = new HashMap<String, Boolean>();
 
     private AssetManager assets;
     private String destPath;
-
     private String textFilename;
     private String modelFilename;
-
-    private static HashMap<String, Boolean> mapInitied = new HashMap<String, Boolean>();
 
     public OfflineResource(Context context, String voiceType) throws IOException {
         context = context.getApplicationContext();
@@ -51,7 +44,7 @@ public class OfflineResource implements IOfflineResourceConst {
         } else if (VOICE_DUYY.equals(voiceType)) {
             model = VOICE_DUYY_MODEL;
         } else {
-            throw new RuntimeException("voice type is not in list");
+            throw new RuntimeException(">>>没有该声音类型");
         }
         textFilename = copyAssetsFile(text);
         modelFilename = copyAssetsFile(model);

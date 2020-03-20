@@ -24,11 +24,10 @@ import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.baidutts.control.InitConfig;
-import com.zistone.blecontrol.baidutts.control.MySyntherizer;
-import com.zistone.blecontrol.baidutts.control.NonBlockSyntherizer;
+import com.zistone.blecontrol.baidutts.InitConfig;
+import com.zistone.blecontrol.baidutts.MySyntherizer;
+import com.zistone.blecontrol.baidutts.NonBlockSyntherizer;
 import com.zistone.blecontrol.baidutts.util.Auth;
-import com.zistone.blecontrol.baidutts.util.AutoCheck;
 import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 import com.zistone.blecontrol.baidutts.util.MessageListener;
 import com.zistone.blecontrol.baidutts.util.OfflineResource;
@@ -238,21 +237,20 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         } else {
             initConfig = new InitConfig(appId, appKey, secretKey, sn, ttsMode, params, listener);
         }
-        //如果您集成中出错,请将下面一段代码放在和demo中相同的位置,并复制InitConfig 和 AutoCheck到您的项目中
         //上线时请删除AutoCheck的调用
-        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == 100) {
-                    AutoCheck autoCheck = (AutoCheck) msg.obj;
-                    synchronized (autoCheck) {
-                        String message = autoCheck.obtainDebugMessage();
-                        Log.i(TAG, ">>>" + message);
-                    }
-                }
-            }
-
-        });
+        //        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
+        //            @Override
+        //            public void handleMessage(Message msg) {
+        //                if (msg.what == 100) {
+        //                    AutoCheck autoCheck = (AutoCheck) msg.obj;
+        //                    synchronized (autoCheck) {
+        //                        String message = autoCheck.obtainDebugMessage();
+        //                        Log.i(TAG, ">>>" + message);
+        //                    }
+        //                }
+        //            }
+        //
+        //        });
         return initConfig;
     }
 

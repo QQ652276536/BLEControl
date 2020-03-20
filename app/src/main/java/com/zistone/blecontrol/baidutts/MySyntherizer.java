@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.baidutts.control;
+package com.zistone.blecontrol.baidutts;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,7 +7,7 @@ import android.util.Pair;
 import com.baidu.tts.client.SpeechSynthesizeBag;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
-import com.zistone.blecontrol.baidutts.MainHandlerConstant;
+import com.zistone.blecontrol.baidutts.util.MainHandlerConstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +167,7 @@ public class MySyntherizer implements MainHandlerConstant {
      * 释放资源
      */
     public void Release() {
-        Log.i(TAG, ">>>执行释放函数Release()");
+        Log.i(TAG, ">>>执行释放资源函数Release()");
         if (!_isInitied) {
             //这里报错是因为连续两次new MySyntherizer,必须第一次new之后,调用Release()
             throw new RuntimeException(">>>TTS还未初始化");

@@ -3,6 +3,7 @@ package com.zistone.blecontrol.baidutts.util;
 import com.baidu.tts.client.TtsMode;
 
 public interface IOfflineResourceConst {
+
     String VOICE_FEMALE = "F";
 
     String VOICE_MALE = "M";
@@ -24,4 +25,5 @@ public interface IOfflineResourceConst {
     TtsMode DEFAULT_OFFLINE_TTS_MODE = TtsMode.MIX;
 
     String PARAM_SN_NAME = null;
+
 }

@@ -247,7 +247,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             _txt1.setText(_bluetoothDevice.getAddress());
             _txt2.setText(_bluetoothDevice.getName());
             //电池电量在连接成功后通过UUID获取
-            Log.d(TAG, ">>>开始连接...");
+            Log.i(TAG, ">>>开始连接...");
             ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
             //连接蓝牙设备的回调
             _bluetoothGatt = _bluetoothDevice.connectGatt(_context, false, new BluetoothGattCallback() {
@@ -260,11 +260,11 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                     if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED) {
-                        Log.d(TAG, ">>>成功建立连接!");
+                        Log.i(TAG, ">>>成功建立连接!");
                         //发现服务
                         gatt.discoverServices();
                     } else {
-                        Log.d(TAG, ">>>连接已断开!");
+                        Log.i(TAG, ">>>连接已断开!");
                         _bluetoothGatt.disconnect();
                         ProgressDialogUtil.Dismiss();
                         Message message = handler.obtainMessage(MESSAGE_ERROR_2, "");
@@ -286,7 +286,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         //写数据的服务和特征
                         _bluetoothGattCharacteristic_write = _bluetoothGattService.getCharacteristic(WRITE_UUID);
                         if (_bluetoothGattCharacteristic_write != null) {
-                            Log.d(TAG, ">>>已找到写入数据的特征值!");
+                            Log.i(TAG, ">>>已找到写入数据的特征值!");
                             Message message = handler.obtainMessage(MESSAGE_1, "");
                             handler.sendMessage(message);
                         } else {
@@ -295,7 +295,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         //读取数据的服务和特征
                         _bluetoothGattCharacteristic_read = _bluetoothGattService.getCharacteristic(READ_UUID);
                         if (_bluetoothGattCharacteristic_read != null) {
-                            Log.d(TAG, ">>>已找到读取数据的特征值!");
+                            Log.i(TAG, ">>>已找到读取数据的特征值!");
                             //手动读取蓝牙设备的参数内容,所以不需要再订阅
                             //                            订阅读取通知
                             //                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
@@ -330,7 +330,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                     byte[] byteArray = characteristic.getValue();
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
-                    Log.d(TAG, ">>>接收:" + result);
+                    Log.i(TAG, ">>>接收:" + result);
                     Message message = handler.obtainMessage(MESSAGE_2, result);
                     handler.sendMessage(message);
                 }
@@ -346,7 +346,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     byte[] byteArray = characteristic.getValue();
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    Log.d(TAG, ">>>发送:" + result);
+                    Log.i(TAG, ">>>发送:" + result);
                 }
 
                 /**
@@ -359,7 +359,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                     byte[] byteArray = characteristic.getValue();
                     String result = ConvertUtil.ByteArrayToHexStr(byteArray);
                     result = ConvertUtil.HexStrAddCharacter(result, " ");
-                    Log.d(TAG, ">>>接收:" + result);
+                    Log.i(TAG, ">>>接收:" + result);
 
                 }
             });

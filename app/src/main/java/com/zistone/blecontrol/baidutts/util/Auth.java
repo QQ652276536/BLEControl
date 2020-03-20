@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Auth {
+
     private static volatile Auth ourInstance;
 
     private String appId;
@@ -15,22 +16,20 @@ public class Auth {
 
     private String secretKey;
 
-    private String sn; // 收费纯离线版本需要序列号，免费离在线版本不需要
+    //收费纯离线版本需要序列号,免费离在线版本不需要
+    private String sn;
 
     private Auth(Context context) {
         Properties prop = load(context);
         String applicationId = getProperty(prop, "applicationId");
-
         if (!context.getPackageName().equals(applicationId)) {
-            throw new AuthCheckException("包名不一致，请在app/build.gradle 里 修改defaultConfig.applicationId。\n\n"
-                    + "auth.properties里写的包名是：'" + applicationId
-                    + "' ; 实际app的包名是：'" + context.getPackageName() + "'");
+            throw new AuthCheckException("包名不一致,请在app/build.gradle 里 修改defaultConfig.applicationId.\nauth.properties里写的包名是:'" + applicationId + "' ; 实际app的包名是:'" + context.getPackageName() + "'");
         }
-
         appId = getProperty(prop, "appId");
         appKey = getProperty(prop, "appKey");
         secretKey = getProperty(prop, "secretKey");
-        sn = prop.getProperty("sn"); //  收费纯离线版本需要序列号，免费离在线版本不需要
+        //收费纯离线版本需要序列号,免费离在线版本不需要
+        sn = prop.getProperty("sn");
     }
 
     public static Auth getInstance(Context context) {
@@ -65,7 +64,7 @@ public class Auth {
     private String getProperty(Properties properties, String key) {
         String value = properties.getProperty(key);
         if (value == null) {
-            throw new AuthCheckException("在 assets/auth.properties里没有设置 " + key);
+            throw new AuthCheckException("在assets/auth.properties里没有设置" + key);
         }
         return value.trim();
     }

@@ -17,29 +17,29 @@ public class MyApplication extends Application {
     private ActivityLifecycleCallbacks _activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            Log.d(TAG, String.format(">>>%s created...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s created...", activity.getLocalClassName()));
             MyActivityManager.getInstance().SetCurrentActivity(activity);
         }
 
         @Override
         public void onActivityStarted(Activity activity) {
-            Log.d(TAG, String.format(">>>%s started...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s started...", activity.getLocalClassName()));
         }
 
         @Override
         public void onActivityResumed(Activity activity) {
-            Log.d(TAG, String.format(">>>%s resumed...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s resumed...", activity.getLocalClassName()));
             MyActivityManager.getInstance().SetCurrentActivity(activity);
         }
 
         @Override
         public void onActivityPaused(Activity activity) {
-            Log.d(TAG, String.format(">>>%s paused...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s paused...", activity.getLocalClassName()));
         }
 
         @Override
         public void onActivityStopped(Activity activity) {
-            Log.d(TAG, String.format(">>>%s stopped...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s stopped...", activity.getLocalClassName()));
         }
 
         @Override
@@ -49,7 +49,7 @@ public class MyApplication extends Application {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            Log.d(TAG, String.format(">>>%s destroyed...", activity.getLocalClassName()));
+            Log.i(TAG, String.format(">>>%s destroyed...", activity.getLocalClassName()));
         }
     };
 

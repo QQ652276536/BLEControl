@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.baidutts.control;
+package com.zistone.blecontrol.baidutts;
 
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;

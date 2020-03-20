@@ -79,7 +79,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 stringBuffer.append(bitStr7);
                 stringBuffer.append(bitStr8);
                 String bitStr = stringBuffer.toString();
-                Log.d(TAG, String.format(">>>发送参数设置(Bit):\n门检测开关用采用常开型(关门开路)%s\n门锁检测开定于关用采用常开型(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                Log.i(TAG, String.format(">>>发送参数设置(Bit):\n门检测开关用采用常开型(关门开路)%s\n门锁检测开定于关用采用常开型(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                 int value = Integer.parseInt(bitStr, 2);
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
@@ -125,7 +125,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
         String bitStr2 = strArray[1];
         //门检测开关(关门开路)
         String bitStr1 = strArray[0];
-        Log.d(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+        Log.i(TAG, String.format(">>>收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
         if(bitStr8.equals("1"))
             _chk8.setChecked(true);
         else

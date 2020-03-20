@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.baidutts.control;
+package com.zistone.blecontrol.baidutts;
 
 import android.content.Context;
 import android.os.Build;
