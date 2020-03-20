@@ -38,6 +38,7 @@ import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,15 +83,22 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * 注意如果需要离线合成功能,请在您申请的应用中填写包名
      * 发布时请替换成自己申请的_appId _appKey 和 _secretKey.注意如果需要离线合成功能,请在您申请的应用中填写包名.
      */
-    protected String _appId = "18730922";
-    protected String _appKey = "Dqm6IyZ47QXlX0WvHnrZKmsF";
-    protected String _secretKey = "UXM4raYA21UA7m48b49lGdEGLZOpIK3w";
+    private String _appId = "18730922";
+    private String _appKey = "Dqm6IyZ47QXlX0WvHnrZKmsF";
+    private String _secretKey = "UXM4raYA21UA7m48b49lGdEGLZOpIK3w";
     //纯离线合成SDK授权码;离在线合成SDK免费,没有此参数
-    protected String _sn;
-    protected TtsMode _ttsMode = IOfflineResourceConst.DEFAULT_OFFLINE_TTS_MODE;
-    protected String _offlineVoice = OfflineResource.VOICE_MALE;
+    private String _sn;
+    private TtsMode _ttsMode = IOfflineResourceConst.DEFAULT_OFFLINE_TTS_MODE;
+    private String _offlineVoice = OfflineResource.VOICE_MALE;
     //主控制类,所有合成控制方法从这个类开始
-    protected MySyntherizer _mySyntherizer;
+    private MySyntherizer _mySyntherizer;
+    private int _calcCount = 5;
+    private double[] _temperatureArray = new double[_calcCount];
+    //语音合成及播放状态,初始值为设为2,当有语音需要合成时该值会被修改
+    //-1表示合成或播放过程中出错,0表示合成正常结束,1表示播放开始,2表示播放正常结束
+    private int _isSpeechState = 2;
+    //每名是否播放完毕的监听
+    private MessageListener.SpeechListener _speechListener;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -98,6 +106,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             public void OnDismiss() {
                 if (!_connectedSuccess)
                     DisConnect();
+            }
+        };
+        _speechListener = new MessageListener.SpeechListener() {
+            @Override
+            public void SetSpeechState(int state) {
+                _isSpeechState = state;
             }
         };
     }
@@ -117,10 +131,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                             runOnUiThread(() -> {
                                 try {
                                     BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                    Log.i(TAG, ">>>发送查询温度的指令...");
+                                    //                                    Log.i(TAG, ">>>发送查询温度的指令...");
                                     Thread.sleep(100);
                                     BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM2);
-                                    Log.i(TAG, ">>>发送接收温度的指令...");
+                                    //                                    Log.i(TAG, ">>>发送接收温度的指令...");
                                     Thread.sleep(100);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -134,7 +148,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 break;
                 case RECEIVE: {
                     String strs[] = result.split(",");
-                    Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", strs[0], strs[1], strs[2], strs[3]));
                     //环境温度
                     double battery = Double.valueOf(strs[0]) / 100;
                     //最低温度
@@ -151,6 +164,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                     _txt3.setTextColor(Color.GREEN);
                     _txt4.setText(magneticUp + "℃");
                     _txt4.setTextColor(Color.CYAN);
+                    ReadySpeak(magneticBefore, magneticDown, battery, magneticUp);
                 }
                 break;
             }
@@ -158,9 +172,55 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     };
 
     /**
+     * 准备语音合成的内容
+     *
+     * @param value1 最高温度
+     * @param value2 最低温度
+     * @param value3 环境温度
+     * @param value4 测量温度
+     */
+    private void ReadySpeak(double value1, double value2, double value3, double value4) {
+        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4));
+        //当环境温度大于30度时表示有人靠近,开始统计测量温度
+        if (value3 >= 30) {
+            //取平均值(没办法,也没个算法参考,尽量接近准确值)
+            if (_calcCount > 0) {
+                _temperatureArray[5 - _calcCount] = value4;
+                _calcCount--;
+            }
+            //清空统计
+            else {
+                double avValue = 0;
+                for (double temp : _temperatureArray) {
+                    avValue += temp;
+                }
+                avValue = avValue / _calcCount;
+                //只保留两位小数
+                String strAvValue = new DecimalFormat("0.00").format(avValue);
+                Log.i(TAG, String.format("计算的平均温度:%s℃", strAvValue));
+                String text;
+                //平均温度在33~37之间表示体温正常
+                if (avValue <= 37) {
+                    text = "您的体温" + strAvValue + "度,体温正常。";
+                } else if (avValue > 37 && avValue <= 38) {
+                    text = "您的体温" + strAvValue + "度,体温低热。";
+                } else {
+                    text = "您的体温" + strAvValue + "度,体温异常,请再次测量,如有发热,请及时就医(yi1)。";
+                }
+                //每条语音播放结束后再播放
+                if (_isSpeechState == 2) {
+                    Speak(text);
+                    _calcCount = 5;
+                    _temperatureArray = new double[_calcCount];
+                }
+            }
+        }
+    }
+
+    /**
      * 初始化引擎,需要的参数均在InitConfig类里
      */
-    protected void InitTTS() {
+    private void InitTTS() {
         //日志打印在logcat中
         LoggerProxy.printable(true);
         //语音合成时的日志
@@ -175,7 +235,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      *
      * @return 合成参数Map
      */
-    protected Map<String, String> GetParams() {
+    private Map<String, String> GetParams() {
         //以下参数均为选填
         Map<String, String> params = new HashMap<>();
         //设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>, 其它发音人见文档
@@ -201,7 +261,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         return params;
     }
 
-    protected InitConfig GetInitConfig(SpeechSynthesizerListener listener) {
+    private InitConfig GetInitConfig(SpeechSynthesizerListener listener) {
         Map<String, String> params = GetParams();
         //添加你自己的参数
         InitConfig initConfig;
@@ -233,7 +293,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param voiceType
      * @return
      */
-    protected OfflineResource CreateOfflineResource(String voiceType) {
+    private OfflineResource CreateOfflineResource(String voiceType) {
         OfflineResource offlineResource = null;
         try {
             offlineResource = new OfflineResource(this, voiceType);
@@ -385,7 +445,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnConnected() {
-        Speak("已成功连接设(she4)备(bei4)");
+        Speak("已成功连接设(she4)备(bei4)。");
         ProgressDialogUtil.Dismiss();
         Log.i(TAG, ">>>成功建立连接!");
         //轮询
@@ -474,7 +534,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature_measure);
         _context = MyActivityManager.getInstance().GetCurrentActivity();
@@ -533,8 +593,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         Speak("欢迎使用");
         super.onStart();
     }
