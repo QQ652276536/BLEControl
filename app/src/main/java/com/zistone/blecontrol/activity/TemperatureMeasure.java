@@ -478,6 +478,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature_measure);
         _context = MyActivityManager.getInstance().GetCurrentActivity();
+        //初始化TTS引擎
+        InitTTS();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -513,8 +515,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             Log.e(TAG, ">>>" + e.getMessage());
             return;
         }
-        //初始化TTS引擎
-        InitTTS();
     }
 
     @Override
@@ -530,6 +530,13 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             _mySyntherizer.Release();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onStart()
+    {
+        Speak("欢迎使用");
+        super.onStart();
     }
 
 }
