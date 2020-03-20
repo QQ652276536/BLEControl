@@ -1,20 +1,19 @@
-package com.zistone.tts.control;
+package com.zistone.blecontrol.baidutts.control;
 
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
-import com.zistone.tts.util.IOfflineResourceConst;
+import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 
 import java.util.Map;
 
 /**
  * 合成引擎的初始化参数
- * <p>
- * Created by fujiayi on 2017/9/13.
  */
 public class InitConfig {
+
     /**
-     * appId appKey 和 secretKey。注意如果需要离线合成功能,请在您申请的应用中填写包名。
-     * 本demo的包名是com.baidu.tts.sample，定义在build.gradle中。
+     * appId、appKey、和secretKey
+     * 注意如果需要离线合成功能,请在您申请的应用中填写包名
      */
     private String appId;
 
@@ -39,20 +38,8 @@ public class InitConfig {
      */
     private SpeechSynthesizerListener listener;
 
-    private InitConfig() {
-    }
-
-    /**
-     * 离在线SDK用
-     * @param appId
-     * @param appKey
-     * @param secretKey
-     * @param ttsMode
-     * @param params
-     * @param listener
-     */
-    public InitConfig(String appId, String appKey, String secretKey, TtsMode ttsMode,
-                      Map<String, String> params, SpeechSynthesizerListener listener) {
+    //离在线SDK用
+    public InitConfig(String appId, String appKey, String secretKey, TtsMode ttsMode, Map<String, String> params, SpeechSynthesizerListener listener) {
         this.appId = appId;
         this.appKey = appKey;
         this.secretKey = secretKey;
@@ -61,22 +48,13 @@ public class InitConfig {
         this.listener = listener;
     }
 
-    /**
-     * 纯离线SDK用
-     * @param appId
-     * @param appKey
-     * @param secretKey
-     * @param sn
-     * @param ttsMode
-     * @param params
-     * @param listener
-     */
-    public InitConfig(String appId, String appKey, String secretKey, String sn, TtsMode ttsMode,
-                      Map<String, String> params, SpeechSynthesizerListener listener) {
+
+    //纯离线SDK用
+    public InitConfig(String appId, String appKey, String secretKey, String sn, TtsMode ttsMode, Map<String, String> params, SpeechSynthesizerListener listener) {
         this(appId, appKey, secretKey, ttsMode, params, listener);
         this.sn = sn;
         if (sn != null) {
-            // 纯离线sdk 才有的参数；离在线版本没有
+            //纯离线sdk 才有的参数;离在线版本没有
             params.put(IOfflineResourceConst.PARAM_SN_NAME, sn);
         }
     }

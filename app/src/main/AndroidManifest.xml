@@ -20,14 +20,26 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.front.autofocus"
-        android:required="false" /> <!-- 网络权限 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 蓝牙权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 位置权限 -->
+        android:required="false" />
+    <!-- 网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- 位置权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" /> <!-- 往SDCard写入数据权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />    <!-- 读写权限 -->
+    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" />
+    <!-- 往SDCard写入数据权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--  从SDCard读取数据权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!---->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!---->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!---->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
 
     <application
         android:name=".MyApplication"
@@ -41,7 +53,7 @@
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
             android:name=".activity.TemperatureMeasure"
-            android:label="体温测量"></activity>
+            android:label="体温测量" />
         <activity
             android:name=".activity.MaterialsInDB"
             android:label="物料绑定" />
@@ -55,20 +67,8 @@
             android:name=".activity.BleDeviceList"
             android:label="低功耗蓝牙设备列表" />
         <activity
-            android:name="com.zistone.tts.MainActivity_TTS"
-            android:label="百度语音离在线合成Demo" />
-        <activity
-            android:name="com.zistone.tts.SynthActivity"
-            android:label="离在线语音合成" />
-        <activity
-            android:name="com.zistone.tts.MiniActivity"
-            android:label="精简版合成" />
-        <activity
-            android:name="com.zistone.tts.SaveFileActivity"
-            android:label="保存合成后的音频" />
-        <activity
             android:name="com.zistone.opencv.FaceDetectActivity"
-            android:label="保存合成后的音频" />
+            android:label="人脸检测" />
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

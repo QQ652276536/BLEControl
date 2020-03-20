@@ -1,4 +1,4 @@
-package com.zistone.tts.util;
+package com.zistone.blecontrol.baidutts.util;
 
 import android.Manifest;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.support.v4.content.ContextCompat;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SynthesizerTool;
 import com.baidu.tts.client.TtsMode;
-import com.zistone.tts.control.InitConfig;
+import com.zistone.blecontrol.baidutts.control.InitConfig;
 
 import org.json.JSONObject;
 
@@ -57,6 +57,7 @@ import java.util.TreeSet;
  * });
  */
 public class AutoCheck {
+
     private static AutoCheck instance;
 
     private LinkedHashMap<String, Check> checks;
@@ -92,6 +93,7 @@ public class AutoCheck {
             }
         });
         t.start();
+
     }
 
     private AutoCheck innerCheck(InitConfig config) {
@@ -190,6 +192,7 @@ public class AutoCheck {
 
     private static class PermissionCheck extends Check {
         private Context context;
+
         public PermissionCheck(Context context) {
             this.context = context;
         }
@@ -446,6 +449,7 @@ public class AutoCheck {
         public String getLogMessage() {
             return logMessage.toString();
         }
-    }
 
+
+    }
 }

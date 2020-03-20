@@ -1,4 +1,4 @@
-package com.zistone.tts.util;
+package com.zistone.blecontrol.baidutts.util;
 
 import android.content.Context;
 
@@ -92,5 +92,4 @@ public class Auth {
             super(cause);
         }
     }
-
 }

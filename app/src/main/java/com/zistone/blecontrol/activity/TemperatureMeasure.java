@@ -10,20 +10,38 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
+import com.baidu.tts.client.SpeechSynthesizer;
+import com.baidu.tts.client.SpeechSynthesizerListener;
+import com.baidu.tts.client.TtsMode;
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.baidutts.control.InitConfig;
+import com.zistone.blecontrol.baidutts.control.MySyntherizer;
+import com.zistone.blecontrol.baidutts.control.NonBlockSyntherizer;
+import com.zistone.blecontrol.baidutts.util.Auth;
+import com.zistone.blecontrol.baidutts.util.AutoCheck;
+import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
+import com.zistone.blecontrol.baidutts.util.MessageListener;
+import com.zistone.blecontrol.baidutts.util.OfflineResource;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +66,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private ImageButton _btnReturn;
     private Button _btn1, _btn2;
     private TextView _txt1, _txt2, _txt3, _txt4;
+    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4;
     private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
@@ -56,6 +75,39 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
     //是否连接成功
     private boolean _connectedSuccess = false;
+
+    /**
+     * TTS语音部分
+     * <p>
+     * 发布时请替换成自己申请的appId、appKey和secretKey
+     * 注意如果需要离线合成功能,请在您申请的应用中填写包名
+     */
+    //================== 完整版初始化参数设置开始 ==========================
+    /**
+     * 发布时请替换成自己申请的appId appKey 和 secretKey.注意如果需要离线合成功能,请在您申请的应用中填写包名.
+     * 本demo的包名是com.zistone.blecontrol.baidutts,定义在build.gradle中.
+     */
+    protected String appId = "18730922";
+
+    protected String appKey = "Dqm6IyZ47QXlX0WvHnrZKmsF";
+
+    protected String secretKey = "UXM4raYA21UA7m48b49lGdEGLZOpIK3w";
+
+    protected String sn; //纯离线合成SDK授权码；离在线合成SDK免费,没有此参数
+
+    //TtsMode.MIX; 离在线融合,在线优先； TtsMode.ONLINE 纯在线； TtsMode.OFFLINE 纯离线合成,需要纯离线SDK
+    protected TtsMode ttsMode = IOfflineResourceConst.DEFAULT_OFFLINE_TTS_MODE;
+
+    //离线发音选择,VOICE_FEMALE即为离线女声发音.
+    //assets目录下bd_etts_common_speech_m15_mand_eng_high_am-mix_vXXXXXXX.dat为离线男声模型文件；
+    //assets目录下bd_etts_common_speech_f7_mand_eng_high_am-mix_vXXXXX.dat为离线女声模型文件;
+    //assets目录下bd_etts_common_speech_yyjw_mand_eng_high_am-mix_vXXXXX.dat 为度逍遥模型文件;
+    //assets目录下bd_etts_common_speech_as_mand_eng_high_am_vXXXX.dat 为度丫丫模型文件;
+    protected String offlineVoice = OfflineResource.VOICE_MALE;
+
+    //===============初始化参数设置完毕,更多合成参数请至getParams()方法中设置 =================
+    //主控制类,所有合成控制方法从这个类开始
+    protected MySyntherizer _mySyntherizer;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -67,6 +119,242 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         };
     }
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            String result = (String) message.obj;
+            switch (message.what) {
+                case MESSAGE_1: {
+                    _btn1.setEnabled(true);
+                    _refreshTimer = new Timer();
+                    _refreshTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(() -> {
+                                try {
+                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                                    Log.i(TAG, ">>>发送查询温度的指令...");
+                                    Thread.sleep(100);
+                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM2);
+                                    Log.i(TAG, ">>>发送接收温度的指令...");
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    };
+                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
+                }
+                break;
+                case RECEIVE: {
+                    String strs[] = result.split(",");
+                    Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", strs[0], strs[1], strs[2], strs[3]));
+                    //环境温度
+                    double battery = Double.valueOf(strs[0]) / 100;
+                    //最低温度
+                    double magneticDown = Double.valueOf(strs[1]) / 100;
+                    //测量温度
+                    double magneticUp = Double.valueOf(strs[2]) / 100;
+                    //最高温度
+                    double magneticBefore = Double.valueOf(strs[3]) / 100;
+                    _txt1.setText(magneticBefore + "℃");
+                    _txt1.setTextColor(Color.RED);
+                    _txt2.setText(magneticDown + "℃");
+                    _txt2.setTextColor(Color.BLUE);
+                    _txt3.setText(battery + "℃");
+                    _txt3.setTextColor(Color.GREEN);
+                    _txt4.setText(magneticUp + "℃");
+                    _txt4.setTextColor(Color.CYAN);
+                }
+                break;
+            }
+        }
+    };
+
+
+    /**
+     * 初始化引擎,需要的参数均在InitConfig类里
+     * <p>
+     * DEMO中提供了3个SpeechSynthesizerListener的实现
+     * MessageListener 仅仅用log.i记录日志,在logcat中可以看见
+     * UiMessageListener 在MessageListener的基础上,对handler发送消息,实现UI的文字更新
+     * FileSaveListener 在UiMessageListener的基础上,使用 onSynthesizeDataArrived回调,获取音频流
+     */
+    protected void InitTTS() {
+        //日志打印在logcat中
+        LoggerProxy.printable(true);
+        //语音合成时的日志
+        SpeechSynthesizerListener listener = new MessageListener();
+        //设置初始化参数
+        InitConfig config = getInitConfig(listener);
+        _mySyntherizer = new NonBlockSyntherizer(_context, config);
+    }
+
+    /**
+     * 合成的参数,可以初始化时填写,也可以在合成前设置.
+     *
+     * @return 合成参数Map
+     */
+    protected Map<String, String> getParams() {
+        Map<String, String> params = new HashMap<>();
+        //以下参数均为选填
+        //设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>, 其它发音人见文档
+        params.put(SpeechSynthesizer.PARAM_SPEAKER, "3");
+        //设置合成的音量,0-15 ,默认 5
+        params.put(SpeechSynthesizer.PARAM_VOLUME, "15");
+        //设置合成的语速,0-15 ,默认 5
+        params.put(SpeechSynthesizer.PARAM_SPEED, "5");
+        //设置合成的语调,0-15 ,默认 5
+        params.put(SpeechSynthesizer.PARAM_PITCH, "5");
+
+        params.put(SpeechSynthesizer.PARAM_MIX_MODE, SpeechSynthesizer.MIX_MODE_DEFAULT);
+        //该参数设置为TtsMode.MIX生效.即纯在线模式不生效.
+        //MIX_MODE_DEFAULT 默认 ,wifi状态下使用在线,非wifi离线.在线状态下,请求超时6s自动转离线
+        //MIX_MODE_HIGH_SPEED_SYNTHESIZE_WIFI wifi状态下使用在线,非wifi离线.在线状态下, 请求超时1.2s自动转离线
+        //MIX_MODE_HIGH_SPEED_NETWORK , 3G 4G wifi状态下使用在线,其它状态离线.在线状态下,请求超时1.2s自动转离线
+        //MIX_MODE_HIGH_SPEED_SYNTHESIZE, 2G 3G 4G wifi状态下使用在线,其它状态离线.在线状态下,请求超时1.2s自动转离线
+
+        //params.put(SpeechSynthesizer.PARAM_MIX_MODE_TIMEOUT, SpeechSynthesizer.PARAM_MIX_TIMEOUT_TWO_SECOND);
+        //离在线模式,强制在线优先.在线请求后超时2秒后,转为离线合成.
+
+        //离线资源文件, 从assets目录中复制到临时目录,需要在initTTs方法前完成
+        OfflineResource offlineResource = CreateOfflineResource(offlineVoice);
+        //声学模型文件路径 (离线引擎使用), 请确认下面两个文件存在
+        params.put(SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE, offlineResource.getTextFilename());
+        params.put(SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE, offlineResource.getModelFilename());
+        return params;
+    }
+
+    protected InitConfig getInitConfig(SpeechSynthesizerListener listener) {
+        Map<String, String> params = getParams();
+        //添加你自己的参数
+        InitConfig initConfig;
+        //appId appKey secretKey 网站上您申请的应用获取.注意使用离线合成功能的话,需要应用中填写您app的包名.包名在build.gradle中获取.
+        if (sn == null) {
+            initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
+        } else {
+            initConfig = new InitConfig(appId, appKey, secretKey, sn, ttsMode, params, listener);
+        }
+        //如果您集成中出错,请将下面一段代码放在和demo中相同的位置,并复制InitConfig 和 AutoCheck到您的项目中
+        //上线时请删除AutoCheck的调用
+        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 100) {
+                    AutoCheck autoCheck = (AutoCheck) msg.obj;
+                    synchronized (autoCheck) {
+                        String message = autoCheck.obtainDebugMessage();
+                        Log.i(TAG, ">>>" + message);
+                    }
+                }
+            }
+
+        });
+        return initConfig;
+    }
+
+    /**
+     * 复制assets里的离线资源文件到设备的/sdcard/baituTTS/
+     *
+     * @param voiceType
+     * @return
+     */
+    protected OfflineResource CreateOfflineResource(String voiceType) {
+        OfflineResource offlineResource = null;
+        try {
+            offlineResource = new OfflineResource(this, voiceType);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, ">>>复制assets里的离线资源文件到设备路径的/sdcard/baituTTS/失败!!!\n" + e.getMessage());
+        }
+        return offlineResource;
+    }
+
+    /**
+     * Speak实际上是调用Synthesize后获取音频流,然后播放.
+     * 获取音频流的方式见SaveFileActivity及FileSaveListener
+     *
+     * @param text 需要合成的文本,长度不能超过1024个GBK字节.
+     */
+    private void Speak(String text) {
+        int result = _mySyntherizer.Speak(text);
+        CheckResult(result, "Speak()");
+    }
+
+
+    /**
+     * 合成但是不播放
+     * 音频流保存为文件的方法可以参见SaveFileActivity及FileSaveListener
+     *
+     * @param text 需要合成的文本,长度不能超过1024个GBK字节.
+     */
+    private void Synthesize(String text) {
+        int result = _mySyntherizer.Synthesize(text);
+        CheckResult(result, "Synthesize()");
+    }
+
+    /**
+     * 批量播放
+     */
+    private void BatchSpeak() {
+        List<Pair<String, String>> texts = new ArrayList<>();
+        texts.add(new Pair<>("开始批量播放,", "a0"));
+        texts.add(new Pair<>("123456,", "a1"));
+        texts.add(new Pair<>("欢迎使用百度语音,,,", "a2"));
+        texts.add(new Pair<>("重(chong2)量这个是多音字示例", "a3"));
+        int result = _mySyntherizer.BatchSpeak(texts);
+        CheckResult(result, "BatchSpeak()");
+    }
+
+    /**
+     * 切换离线发音,引擎在合成时该方法不能调用
+     *
+     * @param mode
+     */
+    private void LoadModel(String mode) {
+        offlineVoice = mode;
+        OfflineResource offlineResource = CreateOfflineResource(offlineVoice);
+        Log.i(TAG, ">>>切换离线语音:" + offlineResource.getModelFilename());
+        int result = _mySyntherizer.LoadModel(offlineResource.getModelFilename(), offlineResource.getTextFilename());
+        CheckResult(result, "LoadModel()");
+    }
+
+    private void CheckResult(int result, String method) {
+        if (result != 0) {
+            Log.e(TAG, String.format(">>>方法%s执行失败,错误代码:%s", method, result));
+        }
+    }
+
+    /**
+     * 暂停播放,仅调用Speak()后生效
+     */
+    private void Pause() {
+        int result = _mySyntherizer.Pause();
+        CheckResult(result, "Pause()");
+    }
+
+    /**
+     * 继续播放,仅调用Speak()后再调用Pause()生效
+     */
+    private void Resume() {
+        int result = _mySyntherizer.Resume();
+        CheckResult(result, "Resume()");
+    }
+
+    /**
+     * 停止合成引擎,即停止播放、合成、清空内部合成队列
+     */
+    private void Stop() {
+        int result = _mySyntherizer.Stop();
+        CheckResult(result, "Stop()");
+    }
+
+    /**
+     * 断开与BLE设备的连接
+     */
     private void DisConnect() {
         _btn1.setEnabled(false);
         if (_refreshTask != null) {
@@ -92,7 +380,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param data
      */
     private void Resolve(String data) {
-        //Log.d(TAG, ">>>共接收:" + data);
+        //Log.i(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
         Message message = new Message();
@@ -126,69 +414,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         handler.sendMessage(message);
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-            String result = (String) message.obj;
-            switch (message.what) {
-                case MESSAGE_ERROR_1:
-                    DisConnect();
-                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
-                    break;
-                case MESSAGE_1: {
-                    _btn1.setEnabled(true);
-                    _refreshTimer = new Timer();
-                    _refreshTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(() -> {
-                                try {
-                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                    Log.d(TAG, ">>>发送查询温度的指令...");
-                                    Thread.sleep(100);
-                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM2);
-                                    Log.d(TAG, ">>>发送接收温度的指令...");
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                        }
-                    };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
-                }
-                break;
-                case RECEIVE: {
-                    String strs[] = result.split(",");
-                    Log.d(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", strs[0], strs[1], strs[2], strs[3]));
-                    //环境温度
-                    double battery = Double.valueOf(strs[0]) / 100;
-                    //最低温度
-                    double magneticDown = Double.valueOf(strs[1]) / 100;
-                    //测量温度
-                    double magneticUp = Double.valueOf(strs[2]) / 100;
-                    //最高温度
-                    double magneticBefore = Double.valueOf(strs[3]) / 100;
-                    _txt1.setText(magneticBefore + "℃");
-                    _txt1.setTextColor(Color.RED);
-                    _txt2.setText(magneticDown + "℃");
-                    _txt2.setTextColor(Color.BLUE);
-                    _txt3.setText(battery + "℃");
-                    _txt3.setTextColor(Color.GREEN);
-                    _txt4.setText(magneticUp + "℃");
-                    _txt4.setTextColor(Color.CYAN);
-                }
-                break;
-            }
-        }
-    };
-
     @Override
     public void OnConnected() {
         ProgressDialogUtil.Dismiss();
-        Log.d(TAG, ">>>成功建立连接!");
+        Log.i(TAG, ">>>成功建立连接!");
         //轮询
         Message message = handler.obtainMessage(MESSAGE_1, "");
         handler.sendMessage(message);
@@ -204,10 +433,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnDisConnected() {
-        Log.d(TAG, ">>>连接已断开!");
+        Log.i(TAG, ">>>连接已断开!");
         _connectedSuccess = false;
-        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
-        handler.sendMessage(message);
     }
 
     @Override
@@ -224,7 +451,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public void OnReadSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
-        //Log.d(TAG, ">>>接收:" + result);
+        //Log.i(TAG, ">>>接收:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
         if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
@@ -267,14 +494,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             //连接
             case R.id.btn1_temperature: {
                 if (_bluetoothDevice != null) {
-                    if (_btn1.getText().toString().equals("连接")) {
-                        _btn1.setText("断开");
-                        Log.d(TAG, ">>>开始连接...");
-                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-                    } else {
-                        _btn1.setText("连接");
-                        DisConnect();
-                    }
+                    Speak("实例化成功");
                 } else {
                     ProgressDialogUtil.ShowWarning(_context, "提示", "未获取到蓝牙,请重试!");
                 }
@@ -295,11 +515,15 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _toolbar = findViewById(R.id.toolbar_temperature);
         _toolbar.setTitle("");
         setSupportActionBar(_toolbar);
+        _btnReturn = findViewById(R.id.btn_return_temperature);
         _txt1 = findViewById(R.id.txt1_temperature);
         _txt2 = findViewById(R.id.txt2_temperature);
         _txt3 = findViewById(R.id.txt3_temperature);
         _txt4 = findViewById(R.id.txt4_temperature);
-        _btnReturn = findViewById(R.id.btn_return_temperature);
+        _rdo1 = findViewById(R.id.rdo1_temperature);
+        _rdo2 = findViewById(R.id.rdo2_temperature);
+        _rdo3 = findViewById(R.id.rdo3_temperature);
+        _rdo4 = findViewById(R.id.rdo4_temperature);
         _btn1 = findViewById(R.id.btn1_temperature);
         _btn2 = findViewById(R.id.btn2_temperature);
         _btnReturn.setOnClickListener(this::onClick);
@@ -308,11 +532,19 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         InitListener();
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
-            Log.d(TAG, ">>>开始连接...");
+            Log.i(TAG, ">>>开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
         }
+        try {
+            Auth.getInstance(this);
+        } catch (Auth.AuthCheckException e) {
+            Log.e(TAG, ">>>" + e.getMessage());
+            return;
+        }
+        //初始化TTS引擎
+        InitTTS();
     }
 
     @Override
@@ -323,6 +555,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             _refreshTask.cancel();
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
+        if (_mySyntherizer != null) {
+            _mySyntherizer.Stop();
+            _mySyntherizer.Release();
+        }
         super.onDestroy();
     }
 

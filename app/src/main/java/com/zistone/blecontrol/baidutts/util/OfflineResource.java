@@ -1,4 +1,4 @@
-package com.zistone.tts.util;
+package com.zistone.blecontrol.baidutts.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -9,7 +9,13 @@ import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
 
+
+/**
+ * Created by fujiayi on 2017/5/19.
+ */
+
 public class OfflineResource implements IOfflineResourceConst {
+
     private AssetManager assets;
     private String destPath;
 
@@ -63,5 +69,6 @@ public class OfflineResource implements IOfflineResourceConst {
         Log.i(TAG, "文件复制成功：" + destFilename);
         return destFilename;
     }
+
 
 }

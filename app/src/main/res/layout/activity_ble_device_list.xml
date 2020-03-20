@@ -160,6 +160,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:text="@string/temperature"
+                    android:checked="true"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </HorizontalScrollView>

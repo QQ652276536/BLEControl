@@ -1,4 +1,4 @@
-package com.zistone.tts.util;
+package com.zistone.blecontrol.baidutts.util;
 
 import android.content.Context;
 import android.content.res.AssetManager;
