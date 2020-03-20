@@ -6,28 +6,11 @@ import com.baidu.tts.client.SpeechError;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 
 /**
- * SpeechSynthesizerListener简单地实现,仅仅记录日志
+ * SpeechSynthesizerListener简单地实现,仅记录日志
  */
 public class MessageListener implements SpeechSynthesizerListener {
 
     private static final String TAG = "MessageListener";
-
-    private SpeechListener _speechListener = new SpeechListener() {
-        @Override
-        public void SetSpeechState(int state) {
-            int a = state;
-        }
-    };
-
-    /**
-     * 语音播放状态
-     */
-    public interface SpeechListener {
-        /**
-         * @param state -1表示合成或播放过程中出错,0表示合成正常结束,1表示播放开始,2表示播放正常结束
-         */
-        void SetSpeechState(int state);
-    }
 
     /**
      * 播放开始,每句播放开始都会回调
@@ -37,7 +20,6 @@ public class MessageListener implements SpeechSynthesizerListener {
     @Override
     public void onSynthesizeStart(String utteranceId) {
         SendMessage(">>>准备开始合成,序列号:" + utteranceId, true);
-        _speechListener.SetSpeechState(1);
     }
 
     /**
@@ -73,7 +55,6 @@ public class MessageListener implements SpeechSynthesizerListener {
     @Override
     public void onSynthesizeFinish(String utteranceId) {
         SendMessage(">>>合成结束回调, 序列号:" + utteranceId, true);
-        _speechListener.SetSpeechState(0);
     }
 
     @Override
@@ -100,7 +81,6 @@ public class MessageListener implements SpeechSynthesizerListener {
     @Override
     public void onSpeechFinish(String utteranceId) {
         SendMessage(">>>播放结束回调, 序列号:" + utteranceId, true);
-        _speechListener.SetSpeechState(2);
     }
 
     /**
@@ -112,7 +92,6 @@ public class MessageListener implements SpeechSynthesizerListener {
     @Override
     public void onError(String utteranceId, SpeechError speechError) {
         SendMessage(">>>错误发生:" + speechError.description + ",错误编码:" + speechError.code + ",序列号:" + utteranceId, false);
-        _speechListener.SetSpeechState(-1);
     }
 
     private void SendMessage(String message, boolean noError) {

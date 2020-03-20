@@ -94,11 +94,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private MySyntherizer _mySyntherizer;
     private int _calcCount = 5;
     private double[] _temperatureArray = new double[_calcCount];
-    //语音合成及播放状态,初始值为设为2,当有语音需要合成时该值会被修改
-    //-1表示合成或播放过程中出错,0表示合成正常结束,1表示播放开始,2表示播放正常结束
-    private int _isSpeechState = 2;
-    //每名是否播放完毕的监听
-    private MessageListener.SpeechListener _speechListener;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -106,12 +101,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             public void OnDismiss() {
                 if (!_connectedSuccess)
                     DisConnect();
-            }
-        };
-        _speechListener = new MessageListener.SpeechListener() {
-            @Override
-            public void SetSpeechState(int state) {
-                _isSpeechState = state;
             }
         };
     }
@@ -207,12 +196,9 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 } else {
                     text = "您的体温" + strAvValue + "度,体温异常,请再次测量,如有发热,请及时就医(yi1)。";
                 }
-                //每条语音播放结束后再播放
-                if (_isSpeechState == 2) {
-                    Speak(text);
-                    _calcCount = 5;
-                    _temperatureArray = new double[_calcCount];
-                }
+                Speak(text);
+                _calcCount = 5;
+                _temperatureArray = new double[_calcCount];
             }
         }
     }
@@ -224,7 +210,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //日志打印在logcat中
         LoggerProxy.printable(true);
         //语音合成时的日志
-        SpeechSynthesizerListener listener = new MessageListener();
+        MessageListener messageListener = new MessageListener();
+        SpeechSynthesizerListener listener = messageListener;
         //设置初始化参数
         InitConfig config = GetInitConfig(listener);
         _mySyntherizer = new NonBlockSyntherizer(_context, config);
