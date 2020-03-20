@@ -8,7 +8,7 @@ import com.baidu.tts.client.SpeechSynthesizerListener;
 /**
  * SpeechSynthesizerListener简单地实现,仅仅记录日志
  */
-public class MessageListener implements SpeechSynthesizerListener, MainHandlerConstant {
+public class MessageListener implements SpeechSynthesizerListener {
 
     private static final String TAG = "MessageListener";
 

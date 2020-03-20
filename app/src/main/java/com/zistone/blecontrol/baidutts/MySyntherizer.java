@@ -7,7 +7,6 @@ import android.util.Pair;
 import com.baidu.tts.client.SpeechSynthesizeBag;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
-import com.zistone.blecontrol.baidutts.util.MainHandlerConstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.Map;
 /**
  * 对SpeechSynthesizer的封装
  */
-public class MySyntherizer implements MainHandlerConstant {
+public class MySyntherizer {
 
     private static final String TAG = "MySyntherizer";
     private static volatile boolean _isInitied = false;
