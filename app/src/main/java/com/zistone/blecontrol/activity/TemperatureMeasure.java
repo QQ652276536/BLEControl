@@ -587,6 +587,9 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _cameraView = findViewById(R.id.cameraView_face);
         _cameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         _cameraView.setCvCameraViewListener(this);
+        //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
+        //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
+        _cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
         InitListener();
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
