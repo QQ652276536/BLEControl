@@ -13,10 +13,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
@@ -36,24 +34,41 @@ import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
+import com.zistone.opencv.DetectionBasedTracker;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
+        CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "TemperatureMeasure";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String SEARCH_TEMPERATURE_COMM1 = "680000000000006810000181E116";
-    private static final String SEARCH_TEMPERATURE_COMM2 = "680000000000006810000180E616";
+    private static final String SEARCH_TEMPERATURE_COMM1 = "680000000000006810000180E616";
+    private static final String SEARCH_TEMPERATURE_COMM2 = "680000000000006810000181E116";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
     private static final int MESSAGE_ERROR_3 = -3;
@@ -64,25 +79,17 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private Context _context;
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
-    private Button _btn1, _btn2;
     private TextView _txt1, _txt2, _txt3, _txt4;
-    private RadioButton _rdo1, _rdo2, _rdo3, _rdo4;
     private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
-    private Timer _refreshTimer;
-    private TimerTask _refreshTask;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
     //是否连接成功
     private boolean _connectedSuccess = false;
-
-    /**
-     * TTS语音部分
-     * <p>
-     * 发布时请替换成自己申请的_appId、_appKey和_secretKey
-     * 注意如果需要离线合成功能,请在您申请的应用中填写包名
-     * 发布时请替换成自己申请的_appId _appKey 和 _secretKey.注意如果需要离线合成功能,请在您申请的应用中填写包名.
-     */
+    //TTS语音部分
+    //发布时请替换成自己申请的_appId、_appKey和_secretKey
+    //注意如果需要离线合成功能,请在您申请的应用中填写包名
+    //发布时请替换成自己申请的appId、appKey和secretKey,注意如果需要离线合成功能,请在您申请的应用中填写包名
     private String _appId = "18730922";
     private String _appKey = "Dqm6IyZ47QXlX0WvHnrZKmsF";
     private String _secretKey = "UXM4raYA21UA7m48b49lGdEGLZOpIK3w";
@@ -92,8 +99,23 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private String _offlineVoice = OfflineResource.VOICE_MALE;
     //主控制类,所有合成控制方法从这个类开始
     private MySyntherizer _mySyntherizer;
-    private int _calcCount = 5;
+    //统计测量温度的次数,语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
+    private int _calcCount = 5, _speechState = 0;
     private double[] _temperatureArray = new double[_calcCount];
+    //OpenCV部分
+    //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度
+    //旋转角度后如果要重绘内容也得加上旋转角度
+    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
+    private static final int JAVA_DETECTOR = 0;
+    private static final int NATIVE_DETECTOR = 1;
+    private CameraBridgeViewBase _cameraView;
+    //灰度图像,R、G、B彩色图像
+    private Mat _gray, _rgba;
+    private int _detectorType = NATIVE_DETECTOR, _absoluteFaceSize = 0;
+    private float _relativeFaceSize = 0.2f;
+    private DetectionBasedTracker _nativeDetector;
+    private CascadeClassifier _javaDetector;
+    private File _cascadeFile;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -105,34 +127,73 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         };
     }
 
-    private Handler handler = new Handler() {
+    private BaseLoaderCallback _baseLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                    //OpenCV初始化加载成功,再加载本地so库
+                    System.loadLibrary("opencv341");
+                    try {
+                        //加载人脸检测模式文件
+                        InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
+                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+                        _cascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
+                        FileOutputStream os = new FileOutputStream(_cascadeFile);
+                        byte[] buffer = new byte[4096];
+                        int byteesRead;
+                        while ((byteesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, byteesRead);
+                        }
+                        is.close();
+                        os.close();
+                        //使用模型文件初始化人脸检测引擎
+                        _javaDetector = new CascadeClassifier(_cascadeFile.getAbsolutePath());
+                        if (_javaDetector.empty()) {
+                            Log.e(TAG, ">>>加载cascade classifier失败");
+                            _javaDetector = null;
+                        } else {
+                            Log.i(TAG, "Loaded cascade classifier from " + _cascadeFile.getAbsolutePath());
+                        }
+                        _nativeDetector = new DetectionBasedTracker(_cascadeFile.getAbsolutePath(), "", 0);
+                        cascadeDir.delete();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //开启渲染Camera
+                    _cameraView.enableView();
+                    break;
+            }
+            super.onManagerConnected(status);
+        }
+    };
+
+    private Handler _speechStateHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            _speechState = message.what;
+        }
+    };
+
+    private Handler _handler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    _btn1.setEnabled(true);
-                    _refreshTimer = new Timer();
-                    _refreshTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(() -> {
-                                try {
-                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                    //                                    Log.i(TAG, ">>>发送查询温度的指令...");
-                                    Thread.sleep(100);
-                                    BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM2);
-                                    //                                    Log.i(TAG, ">>>发送接收温度的指令...");
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                    runOnUiThread(() -> {
+                        try {
+                            BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                            Log.i(TAG, ">>>已发送查询温度的指令...");
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
+                    });
                 }
                 break;
                 case RECEIVE: {
@@ -170,8 +231,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
         Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4));
-        //当环境温度大于30度时表示有人靠近,开始统计测量温度
-        if (value3 >= 30) {
+        //当环境温度大于30度时表示有人靠近,上条语音播放完毕后才开始统计测量温度
+        if (value3 >= 30 && _speechState == 2) {
             //取平均值(没办法,也没个算法参考,尽量接近准确值)
             if (_calcCount > 0) {
                 _temperatureArray[5 - _calcCount] = value4;
@@ -210,7 +271,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //日志打印在logcat中
         LoggerProxy.printable(true);
         //语音合成时的日志
-        MessageListener messageListener = new MessageListener();
+        MessageListener messageListener = new MessageListener(_speechStateHandler);
         SpeechSynthesizerListener listener = messageListener;
         //设置初始化参数
         InitConfig config = GetInitConfig(listener);
@@ -258,19 +319,19 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             initConfig = new InitConfig(_appId, _appKey, _secretKey, _sn, _ttsMode, params, listener);
         }
         //上线时请删除AutoCheck的调用
-        //        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
-        //            @Override
-        //            public void handleMessage(Message msg) {
-        //                if (msg.what == 100) {
-        //                    AutoCheck autoCheck = (AutoCheck) msg.obj;
-        //                    synchronized (autoCheck) {
-        //                        String message = autoCheck.obtainDebugMessage();
-        //                        Log.i(TAG, ">>>" + message);
-        //                    }
-        //                }
-        //            }
+        //       AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
+        //           @Override
+        //           public void handleMessage(Message msg) {
+        //               if (msg.what == 100) {
+        //                   AutoCheck autoCheck = (AutoCheck) msg.obj;
+        //                   synchronized (autoCheck) {
+        //                       String message = autoCheck.obtainDebugMessage();
+        //                       Log.i(TAG, ">>>" + message);
+        //                   }
+        //               }
+        //           }
         //
-        //        });
+        //       });
         return initConfig;
     }
 
@@ -372,13 +433,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * 断开与BLE设备的连接
      */
     private void DisConnect() {
-        _btn1.setEnabled(false);
-        if (_refreshTask != null) {
-            _refreshTask.cancel();
-        }
-        if (_refreshTimer != null) {
-            _refreshTimer.cancel();
-        }
         BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
@@ -427,7 +481,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             }
             break;
         }
-        handler.sendMessage(message);
+        _handler.sendMessage(message);
     }
 
     @Override
@@ -436,8 +490,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         ProgressDialogUtil.Dismiss();
         Log.i(TAG, ">>>成功建立连接!");
         //轮询
-        Message message = handler.obtainMessage(MESSAGE_1, "");
-        handler.sendMessage(message);
+        Message message = _handler.obtainMessage(MESSAGE_1, "");
+        _handler.sendMessage(message);
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
         _connectedSuccess = true;
@@ -503,18 +557,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn2_temperature:
             case R.id.btn_return_temperature: {
                 finish();
-            }
-            break;
-            //连接
-            case R.id.btn1_temperature: {
-                if (_bluetoothDevice != null) {
-                    BatchSpeak();
-                } else {
-                    ProgressDialogUtil.ShowWarning(_context, "提示", "未获取到蓝牙,请重试!");
-                }
             }
             break;
         }
@@ -539,15 +583,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt2 = findViewById(R.id.txt2_temperature);
         _txt3 = findViewById(R.id.txt3_temperature);
         _txt4 = findViewById(R.id.txt4_temperature);
-        _rdo1 = findViewById(R.id.rdo1_temperature);
-        _rdo2 = findViewById(R.id.rdo2_temperature);
-        _rdo3 = findViewById(R.id.rdo3_temperature);
-        _rdo4 = findViewById(R.id.rdo4_temperature);
-        _btn1 = findViewById(R.id.btn1_temperature);
-        _btn2 = findViewById(R.id.btn2_temperature);
         _btnReturn.setOnClickListener(this::onClick);
-        _btn1.setOnClickListener(this::onClick);
-        _btn2.setOnClickListener(this::onClick);
+        _cameraView = findViewById(R.id.cameraView_face);
+        _cameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
+        _cameraView.setCvCameraViewListener(this);
         InitListener();
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
@@ -565,24 +604,91 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     }
 
     @Override
+    protected void onResume() {
+        //静态初始化OpenCV
+        if (!OpenCVLoader.initDebug()) {
+            Log.i(TAG, "无法加载OpenCV本地库,将使用OpenCV Manager初始化");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_3_0, this, _baseLoaderCallback);
+        } else {
+            Log.i(TAG, "成功加载OpenCV本地库");
+            _baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        //停止渲染Camera
+        if (_cameraView != null)
+            _cameraView.disableView();
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
-        if (_refreshTask != null)
-            _refreshTask.cancel();
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         if (_mySyntherizer != null) {
             _mySyntherizer.Stop();
             _mySyntherizer.Release();
         }
+        //停止渲染Camera
+        if (_cameraView != null)
+            _cameraView.disableView();
         super.onDestroy();
     }
 
     @Override
     public void onStart() {
-        Speak("欢迎使用");
         super.onStart();
+    }
+
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+        _gray = new Mat();
+        _rgba = new Mat();
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+        _gray.release();
+        _rgba.release();
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        _rgba = inputFrame.rgba();
+        _gray = inputFrame.gray();
+        //设置脸部大小
+        if (_absoluteFaceSize == 0) {
+            int height = _gray.rows();
+            if (Math.round(height * _relativeFaceSize) > 0) {
+                _absoluteFaceSize = Math.round(height * _relativeFaceSize);
+            }
+            _nativeDetector.setMinFaceSize(_absoluteFaceSize);
+        }
+        //获取检测到的脸部数据
+        MatOfRect faces = new MatOfRect();
+        if (_detectorType == JAVA_DETECTOR) {
+            if (_javaDetector != null) {
+                _javaDetector.detectMultiScale(_gray, faces, 1.1, 2, 2, new Size(_absoluteFaceSize, _absoluteFaceSize), new Size());
+            }
+        } else if (_detectorType == NATIVE_DETECTOR) {
+            if (_nativeDetector != null) {
+                _nativeDetector.detect(_gray, faces);
+            }
+        } else {
+            Log.e(TAG, "Detection method is not selected!");
+        }
+        Rect[] facesArray = faces.toArray();
+        //绘制检测框
+        for (int i = 0; i < facesArray.length; i++) {
+            Imgproc.rectangle(_rgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
+        }
+        //绘制文字
+        Point point = new Point(300, 300);
+        //        Imgproc.putText(_rgba, "36.78", point, 36, 10, FACE_RECT_COLOR);
+        return _rgba;
     }
 
 }

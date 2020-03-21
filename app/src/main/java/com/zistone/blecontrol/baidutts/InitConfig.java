@@ -48,13 +48,22 @@ public class InitConfig {
         this.listener = listener;
     }
 
-
-    //纯离线SDK用
+    /**
+     * 纯离线SDK用
+     *
+     * @param appId
+     * @param appKey
+     * @param secretKey
+     * @param sn
+     * @param ttsMode
+     * @param params
+     * @param listener
+     */
     public InitConfig(String appId, String appKey, String secretKey, String sn, TtsMode ttsMode, Map<String, String> params, SpeechSynthesizerListener listener) {
         this(appId, appKey, secretKey, ttsMode, params, listener);
         this.sn = sn;
         if (sn != null) {
-            //纯离线sdk 才有的参数;离在线版本没有
+            //纯离线SDK才有的参数,离在线版本没有
             params.put(IOfflineResourceConst.PARAM_SN_NAME, sn);
         }
     }

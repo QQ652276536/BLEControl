@@ -36,6 +36,7 @@ public interface IOfflineResourceConst {
     //TtsMode.OFFLINE   纯离线合成,需要纯离线SDK
     TtsMode DEFAULT_OFFLINE_TTS_MODE = TtsMode.MIX;
 
+    //纯离线SDK才有的参数,离在线版本没有
     String PARAM_SN_NAME = null;
 
 }
