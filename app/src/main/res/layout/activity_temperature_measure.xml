@@ -105,19 +105,35 @@
         android:layout_marginRight="10dp"
         android:orientation="horizontal">
 
-
         <TextView
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="语音："
-            android:textSize="16dp" />
-
-        <CheckBox
-            android:id="@+id/chk1_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:button="@drawable/chk_selector"
-            android:checked="true" />
+            android:text="检测区间:"
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/edt1_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="36.56"
+            android:ems="4"
+            android:textSize="16dp"
+            android:inputType="number"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="至"
+            android:textSize="16dp" />
+
+        <EditText
+            android:textSize="16dp"
+            android:id="@+id/edt2_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="4"
+            android:inputType="number" />
     </LinearLayout>
 
     <LinearLayout
@@ -128,17 +144,10 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="人脸检测："
-            android:textSize="16dp" />
-
-        <CheckBox
-            android:id="@+id/chk2_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:button="@drawable/chk_selector"
-            android:checked="true" />
+            android:text="参数校准："
+            android:textSize="16dp" />
     </LinearLayout>
 
     <org.opencv.android.JavaCameraView

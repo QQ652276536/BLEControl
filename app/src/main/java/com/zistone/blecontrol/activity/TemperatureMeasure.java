@@ -13,7 +13,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -82,7 +81,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private TextView _txt1, _txt2, _txt3, _txt4;
-    private CheckBox _chk1, _chk2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
@@ -274,6 +272,11 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 Speak(text);
                 _temperatureArray = new double[_calcCount];
             }
+        }
+        //已离开检测范围
+        else {
+            _calcCount = 5;
+            _temperatureArray = new double[_calcCount];
         }
     }
 
