@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
@@ -86,6 +88,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
     //是否连接成功
     private boolean _connectedSuccess = false;
+    private Timer _refreshTimer;
+    private TimerTask _refreshTask;
     //TTS语音部分
     //发布时请替换成自己申请的_appId、_appKey和_secretKey
     //注意如果需要离线合成功能,请在您申请的应用中填写包名
@@ -99,10 +103,11 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private String _offlineVoice = OfflineResource.VOICE_MALE;
     //主控制类,所有合成控制方法从这个类开始
     private MySyntherizer _mySyntherizer;
-    //统计测量温度的次数,语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
-    private int _calcCount = 5, _speechState = 0;
+    //统计平均温度的次数,语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
+    private int _calcCount = 5, _speechState = 3;
     private double[] _temperatureArray = new double[_calcCount];
     //OpenCV部分
+    //蓝牙设备连接成功以后再进行初始化
     //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度
     //旋转角度后如果要重绘内容也得加上旋转角度
     private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
@@ -185,36 +190,44 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    runOnUiThread(() -> {
-                        try {
-                            BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                            Log.i(TAG, ">>>已发送查询温度的指令...");
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    //连接成功后再显示人脸检测
+                    _cameraView.setVisibility(View.VISIBLE);
+                    _refreshTimer = new Timer();
+                    _refreshTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                                //                                    Log.i(TAG, ">>>发送查询温度的指令...");
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    });
+                    };
+                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
                 }
                 break;
                 case RECEIVE: {
                     String strs[] = result.split(",");
-                    //环境温度
-                    double battery = Double.valueOf(strs[0]) / 100;
-                    //最低温度
-                    double magneticDown = Double.valueOf(strs[1]) / 100;
-                    //测量温度
-                    double magneticUp = Double.valueOf(strs[2]) / 100;
                     //最高温度
-                    double magneticBefore = Double.valueOf(strs[3]) / 100;
-                    _txt1.setText(magneticBefore + "℃");
+                    double value1 = Double.valueOf(strs[0]) / 100;
+                    //最低温度
+                    double value2 = Double.valueOf(strs[1]) / 100;
+                    //环境温度
+                    double value3 = Double.valueOf(strs[2]) / 100;
+                    //平均温度
+                    double value4 = Double.valueOf(strs[3]) / 100;
+                    _txt1.setText(value1 + "℃");
                     _txt1.setTextColor(Color.RED);
-                    _txt2.setText(magneticDown + "℃");
+                    _txt2.setText(value2 + "℃");
                     _txt2.setTextColor(Color.BLUE);
-                    _txt3.setText(battery + "℃");
+                    _txt3.setText(value3 + "℃");
                     _txt3.setTextColor(Color.GREEN);
-                    _txt4.setText(magneticUp + "℃");
+                    _txt4.setText(value4 + "℃");
                     _txt4.setTextColor(Color.CYAN);
-                    ReadySpeak(magneticBefore, magneticDown, battery, magneticUp);
+                    ReadySpeak(value1, value2, value3, value4);
                 }
                 break;
             }
@@ -227,38 +240,38 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param value1 最高温度
      * @param value2 最低温度
      * @param value3 环境温度
-     * @param value4 测量温度
+     * @param value4 平均温度
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
-        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4));
-        //当环境温度大于30度时表示有人靠近,上条语音播放完毕后才开始统计测量温度
-        if (value3 >= 30 && _speechState == 2) {
+        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃", value1, value2, value3, value4));
+        //当最高温度大于30度时表示有人靠近,上条语音播放完毕后才开始统计平均温度
+        if (value1 >= 30 && _speechState == 3) {
             //取平均值(没办法,也没个算法参考,尽量接近准确值)
             if (_calcCount > 0) {
-                _temperatureArray[5 - _calcCount] = value4;
+                _temperatureArray[5 - _calcCount] = value1;
                 _calcCount--;
             }
             //清空统计
             else {
-                double avValue = 0;
+                _calcCount = 5;
+                double totalValue = 0, avValue = 0;
                 for (double temp : _temperatureArray) {
-                    avValue += temp;
+                    totalValue += temp;
                 }
-                avValue = avValue / _calcCount;
+                avValue = totalValue / _calcCount;
+                Log.i(TAG, String.format("计算的平均温度:%s℃", avValue));
                 //只保留两位小数
                 String strAvValue = new DecimalFormat("0.00").format(avValue);
-                Log.i(TAG, String.format("计算的平均温度:%s℃", strAvValue));
                 String text;
                 //平均温度在33~37之间表示体温正常
                 if (avValue <= 37) {
-                    text = "您的体温" + strAvValue + "度,体温正常。";
+                    text = "您的体温为" + strAvValue + "度,体温正常。";
                 } else if (avValue > 37 && avValue <= 38) {
-                    text = "您的体温" + strAvValue + "度,体温低热。";
+                    text = "您的体温为" + strAvValue + "度,体温低热。";
                 } else {
-                    text = "您的体温" + strAvValue + "度,体温异常,请再次测量,如有发热,请及时就医(yi1)。";
+                    text = "您的体温为" + strAvValue + "度,体温异常,请再次测量,如有发热,请及时就医(yi1)。";
                 }
                 Speak(text);
-                _calcCount = 5;
                 _temperatureArray = new double[_calcCount];
             }
         }
@@ -433,6 +446,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * 断开与BLE设备的连接
      */
     private void DisConnect() {
+        if (_refreshTask != null) {
+            _refreshTask.cancel();
+        }
+        if (_refreshTimer != null) {
+            _refreshTimer.cancel();
+        }
         BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
@@ -450,7 +469,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param data
      */
     private void Resolve(String data) {
-        //Log.i(TAG, ">>>共接收:" + data);
+        Log.i(TAG, ">>>共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
         Message message = new Message();
@@ -468,16 +487,17 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 String outsideState = String.valueOf(bitStr.charAt(2));
                 //内部电池充电状态
                 String insideState = String.valueOf(bitStr.charAt(1));
-                //电池电量(环境温度)
+                //电池电量(平均温度)
                 int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
                 //下端磁强(最低温度)
                 int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                //上端磁强(测量温度)
+                //上端磁强(最高温度)
                 int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
-                //前端磁强(最高温度)
+                //前端磁强(环境温度)
                 int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                 message.what = RECEIVE;
-                message.obj = battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
+                //注意几个温度的顺序,最高->最低->环境->平均,后面解析也是这个顺序来的
+                message.obj = magneticUp + "," + magneticDown + "," + magneticBefore + "," + battery;
             }
             break;
         }
@@ -585,11 +605,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt4 = findViewById(R.id.txt4_temperature);
         _btnReturn.setOnClickListener(this::onClick);
         _cameraView = findViewById(R.id.cameraView_face);
-        _cameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
-        _cameraView.setCvCameraViewListener(this);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
         //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
         _cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
+        _cameraView.setCvCameraViewListener(TemperatureMeasure.this);
         InitListener();
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
@@ -629,6 +648,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onDestroy() {
+        if (_refreshTask != null) {
+            _refreshTask.cancel();
+        }
+        if (_refreshTimer != null) {
+            _refreshTimer.cancel();
+        }
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         if (_mySyntherizer != null) {
