@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -81,6 +82,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private TextView _txt1, _txt2, _txt3, _txt4;
+    private EditText _edt1, _edt2;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
@@ -188,6 +190,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
+                    Speak("已连接设(she4)备(bei4)。");
                     //连接成功后再显示人脸检测
                     _cameraView.setVisibility(View.VISIBLE);
                     _refreshTimer = new Timer();
@@ -509,7 +512,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnConnected() {
-        Speak("已成功连接设(she4)备(bei4)。");
         ProgressDialogUtil.Dismiss();
         Log.i(TAG, ">>>成功建立连接!");
         //轮询
@@ -606,6 +608,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt2 = findViewById(R.id.txt2_temperature);
         _txt3 = findViewById(R.id.txt3_temperature);
         _txt4 = findViewById(R.id.txt4_temperature);
+        _edt1 = findViewById(R.id.edt1_temperature);
+        _edt1.clearFocus();
+        _edt2 = findViewById(R.id.edt2_temperature);
+        _edt2.clearFocus();
         _btnReturn.setOnClickListener(this::onClick);
         _cameraView = findViewById(R.id.cameraView_face);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT

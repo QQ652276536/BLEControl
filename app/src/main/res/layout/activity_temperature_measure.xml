@@ -115,25 +115,27 @@
             android:id="@+id/edt1_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="36.56"
-            android:ems="4"
-            android:textSize="16dp"
+            android:ems="3"
             android:inputType="number"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:text="30"
+            android:textSize="16dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="至"
             android:textSize="16dp" />
 
         <EditText
-            android:textSize="16dp"
             android:id="@+id/edt2_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="4"
-            android:inputType="number" />
+            android:ems="3"
+            android:inputType="number"
+            android:text="38"
+            android:textSize="16dp" />
     </LinearLayout>
 
     <LinearLayout
