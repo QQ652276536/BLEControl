@@ -35,7 +35,7 @@ import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
-import com.zistone.opencv.DetectionBasedTracker;
+import com.zistone.blecontrol.opencv.DetectionBasedTracker;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -732,6 +732,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         } else {
             Log.e(TAG, "Detection method is not selected!");
         }
+        Log.i(TAG, "\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         Rect[] facesArray = faces.toArray();
         //绘制检测框
         for (int i = 0; i < facesArray.length; i++) {
@@ -739,7 +740,13 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         }
         //绘制文字
         Point point = new Point(300, 300);
-        //        Imgproc.putText(_rgba, "36.78", point, 36, 10, FACE_RECT_COLOR);
+        int a = _rgba.cols();
+        int b = _rgba.rows();
+        Rect rect = new Rect(0,0,a,b);
+        Scalar scalar = new Scalar(255,0,0);
+
+        Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
+        Log.i(TAG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n\n");
         return _rgba;
     }
 

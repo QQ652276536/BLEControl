@@ -33,12 +33,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!--  从SDCard读取数据权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!---->
+    <!-- 访问网络状态,主要用于监视网络连接 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!---->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <!---->
+    <!-- Wifi状态 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 修改声音设置 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
 
     <application
@@ -66,9 +66,6 @@
         <activity
             android:name=".activity.BleDeviceList"
             android:label="低功耗蓝牙设备列表" />
-        <activity
-            android:name="com.zistone.opencv.FaceDetectActivity"
-            android:label="人脸检测" />
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

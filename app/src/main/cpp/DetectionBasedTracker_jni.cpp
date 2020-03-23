@@ -78,7 +78,7 @@ struct DetectorAgregator
 /*
  * 加载人脸检测分类器
  */
-JNIEXPORT jlong JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeCreateObject
+JNIEXPORT jlong JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeCreateObject
         (JNIEnv * jenv, jclass, jstring jFileName, jstring eyeFile,jint faceSize)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeCreateObject enter");
@@ -121,7 +121,7 @@ JNIEXPORT jlong JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeCrea
     return result;
 }
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDestroyObject
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDestroyObject
         (JNIEnv * jenv, jclass, jlong thiz)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeDestroyObject");
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDestr
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeDestroyObject exit");
 }
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStart
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeStart
         (JNIEnv * jenv, jclass, jlong thiz)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeStart");
@@ -177,7 +177,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStart
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeStart exit");
 }
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStop
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeStop
         (JNIEnv * jenv, jclass, jlong thiz)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeStop");
@@ -203,7 +203,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStop
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeStop exit");
 }
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeSetFaceSize
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeSetFaceSize
         (JNIEnv * jenv, jclass, jlong thiz, jint faceSize)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeSetFaceSize -- BEGIN");
@@ -234,7 +234,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeSetFa
 }
 
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDetect
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDetect
         (JNIEnv * jenv, jclass, jlong thiz, jlong imageGray, jlong faces)
 {
     LOGD("Java_org_opencv_samples_facedetect_DetectionBasedTracker_nativeDetect");
@@ -275,7 +275,7 @@ jint blinkNumberRight = 0;
 jboolean leftEyeOpen = true;
 jboolean rightEyeOpen = true;
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDetectEyeBlink
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDetectEyeBlink
         (JNIEnv *env, jclass jcls){
 //    Mat matCapturedGrayImage;
 //    Rect face;
@@ -323,7 +323,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDetec
 /*
  * nativeRgba方法，处理预览帧
  */
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeRgba
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeRgba
         (JNIEnv * jenv, jclass jcls,jlong address,jint width,jint height)
 {
     Mat &img = *(Mat*)address;

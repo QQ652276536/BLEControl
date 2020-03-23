@@ -1,4 +1,4 @@
-package com.zistone.opencv;
+package com.zistone.blecontrol.opencv;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;

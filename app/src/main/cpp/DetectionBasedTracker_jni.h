@@ -12,7 +12,7 @@ extern "C" {
  * Method:    nativeCreateObject
  * Signature: (Ljava/lang/String;F)J
  */
-JNIEXPORT jlong JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeCreateObject
+JNIEXPORT jlong JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeCreateObject
   (JNIEnv *, jclass, jstring,jstring,jint);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeCrea
  * Method:    nativeDestroyObject
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDestroyObject
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDestroyObject
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDestr
  * Method:    nativeStart
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStart
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeStart
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStart
  * Method:    nativeStop
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStop
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeStop
   (JNIEnv *, jclass, jlong);
 
   /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStop
    * Method:    nativeSetFaceSize
    * Signature: (JI)V
    */
-  JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeSetFaceSize
+  JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeSetFaceSize
   (JNIEnv *, jclass, jlong, jint);
 
 /*
@@ -52,13 +52,13 @@ JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeStop
  * Method:    nativeDetect
  * Signature: (JJJ)V
  */
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDetect
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDetect
   (JNIEnv *, jclass, jlong, jlong, jlong);
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeDetectEyeBlink
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeDetectEyeBlink
 (JNIEnv *, jclass);
 
-JNIEXPORT void JNICALL Java_com_zistone_opencv_DetectionBasedTracker_nativeRgba
+JNIEXPORT void JNICALL Java_com_zistone_blecontrol_opencv_DetectionBasedTracker_nativeRgba
 (JNIEnv * , jclass ,jlong ,jint ,jint);
 
 #ifdef __cplusplus
