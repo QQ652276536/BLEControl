@@ -29,6 +29,7 @@ import com.zistone.blecontrol.baidutts.util.Auth;
 import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 import com.zistone.blecontrol.baidutts.util.MessageListener;
 import com.zistone.blecontrol.baidutts.util.OfflineResource;
+import com.zistone.blecontrol.controls.AmountView;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
@@ -90,6 +91,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private boolean _connectedSuccess = false;
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
+    private AmountView _amountView;
+    private AmountView.OnAmountChangeListener _onAmountChangeListener;
     //TTS语音部分
     //发布时请替换成自己申请的_appId、_appKey和_secretKey
     //注意如果需要离线合成功能,请在您申请的应用中填写包名
@@ -128,6 +131,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             public void OnDismiss() {
                 if (!_connectedSuccess)
                     DisConnect();
+            }
+        };
+        _onAmountChangeListener = new AmountView.OnAmountChangeListener() {
+            @Override
+            public void onAmountChange(View view, double current) {
+                if (_connectedSuccess) {
+
+                }
             }
         };
     }
@@ -613,6 +624,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _edt2 = findViewById(R.id.edt2_temperature);
         _edt2.clearFocus();
         _btnReturn.setOnClickListener(this::onClick);
+        _amountView = findViewById(R.id.amountView_temperature);
+        _amountView.setMax(10);
+        _amountView.setStep(0.1);
+        _amountView.setLister(_onAmountChangeListener);
         _cameraView = findViewById(R.id.cameraView_face);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
         //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
