@@ -9,17 +9,19 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.zistone.blecontrol.R;
+
+import java.text.DecimalFormat;
 
 public class AmountView extends LinearLayout implements View.OnClickListener, TextWatcher {
 
     private static final String TAG = "AmountView";
 
     private OnAmountChangeListener _lister;
-    private EditText _edt;
+    private TextView _text;
     private Button _btnAdd;
     private Button _btnCut;
     private double _step = 0.0, _current = 0.0, _min = 0.0, _max = 0.0;
@@ -35,8 +37,8 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
     public AmountView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.amount_view, this);
-        _edt = findViewById(R.id.edt);
-        _edt.addTextChangedListener(this);
+        _text = findViewById(R.id.text);
+        _text.addTextChangedListener(this);
         _btnAdd = findViewById(R.id.btnAdd);
         _btnAdd.setOnClickListener(this);
         _btnCut = findViewById(R.id.btnCut);
@@ -55,14 +57,15 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
             _btnCut.setTextSize(TypedValue.COMPLEX_UNIT_PX, btnTextSize);
         }
         LayoutParams textParams = new LayoutParams(tvWidth, LayoutParams.MATCH_PARENT);
-        _edt.setLayoutParams(textParams);
+        _text.setLayoutParams(textParams);
         if (tvTextSize > 0) {
-            _edt.setTextSize(tvTextSize);
+            _text.setTextSize(tvTextSize);
         }
     }
 
     @Override
     public void onClick(View v) {
+        _current = Double.valueOf(_text.getText().toString());
         switch (v.getId()) {
             case R.id.btnAdd:
                 if (_current < _max) {
@@ -75,8 +78,7 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
                 }
                 break;
         }
-        _edt.setText(String.valueOf(_current));
-        _edt.clearFocus();
+        _text.setText(new DecimalFormat("0.0").format(_current));
         if (_lister != null)
             _lister.onAmountChange(this, _current);
     }
