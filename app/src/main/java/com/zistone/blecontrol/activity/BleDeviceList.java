@@ -62,7 +62,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
 
     private static final String TAG = "BleDeviceList";
-    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param2";
+    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private BluetoothListAdapter _bleListAdapter;
