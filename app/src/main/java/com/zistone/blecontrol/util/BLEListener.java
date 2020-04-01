@@ -2,8 +2,8 @@ package com.zistone.blecontrol.util;
 
 import android.bluetooth.le.ScanResult;
 
-public interface BLEListener
-{
+public interface BLEListener {
+
     /**
      * 扫描到的设备
      *

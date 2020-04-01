@@ -11,34 +11,34 @@ import java.util.Map;
  */
 public class InitConfig {
 
-    /**
-     * appId、appKey、和secretKey
-     * 注意如果需要离线合成功能,请在您申请的应用中填写包名
-     */
     private String appId;
 
     private String appKey;
 
     private String secretKey;
 
+    //纯离线SDK才有的参数,离在线版本没有
     private String sn;
 
-    /**
-     * 纯在线或者离在线融合
-     */
+    //纯在线或者离在线融合
     private TtsMode ttsMode;
 
-    /**
-     * 初始化的其它参数，用于setParam
-     */
+    //初始化的其它参数,用于setParam
     private Map<String, String> params;
 
-    /**
-     * 合成引擎的回调
-     */
+    //合成引擎的回调
     private SpeechSynthesizerListener listener;
 
-    //离在线SDK用
+    /**
+     * 离在线SDK用
+     *
+     * @param appId
+     * @param appKey
+     * @param secretKey
+     * @param ttsMode
+     * @param params
+     * @param listener
+     */
     public InitConfig(String appId, String appKey, String secretKey, TtsMode ttsMode, Map<String, String> params, SpeechSynthesizerListener listener) {
         this.appId = appId;
         this.appKey = appKey;
@@ -63,7 +63,6 @@ public class InitConfig {
         this(appId, appKey, secretKey, ttsMode, params, listener);
         this.sn = sn;
         if (sn != null) {
-            //纯离线SDK才有的参数,离在线版本没有
             params.put(IOfflineResourceConst.PARAM_SN_NAME, sn);
         }
     }

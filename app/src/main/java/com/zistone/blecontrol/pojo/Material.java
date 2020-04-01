@@ -2,21 +2,11 @@ package com.zistone.blecontrol.pojo;
 
 import java.util.Date;
 
-public class Material
-{
+public class Material {
+
     @Override
-    public String toString()
-    {
-        return "Material{" +
-                "id=" + id +
-                ", materialName='" + materialName + '\'' +
-                ", deviceName='" + deviceName + '\'' +
-                ", depotRow=" + depotRow +
-                ", depotColumn=" + depotColumn +
-                ", deviceAddress='" + deviceAddress + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
+    public String toString() {
+        return "Material{" + "id=" + id + ", materialName='" + materialName + '\'' + ", deviceName='" + deviceName + '\'' + ", depotRow=" + depotRow + ", depotColumn=" + depotColumn + ", deviceAddress='" + deviceAddress + '\'' + ", createTime=" + createTime + ", updateTime=" + updateTime + '}';
     }
 
     /**
@@ -59,83 +49,67 @@ public class Material
      */
     private Date updateTime;
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
-    public void setId(int id)
-    {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getMaterialName()
-    {
+    public String getMaterialName() {
         return materialName;
     }
 
-    public void setMaterialName(String materialName)
-    {
+    public void setMaterialName(String materialName) {
         this.materialName = materialName;
     }
 
-    public String getDeviceName()
-    {
+    public String getDeviceName() {
         return deviceName;
     }
 
-    public void setDeviceName(String deviceName)
-    {
+    public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
 
-    public int getDepotRow()
-    {
+    public int getDepotRow() {
         return depotRow;
     }
 
-    public void setDepotRow(int depotRow)
-    {
+    public void setDepotRow(int depotRow) {
         this.depotRow = depotRow;
     }
 
-    public int getDepotColumn()
-    {
+    public int getDepotColumn() {
         return depotColumn;
     }
 
-    public void setDepotColumn(int depotColumn)
-    {
+    public void setDepotColumn(int depotColumn) {
         this.depotColumn = depotColumn;
     }
 
-    public Date getCreateTime()
-    {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime)
-    {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime()
-    {
+    public Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime)
-    {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
 
-    public String getDeviceAddress()
-    {
+    public String getDeviceAddress() {
         return deviceAddress;
     }
 
-    public void setDeviceAddress(String deviceAddress)
-    {
+    public void setDeviceAddress(String deviceAddress) {
         this.deviceAddress = deviceAddress;
     }
 

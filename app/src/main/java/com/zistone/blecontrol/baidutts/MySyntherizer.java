@@ -44,10 +44,10 @@ public class MySyntherizer {
      * @return 是否初始化成功
      */
     protected boolean Init(InitConfig config) {
-        Log.i(TAG, ">>>初始化开始");
+        Log.i(TAG, "初始化开始");
         _speechSynthesizer = SpeechSynthesizer.getInstance();
         _speechSynthesizer.setContext(_context);
-        Log.i(TAG, ">>>包名:" + _context.getPackageName());
+        Log.i(TAG, "包名:" + _context.getPackageName());
         SpeechSynthesizerListener listener = config.getListener();
         _speechSynthesizer.setSpeechSynthesizerListener(listener);
         //请替换为语音开发者平台上注册应用得到的App ID ,AppKey ,Secret Key ,填写在SynthActivity的开始位置
@@ -58,10 +58,10 @@ public class MySyntherizer {
         //初始化tts
         int result = _speechSynthesizer.initTts(config.getTtsMode());
         if (result != 0) {
-            Log.e(TAG, ">>>初始化失败,错误代码:" + result);
+            Log.e(TAG, "初始化失败,错误代码:" + result);
             return false;
         }
-        Log.i(TAG, ">>>合成引擎初始化成功");
+        Log.i(TAG, "合成引擎初始化成功");
         return true;
     }
 
@@ -73,7 +73,7 @@ public class MySyntherizer {
      */
     public int Speak(String text) {
         if (!_isInitied) {
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         return _speechSynthesizer.speak(text);
     }
@@ -87,7 +87,7 @@ public class MySyntherizer {
      */
     public int Speak(String text, String utteranceId) {
         if (!_isInitied) {
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         return _speechSynthesizer.speak(text, utteranceId);
     }
@@ -101,7 +101,7 @@ public class MySyntherizer {
     public int Synthesize(String text) {
         if (!_isInitied) {
             //SpeechSynthesizer.getInstance()不要连续调用
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         return _speechSynthesizer.synthesize(text);
     }
@@ -109,14 +109,14 @@ public class MySyntherizer {
     public int Synthesize(String text, String utteranceId) {
         if (!_isInitied) {
             //SpeechSynthesizer.getInstance()不要连续调用
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         return _speechSynthesizer.synthesize(text, utteranceId);
     }
 
     public int BatchSpeak(List<Pair<String, String>> texts) {
         if (!_isInitied) {
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         List<SpeechSynthesizeBag> bags = new ArrayList<SpeechSynthesizeBag>();
         for (Pair<String, String> pair : texts) {
@@ -158,7 +158,7 @@ public class MySyntherizer {
      */
     public int LoadModel(String modelFilename, String textFilename) {
         int result = _speechSynthesizer.loadModel(modelFilename, textFilename);
-        Log.i(TAG, ">>>切换离线发音人成功");
+        Log.i(TAG, "切换离线发音人成功");
         return result;
     }
 
@@ -166,10 +166,10 @@ public class MySyntherizer {
      * 释放资源
      */
     public void Release() {
-        Log.i(TAG, ">>>执行释放资源函数Release()");
+        Log.i(TAG, "执行释放资源函数Release()");
         if (!_isInitied) {
             //这里报错是因为连续两次new MySyntherizer,必须第一次new之后,调用Release()
-            throw new RuntimeException(">>>TTS还未初始化");
+            throw new RuntimeException("TTS还未初始化");
         }
         _speechSynthesizer.stop();
         _speechSynthesizer.release();

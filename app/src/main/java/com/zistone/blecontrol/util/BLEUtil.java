@@ -8,8 +8,8 @@ import android.content.Context;
 
 import java.util.List;
 
-public class BLEUtil
-{
+public class BLEUtil {
+
     private static Context _context;
     private static BLEListener _listener;
     private static BluetoothAdapter _bluetoothAdapter;
@@ -37,8 +37,7 @@ public class BLEUtil
      * @param bluetoothAdapter   蓝牙适配器
      * @param bluetoothLeScanner BLE设备扫描器
      */
-    public static void Init(Context context, BLEListener listener, BluetoothAdapter bluetoothAdapter, BluetoothLeScanner bluetoothLeScanner)
-    {
+    public static void Init(Context context, BLEListener listener, BluetoothAdapter bluetoothAdapter, BluetoothLeScanner bluetoothLeScanner) {
         _context = context;
         _listener = listener;
         _bluetoothAdapter = bluetoothAdapter;
@@ -52,8 +51,7 @@ public class BLEUtil
      *
      * @return
      */
-    private static boolean IsBluetoothAvailable()
-    {
+    private static boolean IsBluetoothAvailable() {
         return (_bluetoothLeScanner != null && _bluetoothAdapter != null && _bluetoothAdapter.isEnabled() && _bluetoothAdapter.getState() == BluetoothAdapter.STATE_ON);
     }
 
@@ -62,17 +60,13 @@ public class BLEUtil
      *
      * @return 蓝牙适配器是否打开、扫描器是否已获取到
      */
-    public static int StartScanLe()
-    {
-        if(IsBluetoothAvailable())
-        {
+    public static int StartScanLe() {
+        if (IsBluetoothAvailable()) {
             _bluetoothLeScanner.stopScan(_leScanCallback);
             //            _bluetoothLeScanner.startScan(_scanFilterList, _scanSettings, _leScanCallback);
             _bluetoothLeScanner.startScan(_leScanCallback);
             return 1;
-        }
-        else
-        {
+        } else {
             return -1;
         }
     }
@@ -82,15 +76,11 @@ public class BLEUtil
      *
      * @return 蓝牙适配器是否打开、扫描器是否已获取到
      */
-    public static int StopScanLe()
-    {
-        if(IsBluetoothAvailable())
-        {
+    public static int StopScanLe() {
+        if (IsBluetoothAvailable()) {
             _bluetoothLeScanner.stopScan(_leScanCallback);
             return 1;
-        }
-        else
-        {
+        } else {
             return -1;
         }
     }
@@ -98,18 +88,15 @@ public class BLEUtil
     /**
      * 扫描到的BLE设备的回调
      */
-    private static final ScanCallback _leScanCallback = new ScanCallback()
-    {
+    private static final ScanCallback _leScanCallback = new ScanCallback() {
         @Override
-        public void onScanResult(int callbackType, ScanResult result)
-        {
+        public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             _listener.OnScanLeResult(result);
         }
 
         @Override
-        public void onBatchScanResults(List<ScanResult> results)
-        {
+        public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
         }
 
@@ -124,8 +111,7 @@ public class BLEUtil
          * @param errorCode
          */
         @Override
-        public void onScanFailed(int errorCode)
-        {
+        public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
         }
     };

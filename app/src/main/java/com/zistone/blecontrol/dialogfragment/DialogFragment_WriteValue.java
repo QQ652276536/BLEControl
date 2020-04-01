@@ -25,8 +25,8 @@ import android.widget.TextView;
 import com.zistone.blecontrol.activity.MainActivity;
 import com.zistone.blecontrol.R;
 
-public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener
-{
+public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener {
+
     private static final String TAG = "DialogFragment_WriteValue";
     private static final String ARG_PARAM1 = "param1";
     private TabLayout _tabLayout;
@@ -38,8 +38,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     private Button _btn4;
     private TableLayout _table;
 
-    public static DialogFragment_ParamSetting newInstance(String[] strArray)
-    {
+    public static DialogFragment_ParamSetting newInstance(String[] strArray) {
         DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, strArray);
@@ -48,14 +47,11 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     }
 
     @Override
-    public void onClick(View v)
-    {
-        switch(v.getId())
-        {
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.btn1_devlceFilter:
                 break;
-            case R.id.writevalue_btn_addvalue:
-            {
+            case R.id.writevalue_btn_addvalue: {
                 TableRow row = new TableRow(_context);
                 row.setGravity(Gravity.CENTER_VERTICAL);
                 TextView textView1 = new TextView(_context);
@@ -74,8 +70,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                 ImageButton imageButton = new ImageButton(_context);
                 imageButton.setImageDrawable(getResources().getDrawable(R.drawable.close1));
                 imageButton.getBackground().setAlpha(0);
-                imageButton.setOnClickListener(v1 ->
-                {
+                imageButton.setOnClickListener(v1 -> {
                     TableRow tableRow = (TableRow) v1.getParent();
                     _table.removeView(tableRow);
                 });
@@ -92,11 +87,9 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
             case R.id.writevalue_btn_cancel:
                 dismiss();
                 break;
-            case R.id.writevalue_btn_send:
-            {
+            case R.id.writevalue_btn_send: {
                 String data = "";
-                for(int i = 0; i < _table.getChildCount(); i++)
-                {
+                for (int i = 0; i < _table.getChildCount(); i++) {
                     TableRow row = (TableRow) _table.getChildAt(i);
                     EditText editText = (EditText) row.getChildAt(2);
                     data += editText.getText().toString();
@@ -110,15 +103,13 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_writevalue, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         _tabLayout = _view.findViewById(R.id.tablayout);
@@ -139,27 +130,22 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-        {
+        if (getArguments() != null) {
         }
         _context = getContext();
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab)
-    {
+    public void onTabSelected(TabLayout.Tab tab) {
     }
 
     @Override
-    public void onTabUnselected(TabLayout.Tab tab)
-    {
+    public void onTabUnselected(TabLayout.Tab tab) {
     }
 
     @Override
-    public void onTabReselected(TabLayout.Tab tab)
-    {
+    public void onTabReselected(TabLayout.Tab tab) {
     }
 }

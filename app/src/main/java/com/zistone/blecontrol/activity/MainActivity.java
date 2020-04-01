@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(TAG, ">>>android 6.0以上动态授权的回调");
+        Log.i(TAG, "Android 6.0以上动态授权的回调");
     }
 
     @Override

@@ -28,21 +28,20 @@ import java.util.Map;
 import java.util.TreeSet;
 
 /**
- * 自动排查工具,用于集成后发现错误。
- * <p>
- * 可以检测如下错误:
- * 1. PermissionCheck : AndroidManifest,xml 需要的部分权限
- * 2. JniCheck: 检测so文件是否安装在指定目录
- * 3. AppInfoCheck: 联网情况下 ,检测appId appKey secretKey是否正确
- * 4. ApplicationIdCheck: 显示包名applicationId, 提示用户手动去官网检查
- * 5. ParamKeyExistCheck: 检查key是否存在,目前检查 SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE和PARAM_TTS_SPEECH_MODEL_FILE
- * 6. OfflineResourceFileCheck 检查离线资源文件（需要从assets目录下复制）,是否存在
+ * 自动排查工具,用于集成后发现错误,可以检测如下错误:
+ * 1.PermissionCheck               AndroidManifest.xml需要的部分权限
+ * 2.JniCheck                      检测so文件是否安装在指定目录
+ * 3.AppInfoCheck                  联网情况下,检测appId appKey secretKey是否正确
+ * 4.ApplicationIdCheck            显示包名applicationId,提示用户手动去官网检查
+ * 5.ParamKeyExistCheck            检查key是否存在,目前检查 SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE和PARAM_TTS_SPEECH_MODEL_FILE
+ * 6.OfflineResourceFileCheck      检查离线资源文件（需要从assets目录下复制）,是否存在
+ * 调试时使用,上线时删除调用
  */
 public class AutoCheck {
 
     private static AutoCheck instance;
 
-    private LinkedHashMap<String,Check> checks;
+    private LinkedHashMap<String, Check> checks;
 
     private static Context context;
 
@@ -62,7 +61,7 @@ public class AutoCheck {
         return instance;
     }
 
-    public void check(final InitConfig initConfig,final Handler handler) {
+    public void check(final InitConfig initConfig, final Handler handler) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -70,7 +69,7 @@ public class AutoCheck {
                 isFinished = true;
                 //偶发,同步线程信息
                 synchronized (obj) {
-                    Message msg = handler.obtainMessage(100,obj);
+                    Message msg = handler.obtainMessage(100, obj);
                     handler.sendMessage(msg);
                 }
             }
@@ -79,23 +78,20 @@ public class AutoCheck {
     }
 
     private AutoCheck innerCheck(InitConfig config) {
-        checks.put("检查申请的Android权限",new PermissionCheck(context));
-        checks.put("检查4个so文件是否存在",new JniCheck(context));
-        checks.put("检查AppId AppKey SecretKey",
-                new AppInfoCheck(config.getAppId(),config.getAppKey(),config.getSecretKey()));
-        checks.put("检查包名",new ApplicationIdCheck(context,config.getAppId()));
+        checks.put("检查申请的Android权限", new PermissionCheck(context));
+        checks.put("检查4个so文件是否存在", new JniCheck(context));
+        checks.put("检查AppId AppKey SecretKey", new AppInfoCheck(config.getAppId(), config.getAppKey(), config.getSecretKey()));
+        checks.put("检查包名", new ApplicationIdCheck(context, config.getAppId()));
         if (TtsMode.MIX.equals(config.getTtsMode())) {
-            Map<String,String> params = config.getParams();
+            Map<String, String> params = config.getParams();
             String fileKey = SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE;
-            checks.put("检查离线资TEXT文件参数",new ParamKeyExistCheck(params,fileKey,
-                    "SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE未设置 ,"));
-            checks.put("检查离线资源TEXT文件",new OfflineResourceFileCheck(params.get(fileKey)));
+            checks.put("检查离线资TEXT文件参数", new ParamKeyExistCheck(params, fileKey, "SpeechSynthesizer.PARAM_TTS_TEXT_MODEL_FILE未设置,"));
+            checks.put("检查离线资源TEXT文件", new OfflineResourceFileCheck(params.get(fileKey)));
             fileKey = SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE;
-            checks.put("检查离线资Speech文件参数",new ParamKeyExistCheck(params,fileKey,
-                    "SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE未设置 ,"));
-            checks.put("检查离线资源Speech文件",new OfflineResourceFileCheck(params.get(fileKey)));
+            checks.put("检查离线资Speech文件参数", new ParamKeyExistCheck(params, fileKey, "SpeechSynthesizer.PARAM_TTS_SPEECH_MODEL_FILE未设置,"));
+            checks.put("检查离线资源Speech文件", new OfflineResourceFileCheck(params.get(fileKey)));
         }
-        for (Map.Entry<String,Check> e : checks.entrySet()) {
+        for (Map.Entry<String, Check> e : checks.entrySet()) {
             Check check = e.getValue();
             check.check();
             if (check.hasError()) {
@@ -127,7 +123,7 @@ public class AutoCheck {
         StringBuilder sb = new StringBuilder();
         hasError = false;
 
-        for (HashMap.Entry<String,Check> entry : checks.entrySet()) {
+        for (HashMap.Entry<String, Check> entry : checks.entrySet()) {
             Check check = entry.getValue();
             String testName = entry.getKey();
             if (check.hasError()) {
@@ -147,7 +143,7 @@ public class AutoCheck {
             }
         }
         if (!hasError) {
-            sb.append("集成自动排查工具: 恭喜没有检测到任何问题\n");
+            sb.append("集成自动排查工具:恭喜没有检测到任何问题\n");
         }
         return sb.toString();
     }
@@ -178,20 +174,17 @@ public class AutoCheck {
 
         @Override
         public void check() {
-            String[] permissions = {
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                    // Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    // Manifest.permission.WRITE_SETTINGS,
-                    Manifest.permission.ACCESS_WIFI_STATE,
-                    // Manifest.permission.CHANGE_WIFI_STATE
+            String[] permissions = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                                    // Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    // Manifest.permission.WRITE_SETTINGS,
+                                    Manifest.permission.ACCESS_WIFI_STATE,
+                                    // Manifest.permission.CHANGE_WIFI_STATE
             };
 
             ArrayList<String> toApplyList = new ArrayList<String>();
 
             for (String perm : permissions) {
-                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context,perm)) {
+                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, perm)) {
                     toApplyList.add(perm);
                     // 进入到这里代表没有权限.
                 }
@@ -210,7 +203,7 @@ public class AutoCheck {
 
         public JniCheck(Context context) {
             this.context = context;
-            soNames = new String[]{"libbd_etts.so","libBDSpeechDecoder_V1.so","libgnustl_shared.so"};
+            soNames = new String[]{"libbd_etts.so", "libBDSpeechDecoder_V1.so", "libgnustl_shared.so"};
         }
 
         @Override
@@ -226,12 +219,11 @@ public class AutoCheck {
                     }
                 }
             }
-            appendLogMessage("Jni目录内文件: " + set.toString());
+            appendLogMessage("Jni目录内文件:" + set.toString());
             for (String name : soNames) {
                 if (!set.contains(name)) {
-                    errorMessage = "Jni目录" + path + " 缺少可读的so文件:" + name + ", 该目录文件列表: " + set.toString();
-                    fixMessage = "如果您的app内没有其它so文件,请复制demo里的src/main/jniLibs至同名目录。"
-                            + " 如果app内有so文件,请合并目录放一起(注意目录取交集,多余的目录删除)。";
+                    errorMessage = "Jni目录" + path + " 缺少可读的so文件:" + name + ",该目录文件列表:" + set.toString();
+                    fixMessage = "如果您的app内没有其它so文件,请复制demo里的src/main/jniLibs至同名目录。" + " 如果app内有so文件,请合并目录放一起(注意目录取交集,多余的目录删除)。";
                     break;
                 }
             }
@@ -239,11 +231,11 @@ public class AutoCheck {
     }
 
     private static class ParamKeyExistCheck extends Check {
-        private Map<String,String> params;
+        private Map<String, String> params;
         private String key;
         private String prefixErrorMessage;
 
-        public ParamKeyExistCheck(Map<String,String> params,String key,String prefixErrorMessage) {
+        public ParamKeyExistCheck(Map<String, String> params, String key, String prefixErrorMessage) {
             this.params = params;
             this.key = key;
             this.prefixErrorMessage = prefixErrorMessage;
@@ -286,16 +278,14 @@ public class AutoCheck {
         private String appId;
         private Context context;
 
-        public ApplicationIdCheck(Context context,String appId) {
+        public ApplicationIdCheck(Context context, String appId) {
             this.appId = appId;
             this.context = context;
         }
 
         @Override
         public void check() {
-            infoMessage = "如果您集成过程中遇见离线合成初始化问题,请检查网页上appId:" + appId
-                    + " 应用是否开通了合成服务,并且网页上的应用填写了Android包名:"
-                    + getApplicationId();
+            infoMessage = "如果您集成过程中遇见离线合成初始化问题,请检查网页上appId:" + appId + " 应用是否开通了合成服务,并且网页上的应用填写了Android包名:" + getApplicationId();
         }
 
         private String getApplicationId() {
@@ -309,7 +299,7 @@ public class AutoCheck {
         private String appKey;
         private String secretKey;
 
-        public AppInfoCheck(String appId,String appKey,String secretKey) {
+        public AppInfoCheck(String appId, String appKey, String secretKey) {
             this.appId = appId;
             this.appKey = appKey;
             this.secretKey = secretKey;
@@ -318,7 +308,7 @@ public class AutoCheck {
 
         public void check() {
             do {
-                appendLogMessage("try to check appId " + appId + " ,appKey=" + appKey + " ,secretKey" + secretKey);
+                appendLogMessage("try to check appId " + appId + ",appKey=" + appKey + ",secretKey" + secretKey);
                 if (appId == null || appId.isEmpty()) {
                     errorMessage = "appId 为空";
                     fixMessage = "填写appID";
@@ -338,16 +328,15 @@ public class AutoCheck {
             try {
                 checkOnline();
             } catch (UnknownHostException e) {
-                infoMessage = "无网络或者网络不连通,忽略检测 : " + e.getMessage();
+                infoMessage = "无网络或者网络不连通,忽略检测:" + e.getMessage();
             } catch (Exception e) {
                 errorMessage = e.getClass().getCanonicalName() + ":" + e.getMessage();
-                fixMessage = " 重新检测appId, appKey, appSecret是否正确";
+                fixMessage = " 重新检测appId,appKey,appSecret是否正确";
             }
         }
 
         public void checkOnline() throws Exception {
-            String urlpath = "https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id="
-                    + appKey + "&client_secret=" + secretKey;
+            String urlpath = "https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + appKey + "&client_secret=" + secretKey;
             URL url = new URL(urlpath);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -371,7 +360,7 @@ public class AutoCheck {
             }
             String token = jsonObject.getString("access_token");
             if (token == null || !token.endsWith("-" + appId)) {
-                throw new Exception("appId 与 appkey及 appSecret 不一致。appId = " + appId + " ,token = " + token);
+                throw new Exception("appId 与 appkey及 appSecret 不一致。appId = " + appId + ",token = " + token);
             }
         }
 

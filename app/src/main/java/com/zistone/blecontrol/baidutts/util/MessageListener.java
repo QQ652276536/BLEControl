@@ -7,7 +7,7 @@ import com.baidu.tts.client.SpeechError;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 
 /**
- * SpeechSynthesizerListener简单地实现,用于记录日志和监听回调
+ * SpeechSynthesizerListener简单地实现,用于记录日志和播放状态的监听回调
  */
 public class MessageListener implements SpeechSynthesizerListener {
 
@@ -26,7 +26,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSynthesizeStart(String utteranceId) {
-        SendMessage(">>>准备开始合成,序列号:" + utteranceId, true);
+        SendMessage("准备开始合成,序列号:" + utteranceId, true);
     }
 
     /**
@@ -41,7 +41,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSynthesizeDataArrived(String utteranceId, byte[] bytes, int progress, int engineType) {
-        SendMessage(">>>合成进度回调, progress:" + progress + ";序列号:" + utteranceId, true);
+        SendMessage("合成进度回调, progress:" + progress + ";序列号:" + utteranceId, true);
     }
 
     /**
@@ -51,7 +51,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSynthesizeFinish(String utteranceId) {
-        SendMessage(">>>合成结束回调, 序列号:" + utteranceId, true);
+        SendMessage("合成结束回调, 序列号:" + utteranceId, true);
         _handler.sendMessage(_handler.obtainMessage(1));
     }
 
@@ -62,7 +62,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSpeechStart(String utteranceId) {
-        SendMessage(">>>播放开始回调, 序列号:" + utteranceId, true);
+        SendMessage("播放开始回调, 序列号:" + utteranceId, true);
         _handler.sendMessage(_handler.obtainMessage(2));
     }
 
@@ -74,7 +74,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSpeechProgressChanged(String utteranceId, int progress) {
-        //SendMessage(">>>播放进度回调, progress:" + progress + ";序列号:" + utteranceId,true);
+        //SendMessage("播放进度回调, progress:" + progress + ";序列号:" + utteranceId,true);
     }
 
     /**
@@ -84,7 +84,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onSpeechFinish(String utteranceId) {
-        SendMessage(">>>播放结束回调, 序列号:" + utteranceId, true);
+        SendMessage("播放结束回调, 序列号:" + utteranceId, true);
         _handler.sendMessage(_handler.obtainMessage(3));
     }
 
@@ -96,7 +96,7 @@ public class MessageListener implements SpeechSynthesizerListener {
      */
     @Override
     public void onError(String utteranceId, SpeechError speechError) {
-        SendMessage(">>>错误发生:" + speechError.description + ",错误编码:" + speechError.code + ",序列号:" + utteranceId, false);
+        SendMessage("错误发生:" + speechError.description + ",错误编码:" + speechError.code + ",序列号:" + utteranceId, false);
         _handler.sendMessage(_handler.obtainMessage(-1));
     }
 

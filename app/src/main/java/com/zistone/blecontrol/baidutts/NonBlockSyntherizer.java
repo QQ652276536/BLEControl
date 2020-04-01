@@ -44,9 +44,9 @@ public class NonBlockSyntherizer extends MySyntherizer {
                         InitConfig config = (InitConfig) msg.obj;
                         boolean isSuccess = Init(config);
                         if (isSuccess) {
-                            Log.i(TAG, ">>>NonBlockSyntherizer初始化成功");
+                            Log.i(TAG, "NonBlockSyntherizer初始化成功");
                         } else {
-                            Log.d(TAG, ">>>NonBlockSyntherizer初始化失败");
+                            Log.d(TAG, "NonBlockSyntherizer初始化失败");
                         }
                         break;
                     case MESSAGE2:

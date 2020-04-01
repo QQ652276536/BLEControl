@@ -166,7 +166,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         //使用模型文件初始化人脸检测引擎
                         _javaDetector = new CascadeClassifier(_cascadeFile.getAbsolutePath());
                         if (_javaDetector.empty()) {
-                            Log.e(TAG, ">>>加载cascade classifier失败");
+                            Log.e(TAG, "加载cascade classifier失败");
                             _javaDetector = null;
                         } else {
                             Log.i(TAG, "Loaded cascade classifier from " + _cascadeFile.getAbsolutePath());
@@ -210,7 +210,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         public void run() {
                             try {
                                 BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                //                                    Log.i(TAG, ">>>发送查询温度的指令...");
+                                //                                    Log.i(TAG, "发送查询温度的指令...");
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -356,7 +356,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //                   AutoCheck autoCheck = (AutoCheck) msg.obj;
         //                   synchronized (autoCheck) {
         //                       String message = autoCheck.obtainDebugMessage();
-        //                       Log.i(TAG, ">>>" + message);
+        //                       Log.i(TAG, message);
         //                   }
         //               }
         //           }
@@ -377,7 +377,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             offlineResource = new OfflineResource(this, voiceType);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, ">>>复制assets里的离线资源文件到设备路径的/sdcard/baituTTS/失败!!!\n" + e.getMessage());
+            Log.e(TAG, "复制assets里的离线资源文件到设备路径的/sdcard/baituTTS/失败!!!\n" + e.getMessage());
         }
         return offlineResource;
     }
@@ -424,14 +424,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private void LoadModel(String mode) {
         _offlineVoice = mode;
         OfflineResource offlineResource = CreateOfflineResource(_offlineVoice);
-        Log.i(TAG, ">>>切换离线语音:" + offlineResource.getModelFilename());
+        Log.i(TAG, "切换离线语音:" + offlineResource.getModelFilename());
         int result = _mySyntherizer.LoadModel(offlineResource.getModelFilename(), offlineResource.getTextFilename());
         CheckResult(result, "LoadModel()");
     }
 
     private void CheckResult(int result, String method) {
         if (result != 0) {
-            Log.e(TAG, String.format(">>>方法%s执行失败,错误代码:%s", method, result));
+            Log.e(TAG, String.format("方法%s执行失败,错误代码:%s", method, result));
         }
     }
 
@@ -486,7 +486,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param data
      */
     private void Resolve(String data) {
-        Log.i(TAG, ">>>共接收:" + data);
+        Log.i(TAG, "共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
         Message message = new Message();
@@ -524,7 +524,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     @Override
     public void OnConnected() {
         ProgressDialogUtil.Dismiss();
-        Log.i(TAG, ">>>成功建立连接!");
+        Log.i(TAG, "成功建立连接!");
         //轮询
         Message message = _handler.obtainMessage(MESSAGE_1, "");
         _handler.sendMessage(message);
@@ -540,7 +540,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, ">>>连接已断开!");
+        Log.i(TAG, "连接已断开!");
         _connectedSuccess = false;
     }
 
@@ -558,7 +558,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public void OnReadSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
-        //Log.i(TAG, ">>>接收:" + result);
+        //Log.i(TAG, "接收:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
         if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
@@ -636,7 +636,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         InitListener();
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
-            Log.i(TAG, ">>>开始连接...");
+            Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
             ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
@@ -644,7 +644,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         try {
             Auth.getInstance(this);
         } catch (Auth.AuthCheckException e) {
-            Log.e(TAG, ">>>" + e.getMessage());
+            Log.e(TAG, e.getMessage());
             return;
         }
     }

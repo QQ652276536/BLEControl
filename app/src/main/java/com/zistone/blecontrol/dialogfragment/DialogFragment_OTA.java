@@ -31,8 +31,8 @@ import java.util.UUID;
 /**
  * 设备空中升级
  */
-public class DialogFragment_OTA extends DialogFragment implements View.OnClickListener
-{
+public class DialogFragment_OTA extends DialogFragment implements View.OnClickListener {
+
     private static final String TAG = "DialogFragment_OTA";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -50,8 +50,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     private BluetoothDevice _bluetoothDevice;
     private byte[] _byteArray;
 
-    public static DialogFragment_OTA newInstance(BluetoothDevice bluetoothDevice)
-    {
+    public static DialogFragment_OTA newInstance(BluetoothDevice bluetoothDevice) {
         DialogFragment_OTA fragment = new DialogFragment_OTA();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1, bluetoothDevice);
@@ -60,33 +59,23 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        switch(requestCode)
-        {
-            case FILE_SELECTOR_CODE:
-            {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FILE_SELECTOR_CODE: {
                 String path = "";
                 Uri uri = data.getData();
-                if("content".equalsIgnoreCase(uri.getScheme()))
-                {
+                if ("content".equalsIgnoreCase(uri.getScheme())) {
                     String[] projection = {"_data"};
-                    try
-                    {
+                    try {
                         Cursor cursor = _context.getContentResolver().query(uri, projection, null, null, null);
                         int column_index = cursor.getColumnIndexOrThrow("_data");
-                        if(cursor.moveToFirst())
-                        {
+                        if (cursor.moveToFirst()) {
                             path = cursor.getString(column_index);
                         }
-                    }
-                    catch(Exception e)
-                    {
+                    } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
-                }
-                else if("file".equalsIgnoreCase(uri.getScheme()))
-                {
+                } else if ("file".equalsIgnoreCase(uri.getScheme())) {
                     path = uri.getPath();
                 }
                 _txt2.setText(path);
@@ -94,22 +83,18 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
                 FileInputStream fileInputStream;
                 BufferedInputStream bufferedInputStream;
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024 * 150);
-                try
-                {
+                try {
                     fileInputStream = new FileInputStream(file);
                     bufferedInputStream = new BufferedInputStream(fileInputStream);
                     byte[] bytes = new byte[1024];
-                    while(bufferedInputStream.available() > 0)
-                    {
+                    while (bufferedInputStream.available() > 0) {
                         bufferedInputStream.read(bytes);
                         byteArrayOutputStream.write(bytes);
                     }
                     _byteArray = byteArrayOutputStream.toByteArray();
                     fileInputStream.close();
                     byteArrayOutputStream.close();
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                     ProgressDialogUtil.ShowWarning(_context, "错误", e.getMessage());
                 }
@@ -119,12 +104,9 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public void onClick(View v)
-    {
-        switch(v.getId())
-        {
-            case R.id.btn1_ota:
-            {
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn1_ota: {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 //选择图片
                 //intent.setType("image/*");
@@ -148,8 +130,7 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         _btn1 = _view.findViewById(R.id.btn1_ota);
         _btn2 = _view.findViewById(R.id.btn2_ota);
@@ -157,16 +138,14 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         _txt2 = _view.findViewById(R.id.txt2_ota);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
-        if(_bluetoothDevice != null)
-        {
+        if (_bluetoothDevice != null) {
             _txt1.setText(_bluetoothDevice.getAddress());
         }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_ota, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setView(_view);
@@ -174,11 +153,9 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-        {
+        if (getArguments() != null) {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
             Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
             SERVICE_UUID = map.get("SERVICE_UUID");

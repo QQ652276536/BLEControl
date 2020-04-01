@@ -11,14 +11,19 @@ import java.io.InputStream;
 
 public class FileUtil {
 
-    // 创建一个临时目录,用于复制临时文件,如assets目录下的离线资源文件
+    /**
+     * 创建一个临时目录,用于复制临时文件,如assets目录下的离线资源文件
+     *
+     * @param context
+     * @return
+     */
     public static String createTmpDir(Context context) {
         String sampleDir = "baiduTTS";
         String tmpDir = Environment.getExternalStorageDirectory().toString() + "/" + sampleDir;
         if (!FileUtil.makeDir(tmpDir)) {
             tmpDir = context.getExternalFilesDir(sampleDir).getAbsolutePath();
             if (tmpDir == null || !FileUtil.makeDir(tmpDir)) {
-                throw new RuntimeException(">>>创建模型资源文件失败:" + tmpDir);
+                throw new RuntimeException("创建模型资源文件失败:" + tmpDir);
             }
         }
         return tmpDir;

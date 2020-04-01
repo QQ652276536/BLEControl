@@ -44,7 +44,7 @@ public class OfflineResource implements IOfflineResourceConst {
         } else if (VOICE_DUYY.equals(voiceType)) {
             model = VOICE_DUYY_MODEL;
         } else {
-            throw new RuntimeException(">>>没有该声音类型");
+            throw new RuntimeException("没有该声音类型");
         }
         textFilename = copyAssetsFile(text);
         modelFilename = copyAssetsFile(model);
