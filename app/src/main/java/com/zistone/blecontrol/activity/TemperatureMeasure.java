@@ -13,7 +13,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -30,12 +29,13 @@ import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 import com.zistone.blecontrol.baidutts.util.MessageListener;
 import com.zistone.blecontrol.baidutts.util.OfflineResource;
 import com.zistone.blecontrol.controls.AmountView;
+import com.zistone.blecontrol.opencv.DetectionBasedTracker;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
-import com.zistone.blecontrol.opencv.DetectionBasedTracker;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -82,8 +82,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private Context _context;
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
-    private TextView _txt1, _txt2, _txt3, _txt4;
-    private EditText _edt1, _edt2;
+    private TextView _txt1, _txt2, _txt3, _txt4, _txt5;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
@@ -107,8 +106,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     //主控制类,所有合成控制方法从这个类开始
     private MySyntherizer _mySyntherizer;
     //统计平均温度的次数,语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
-    private int _calcCount = 5, _speechState = 3;
-    private double[] _temperatureArray = new double[_calcCount];
+    private int _speechState = 3;
     //OpenCV部分
     //蓝牙设备连接成功以后再进行初始化
     //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度
@@ -136,9 +134,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _onAmountChangeListener = new AmountView.OnAmountChangeListener() {
             @Override
             public void onAmountChange(View view, double current) {
-                if (_connectedSuccess) {
-
-                }
+                DeviceFilterShared.SetTemperatureParam(_context, String.valueOf(_amountView.getCurrent()));
             }
         };
     }
@@ -201,7 +197,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    Speak("已连接设(she4)备(bei4)。");
+                    Speak("已连接设备");
                     //连接成功后再显示人脸检测
                     _cameraView.setVisibility(View.VISIBLE);
                     _refreshTimer = new Timer();
@@ -234,9 +230,9 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                     _txt1.setText(value1 + "℃");
                     _txt1.setTextColor(Color.RED);
                     _txt2.setText(value2 + "℃");
-                    _txt2.setTextColor(Color.BLUE);
+                    _txt2.setTextColor(Color.YELLOW);
                     _txt3.setText(value3 + "℃");
-                    _txt3.setTextColor(Color.GREEN);
+                    _txt3.setTextColor(Color.BLUE);
                     _txt4.setText(value4 + "℃");
                     _txt4.setTextColor(Color.CYAN);
                     ReadySpeak(value1, value2, value3, value4);
@@ -255,42 +251,16 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param value4 平均温度
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
-        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃", value1, value2, value3, value4));
-        //当最高温度大于30度时表示有人靠近,上条语音播放完毕后才开始统计平均温度
-        if (value1 >= 30 && _speechState == 3) {
-            //取平均值(没办法,也没个算法参考,尽量接近准确值)
-            if (_calcCount > 0) {
-                _temperatureArray[5 - _calcCount] = value1;
-                _calcCount--;
-            }
-            //清空统计
-            else {
-                _calcCount = 5;
-                double totalValue = 0, avValue = 0;
-                for (double temp : _temperatureArray) {
-                    totalValue += temp;
-                }
-                avValue = totalValue / _calcCount;
-                Log.i(TAG, String.format("计算的平均温度:%s℃", avValue));
-                //只保留两位小数
-                String strAvValue = new DecimalFormat("0.00").format(avValue);
-                String text;
-                //平均温度在33~37之间表示体温正常
-                if (avValue <= 37) {
-                    text = "您的体温为" + strAvValue + "度,体温正常。";
-                } else if (avValue > 37 && avValue <= 38) {
-                    text = "您的体温为" + strAvValue + "度,体温低热。";
-                } else {
-                    text = "您的体温为" + strAvValue + "度,体温异常,请再次测量,如有发热,请及时就医(yi1)。";
-                }
-                Speak(text);
-                _temperatureArray = new double[_calcCount];
-            }
-        }
-        //已离开检测范围
-        else {
-            _calcCount = 5;
-            _temperatureArray = new double[_calcCount];
+        double avValue = value1 + _amountView.getCurrent();
+        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, avValue));
+        //只保留两位小数
+        String strAvValue = new DecimalFormat("0.0").format(avValue);
+        _txt5.setText(strAvValue + "℃");
+        _txt5.setTextColor(Color.GREEN);
+        String text = strAvValue + "度";
+        //上一条语音播放完毕才播放下一条
+        if (_speechState == 3 && avValue >= 31) {
+            Speak(text);
         }
     }
 
@@ -317,7 +287,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //以下参数均为选填
         Map<String, String> params = new HashMap<>();
         //设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>, 其它发音人见文档
-        params.put(SpeechSynthesizer.PARAM_SPEAKER, "3");
+        params.put(SpeechSynthesizer.PARAM_SPEAKER, "2");
         //设置合成的音量,0-15 ,默认 5
         params.put(SpeechSynthesizer.PARAM_VOLUME, "15");
         //设置合成的语速,0-15 ,默认 5
@@ -478,6 +448,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt3.setTextColor(Color.GRAY);
         _txt4.setText("Null");
         _txt4.setTextColor(Color.GRAY);
+        _txt5.setText("Null");
+        _txt5.setTextColor(Color.GRAY);
     }
 
     /**
@@ -619,21 +591,20 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt2 = findViewById(R.id.txt2_temperature);
         _txt3 = findViewById(R.id.txt3_temperature);
         _txt4 = findViewById(R.id.txt4_temperature);
-        _edt1 = findViewById(R.id.edt1_temperature);
-        _edt1.clearFocus();
-        _edt2 = findViewById(R.id.edt2_temperature);
-        _edt2.clearFocus();
+        _txt5 = findViewById(R.id.txt5_temperature);
         _btnReturn.setOnClickListener(this::onClick);
         _amountView = findViewById(R.id.amountView_temperature);
         _amountView.setMax(10);
         _amountView.setStep(0.1);
-        _amountView.setLister(_onAmountChangeListener);
+        _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(_context)));
         _cameraView = findViewById(R.id.cameraView_face);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
         //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
         _cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
         _cameraView.setCvCameraViewListener(TemperatureMeasure.this);
         InitListener();
+        //初始化完再设置监听
+        _amountView.setLister(_onAmountChangeListener);
         BluetoothUtil.Init(_context, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
@@ -742,8 +713,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         Point point = new Point(300, 300);
         int a = _rgba.cols();
         int b = _rgba.rows();
-        Rect rect = new Rect(0,0,a,b);
-        Scalar scalar = new Scalar(255,0,0);
+        Rect rect = new Rect(0, 0, a, b);
+        Scalar scalar = new Scalar(255, 0, 0);
 
         Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
         Log.i(TAG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n\n");

@@ -49,4 +49,14 @@ public class DeviceFilterShared {
         return editor.commit();
     }
 
+    public static String GetTemperatureParam(Context context) {
+        return Share(context).getString("setTemperatureParam", "0.0");
+    }
+
+    public static boolean SetTemperatureParam(Context context, String value) {
+        SharedPreferences.Editor editor = Share(context).edit();
+        editor.putString("setTemperatureParam", value);
+        return editor.commit();
+    }
+
 }

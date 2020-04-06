@@ -79,8 +79,6 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
                 break;
         }
         _text.setText(new DecimalFormat("0.0").format(_current));
-        if (_lister != null)
-            _lister.onAmountChange(this, _current);
     }
 
     @Override
@@ -116,6 +114,11 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
 
     public void setCurrent(double current) {
         this._current = current;
+        _text.setText(new DecimalFormat("0.0").format(_current));
+    }
+
+    public double getCurrent() {
+        return _current;
     }
 
 }
