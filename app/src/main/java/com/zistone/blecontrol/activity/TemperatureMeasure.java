@@ -92,6 +92,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private TimerTask _refreshTask;
     private AmountView _amountView;
     private AmountView.OnAmountChangeListener _onAmountChangeListener;
+    //测量温度
+    private double _measuringValue = 0.0;
     //TTS语音部分
     //发布时请替换成自己申请的_appId、_appKey和_secretKey
     //注意如果需要离线合成功能,请在您申请的应用中填写包名
@@ -111,7 +113,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     //蓝牙设备连接成功以后再进行初始化
     //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度
     //旋转角度后如果要重绘内容也得加上旋转角度
-    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
+    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0);
+    private static final Scalar READ_COLOR = new Scalar(255, 0, 0);
     private static final int JAVA_DETECTOR = 0;
     private static final int NATIVE_DETECTOR = 1;
     private CameraBridgeViewBase _cameraView;
@@ -251,16 +254,15 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param value4 平均温度
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
-        double avValue = value1 + _amountView.getCurrent();
-        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, avValue));
+        _measuringValue = value1 + _amountView.getCurrent();
+        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, _measuringValue));
         //只保留两位小数
-        String strAvValue = new DecimalFormat("0.0").format(avValue);
+        String strAvValue = new DecimalFormat("0.0").format(_measuringValue);
         _txt5.setText(strAvValue + "℃");
         _txt5.setTextColor(Color.GREEN);
-        String text = strAvValue + "度";
         //上一条语音播放完毕才播放下一条
-        if (_speechState == 3 && avValue >= 34) {
-            Speak(text);
+        if (_speechState == 3 && _measuringValue >= 34) {
+            Speak(strAvValue + "度");
         }
     }
 
@@ -287,7 +289,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //以下参数均为选填
         Map<String, String> params = new HashMap<>();
         //设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>, 其它发音人见文档
-        params.put(SpeechSynthesizer.PARAM_SPEAKER, "2");
+        params.put(SpeechSynthesizer.PARAM_SPEAKER, "0");
         //设置合成的音量,0-15 ,默认 5
         params.put(SpeechSynthesizer.PARAM_VOLUME, "15");
         //设置合成的语速,0-15 ,默认 5
@@ -704,22 +706,22 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         } else {
             Log.e(TAG, "Detection method is not selected!");
         }
-        Log.i(TAG, "\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         Rect[] facesArray = faces.toArray();
         //绘制检测框
         for (int i = 0; i < facesArray.length; i++) {
             Imgproc.rectangle(_rgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
         }
-        //绘制文字
-        Point point = new Point(300, 300);
         int a = _rgba.cols();
         int b = _rgba.rows();
-        Rect rect = new Rect(0, 0, a, b);
-        Scalar scalar = new Scalar(255, 0, 0);
-        Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
-        //绘制半透明矩形,对两张图片进行像素值加权叠加
-
-        Log.i(TAG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n\n");
+        Point point1 = new Point(0, 0);
+        Point point2 = new Point(a, b);
+        if (_measuringValue >= 34 && _measuringValue <= 37.5) {
+            Imgproc.rectangle(_rgba, point1, point2, FACE_RECT_COLOR, 80);
+        } else if (_measuringValue > 37.5) {
+            Imgproc.rectangle(_rgba, point1, point2, READ_COLOR, 80);
+        }
+        //绘制文字
+        //Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
         return _rgba;
     }
 

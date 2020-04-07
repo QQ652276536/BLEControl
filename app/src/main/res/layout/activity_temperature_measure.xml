@@ -120,6 +120,15 @@
             android:text="Null"
             android:textSize="16dp" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -130,21 +139,14 @@
         <com.zistone.blecontrol.controls.AmountView
             android:id="@+id/amountView_temperature"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="35dp"
             android:layout_centerInParent="true"
-            android:layout_gravity="right"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            app:btnTextSize="14sp"
+            app:btnTextSize="12dp"
             app:btnWidth="40dp"
             app:tvWidth="50dp" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal"></LinearLayout>
 
     <org.opencv.android.JavaCameraView
         android:id="@+id/cameraView_face"
