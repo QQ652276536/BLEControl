@@ -281,7 +281,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     /**
      * 合成的参数,可以初始化时填写,也可以在合成前设置.
      *
-     * @return 合成参数Map
+     * @return 合成参数
      */
     private Map<String, String> GetParams() {
         //以下参数均为选填
