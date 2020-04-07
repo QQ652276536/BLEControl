@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zistone.blecontrol">
+
+    <!-- 震动提示 -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <!--
     摄像头权限
     required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
