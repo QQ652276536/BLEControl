@@ -108,6 +108,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="测量温度："
             android:textSize="16dp" />
 
@@ -115,16 +116,9 @@
             android:id="@+id/txt5_temperature"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="Null"
             android:textSize="16dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -144,6 +138,13 @@
             app:btnWidth="40dp"
             app:tvWidth="50dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal"></LinearLayout>
 
     <org.opencv.android.JavaCameraView
         android:id="@+id/cameraView_face"
