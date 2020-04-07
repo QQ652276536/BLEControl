@@ -259,7 +259,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt5.setTextColor(Color.GREEN);
         String text = strAvValue + "度";
         //上一条语音播放完毕才播放下一条
-        if (_speechState == 3 && avValue >= 31) {
+        if (_speechState == 3 && avValue >= 34) {
             Speak(text);
         }
     }
@@ -595,6 +595,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _btnReturn.setOnClickListener(this::onClick);
         _amountView = findViewById(R.id.amountView_temperature);
         _amountView.setMax(10);
+        _amountView.setMin(-10);
         _amountView.setStep(0.1);
         _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(_context)));
         _cameraView = findViewById(R.id.cameraView_face);
@@ -715,8 +716,9 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         int b = _rgba.rows();
         Rect rect = new Rect(0, 0, a, b);
         Scalar scalar = new Scalar(255, 0, 0);
-
         Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
+        //绘制半透明矩形,对两张图片进行像素值加权叠加
+
         Log.i(TAG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n\n");
         return _rgba;
     }

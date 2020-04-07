@@ -73,7 +73,7 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
                 }
                 break;
             case R.id.btnCut:
-                if (_current > _min && _current >= _step) {
+                if (_current > _min) {
                     _current -= _step;
                 }
                 break;
