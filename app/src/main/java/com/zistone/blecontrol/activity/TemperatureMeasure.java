@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -94,6 +95,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private AmountView.OnAmountChangeListener _onAmountChangeListener;
     //测量温度
     private double _measuringValue = 0.0;
+    private int _calcCount = 3;
+    private double[] _calcArray = new double[_calcCount];
     //TTS语音部分
     //发布时请替换成自己申请的_appId、_appKey和_secretKey
     //注意如果需要离线合成功能,请在您申请的应用中填写包名
@@ -125,6 +128,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private DetectionBasedTracker _nativeDetector;
     private CascadeClassifier _javaDetector;
     private File _cascadeFile;
+    private MediaPlayer _mediaPlayer1, _mediaPlayer2;
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -200,7 +204,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    Speak("已连接设备");
+                    Speak("已连接");
                     //连接成功后再显示人脸检测
                     _cameraView.setVisibility(View.VISIBLE);
                     _refreshTimer = new Timer();
@@ -254,15 +258,35 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param value4 平均温度
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
-        _measuringValue = value1 + _amountView.getCurrent();
-        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, _measuringValue));
-        //只保留两位小数
-        String strAvValue = new DecimalFormat("0.0").format(_measuringValue);
-        _txt5.setText(strAvValue + "℃");
-        _txt5.setTextColor(Color.GREEN);
-        //上一条语音播放完毕才播放下一条
-        if (_speechState == 3 && _measuringValue >= 34) {
-            Speak(strAvValue + "度");
+        //统计3次,也相当于一个延时播报的处理吧
+        if (_calcCount > 0) {
+            _calcArray[(_calcCount - 3) * -1] = value1;
+            if (_calcCount == 1) {
+                double total = 0.0;
+                for (double temp : _calcArray) {
+                    total += temp;
+                }
+                _measuringValue = total / 3 + _amountView.getCurrent();
+                //只保留两位小数
+                String strAvValue = new DecimalFormat("0.0").format(_measuringValue);
+                Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, strAvValue));
+                _txt5.setText(strAvValue + "℃");
+                _txt5.setTextColor(Color.GREEN);
+                if (_measuringValue >= 34 && _measuringValue <= 37.5) {
+                    _mediaPlayer1.start();
+                } else if (_measuringValue > 37.5) {
+                    _mediaPlayer2.start();
+                }
+                //上一条语音播放完毕才播放下一条
+                //                if (_speechState == 3 && _measuringValue >= 34) {
+                //                    Speak(strAvValue + "度");
+                //                }
+            }
+            _calcCount--;
+            if (_calcCount == 0) {
+                _calcCount = 3;
+                _calcArray = new double[_calcCount];
+            }
         }
     }
 
@@ -452,6 +476,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt4.setTextColor(Color.GRAY);
         _txt5.setText("Null");
         _txt5.setTextColor(Color.GRAY);
+        Speak("连接已断开");
     }
 
     /**
@@ -579,6 +604,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature_measure);
         _context = MyActivityManager.getInstance().GetCurrentActivity();
+        _mediaPlayer1 = MediaPlayer.create(this, R.raw.dingdong);
+        _mediaPlayer2 = MediaPlayer.create(this, R.raw.didi);
         //初始化TTS引擎
         InitTTS();
         Intent intent = getIntent();
@@ -652,8 +679,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         if (_refreshTimer != null) {
             _refreshTimer.cancel();
         }
-        BluetoothUtil.DisConnGatt();
-        _bluetoothDevice = null;
         if (_mySyntherizer != null) {
             _mySyntherizer.Stop();
             _mySyntherizer.Release();
@@ -661,6 +686,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //停止渲染Camera
         if (_cameraView != null)
             _cameraView.disableView();
+        if (_mediaPlayer1 != null)
+            _mediaPlayer1.release();
+        if (_mediaPlayer2 != null)
+            _mediaPlayer2.release();
+        BluetoothUtil.DisConnGatt();
+        _bluetoothDevice = null;
         super.onDestroy();
     }
 
