@@ -30,7 +30,6 @@ import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.pojo.Material;
 import com.zistone.blecontrol.util.ConvertUtil;
-import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.blecontrol.util.PropertiesUtil;
@@ -58,7 +57,6 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     private static UUID READ_UUID;
     private static UUID CONFIG_UUID;
     private static String URL;
-    private Context _context;
     private Spinner _spinner1, _spinner2;
     private Button _btn1, _btn2;
     private ImageButton _btnReturn;
@@ -104,26 +102,26 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         _spinner2.setSelection(column--, true);
                         if (URL.contains("FindByDeviceAddress")) {
                         } else if (URL.contains("UPDATE")) {
-                            ProgressDialogUtil.ShowWarning(_context, "提示", "物料绑定成功");
+                            ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "提示", "物料绑定成功");
                         }
                     }
                     //物料绑定失败
                     else {
-                        ProgressDialogUtil.ShowWarning(_context, "错误", "物料绑定失败,请重试!");
+                        ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "错误", "物料绑定失败,请重试!");
                     }
                     break;
                 //与蓝牙设备的连接已断开
                 case MESSAGE_ERROR_2:
-                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 //网络异常
                 case MESSAGE_ERROR_3:
                     _materialRefreshLayout.finishRefresh();
-                    ProgressDialogUtil.ShowWarning(_context, "警告", "网络连接失败,请检查!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "网络连接失败,请检查!");
                     break;
                 //服务异常
                 case MESSAGE_ERROR_4:
-                    ProgressDialogUtil.ShowWarning(_context, "警告", "服务异常,请与管理员联系!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "服务异常,请与管理员联系!");
                     break;
             }
         }
@@ -195,8 +193,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             case R.id.btn2_db:
                 break;
             case R.id.btn1_db: {
-                ProgressDialogUtil.ShowProgressDialog(_context, "正在绑定物料...");
-                URL = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/Material/Update";
+                ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, "正在绑定物料...");
+                URL = PropertiesUtil.GetValueProperties(MaterialsInDB.this).getProperty("URL") + "/Material/Update";
                 Material materiel = new Material();
                 materiel.setDeviceName(_txt2.getText().toString());
                 materiel.setMaterialName(_edt1.getText().toString());
@@ -214,7 +212,6 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_materials_in_d_b);
-        _context = MyActivityManager.getInstance().GetCurrentActivity();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -248,9 +245,9 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             _txt2.setText(_bluetoothDevice.getName());
             //电池电量在连接成功后通过UUID获取
             Log.i(TAG, "开始连接...");
-            ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
+            ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, "正在连接...");
             //连接蓝牙设备的回调
-            _bluetoothGatt = _bluetoothDevice.connectGatt(_context, false, new BluetoothGattCallback() {
+            _bluetoothGatt = _bluetoothDevice.connectGatt(MaterialsInDB.this, false, new BluetoothGattCallback() {
                 /**
                  * 连接状态改变时回调
                  * @param gatt
@@ -368,7 +365,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
         else {
             _btn1.setEnabled(false);
             ProgressDialogUtil.Dismiss();
-            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙设备,请重试!");
+            ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "未获取到蓝牙设备,请重试!");
         }
         //下拉刷新的监听
         _materialRefreshListener = new MaterialRefreshListener() {
@@ -383,7 +380,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 //结束下拉刷新
                 materialRefreshLayout.postDelayed(() -> new Thread(() -> {
                     Looper.prepare();
-                    URL = PropertiesUtil.GetValueProperties(_context).getProperty("URL") + "/Material/FindByDeviceAddress";
+                    URL = PropertiesUtil.GetValueProperties(MaterialsInDB.this).getProperty("URL") + "/Material/FindByDeviceAddress";
                     Map<String, String> map = new HashMap<String, String>() {{
                         this.put("deviceAddress", _bluetoothDevice.getAddress());
                     }};
@@ -397,7 +394,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onfinish() {
-                //Toast.makeText(_context, "完成", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MaterialsInDB.this, "完成", Toast.LENGTH_LONG).show();
             }
 
             /**
@@ -407,7 +404,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
-                Toast.makeText(_context, "别滑了,到底了", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MaterialsInDB.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
         //下拉刷新控件

@@ -7,4 +7,11 @@
     android:orientation="vertical"
     tools:context="com.zistone.blecontrol.activity.MainActivity">
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/start_logo_2" />
 </LinearLayout>

@@ -18,7 +18,7 @@ public class MyApplication extends Application {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             Log.i(TAG, String.format("%s created...", activity.getLocalClassName()));
-            MyActivityManager.getInstance().SetCurrentActivity(activity);
+            MyActivityManager.getInstance().AddActivity(activity);
         }
 
         @Override
@@ -29,7 +29,6 @@ public class MyApplication extends Application {
         @Override
         public void onActivityResumed(Activity activity) {
             Log.i(TAG, String.format("%s resumed...", activity.getLocalClassName()));
-            MyActivityManager.getInstance().SetCurrentActivity(activity);
         }
 
         @Override
@@ -44,12 +43,12 @@ public class MyApplication extends Application {
 
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
         }
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            Log.i(TAG, String.format("%s destroyed...", activity.getLocalClassName()));
+            Log.i(TAG, String.format("%s destroyed...", activity));
+            MyActivityManager.getInstance().FinishActivity(activity);
         }
     };
 

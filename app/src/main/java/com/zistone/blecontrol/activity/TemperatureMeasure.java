@@ -35,7 +35,6 @@ import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
-import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -80,7 +79,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private static final int RECEIVE = 8002;
 
     private BluetoothDevice _bluetoothDevice;
-    private Context _context;
     private Toolbar _toolbar;
     private ImageButton _btnReturn;
     private TextView _txt1, _txt2, _txt3, _txt4, _txt5;
@@ -141,7 +139,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _onAmountChangeListener = new AmountView.OnAmountChangeListener() {
             @Override
             public void onAmountChange(View view, double current) {
-                DeviceFilterShared.SetTemperatureParam(_context, String.valueOf(_amountView.getCurrent()));
+                DeviceFilterShared.SetTemperatureParam(getApplicationContext(), String.valueOf(_amountView.getCurrent()));
             }
         };
     }
@@ -301,7 +299,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         SpeechSynthesizerListener listener = messageListener;
         //设置初始化参数
         InitConfig config = GetInitConfig(listener);
-        _mySyntherizer = new NonBlockSyntherizer(_context, config);
+        _mySyntherizer = new NonBlockSyntherizer(TemperatureMeasure.this, config);
     }
 
     /**
@@ -534,7 +532,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(_context, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(TemperatureMeasure.this, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -603,7 +601,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature_measure);
-        _context = MyActivityManager.getInstance().GetCurrentActivity();
         _mediaPlayer1 = MediaPlayer.create(this, R.raw.dingdong);
         _mediaPlayer2 = MediaPlayer.create(this, R.raw.didi);
         //初始化TTS引擎
@@ -626,7 +623,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _amountView.setMax(10);
         _amountView.setMin(-10);
         _amountView.setStep(0.1);
-        _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(_context)));
+        _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(getApplicationContext())));
         _cameraView = findViewById(R.id.cameraView_face);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
         //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
@@ -635,12 +632,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         InitListener();
         //初始化完再设置监听
         _amountView.setLister(_onAmountChangeListener);
-        BluetoothUtil.Init(_context, this);
+        BluetoothUtil.Init(TemperatureMeasure.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
+            ProgressDialogUtil.ShowWarning(TemperatureMeasure.this, "警告", "未获取到蓝牙,请重试!");
         }
         try {
             Auth.getInstance(this);

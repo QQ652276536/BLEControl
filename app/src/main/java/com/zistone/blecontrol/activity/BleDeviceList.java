@@ -1,5 +1,6 @@
 package com.zistone.blecontrol.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,7 +12,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -54,6 +59,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -61,8 +68,8 @@ import pl.droidsonroids.gif.GifImageView;
 public class BleDeviceList extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
 
-    private static final String TAG = "BleDeviceList";
-    private static final String ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
+    private static final String TAG = "BleDeviceList", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
+    private static final int MESSAGE_1 = 1;
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private BluetoothListAdapter _bleListAdapter;
@@ -94,9 +101,50 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     private Map<String, MyBluetoothDevice> _deviceMap = new HashMap<>(), _connectSuccessMap = new HashMap<>();
     //传递进来的参数1、传递进来的参数2、根据名称筛选设备、根据地址过滤设备
     private String _param1, _param2, _filterName, _filterAddress, _filterContent;
-    //根据信号强度筛选设备
-    private int _filterRssi = 100;
-    private boolean _isHideConnectSuccessDevice = false, _isBtnUpDownFlag = false, _isStartOrStopScan = false;
+    //根据信号强度筛选设备,动画倒计时
+    private int _filterRssi = 100, _count = 3;
+    private boolean _isHideConnectSuccessDevice = false, _isBtnUpDownFlag = false, _isStartOrStopScan = false, _isPermissionRequested = false;
+    private Timer _timer;
+    private TimerTask _timerTask;
+
+    private Handler _handler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            String result = (String) message.obj;
+            switch (message.what) {
+                case MESSAGE_1: {
+                    _timerTask.cancel();
+                    _timer.cancel();
+                    MyActivityManager.getInstance().FinishActivity(MyAnimation.class);
+                }
+            }
+        }
+    };
+
+    /**
+     * Android6.0之后需要动态申请权限
+     */
+    private void RequestPermission() {
+        if (Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested) {
+            _isPermissionRequested = true;
+            ArrayList<String> permissionsList = new ArrayList<>();
+            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET,
+                                    Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE,
+                                    Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA, Manifest.permission.WRITE_SETTINGS};
+            for (String perm : permissions) {
+                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
+                    //进入到这里代表没有权限
+                    permissionsList.add(perm);
+                }
+            }
+            if (!permissionsList.isEmpty()) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), 1);
+            }
+        }
+    }
 
     /**
      * 统一初始化监听
@@ -133,7 +181,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onfinish() {
-                //Toast.makeText(_context, "完成", Toast.LENGTH_LONG).show();
+                //Toast.makeText(BleDeviceList.this, "完成", Toast.LENGTH_LONG).show();
             }
 
             /**
@@ -143,9 +191,28 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
-                Toast.makeText(_context, "别滑了,到底了", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BleDeviceList.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    /**
+     * 动画
+     */
+    private void StartAnimation() {
+        Intent intent = new Intent(getApplicationContext(), MyAnimation.class);
+        startActivity(intent);
+        _timer = new Timer();
+        _timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (_count > 0)
+                    _count--;
+                else
+                    _handler.sendMessage(_handler.obtainMessage(MESSAGE_1, ""));
+            }
+        };
+        _timer.schedule(_timerTask, 0, 800);
     }
 
     private void BeginScan() {
@@ -154,7 +221,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
             _gifImageView.setVisibility(View.VISIBLE);
             _toolbar.setNavigationIcon(R.drawable.stop1);
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "提示", "请确认系统蓝牙是否开启");
+            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "提示", "请确认系统蓝牙是否开启");
         }
     }
 
@@ -183,7 +250,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     case BluetoothAdapter.STATE_TURNING_ON:
                         _toolbar.setNavigationIcon(R.drawable.stop1);
                         _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                        BLEUtil.Init(_context, this, _bluetoothAdapter, _bluetoothLeScanner);
+                        BLEUtil.Init(BleDeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                         break;
                     //蓝牙未开启
                     case BluetoothAdapter.STATE_OFF:
@@ -194,7 +261,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 }
             }
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "错误", "该设备不支持BLE");
+            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "该设备不支持BLE");
         }
     }
 
@@ -408,7 +475,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 //用户授权开启蓝牙
                 if (requestCode != 0) {
                     _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                    BLEUtil.Init(_context, this, _bluetoothAdapter, _bluetoothLeScanner);
+                    BLEUtil.Init(BleDeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                     BeginScan();
                 }
                 //用户拒绝开启蓝牙
@@ -425,7 +492,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - _exitTime) > 2000) {
-                Toast.makeText(_context, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BleDeviceList.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 _exitTime = System.currentTimeMillis();
             } else {
                 this.finish();
@@ -484,7 +551,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     ShowHideFilter();
                     _isBtnUpDownFlag = false;
                     //隐藏键盘
-                    InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) BleDeviceList.this.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(_btnFilterContent.getApplicationWindowToken(), 0);
                     _btnFilterContent.setCompoundDrawables(null, null, _drawableDown, null);
                     _filterName = _editName.getText().toString();
@@ -564,7 +631,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     intent.putExtra(ARG_PARAM2, (Serializable) map);
                     intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
                 } else {
-                    ProgressDialogUtil.ShowWarning(_context, "错误", "【物料入库】的功能仅支持【Tag】模块");
+                    ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
                 }
             }
             //测量体温
@@ -577,7 +644,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据
                 startActivityForResult(intent, 2);
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "错误", "请检查该设备是否被占用");
+            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "请检查该设备是否被占用");
         }
     }
 
@@ -682,10 +749,28 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         super.onDestroy();
     }
 
+    /**
+     * 动态授权的回调
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        String content = "动态授权的回调:";
+        for (int i = 0; i < permissions.length; i++) {
+            content += "\r\n权限" + permissions[i] + "【" + (grantResults[i] != -1 ? "允许" : "拒绝") + "】";
+        }
+        Log.i(TAG, content);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_ble_device_list);
-        _context = MyActivityManager.getInstance().GetCurrentActivity();
+        StartAnimation();
+        RequestPermission();
+        _context = getApplicationContext();
         Intent intent = getIntent();
         _param1 = intent.getStringExtra(ARG_PARAM1);
         _param2 = intent.getStringExtra(ARG_PARAM2);

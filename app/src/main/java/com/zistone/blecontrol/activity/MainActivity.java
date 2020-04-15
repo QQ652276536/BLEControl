@@ -1,7 +1,6 @@
 package com.zistone.blecontrol.activity;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * android 6.0以上动态授权的回调
+     * 动态授权的回调
      *
      * @param requestCode
      * @param permissions
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(TAG, "Android 6.0以上动态授权的回调");
+        Log.i(TAG, "动态授权的回调");
     }
 
     @Override
@@ -64,20 +63,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RequestPermission();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(2500);
-                    Intent intent = new Intent(getApplicationContext(), BleDeviceList.class);
-                    startActivity(intent);
-                    finish();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();
     }
 
 }

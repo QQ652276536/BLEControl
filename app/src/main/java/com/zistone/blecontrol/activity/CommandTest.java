@@ -1,7 +1,6 @@
 package com.zistone.blecontrol.activity;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +20,6 @@ import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
-import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.util.Map;
@@ -38,7 +36,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private static final int SEND_SET_CONTROLPARAM = 87;
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
 
-    private Context _context;
     private ImageButton _btnReturn;
     private TextView _txt;
     private Button _btn0, _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11;
@@ -81,7 +78,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6,
-                                    bitStr7, bitStr8});
+                                                                                                 bitStr7, bitStr8});
                             _paramSetting.setCancelable(false);
                         }
                         _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
@@ -101,7 +98,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case MESSAGE_ERROR_1:
                     _connectedSuccess = false;
                     ProgressDialogUtil.Dismiss();
-                    ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
+                    ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
                     break;
                 case MESSAGE_1: {
                     _btn1.setEnabled(true);
@@ -307,7 +304,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(_context, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, "正在连接...");
     }
 
     @Override
@@ -414,7 +411,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "警告", "该设备的连接已断开,如需再次连接请重试!");
+            ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
         }
         //发送内部参数以后关闭设置窗口
         _paramSetting.dismiss();
@@ -532,7 +529,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command_test);
-        _context = MyActivityManager.getInstance().GetCurrentActivity();
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
@@ -565,12 +561,12 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn10.setOnClickListener(this);
         _btn11 = findViewById(R.id.btn11);
         _btn11.setOnClickListener(this);
-        BluetoothUtil.Init(_context, this);
+        BluetoothUtil.Init(CommandTest.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(_context, "警告", "未获取到蓝牙,请重试!");
+            ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "未获取到蓝牙,请重试!");
         }
     }
 
