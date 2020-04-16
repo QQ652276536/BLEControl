@@ -77,6 +77,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
     private static final int RECEIVE = 8002;
+    //OpenCV部分
+    //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度,旋转角度后如果要重绘内容也得加上旋转角度
+    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0);
+    private static final Scalar READ_COLOR = new Scalar(255, 0, 0);
+    private static final int JAVA_DETECTOR = 0;
+    private static final int NATIVE_DETECTOR = 1;
 
     private BluetoothDevice _bluetoothDevice;
     private Toolbar _toolbar;
@@ -85,16 +91,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
-    //是否连接成功
-    private boolean _connectedSuccess = false;
+    //是否连接成功,是否检测到人脸
+    private boolean _connectedSuccess = false, _isCheckedFace = false;
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
     private AmountView _amountView;
     private AmountView.OnAmountChangeListener _onAmountChangeListener;
-    //测量温度
+    //统计的所有温度,测量温度
     private double _measuringValue = 0.0;
-    private int _calcCount = 3;
-    private double[] _calcArray = new double[_calcCount];
     //TTS语音部分
     //发布时请替换成自己申请的_appId、_appKey和_secretKey
     //注意如果需要离线合成功能,请在您申请的应用中填写包名
@@ -108,19 +112,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private String _offlineVoice = OfflineResource.VOICE_MALE;
     //主控制类,所有合成控制方法从这个类开始
     private MySyntherizer _mySyntherizer;
-    //统计平均温度的次数,语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
+    //语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
     private int _speechState = 3;
-    //OpenCV部分
-    //蓝牙设备连接成功以后再进行初始化
-    //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度
-    //旋转角度后如果要重绘内容也得加上旋转角度
-    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0);
-    private static final Scalar READ_COLOR = new Scalar(255, 0, 0);
-    private static final int JAVA_DETECTOR = 0;
-    private static final int NATIVE_DETECTOR = 1;
     private CameraBridgeViewBase _cameraView;
     //灰度图像,R、G、B彩色图像
     private Mat _gray, _rgba;
+    //OpenCV的调用方式,脸部大小
     private int _detectorType = NATIVE_DETECTOR, _absoluteFaceSize = 0;
     private float _relativeFaceSize = 0.2f;
     private DetectionBasedTracker _nativeDetector;
@@ -202,7 +199,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    Speak("已连接");
+                    Speak("设备已连接");
                     //连接成功后再显示人脸检测
                     _cameraView.setVisibility(View.VISIBLE);
                     _refreshTimer = new Timer();
@@ -256,36 +253,25 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * @param value4 平均温度
      */
     private void ReadySpeak(double value1, double value2, double value3, double value4) {
-        //统计3次,也相当于一个延时播报的处理吧
-        if (_calcCount > 0) {
-            _calcArray[(_calcCount - 3) * -1] = value1;
-            if (_calcCount == 1) {
-                double total = 0.0;
-                for (double temp : _calcArray) {
-                    total += temp;
-                }
-                _measuringValue = total / 3 + _amountView.getCurrent();
-                //只保留两位小数
-                String strAvValue = new DecimalFormat("0.0").format(_measuringValue);
-                Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, strAvValue));
-                _txt5.setText(strAvValue + "℃");
-                _txt5.setTextColor(Color.GREEN);
-                if (_measuringValue >= 34 && _measuringValue <= 37.5) {
-                    _mediaPlayer1.start();
-                } else if (_measuringValue > 37.5) {
-                    _mediaPlayer2.start();
-                }
-                //上一条语音播放完毕才播放下一条
-                //                if (_speechState == 3 && _measuringValue >= 34) {
-                //                    Speak(strAvValue + "度");
-                //                }
+        _measuringValue = value1 + _amountView.getCurrent();
+        //只保留两位小数
+        String strAvValue = new DecimalFormat("0.0").format(_measuringValue);
+        Log.i(TAG, String.format("最高温度:%s℃ 最低温度:%s℃ 环境温度:%s℃ 平均温度:%s℃ 测量温度:%s℃", value1, value2, value3, value4, strAvValue));
+        //检测到人脸才统计温度
+        if (_isCheckedFace) {
+            if (_measuringValue >= 34 && _measuringValue <= 37.5) {
+                //                _mediaPlayer1.start();
+            } else if (_measuringValue > 37.5) {
+                //                _mediaPlayer2.start();
             }
-            _calcCount--;
-            if (_calcCount == 0) {
-                _calcCount = 3;
-                _calcArray = new double[_calcCount];
+            //上一条语音播放完毕才播放下一条
+            if (_speechState == 3) {
+                Speak(strAvValue + "度");
             }
+            _isCheckedFace = false;
         }
+        _txt5.setText(strAvValue + "℃");
+        _txt5.setTextColor(Color.GREEN);
     }
 
     /**
@@ -474,7 +460,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt4.setTextColor(Color.GRAY);
         _txt5.setText("Null");
         _txt5.setTextColor(Color.GRAY);
-        Speak("连接已断开");
+        Speak("设备已断开");
     }
 
     /**
@@ -729,6 +715,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             }
         } else if (_detectorType == NATIVE_DETECTOR) {
             if (_nativeDetector != null) {
+                //检测人脸
                 _nativeDetector.detect(_gray, faces);
             }
         } else {
@@ -738,7 +725,9 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //绘制检测框
         for (int i = 0; i < facesArray.length; i++) {
             Imgproc.rectangle(_rgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
+            _isCheckedFace = true;
         }
+        //绘制不同颜色的边框
         int a = _rgba.cols();
         int b = _rgba.rows();
         Point point1 = new Point(0, 0);
