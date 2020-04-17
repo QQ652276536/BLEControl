@@ -28,7 +28,7 @@ public class Auth {
         appId = getProperty(prop, "appId");
         appKey = getProperty(prop, "appKey");
         secretKey = getProperty(prop, "secretKey");
-        //收费纯离线版本需要序列号,免费离在线版本不需要
+        //纯离线版本需要序列号,离在线版本不需要
         sn = prop.getProperty("sn");
     }
 

@@ -30,7 +30,7 @@ public class InitConfig {
     private SpeechSynthesizerListener listener;
 
     /**
-     * 离在线SDK用
+     * 离在线
      *
      * @param appId
      * @param appKey
@@ -49,7 +49,7 @@ public class InitConfig {
     }
 
     /**
-     * 纯离线SDK用
+     * 纯离线
      *
      * @param appId
      * @param appKey

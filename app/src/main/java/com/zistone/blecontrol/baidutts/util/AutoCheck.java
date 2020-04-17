@@ -223,7 +223,7 @@ public class AutoCheck {
             for (String name : soNames) {
                 if (!set.contains(name)) {
                     errorMessage = "Jni目录" + path + " 缺少可读的so文件:" + name + ",该目录文件列表:" + set.toString();
-                    fixMessage = "如果您的app内没有其它so文件,请复制demo里的src/main/jniLibs至同名目录。" + " 如果app内有so文件,请合并目录放一起(注意目录取交集,多余的目录删除)。";
+                    fixMessage = "如果您的app内没有其它so文件,请复制demo里的src/main/jniLibs至同名目录。如果app内有so文件,请合并目录放一起(注意目录取交集,多余的目录删除)。";
                     break;
                 }
             }
