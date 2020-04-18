@@ -437,9 +437,11 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     }
 
     /**
-     * 成功连接BLE设备
+     * 成功连接BLE设备,用于隐藏连接成功的设备
      */
     public void OnConnected() {
+        if (_myBluetoothDevice == null)
+            return;
         String address = _myBluetoothDevice.getAddress();
         Log.i(TAG, String.format("设备%s连接成功", address));
         //选择设备后会停止扫描,隐藏连接成功的设备后再调用一次筛选
@@ -641,7 +643,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
             if (intent != null)
-                //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据
+                //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
                 startActivityForResult(intent, 2);
         } else {
             ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "请检查该设备是否被占用");
