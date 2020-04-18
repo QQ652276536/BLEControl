@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <android/log.h>
-#include <opencv/cv.hpp>
 
 #define LOG_TAG "FaceDetection/DetectionBasedTracker"
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
