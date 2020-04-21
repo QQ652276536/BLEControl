@@ -8,7 +8,7 @@ buildscript {
     }
     //注意:不要将您的应用程序依赖项放在这里,它们属于单独的模块build.gradle文件
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.1'
+        classpath 'com.android.tools.build:gradle:3.6.1'
     }
 }
 
