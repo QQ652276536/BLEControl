@@ -15,10 +15,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    public static final int ACTIVITYRESULT_WRITEVALUE = 1;
-    public static final int ACTIVITYRESULT_PARAMSETTING = 2;
-    public static final int ACTIVITYRESULT_OTA = 3;
-    public static final int ACTIVITYRESULT_FILTER = 4;
 
     private boolean _isPermissionRequested = false;
 

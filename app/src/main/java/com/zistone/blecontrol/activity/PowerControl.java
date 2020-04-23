@@ -29,6 +29,7 @@ import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.util.Map;
@@ -86,6 +87,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private boolean _connectedSuccess = false, _isOpenParamSetting = false;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
+    private DialogFragmentListener _dialogFragmentListener;
     private FragmentManager _fragmentManager;
 
     private void InitListener() {
@@ -96,6 +98,21 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     _btn1.setText("连接");
                     DisConnect();
                 }
+            }
+        };
+        _dialogFragmentListener = new DialogFragmentListener() {
+            @Override
+            public void OnDismiss(String tag) {
+
+            }
+
+            @Override
+            public void OnComfirm(String tag, String str) {
+                Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, str);
+                handler.sendMessage(message);
+                //发送内部参数以后关闭设置窗口
+                _paramSetting.dismiss();
+                _paramSetting = null;
             }
         };
     }
@@ -275,7 +292,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     if (_isOpenParamSetting) {
                         if (_paramSetting == null) {
                             _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6,
-                                                                                                 bitStr7, bitStr8});
+                                                                                                 bitStr7, bitStr8}, _dialogFragmentListener);
                             _paramSetting.setCancelable(false);
                         }
                         _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
@@ -486,29 +503,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (_connectedSuccess) {
-            switch (requestCode) {
-                case MainActivity.ACTIVITYRESULT_WRITEVALUE: {
-                    String hexStr = data.getStringExtra("WriteValue");
-                }
-                break;
-                case MainActivity.ACTIVITYRESULT_PARAMSETTING: {
-                    String hexStr = data.getStringExtra("ParamSetting");
-                    Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, hexStr);
-                    handler.sendMessage(message);
-                }
-                break;
-                case MainActivity.ACTIVITYRESULT_OTA: {
-                    String hexStr = data.getStringExtra("OTA");
-                }
-                break;
-            }
-        } else {
-            ProgressDialogUtil.ShowWarning(PowerControl.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
-        }
-        //发送内部参数以后关闭设置窗口
-        _paramSetting.dismiss();
-        _paramSetting = null;
     }
 
     @Override

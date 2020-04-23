@@ -24,11 +24,13 @@ import android.widget.TextView;
 
 import com.zistone.blecontrol.activity.MainActivity;
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.DialogFragmentListener;
 
 public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener {
 
     private static final String TAG = "DialogFragment_WriteValue";
     private static final String ARG_PARAM1 = "param1";
+    private static DialogFragmentListener _dialogFragmentListener;
     private TabLayout _tabLayout;
     private View _view;
     private Context _context;
@@ -38,7 +40,8 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     private Button _btn4;
     private TableLayout _table;
 
-    public static DialogFragment_ParamSetting newInstance(String[] strArray) {
+    public static DialogFragment_ParamSetting newInstance(String[] strArray, DialogFragmentListener listener) {
+        _dialogFragmentListener = listener;
         DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, strArray);
@@ -94,9 +97,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
                     EditText editText = (EditText) row.getChildAt(2);
                     data += editText.getText().toString();
                 }
-                Intent intent = new Intent();
-                intent.putExtra("WriteValue", data);
-                getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_WRITEVALUE, Activity.RESULT_OK, intent);
+                _dialogFragmentListener.OnComfirm(TAG, data);
             }
             break;
         }

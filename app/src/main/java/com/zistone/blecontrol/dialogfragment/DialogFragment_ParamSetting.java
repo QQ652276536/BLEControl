@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 
 import com.zistone.blecontrol.activity.MainActivity;
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.DialogFragmentListener;
 
 /**
  * 修改内部控制参数
@@ -29,6 +30,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
 
     private static final String TAG = "DialogFragment_ParamSetting";
     private static final String ARG_PARAM1 = "param1";
+    private static DialogFragmentListener _dialogFragmentListener;
     private Context _context;
     private View _view;
     private Button _btn1;
@@ -42,7 +44,8 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     private CheckBox _chk7;
     private CheckBox _chk8;
 
-    public static DialogFragment_ParamSetting newInstance(String[] strArray) {
+    public static DialogFragment_ParamSetting newInstance(String[] strArray, DialogFragmentListener listener) {
+        _dialogFragmentListener = listener;
         DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, strArray);
@@ -80,9 +83,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
                 String data = "680000000000006810000587" + hexStr.toUpperCase() + "000000EA16";
-                Intent intent = new Intent();
-                intent.putExtra("ParamSetting", data);
-                getTargetFragment().onActivityResult(MainActivity.ACTIVITYRESULT_PARAMSETTING, Activity.RESULT_OK, intent);
+                _dialogFragmentListener.OnComfirm(TAG, data);
             }
             break;
         }
