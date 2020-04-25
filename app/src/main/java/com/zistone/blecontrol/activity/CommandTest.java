@@ -39,7 +39,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     private ImageButton _btnReturn;
     private TextView _txt;
-    private Button _btn0, _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11;
+    private Button _btn0, _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -114,6 +114,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     _btn9.setEnabled(true);
                     _btn10.setEnabled(true);
                     _btn11.setEnabled(true);
+                    _btn12.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
                     _connectedSuccess = true;
                 }
@@ -296,9 +297,15 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 receive = stringBuffer.toString() + "\r\n";
             }
             break;
-            //修改内部控制参数:68,00,00,00,00,00,01,68,10,00,02,00,87,E3,16
+            //修改内部控制参数:68000000000001681000020087EB16
             case "87":
                 break;
+            //读取内部存储的事件记录:
+            case "20": {
+                String a = data;
+                int af = 1;
+            }
+            break;
         }
         Message message = handler.obtainMessage(MESSAGE_2, "接收:" + receive);
         handler.sendMessage(message);
@@ -371,8 +378,11 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             case "87":
                 sendResult = "修改内部控制参数";
                 break;
+            case "20":
+                sendResult = "读取内部存储的事件记录";
+                break;
         }
-        Log.i(TAG, "发送:" + sendResult);
+        Log.i(TAG, "成功发送'" + sendResult + "'的指令");
         Message message = handler.obtainMessage(MESSAGE_2, "发送:" + ConvertUtil.StrArrayToStr(strArray));
         handler.sendMessage(message);
     }
@@ -416,6 +426,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
+        String hexStr = "";
+        String logStr = "";
         switch (v.getId()) {
             case R.id.btn_return: {
                 ProgressDialogUtil.Dismiss();
@@ -428,84 +440,83 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
             //开门
             case R.id.button1: {
-                String hexStr = "680000000000006810000100E116";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000100E116";
+                logStr = "发送'开门'指令:" + hexStr;
             }
             break;
             //读卡
             case R.id.btn2: {
-                String hexStr = "680000000000006810000101E216";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000101E216";
+                logStr = "发送'读卡'指令:" + hexStr;
             }
             break;
             //测量电池电压
             case R.id.btn3: {
-                String hexStr = "680000000000006810000102E316";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000102E316";
+                logStr = "发送'测量电池电压'指令:" + hexStr;
             }
             break;
             //测量磁场强度
             case R.id.btn4: {
-                String hexStr = "680000000000006810000103E416";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000103E416";
+                logStr = "发送'测量磁场强度'指令:" + hexStr;
             }
             break;
             //测量门状态
             case R.id.btn5: {
-                String hexStr = "680000000000006810000104E516";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000104E516";
+                logStr = "发送'测量门状态'指令:" + hexStr;
             }
             break;
             //综合测试A
             case R.id.btn6: {
-                String hexStr = "680000000000006810000180E616";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000180E616";
+                logStr = "发送'综合测试A'指令:" + hexStr;
             }
             break;
             //开一号门锁
             case R.id.btn7: {
-                String hexStr = "680000000000006810000181E716";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000181E716";
+                logStr = "发送'开一号门锁'指令:" + hexStr;
             }
             break;
             //开二号门锁
             case R.id.btn8: {
-                String hexStr = "680000000000006810000182E816";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000182E816";
+                logStr = "发送'开二号门锁'指令:" + hexStr;
             }
             break;
             //开全部门锁
             case R.id.btn9: {
-                String hexStr = "680000000000006810000183E916";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000183E916";
+                logStr = "发送'开全部门锁'指令:" + hexStr;
             }
             break;
             //查询内部控制参数
             case R.id.btn10: {
                 _isOpenParamSetting = false;
-                String hexStr = "680000000000006810000186EA16";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000186EA16";
+                logStr = "发送'查询内部控制参数'指令:" + hexStr;
             }
             break;
             //修改内部控制参数
             case R.id.btn11: {
                 _isOpenParamSetting = true;
                 //先查询内部控制参数,再打开修改参数的界面
-                String hexStr = "680000000000006810000186EA16";
-                Log.i(TAG, "发送:" + hexStr);
-                BluetoothUtil.SendComm(hexStr);
+                hexStr = "680000000000006810000186EA16";
+                logStr = "发送'修改内部控制参数'指令:" + hexStr;
             }
             break;
+            //读取内部存储的事件记录
+            case R.id.btn12: {
+                hexStr = "680000000000006810000120EC16";
+                logStr = "发送'读取内部存储的事件记录'指令:" + hexStr;
+            }
+            break;
+        }
+        if (!hexStr.equals("")) {
+            BluetoothUtil.SendComm(hexStr);
+            Log.i(TAG, logStr);
         }
     }
 
@@ -557,6 +568,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn10.setOnClickListener(this);
         _btn11 = findViewById(R.id.btn11);
         _btn11.setOnClickListener(this);
+        _btn12 = findViewById(R.id.btn12);
+        _btn12.setOnClickListener(this);
         BluetoothUtil.Init(CommandTest.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
