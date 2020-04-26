@@ -518,7 +518,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(TemperatureMeasure.this, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(TemperatureMeasure.this, false, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override

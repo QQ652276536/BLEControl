@@ -193,7 +193,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             case R.id.btn2_db:
                 break;
             case R.id.btn1_db: {
-                ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, "正在绑定物料...");
+                ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, false, "正在绑定物料...");
                 URL = PropertiesUtil.GetValueProperties(MaterialsInDB.this).getProperty("URL") + "/Material/Update";
                 Material materiel = new Material();
                 materiel.setDeviceName(_txt2.getText().toString());
@@ -245,7 +245,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             _txt2.setText(_bluetoothDevice.getName());
             //电池电量在连接成功后通过UUID获取
             Log.i(TAG, "开始连接...");
-            ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, "正在连接...");
+            ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, false, "正在连接...");
             //连接蓝牙设备的回调
             _bluetoothGatt = _bluetoothDevice.connectGatt(MaterialsInDB.this, false, new BluetoothGattCallback() {
                 /**

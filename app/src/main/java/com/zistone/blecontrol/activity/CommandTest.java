@@ -300,7 +300,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             //修改内部控制参数:68000000000001681000020087EB16
             case "87":
                 break;
-            //读取内部存储的事件记录:
+            //读取内部存储的事件记录:6803000014000168A00B062004252326401A8516
             case "20": {
                 String a = data;
                 int af = 1;
@@ -330,7 +330,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, false, "正在连接...");
     }
 
     @Override
@@ -509,7 +509,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             break;
             //读取内部存储的事件记录
             case R.id.btn12: {
-                hexStr = "680000000000006810000120EC16";
+                hexStr = "6800000000000068200100EC16";
                 logStr = "发送'读取内部存储的事件记录'指令:" + hexStr;
             }
             break;
