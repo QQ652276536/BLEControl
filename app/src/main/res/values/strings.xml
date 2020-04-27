@@ -56,4 +56,6 @@
     <string name="commandTest">指令测试</string>
     <string name="inDB">物料绑定</string>
     <string name="temperature">体温测量</string>
+    <string name="btn_top">顶部</string>
+    <string name="btn_bottom">底部</string>
 </resources>
