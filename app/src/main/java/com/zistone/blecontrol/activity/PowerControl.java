@@ -618,7 +618,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(PowerControl.this, false, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(PowerControl.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override

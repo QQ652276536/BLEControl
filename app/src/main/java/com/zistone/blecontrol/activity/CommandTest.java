@@ -198,7 +198,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 return;
             }
             _nextEvent++;
-            receive = "第" + _nextEvent + "条内部存储的事件记录";
+            //            receive = "第" + _nextEvent + "条内部存储的事件记录";
+            receive = "事件" + _nextEvent;
             switch (strArray[10]) {
                 case "01":
                     receive += " 开锁";
@@ -424,7 +425,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, false, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, true, "正在连接...");
     }
 
     @Override
