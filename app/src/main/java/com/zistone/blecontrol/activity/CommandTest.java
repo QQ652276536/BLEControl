@@ -37,9 +37,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private static final int SEND_SET_CONTROLPARAM = 87;
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
 
-    private ImageButton _btnReturn;
+    private ImageButton _btnReturn,_btnClear;
     private TextView _txt;
-    private Button _btn0, _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btnTop, _btnBottom;
+    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btnTop, _btnBottom;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -691,8 +691,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btnReturn.setOnClickListener(this);
         _txt = findViewById(R.id.txt);
         _txt.setMovementMethod(ScrollingMovementMethod.getInstance());
-        _btn0 = findViewById(R.id.btnClear);
-        _btn0.setOnClickListener(this);
+        _btnClear = findViewById(R.id.btnClear);
+        _btnClear.setOnClickListener(this);
         _btnTop = findViewById(R.id.btnTop);
         _btnTop.setOnClickListener(this);
         _btnBottom = findViewById(R.id.btnBottom);

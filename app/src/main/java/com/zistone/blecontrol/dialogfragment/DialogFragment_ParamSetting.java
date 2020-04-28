@@ -3,6 +3,7 @@ package com.zistone.blecontrol.dialogfragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +94,15 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    dismiss();
+                }
+                return false;
+            }
+        });
         _btn1 = _view.findViewById(R.id.btn1_paramsetting);
         _btn2 = _view.findViewById(R.id.btn2_paramsetting);
         _chk1 = _view.findViewById(R.id.chk1_paramsetting);
@@ -202,4 +213,5 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
         }
         _context = getContext();
     }
+
 }

@@ -17,7 +17,7 @@
             android:id="@+id/btn_return"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/transparent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/btn_return" />
 
         <TextView
@@ -265,14 +265,13 @@
                         android:text="调试信息"
                         android:textSize="18sp" />
 
-                    <Button
-                        android:id="@+id/button5"
-                        style="@style/ButtonStyleA"
-                        android:layout_width="70dp"
-                        android:layout_height="match_parent"
+                    <ImageButton
+                        android:id="@+id/btnClear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:text="清屏"
-                        android:textSize="16sp" />
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/clear" />
                 </LinearLayout>
 
                 <com.zistone.blecontrol.controls.MyScrollView

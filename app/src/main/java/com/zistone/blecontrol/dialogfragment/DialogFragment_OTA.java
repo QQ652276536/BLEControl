@@ -3,6 +3,7 @@ package com.zistone.blecontrol.dialogfragment;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,6 +134,15 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    dismiss();
+                }
+                return false;
+            }
+        });
         _btn1 = _view.findViewById(R.id.btn1_ota);
         _btn2 = _view.findViewById(R.id.btn2_ota);
         _txt1 = _view.findViewById(R.id.txt1_ota);
@@ -157,11 +168,6 @@ public class DialogFragment_OTA extends DialogFragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             _bluetoothDevice = getArguments().getParcelable(ARG_PARAM1);
-            Map<String, UUID> map = (Map<String, UUID>) getArguments().getSerializable(ARG_PARAM2);
-            SERVICE_UUID = map.get("SERVICE_UUID");
-            WRITE_UUID = map.get("WRITE_UUID");
-            READ_UUID = map.get("READ_UUID");
-            CONFIG_UUID = map.get("CONFIG_UUID");
         }
         _context = getContext();
     }

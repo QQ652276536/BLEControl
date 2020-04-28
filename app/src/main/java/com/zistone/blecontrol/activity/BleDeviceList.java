@@ -219,7 +219,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         if (BLEUtil.StartScanLe() == 1) {
             _isStartOrStopScan = true;
             _gifImageView.setVisibility(View.VISIBLE);
-            _toolbar.setNavigationIcon(R.drawable.stop1);
+            _toolbar.setNavigationIcon(R.drawable.stop);
         } else {
             ProgressDialogUtil.ShowWarning(BleDeviceList.this, "提示", "请确认系统蓝牙是否开启");
         }
@@ -229,7 +229,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         BLEUtil.StopScanLe();
         _isStartOrStopScan = false;
         _gifImageView.setVisibility(View.INVISIBLE);
-        _toolbar.setNavigationIcon(R.drawable.start1);
+        _toolbar.setNavigationIcon(R.drawable.start);
     }
 
     /**
@@ -248,7 +248,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     //蓝牙已开启则直接开始扫描设备
                     case BluetoothAdapter.STATE_ON:
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        _toolbar.setNavigationIcon(R.drawable.stop1);
+                        _toolbar.setNavigationIcon(R.drawable.stop);
                         _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
                         BLEUtil.Init(BleDeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                         break;
@@ -256,7 +256,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     case BluetoothAdapter.STATE_OFF:
                     case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        _toolbar.setNavigationIcon(R.drawable.start1);
+                        _toolbar.setNavigationIcon(R.drawable.start);
                         break;
                 }
             }
@@ -813,9 +813,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _listView = findViewById(R.id.lv_bleList);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
-        _drawableUp = getResources().getDrawable(R.drawable.up1, null);
+        _drawableUp = getResources().getDrawable(R.drawable.up, null);
         _drawableUp.setBounds(0, 0, _drawableUp.getMinimumWidth(), _drawableUp.getMinimumHeight());
-        _drawableDown = getResources().getDrawable(R.drawable.down1, null);
+        _drawableDown = getResources().getDrawable(R.drawable.down, null);
         _drawableDown.setBounds(0, 0, _drawableDown.getMinimumWidth(), _drawableDown.getMinimumHeight());
         _btnClearContentFilter = findViewById(R.id.btnClearFilterContent_filter);
         _btnClearContentFilter.setOnClickListener(this::onClick);

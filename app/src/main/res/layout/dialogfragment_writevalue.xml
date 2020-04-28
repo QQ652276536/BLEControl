@@ -90,7 +90,7 @@
                         android:id="@+id/btn1_devlceFilter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/transparent"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
                         android:visibility="invisible"
                         app:srcCompat="@drawable/close1" />
                 </TableRow>
@@ -102,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@color/transparent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/add" />
 
             <EditText
