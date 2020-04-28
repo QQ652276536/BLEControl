@@ -51,7 +51,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
@@ -60,31 +59,29 @@
                 android:gravity="right"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnTop"
-                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="right"
-                    android:layout_marginRight="20dp"
-                    android:text="@string/btn_top"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="40dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/top" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnBottom"
-                    style="@style/ButtonStyleA"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="right"
-                    android:layout_marginRight="20dp"
-                    android:text="@string/btn_bottom"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="40dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/bottom" />
 
                 <ImageButton
                     android:id="@+id/btnClear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_gravity="center_vertical"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/clear" />
             </LinearLayout>
