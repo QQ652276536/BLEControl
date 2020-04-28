@@ -1,14 +1,22 @@
 package com.zistone.blecontrol.activity;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,6 +40,7 @@ import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -115,6 +124,37 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 _paramSetting = null;
             }
         };
+    }
+
+    /**
+     * 根据包名启动APK
+     *
+     * @param context
+     * @param packageName
+     * @return
+     */
+    private Intent GetAppOpenIntentByPackageName(Context context, String packageName) {
+        String mainAct = null;
+        PackageManager pkgMag = context.getPackageManager();
+        //ACTION_MAIN是隐藏启动的action, 你也可以自定义
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        //CATEGORY_LAUNCHER有了这个,你的程序就会出现在桌面上
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键,如果任务队列中已经存在,则重建程序
+        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
+        for (int i = 0; i < list.size(); i++) {
+            ResolveInfo info = list.get(i);
+            if (info.activityInfo.packageName.equals(packageName)) {
+                mainAct = info.activityInfo.name;
+                break;
+            }
+        }
+        if (TextUtils.isEmpty(mainAct))
+            return null;
+        intent.setComponent(new ComponentName(packageName, mainAct));
+        return intent;
     }
 
     private Handler handler = new Handler() {
@@ -532,11 +572,22 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     _writeValue.show(_fragmentManager, "DialogFragment_WriteValue");
                 }
                 break;
-                //OTA
+                //文件传输
                 case R.id.menu_3_power: {
                     _ota = DialogFragment_OTA.newInstance(_bluetoothDevice);
                     _ota.setCancelable(false);
                     _ota.show(_fragmentManager, "DialogFragment_OTA");
+                }
+                break;
+                //OTA升级
+                case R.id.menu_4_power: {
+                    Intent intent = GetAppOpenIntentByPackageName(this, "com.ambiqmicro.android.amota");
+                    if (intent != null) {
+                        DisConnect();
+                        startActivity(intent);
+                    } else {
+                        ProgressDialogUtil.ShowWarning(this, "提示", "未安装OTA_ZM301,无法使用该功能!");
+                    }
                 }
                 break;
             }
