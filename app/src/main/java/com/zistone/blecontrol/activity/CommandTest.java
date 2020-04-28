@@ -37,9 +37,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private static final int SEND_SET_CONTROLPARAM = 87;
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
 
-    private ImageButton _btnReturn, _btnClear;
+    private ImageButton _btnReturn, _btnClear, _btnTop, _btnBottom;
     private TextView _txt;
-    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btnTop, _btnBottom;
+    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
