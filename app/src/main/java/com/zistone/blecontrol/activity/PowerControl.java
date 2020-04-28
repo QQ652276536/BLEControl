@@ -71,9 +71,9 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     private BluetoothDevice _bluetoothDevice;
     private Toolbar _toolbar;
-    private ImageButton _btnReturn;
+    private ImageButton _btnReturn, _btnClear;
     private TextView _debugView;
-    private Button _btn1, _btn2, _btn3, _btn4, _btn5;
+    private Button _btn1, _btn2, _btn3, _btn4;
     private TextView _txt1, _txt2, _txt3, _txt4, _txt5, _txt6;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
@@ -598,7 +598,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             }
             break;
             //清屏
-            case R.id.button5:
+            case R.id.btnClear:
                 _debugView.setText("");
                 break;
         }
@@ -618,7 +618,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(PowerControl.this, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(PowerControl.this, false, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -727,15 +727,15 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _btn2 = findViewById(R.id.button2);
         _btn3 = findViewById(R.id.button3);
         _btn4 = findViewById(R.id.button4);
-        _btn5 = findViewById(R.id.button5);
+        _btnClear = findViewById(R.id.btnClear);
         _scrollView = findViewById(R.id.scrollView);
         _llPowerControl = findViewById(R.id.fragment_bluetooth_powercontrol);
         _btnReturn.setOnClickListener(this::onClick);
+        _btnClear.setOnClickListener(this::onClick);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
-        _btn5.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         InitListener();
         BluetoothUtil.Init(PowerControl.this, this);

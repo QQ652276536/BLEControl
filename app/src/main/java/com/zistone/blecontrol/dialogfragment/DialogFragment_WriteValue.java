@@ -3,6 +3,7 @@ package com.zistone.blecontrol.dialogfragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +36,7 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     private TabLayout _tabLayout;
     private View _view;
     private Context _context;
-    private Button _btn1;
+    private ImageButton _btn1;
     private Button _btn2;
     private Button _btn3;
     private Button _btn4;
@@ -106,6 +108,15 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    dismiss();
+                }
+                return false;
+            }
+        });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -149,4 +160,5 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
     }
+
 }

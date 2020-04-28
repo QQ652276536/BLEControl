@@ -65,10 +65,10 @@ import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
 
-public class BleDeviceList extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
+public class DeviceList extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
 
-    private static final String TAG = "BleDeviceList", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
+    private static final String TAG = "DeviceList", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -181,7 +181,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onfinish() {
-                //Toast.makeText(BleDeviceList.this, "完成", Toast.LENGTH_LONG).show();
+                //Toast.makeText(DeviceList.this, "完成", Toast.LENGTH_LONG).show();
             }
 
             /**
@@ -191,7 +191,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
              */
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
-                Toast.makeText(BleDeviceList.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DeviceList.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -219,9 +219,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         if (BLEUtil.StartScanLe() == 1) {
             _isStartOrStopScan = true;
             _gifImageView.setVisibility(View.VISIBLE);
-            _toolbar.setNavigationIcon(R.drawable.stop1);
+            _toolbar.setNavigationIcon(R.drawable.stop);
         } else {
-            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "提示", "请确认系统蓝牙是否开启");
+            ProgressDialogUtil.ShowWarning(DeviceList.this, "提示", "请确认系统蓝牙是否开启");
         }
     }
 
@@ -229,7 +229,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         BLEUtil.StopScanLe();
         _isStartOrStopScan = false;
         _gifImageView.setVisibility(View.INVISIBLE);
-        _toolbar.setNavigationIcon(R.drawable.start1);
+        _toolbar.setNavigationIcon(R.drawable.start);
     }
 
     /**
@@ -248,20 +248,20 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     //蓝牙已开启则直接开始扫描设备
                     case BluetoothAdapter.STATE_ON:
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        _toolbar.setNavigationIcon(R.drawable.stop1);
+                        _toolbar.setNavigationIcon(R.drawable.stop);
                         _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                        BLEUtil.Init(BleDeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
+                        BLEUtil.Init(DeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                         break;
                     //蓝牙未开启
                     case BluetoothAdapter.STATE_OFF:
                     case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        _toolbar.setNavigationIcon(R.drawable.start1);
+                        _toolbar.setNavigationIcon(R.drawable.start);
                         break;
                 }
             }
         } else {
-            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "该设备不支持BLE");
+            ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "该设备不支持BLE");
         }
     }
 
@@ -477,7 +477,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 //用户授权开启蓝牙
                 if (requestCode != 0) {
                     _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                    BLEUtil.Init(BleDeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
+                    BLEUtil.Init(DeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                     BeginScan();
                 }
                 //用户拒绝开启蓝牙
@@ -494,7 +494,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - _exitTime) > 2000) {
-                Toast.makeText(BleDeviceList.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DeviceList.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 _exitTime = System.currentTimeMillis();
             } else {
                 this.finish();
@@ -553,7 +553,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                     ShowHideFilter();
                     _isBtnUpDownFlag = false;
                     //隐藏键盘
-                    InputMethodManager imm = (InputMethodManager) BleDeviceList.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) DeviceList.this.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(_btnFilterContent.getApplicationWindowToken(), 0);
                     _btnFilterContent.setCompoundDrawables(null, null, _drawableDown, null);
                     _filterName = _editName.getText().toString();
@@ -615,30 +615,30 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
             //电力控制
             if (_rdoFunc1.isChecked()) {
-                intent = new Intent(BleDeviceList.this, PowerControl.class);
+                intent = new Intent(DeviceList.this, PowerControl.class);
                 intent.putExtra(ARG_PARAM1, bluetoothDevice);
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
             //指令测试
             else if (_rdoFunc2.isChecked()) {
-                intent = new Intent(BleDeviceList.this, CommandTest.class);
+                intent = new Intent(DeviceList.this, CommandTest.class);
                 intent.putExtra(ARG_PARAM1, bluetoothDevice);
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
             //物料绑定
             else if (_rdoFunc3.isChecked()) {
                 if (_rdoUUID4.isChecked()) {
-                    intent = new Intent(BleDeviceList.this, MaterialsInDB.class);
+                    intent = new Intent(DeviceList.this, MaterialsInDB.class);
                     intent.putExtra(ARG_PARAM1, bluetoothDevice);
                     intent.putExtra(ARG_PARAM2, (Serializable) map);
                     intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
                 } else {
-                    ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
+                    ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
                 }
             }
             //测量体温
             else if (_rdoFunc4.isChecked()) {
-                intent = new Intent(BleDeviceList.this, TemperatureMeasure.class);
+                intent = new Intent(DeviceList.this, TemperatureMeasure.class);
                 intent.putExtra(ARG_PARAM1, bluetoothDevice);
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
             }
@@ -646,7 +646,7 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
                 //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
                 startActivityForResult(intent, 2);
         } else {
-            ProgressDialogUtil.ShowWarning(BleDeviceList.this, "错误", "请检查该设备是否被占用");
+            ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "请检查该设备是否被占用");
         }
     }
 
@@ -813,9 +813,9 @@ public class BleDeviceList extends AppCompatActivity implements View.OnClickList
         _listView = findViewById(R.id.lv_bleList);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
-        _drawableUp = getResources().getDrawable(R.drawable.up1, null);
+        _drawableUp = getResources().getDrawable(R.drawable.up, null);
         _drawableUp.setBounds(0, 0, _drawableUp.getMinimumWidth(), _drawableUp.getMinimumHeight());
-        _drawableDown = getResources().getDrawable(R.drawable.down1, null);
+        _drawableDown = getResources().getDrawable(R.drawable.down, null);
         _drawableDown.setBounds(0, 0, _drawableDown.getMinimumWidth(), _drawableDown.getMinimumHeight());
         _btnClearContentFilter = findViewById(R.id.btnClearFilterContent_filter);
         _btnClearContentFilter.setOnClickListener(this::onClick);
