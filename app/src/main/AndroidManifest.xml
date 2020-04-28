@@ -60,7 +60,7 @@
             android:name=".activity.PowerControl"
             android:label="电力控制" />
         <activity
-            android:name=".activity.BleDeviceList"
+            android:name=".activity.DeviceList"
             android:label="低功耗蓝牙设备列表">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
