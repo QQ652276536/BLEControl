@@ -552,7 +552,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 _txt.setText("");
                 break;
             //开门
-            case R.id.button1: {
+            case R.id.btn1: {
                 hexStr = "680000000000006810000100E116";
                 logStr = "发送'开门'指令:" + hexStr;
             }
