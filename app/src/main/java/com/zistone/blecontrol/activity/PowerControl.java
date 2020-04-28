@@ -108,6 +108,18 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     DisConnect();
                 }
             }
+
+            @Override
+            public void OnConfirm() {
+                _btn1.setText("连接");
+                DisConnect();
+                Intent intent = GetAppOpenIntentByPackageName(PowerControl.this, "com.ambiqmicro.android.amota");
+                startActivity(intent);
+            }
+
+            @Override
+            public void OnCancel() {
+            }
         };
         _dialogFragmentListener = new DialogFragmentListener() {
             @Override
@@ -581,12 +593,11 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 break;
                 //OTA升级
                 case R.id.menu_4_power: {
-                    Intent intent = GetAppOpenIntentByPackageName(this, "com.ambiqmicro.android.amota");
+                    Intent intent = GetAppOpenIntentByPackageName(PowerControl.this, "com.ambiqmicro.android.amota");
                     if (intent != null) {
-                        DisConnect();
-                        startActivity(intent);
+                        ProgressDialogUtil.ShowConfirm(PowerControl.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
                     } else {
-                        ProgressDialogUtil.ShowWarning(this, "提示", "未安装OTA_ZM301,无法使用该功能!");
+                        ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未安装OTA_ZM301,无法使用该功能!");
                     }
                 }
                 break;

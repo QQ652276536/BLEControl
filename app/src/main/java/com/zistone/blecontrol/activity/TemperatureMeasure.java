@@ -132,6 +132,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 if (!_connectedSuccess)
                     DisConnect();
             }
+
+            @Override
+            public void OnConfirm() {
+            }
+
+            @Override
+            public void OnCancel() {
+            }
         };
         _onAmountChangeListener = new AmountView.OnAmountChangeListener() {
             @Override
