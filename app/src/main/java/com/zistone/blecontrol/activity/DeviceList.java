@@ -48,6 +48,7 @@ import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.ConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.util.InstallAPK;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -769,6 +770,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_device_list);
         StartAnimation();
         RequestPermission();
@@ -857,7 +859,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         _materialRefreshLayout.autoRefresh();
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
-        super.onCreate(savedInstanceState);
     }
 
 }
