@@ -39,7 +39,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     private ImageButton _btnReturn, _btnClear, _btnTop, _btnBottom;
     private TextView _txt;
-    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12;
+    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btn13, _btn14;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -118,6 +118,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     _btn10.setEnabled(true);
                     _btn11.setEnabled(true);
                     _btn12.setEnabled(true);
+                    _btn13.setEnabled(true);
+                    _btn14.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
                     _connectedSuccess = true;
                 }
@@ -450,6 +452,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * */
         if (strArray[8].equals("20") && byteArray.length == 13 && !_btn12.isEnabled()) {
             sendResult = "读取内部存储的事件记录";
+        } else if (strArray[8].equals("21")) {
+            sendResult = "读取基本信息";
+        } else if (strArray[8].equals("22")) {
+            sendResult = "读取GPS位置信息";
         } else {
             String indexStr = strArray[11];
             switch (indexStr) {
@@ -660,6 +666,18 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 }).start();
             }
             break;
+            //读取基本信息
+            case R.id.btn13: {
+                hexStr = "6800000000000068210100EC16";
+                logStr = "发送'读取基本信息'指令:" + hexStr;
+            }
+            break;
+            //读取GPS位置信息
+            case R.id.btn14: {
+                hexStr = "6800000000000068220100EC16";
+                logStr = "发送'读取GPS位置信息'指令:" + hexStr;
+            }
+            break;
         }
         if (!hexStr.equals("")) {
             BluetoothUtil.SendComm(hexStr);
@@ -722,6 +740,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn11.setOnClickListener(this);
         _btn12 = findViewById(R.id.btn12);
         _btn12.setOnClickListener(this);
+        _btn13 = findViewById(R.id.btn13);
+        _btn13.setOnClickListener(this);
+        _btn14 = findViewById(R.id.btn14);
+        _btn14.setOnClickListener(this);
         BluetoothUtil.Init(CommandTest.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
