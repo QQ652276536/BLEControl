@@ -159,7 +159,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     /**
      * 内部事件
      *
-     * @param data
+     * @param data 带空格的16进制
      */
     private void Resolve(String data) {
         Log.i(TAG, "共接收:" + data);
@@ -170,7 +170,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             _isEventReadThread = true;
             return;
         }
-        String receive = "";
+        String receive = data.trim();
         /*
          * 特殊处理:读取内部存储的事件记录的通信协议和之前的协议不一样,需要留意
          * 指令示例:68 03 00 00 14 00 01 68 A0 0B 06 20 04 25 23 26 40 1A 85 16
@@ -490,9 +490,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     sendResult = "修改内部控制参数";
                     break;
             }
-            Message message = handler.obtainMessage(MESSAGE_2, "发送:" + ConvertUtil.StrArrayToStr(strArray));
-            handler.sendMessage(message);
         }
+        Message message = handler.obtainMessage(MESSAGE_2, "发送:" + ConvertUtil.StrArrayToStr(strArray));
+        handler.sendMessage(message);
         Log.i(TAG, "成功发送'" + sendResult + "'的指令");
     }
 
