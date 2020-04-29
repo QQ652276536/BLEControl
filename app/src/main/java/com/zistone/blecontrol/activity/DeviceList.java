@@ -613,42 +613,38 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         map.put("WRITE_UUID", WRITE_UUID);
         map.put("CONFIG_UUID", CONFIG_UUID);
         Intent intent = null;
-        if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
-            //电力控制
-            if (_rdoFunc1.isChecked()) {
-                intent = new Intent(DeviceList.this, PowerControl.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            //指令测试
-            else if (_rdoFunc2.isChecked()) {
-                intent = new Intent(DeviceList.this, CommandTest.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            //物料绑定
-            else if (_rdoFunc3.isChecked()) {
-                if (_rdoUUID4.isChecked()) {
-                    intent = new Intent(DeviceList.this, MaterialsInDB.class);
-                    intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                    intent.putExtra(ARG_PARAM2, (Serializable) map);
-                    intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
-                } else {
-                    ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
-                }
-            }
-            //测量体温
-            else if (_rdoFunc4.isChecked()) {
-                intent = new Intent(DeviceList.this, TemperatureMeasure.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            if (intent != null)
-                //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
-                startActivityForResult(intent, 2);
-        } else {
-            ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "请检查该设备是否被占用");
+        //电力控制
+        if (_rdoFunc1.isChecked()) {
+            intent = new Intent(DeviceList.this, PowerControl.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
+        //指令测试
+        else if (_rdoFunc2.isChecked()) {
+            intent = new Intent(DeviceList.this, CommandTest.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
+        //物料绑定
+        else if (_rdoFunc3.isChecked()) {
+            if (_rdoUUID4.isChecked()) {
+                intent = new Intent(DeviceList.this, MaterialsInDB.class);
+                intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                intent.putExtra(ARG_PARAM2, (Serializable) map);
+                intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
+            } else {
+                ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
+            }
+        }
+        //测量体温
+        else if (_rdoFunc4.isChecked()) {
+            intent = new Intent(DeviceList.this, TemperatureMeasure.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
+        if (intent != null)
+            //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
+            startActivityForResult(intent, 2);
     }
 
     @Override
