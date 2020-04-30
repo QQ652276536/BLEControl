@@ -70,8 +70,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -105,8 +103,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -140,12 +136,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="电池电压"
                         android:textSize="18sp" />
@@ -158,9 +152,9 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
+                        android:layout_marginLeft="30dp"
                         android:text="内部温度"
                         android:textSize="18sp" />
 
@@ -176,12 +170,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="位置信息"
                         android:textSize="18sp" />

@@ -141,6 +141,27 @@ public class ConvertUtil {
     /**
      * 不带空格的16进制字符串插入指定字符
      *
+     * @param str       不带空格的字符串
+     * @param character 指定字符
+     * @return
+     */
+    public static String StrAddCharacter(String str, String character) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < str.length(); i++) {
+            if (i != str.length() - 1) {
+                stringBuffer.append(str.charAt(i));
+                stringBuffer.append(character);
+
+            } else {
+                stringBuffer.append(str.charAt(i));
+            }
+        }
+        return stringBuffer.toString();
+    }
+
+    /**
+     * 不带空格的16进制字符串插入指定字符
+     *
      * @param hexStr    不带空格不带0x的16进制字符串,比如810300
      * @param character 指定字符
      * @return

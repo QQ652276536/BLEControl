@@ -59,21 +59,19 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private static final String BASEINFO_COMM = "6800000000000068210100EC16";
     //读取GPS位置信息
     private static final String LOCATION_COMM = "6800000000000068220100EC16";
+    //综合测试：循环发送检测门的状态
+    private static final String TESTA = "680000000000006810000180E616";
     //开一号门锁
     private static final String OPENDOOR1_COMM = "680000000000006810000181E116";
     //开二号门锁
     private static final String OPENDOOR2_COMM = "680000000000006810000182E716";
     //开全部门锁
     private static final String OPENDOORS_COMM = "680000000000006810000183E716";
-    //综合测试：循环发送检测门的状态
-    private static final String TESTA = "680000000000006810000180E616";
     private static final int MESSAGE_ERROR_1 = -1;
     private static final int MESSAGE_ERROR_2 = -2;
     private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
-    private static final int RECEIVE_OPENDOOR = 0;
-    private static final int RECEIVE_DOORSTATE = 402;
-    private static final int RECEIVE_BASE_INFO = 21;
+    private static final int RECEIVE_BASEINFO = 21;
     private static final int RECEIVE_LOCATION = 22;
     private static final int RECEIVE_TESTA = 8002;
     private static final int RECEIVE_OPENDOORS1 = 8102;
@@ -123,72 +121,85 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             switch (message.what) {
                 case MESSAGE_ERROR_1:
                     _powerControl.DisConnect();
-                    ProgressDialogUtil.ShowWarning(_powerControl, "警告", "该设备的连接已断开,如需再次连接请重试!");
+                    ProgressDialogUtil.ShowWarning(_powerControl, "警告", "该设备的连接已断开！");
                     break;
+                //连接成功
                 case MESSAGE_1: {
                     _powerControl._btn2.setEnabled(true);
                     _powerControl._btn3.setEnabled(true);
                     _powerControl._btn4.setEnabled(true);
-                    //读取设备基本信息
-                    BluetoothUtil.SendComm(BASEINFO_COMM);
                     _powerControl._refreshTimer = new Timer();
                     //综合测试
                     _powerControl._refreshTask = new TimerTask() {
                         @Override
                         public void run() {
-                            _powerControl.runOnUiThread(() -> {
-                                try {
-                                    BluetoothUtil.SendComm(TESTA);
-                                    //Log.i(TAG, "发送综合测试:" + hexStr);
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                            try {
+                                BluetoothUtil.SendComm(BASEINFO_COMM);
+                                Log.i(TAG, "发送'读取设备基本信息'指令:" + BASEINFO_COMM);
+                                Thread.sleep(100);
+                                BluetoothUtil.SendComm(LOCATION_COMM);
+                                Log.i(TAG, "发送'GPS位置'指令:" + LOCATION_COMM);
+                                Thread.sleep(100);
+                                BluetoothUtil.SendComm(TESTA);
+                                Log.i(TAG, "发送'综合测试'指令:" + TESTA);
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
                     _powerControl._refreshTimer.schedule(_powerControl._refreshTask, 0, 2 * 1000);
                     _powerControl._connectedSuccess = true;
                 }
                 break;
-                case RECEIVE_OPENDOOR: {
-                    if (result.equalsIgnoreCase("opendoor")) {
-                        _powerControl._debugView.append("发送开门指令 ");
-                    } else if (result.equalsIgnoreCase("doorisopen")) {
-                        _powerControl._debugView.append("收到:门【已打开】\n");
-                        _powerControl._txt1.setText("已开");
-                    } else {
-                        _powerControl._debugView.append("收到:门【未打开】\n");
-                        _powerControl._txt1.setText("未开");
+                //设备基本信息
+                case RECEIVE_BASEINFO: {
+                    String[] strArray = result.split(" ");
+                    String versionStr = ConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
+                    versionStr = ConvertUtil.StrAddCharacter(versionStr, ".");
+                    String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
+                    //不足两位补齐，比如0->0、1->01
+                    if (voltageStr1.length() == 1)
+                        voltageStr1 = "0" + voltageStr1;
+                    String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
+                    if (voltageStr2.length() == 1)
+                        voltageStr2 = "0" + voltageStr2;
+                    double voltage = Double.valueOf(voltageStr1 + voltageStr2) / 1000;
+                    double temperature = 23.0;
+                    try {
+                        temperature = 23 + Double.valueOf(strArray[16]) / 2;
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    //定位到最后一行
-                    int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
-                    //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _powerControl._scrollView.getHeight()) {
-                        _powerControl._debugView.scrollTo(0, offset - _powerControl._scrollView.getHeight());
-                    }
+                    _powerControl._txtVersion.setText(versionStr);
+                    _powerControl._txt5.setText(voltage + "V");
+                    _powerControl._txt6.setText(temperature + "℃");
                 }
                 break;
-                //设备基本信息
-                case RECEIVE_BASE_INFO:
-
-                    _powerControl._txtVersion.setText(result);
-                    _powerControl._txt5.setText(result + "V");
-                    _powerControl._txt6.setText(result);
-                    break;
                 //设备位置信息
-                case RECEIVE_LOCATION:
-                    _powerControl._txt7.setText(result);
-                    break;
-                //门状态
-                case RECEIVE_DOORSTATE:
-                    _powerControl._txt1.setText(result);
-                    break;
+                case RECEIVE_LOCATION: {
+                    String[] strArray = result.split(" ");
+                    int state = Integer.parseInt(strArray[10], 16);
+                    if (state != 1) {
+                        _powerControl._txt7.setText("定位失败");
+                        return;
+                    }
+                    String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                    double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
+                    int len = Integer.parseInt(strArray[1], 16);
+                    String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                    double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
+                    //                    String heightStr = strArray[3] + strArray[4];
+                    String heightStr = strArray[3];
+                    int height = Integer.parseInt(heightStr, 16);
+                    _powerControl._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                }
+                break;
                 //综合测试
                 case RECEIVE_TESTA: {
-                    String strs[] = result.split(",");
-                    String doorState1 = strs[0];
+                    String strArray[] = result.split(",");
+                    String doorState1 = strArray[0];
                     if (doorState1.equalsIgnoreCase("1")) {
                         _powerControl._txt1.setText("已开");
                         _powerControl._txt1.setTextColor(Color.GREEN);
@@ -196,7 +207,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt1.setText("已关");
                         _powerControl._txt1.setTextColor(Color.RED);
                     }
-                    String lockState1 = strs[1];
+                    String lockState1 = strArray[1];
                     if (lockState1.equalsIgnoreCase("1")) {
                         _powerControl._txt2.setText("已开");
                         _powerControl._txt2.setTextColor(Color.GREEN);
@@ -204,7 +215,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt2.setText("已关");
                         _powerControl._txt2.setTextColor(Color.RED);
                     }
-                    String doorState2 = strs[2];
+                    String doorState2 = strArray[2];
                     if (doorState2.equalsIgnoreCase("1")) {
                         _powerControl._txt3.setText("已开");
                         _powerControl._txt3.setTextColor(Color.GREEN);
@@ -212,7 +223,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt3.setText("已关");
                         _powerControl._txt3.setTextColor(Color.RED);
                     }
-                    String lockState2 = strs[3];
+                    String lockState2 = strArray[3];
                     if (lockState2.equalsIgnoreCase("1")) {
                         _powerControl._txt4.setText("已开");
                         _powerControl._txt4.setTextColor(Color.GREEN);
@@ -287,8 +298,9 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     String bitStr2 = String.valueOf(bitStr.charAt(1));
                     //门检测开关(关门开路)
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
-                    Log.i(TAG, String.format("收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
-                    //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
+                    Log.
+                            i(TAG, String.format("收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                    //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerControl._isOpenParamSetting) {
                         if (_powerControl._paramSetting == null) {
                             _powerControl._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
@@ -297,7 +309,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                             _powerControl._paramSetting.setCancelable(false);
                         }
                         _powerControl._paramSetting.show(_powerControl._fragmentManager, "DialogFragment_ParamSetting");
-                        _powerControl._isOpenParamSetting = false;
+                        _powerControl.
+                                _isOpenParamSetting = false;
                     } else {
                         if (bitStr8.equalsIgnoreCase("1")) {
                             _powerControl._debugView.append("\n收到:\n启用DEBUG软串口【启用】\n");
@@ -342,7 +355,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     }
                     //定位到最后一行
                     int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
-                    //如果文本的高度大于ScrollView的,就自动滑动
+                    //如果文本的高度大于ScrollView的，就自动滑动
                     if (offset > _powerControl._debugView.getHeight()) {
                         _powerControl._debugView.scrollTo(0, offset - _powerControl._debugView.getHeight());
                     }
@@ -417,11 +430,11 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private Intent GetAppOpenIntentByPackageName(Context context, String packageName) {
         String mainAct = null;
         PackageManager pkgMag = context.getPackageManager();
-        //ACTION_MAIN是隐藏启动的action, 你也可以自定义
+        //ACTION_MAIN是隐藏启动的action， 你也可以自定义
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        //CATEGORY_LAUNCHER有了这个,你的程序就会出现在桌面上
+        //CATEGORY_LAUNCHER有了这个，你的程序就会出现在桌面上
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键,如果任务队列中已经存在,则重建程序
+        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键，如果任务队列中已经存在，则重建程序
         intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
@@ -444,103 +457,85 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
      * @param data
      */
     private void Resolve(String data) {
-        //Log.i(TAG, "共接收:" + data);
         String[] strArray = data.split(" ");
-        String indexStr = strArray[12];
         Message message = new Message();
-        switch (indexStr) {
-            //开门
-            case "00": {
-                message.what = RECEIVE_OPENDOOR;
-                if (strArray[14].equalsIgnoreCase("00")) {
-                    message.obj = "doorisopen";
-                } else if (ConvertUtil.HexStrToStr(strArray[13] + strArray[14]).equalsIgnoreCase("OK")) {
-                    message.obj = "doorisopen";
-                } else {
+        /*
+         * 特殊处理:设备基本信息的通信协议和之前的协议不一样，需要留意
+         *
+         * */
+        if (strArray[8].equals("A1") && strArray.length == 19) {
+            message.what = RECEIVE_BASEINFO;
+            message.obj = data;
+        }
+        /*
+         * 特殊处理:GPS位置信息的通信协议和之前的协议不一样，需要留意
+         *
+         * */
+        else if (strArray[8].equals("A2") && strArray.length == 20) {
+            message.what = RECEIVE_LOCATION;
+            message.obj = data;
+        } else {
+            String indexStr = strArray[12];
+            switch (indexStr) {
+                //全部门锁状态
+                case "80": {
+                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                    String doorState1 = String.valueOf(bitStr.charAt(7));
+                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    String doorState2 = String.valueOf(bitStr.charAt(5));
+                    String lockState2 = String.valueOf(bitStr.charAt(4));
+                    //强磁开关状态
+                    String magneticState = String.valueOf(bitStr.charAt(3));
+                    //外接电源状态
+                    String outsideState = String.valueOf(bitStr.charAt(2));
+                    //内部电池充电状态
+                    String insideState = String.valueOf(bitStr.charAt(1));
+                    //电池电量
+                    int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                    //下端磁强
+                    int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
+                    //上端磁强
+                    int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                    //前端磁强
+                    int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
+                    message.what = RECEIVE_TESTA;
+                    message.
+                            obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
+                }
+                break;
+                //开一号门锁
+                case "81": {
+                    message.what = RECEIVE_OPENDOORS1;
                     message.obj = "";
                 }
-            }
-            break;
-            //读卡
-            case "01":
                 break;
-            //电池电压
-            case "02":
-                break;
-            //磁场强度
-            case "03": {
-                String responseValue1 = strArray[9].equals("00") ? "OK" : "Fail";
-                //                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                String responseValue2 = ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18]);
-            }
-            break;
-            //测量门状态
-            case "04": {
-                message.what = RECEIVE_DOORSTATE;
-                if (strArray[13].equals("01")) {
-                    message.obj = "已关";
-                } else {
-                    message.obj = "已开";
+                //开二号门锁
+                case "82": {
+                    message.what = RECEIVE_OPENDOORS2;
+                    message.obj = strArray[13];
                 }
+                break;
+                //开全部门锁
+                case "83": {
+                    message.what = RECEIVE_OPENALLDOORS;
+                    message.obj = strArray[13];
+                }
+                break;
+                //查询内部控制参数
+                case "86": {
+                    message.what = RECEIVE_SEARCH_CONTROLPARAM;
+                    message.obj = strArray[13];
+                }
+                break;
+                //修改内部控制参数
+                case "87": {
+                    //先查询内部控制参数
+                    message.what = SEND_SEARCH_CONTROLPARAM;
+                    message.obj = "";
+                }
+                break;
             }
-            break;
-            //全部门锁状态
-            case "80": {
-                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
-                String doorState1 = String.valueOf(bitStr.charAt(7));
-                String lockState1 = String.valueOf(bitStr.charAt(6));
-                String doorState2 = String.valueOf(bitStr.charAt(5));
-                String lockState2 = String.valueOf(bitStr.charAt(4));
-                //强磁开关状态
-                String magneticState = String.valueOf(bitStr.charAt(3));
-                //外接电源状态
-                String outsideState = String.valueOf(bitStr.charAt(2));
-                //内部电池充电状态
-                String insideState = String.valueOf(bitStr.charAt(1));
-                //电池电量
-                int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
-                //下端磁强
-                int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                //上端磁强
-                int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
-                //前端磁强
-                int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                message.what = RECEIVE_TESTA;
-                message.obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
-            }
-            break;
-            //开一号门锁
-            case "81": {
-                message.what = RECEIVE_OPENDOORS1;
-                message.obj = "";
-            }
-            break;
-            //开二号门锁
-            case "82": {
-                message.what = RECEIVE_OPENDOORS2;
-                message.obj = strArray[13];
-            }
-            break;
-            //开全部门锁
-            case "83": {
-                message.what = RECEIVE_OPENALLDOORS;
-                message.obj = strArray[13];
-            }
-            break;
-            //查询内部控制参数
-            case "86": {
-                message.what = RECEIVE_SEARCH_CONTROLPARAM;
-                message.obj = strArray[13];
-            }
-            break;
-            //修改内部控制参数
-            case "87": {
-                //先查询内部控制参数
-                message.what = SEND_SEARCH_CONTROLPARAM;
-                message.obj = "";
-            }
-            break;
         }
         _myHandler.sendMessage(message);
     }
@@ -569,6 +564,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _txt6.setText("Null");
         _txt7.setText("Null");
         _txtVersion.setText("Null");
+        _txtVersion.setTextColor(Color.GRAY);
     }
 
     @Override
@@ -591,7 +587,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             switch (item.getItemId()) {
                 //内部控制参数设置
                 case R.id.menu_1_power: {
-                    //先查询内部控制参数,再打开修改参数的界面
+                    //先查询内部控制参数，再打开修改参数的界面
                     BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                     _isOpenParamSetting = true;
                 }
@@ -616,13 +612,13 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     if (intent != null) {
                         ProgressDialogUtil.ShowConfirm(PowerControl.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
                     } else {
-                        ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未安装OTA_ZM301,无法使用该功能!");
+                        ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未安装OTA_ZM301，无法使用该功能！");
                     }
                 }
                 break;
             }
         } else {
-            ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "请连接蓝牙设备!");
+            ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "请连接蓝牙设备！");
         }
         return true;
     }
@@ -653,7 +649,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         DisConnect();
                     }
                 } else {
-                    ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未获取到蓝牙,请重试!");
+                    ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未获取到蓝牙，请重试！");
                 }
             }
             break;
@@ -686,8 +682,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     @Override
     public void OnConnected() {
         ProgressDialogUtil.Dismiss();
-        Log.i(TAG, "成功建立连接!");
-        //轮询
+        Log.i(TAG, "成功建立连接！");
         Message message = _myHandler.obtainMessage(MESSAGE_1, "");
         _myHandler.sendMessage(message);
         //返回时告知该设备已成功连接
@@ -701,7 +696,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开!");
+        Log.i(TAG, "连接已断开！");
         Message message = _myHandler.obtainMessage(MESSAGE_ERROR_1, "");
         _myHandler.sendMessage(message);
     }
@@ -712,39 +707,23 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         result = ConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
+        String sendResult = "";
         switch (indexStr) {
-            //发送开门指令
-            case "00":
-                break;
-            //发送读卡指令
-            case "01":
-                break;
-            //发送测量电池电压指令
-            case "02":
-                break;
-            //发送测量磁场强度指令
-            case "03":
-                break;
-            //发送测量门状态指令
-            case "04":
-                break;
             //发送综合测量指令
             case "80":
+                sendResult = "综合测试A";
                 break;
             //发送开一号门锁指令
             case "81":
+                sendResult = "开一号门锁";
                 break;
             //发送开二号门锁指令
             case "82":
+                sendResult = "开二号门锁";
                 break;
             //发送开全部门锁指令
             case "83":
-                break;
-            //发送查询内部控制参数指令
-            case "86":
-                break;
-            //发送修改内部控制参数指令
-            case "87":
+                sendResult = "开全部门锁";
                 break;
         }
     }
@@ -753,7 +732,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     public void OnReadSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
-        //Log.i(TAG, "接收:" + result);
+        Log.i(TAG, "收到:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
         if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
