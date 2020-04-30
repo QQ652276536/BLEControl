@@ -515,7 +515,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     @Override
     public void OnConnected() {
         ProgressDialogUtil.Dismiss();
-        Log.i(TAG, "成功建立连接!");
+        Log.i(TAG, "成功建立连接！");
         //轮询
         Message message = _handler.obtainMessage(MESSAGE_1, "");
         _handler.sendMessage(message);
@@ -531,7 +531,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开!");
+        Log.i(TAG, "连接已断开！");
         _connectedSuccess = false;
     }
 
@@ -631,7 +631,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(TemperatureMeasure.this, "警告", "未获取到蓝牙,请重试!");
+            ProgressDialogUtil.ShowWarning(TemperatureMeasure.this, "警告", "未获取到蓝牙,请重试！");
         }
         try {
             Auth.getInstance(this);
@@ -727,7 +727,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 _nativeDetector.detect(_gray, faces);
             }
         } else {
-            Log.e(TAG, "Detection method is not selected!");
+            Log.e(TAG, "Detection method is not selected！");
         }
         Rect[] facesArray = faces.toArray();
         //绘制检测框

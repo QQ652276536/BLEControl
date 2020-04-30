@@ -198,8 +198,27 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 break;
                 //综合测试
                 case RECEIVE_TESTA: {
-                    String strArray[] = result.split(",");
-                    String doorState1 = strArray[0];
+                    String[] strArray = result.split(" ");
+                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                    String doorState1 = String.valueOf(bitStr.charAt(7));
+                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    String doorState2 = String.valueOf(bitStr.charAt(5));
+                    String lockState2 = String.valueOf(bitStr.charAt(4));
+                    //强磁开关状态
+                    String magneticState = String.valueOf(bitStr.charAt(3));
+                    //外接电源状态
+                    String outsideState = String.valueOf(bitStr.charAt(2));
+                    //内部电池充电状态
+                    String insideState = String.valueOf(bitStr.charAt(1));
+                    //电池电量
+                    int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
+                    //下端磁强
+                    int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
+                    //上端磁强
+                    int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
+                    //前端磁强
+                    int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                     if (doorState1.equalsIgnoreCase("1")) {
                         _powerControl._txt1.setText("已开");
                         _powerControl._txt1.setTextColor(Color.GREEN);
@@ -207,7 +226,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt1.setText("已关");
                         _powerControl._txt1.setTextColor(Color.RED);
                     }
-                    String lockState1 = strArray[1];
                     if (lockState1.equalsIgnoreCase("1")) {
                         _powerControl._txt2.setText("已开");
                         _powerControl._txt2.setTextColor(Color.GREEN);
@@ -215,7 +233,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt2.setText("已关");
                         _powerControl._txt2.setTextColor(Color.RED);
                     }
-                    String doorState2 = strArray[2];
                     if (doorState2.equalsIgnoreCase("1")) {
                         _powerControl._txt3.setText("已开");
                         _powerControl._txt3.setTextColor(Color.GREEN);
@@ -223,7 +240,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt3.setText("已关");
                         _powerControl._txt3.setTextColor(Color.RED);
                     }
-                    String lockState2 = strArray[3];
                     if (lockState2.equalsIgnoreCase("1")) {
                         _powerControl._txt4.setText("已开");
                         _powerControl._txt4.setTextColor(Color.GREEN);
@@ -234,11 +250,26 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
                 //一号门锁
-                case RECEIVE_OPENDOORS1:
-                    break;
+                case RECEIVE_OPENDOORS1: {
+                    String[] strArray = result.split(" ");
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    String doorState2 = String.valueOf(bitStr.charAt(7));
+                    if (doorState2.equalsIgnoreCase("1"))
+                        _powerControl._txt1.setText("已开");
+                    else
+                        _powerControl._txt1.setText("已关");
+                    String lockState2 = String.valueOf(bitStr.charAt(6));
+                    if (lockState2.equalsIgnoreCase("1"))
+                        _powerControl._txt2.setText("已开");
+                    else
+                        _powerControl._txt2.setText("已关");
+                }
+                break;
                 //二号门锁
                 case RECEIVE_OPENDOORS2: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String[] strArray = result.split(" ");
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
                     if (doorState2.equalsIgnoreCase("1"))
@@ -254,7 +285,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 break;
                 //全部门锁
                 case RECEIVE_OPENALLDOORS: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String[] strArray = result.split(" ");
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     if (doorState1.equalsIgnoreCase("1"))
@@ -278,9 +310,15 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt4.setText("已关");
                 }
                 break;
-                //解析查询到的内部控制参数
+                //发送查询内部控制参数的指令
+                case SEND_SEARCH_CONTROLPARAM: {
+                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                }
+                break;
+                //查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
+                    String[] strArray = result.split(" ");
+                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
                     String bitStr8 = String.valueOf(bitStr.charAt(7));
@@ -371,13 +409,72 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 break;
-                //发送查询内部控制参数的指令
-                case SEND_SEARCH_CONTROLPARAM: {
-                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+            }
+        }
+    }
+
+    /**
+     * 解析硬件返回的数据
+     *
+     * @param data 带空格的16进制字符串
+     */
+    private void Resolve(String data) {
+        String[] strArray = data.split(" ");
+        Message message = new Message();
+        /*
+         * 特殊处理：设备基本信息的通信协议和之前的协议不一样，需要留意
+         *
+         * */
+        if (strArray[8].equals("A1") && strArray.length == 19) {
+            message.what = RECEIVE_BASEINFO;
+            message.obj = data;
+        }
+        /*
+         * 特殊处理：GPS位置信息的通信协议和之前的协议不一样，需要留意
+         *
+         * */
+        else if (strArray[8].equals("A2") && strArray.length == 20) {
+            message.what = RECEIVE_LOCATION;
+        }
+        //开关门的协议
+        else {
+            String indexStr = strArray[12];
+            switch (indexStr) {
+                //全部门锁状态
+                case "80": {
+                    message.what = RECEIVE_TESTA;
+                }
+                break;
+                //开一号门锁
+                case "81": {
+                    message.what = RECEIVE_OPENDOORS1;
+                }
+                break;
+                //开二号门锁
+                case "82": {
+                    message.what = RECEIVE_OPENDOORS2;
+                }
+                break;
+                //开全部门锁
+                case "83": {
+                    message.what = RECEIVE_OPENALLDOORS;
+                }
+                break;
+                //查询内部控制参数
+                case "86": {
+                    message.what = RECEIVE_SEARCH_CONTROLPARAM;
+                }
+                break;
+                //修改内部控制参数
+                case "87": {
+                    //先查询再修改
+                    message.what = SEND_SEARCH_CONTROLPARAM;
                 }
                 break;
             }
         }
+        message.obj = data;
+        _myHandler.sendMessage(message);
     }
 
     private void InitListener() {
@@ -448,95 +545,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             return null;
         intent.setComponent(new ComponentName(packageName, mainAct));
         return intent;
-    }
-
-    /**
-     * 解析硬件返回的数据
-     *
-     * @param data
-     */
-    private void Resolve(String data) {
-        String[] strArray = data.split(" ");
-        Message message = new Message();
-        /*
-         * 特殊处理：设备基本信息的通信协议和之前的协议不一样，需要留意
-         *
-         * */
-        if (strArray[8].equals("A1") && strArray.length == 19) {
-            message.what = RECEIVE_BASEINFO;
-            message.obj = data;
-        }
-        /*
-         * 特殊处理：GPS位置信息的通信协议和之前的协议不一样，需要留意
-         *
-         * */
-        else if (strArray[8].equals("A2") && strArray.length == 20) {
-            message.what = RECEIVE_LOCATION;
-            message.obj = data;
-        } else {
-            String indexStr = strArray[12];
-            switch (indexStr) {
-                //全部门锁状态
-                case "80": {
-                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
-                    String doorState1 = String.valueOf(bitStr.charAt(7));
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
-                    String doorState2 = String.valueOf(bitStr.charAt(5));
-                    String lockState2 = String.valueOf(bitStr.charAt(4));
-                    //强磁开关状态
-                    String magneticState = String.valueOf(bitStr.charAt(3));
-                    //外接电源状态
-                    String outsideState = String.valueOf(bitStr.charAt(2));
-                    //内部电池充电状态
-                    String insideState = String.valueOf(bitStr.charAt(1));
-                    //电池电量
-                    int battery = Integer.parseInt(strArray[14] + strArray[15], 16);
-                    //下端磁强
-                    int magneticDown = Integer.parseInt(strArray[16] + strArray[17], 16);
-                    //上端磁强
-                    int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
-                    //前端磁强
-                    int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                    message.what = RECEIVE_TESTA;
-                    message.
-                            obj = doorState1 + "," + lockState1 + "," + doorState2 + "," + lockState2 + "," + battery + "," + magneticDown + "," + magneticUp + "," + magneticBefore;
-                }
-                break;
-                //开一号门锁
-                case "81": {
-                    message.what = RECEIVE_OPENDOORS1;
-                    message.obj = "";
-                }
-                break;
-                //开二号门锁
-                case "82": {
-                    message.what = RECEIVE_OPENDOORS2;
-                    message.obj = strArray[13];
-                }
-                break;
-                //开全部门锁
-                case "83": {
-                    message.what = RECEIVE_OPENALLDOORS;
-                    message.obj = strArray[13];
-                }
-                break;
-                //查询内部控制参数
-                case "86": {
-                    message.what = RECEIVE_SEARCH_CONTROLPARAM;
-                    message.obj = strArray[13];
-                }
-                break;
-                //修改内部控制参数
-                case "87": {
-                    //先查询内部控制参数
-                    message.what = SEND_SEARCH_CONTROLPARAM;
-                    message.obj = "";
-                }
-                break;
-            }
-        }
-        _myHandler.sendMessage(message);
     }
 
     private void DisConnect() {
