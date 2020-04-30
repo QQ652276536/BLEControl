@@ -148,7 +148,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                     };
-                    //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
                     _powerControl._refreshTimer.schedule(_powerControl._refreshTask, 0, 2 * 1000);
                     _powerControl._connectedSuccess = true;
                 }
@@ -298,8 +298,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     String bitStr2 = String.valueOf(bitStr.charAt(1));
                     //门检测开关(关门开路)
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
-                    Log.
-                            i(TAG, String.format("收到查询到的参数(Bit)：\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                    Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerControl._isOpenParamSetting) {
                         if (_powerControl._paramSetting == null) {
