@@ -658,12 +658,12 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (_nextEvent > 0) {
-                                            BluetoothUtil.SendComm("6800000000000068200101EC16");
-                                            Log.i(TAG, "发送'读取内部存储的下一条记录'指令：6800000000000068200101EC16");
-                                        } else {
+                                        if (_nextEvent == 0) {
                                             BluetoothUtil.SendComm("6800000000000068200100EC16");
                                             Log.i(TAG, "发送'读取内部存储的事件记录'指令：6800000000000068200100EC16");
+                                        } else {
+                                            BluetoothUtil.SendComm("6800000000000068200101EC16");
+                                            Log.i(TAG, "发送'读取内部存储的【下一条】记录'指令：6800000000000068200101EC16");
                                         }
                                     }
                                 });
