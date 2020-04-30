@@ -48,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:gravity="right"
+        android:background="@color/darkgray"
         android:orientation="horizontal">
 
         <ImageButton
@@ -90,77 +91,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn1"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_openDoor"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn2"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_readCar"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn3"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_batteryVol"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn4"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_magStr"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn5"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_doorState"
-                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn6"

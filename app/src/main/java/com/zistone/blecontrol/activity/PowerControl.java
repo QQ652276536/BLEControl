@@ -219,28 +219,28 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
                     //前端磁强
                     int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                    if (doorState1.equalsIgnoreCase("1")) {
+                    if (doorState1.equals("1")) {
                         _powerControl._txt1.setText("已开");
                         _powerControl._txt1.setTextColor(Color.GREEN);
                     } else {
                         _powerControl._txt1.setText("已关");
                         _powerControl._txt1.setTextColor(Color.RED);
                     }
-                    if (lockState1.equalsIgnoreCase("1")) {
+                    if (lockState1.equals("1")) {
                         _powerControl._txt2.setText("已开");
                         _powerControl._txt2.setTextColor(Color.GREEN);
                     } else {
                         _powerControl._txt2.setText("已关");
                         _powerControl._txt2.setTextColor(Color.RED);
                     }
-                    if (doorState2.equalsIgnoreCase("1")) {
+                    if (doorState2.equals("1")) {
                         _powerControl._txt3.setText("已开");
                         _powerControl._txt3.setTextColor(Color.GREEN);
                     } else {
                         _powerControl._txt3.setText("已关");
                         _powerControl._txt3.setTextColor(Color.RED);
                     }
-                    if (lockState2.equalsIgnoreCase("1")) {
+                    if (lockState2.equals("1")) {
                         _powerControl._txt4.setText("已开");
                         _powerControl._txt4.setTextColor(Color.GREEN);
                     } else {
@@ -255,12 +255,12 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if (doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equals("1"))
                         _powerControl._txt1.setText("已开");
                     else
                         _powerControl._txt1.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if (lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equals("1"))
                         _powerControl._txt2.setText("已开");
                     else
                         _powerControl._txt2.setText("已关");
@@ -272,12 +272,12 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if (doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equals("1"))
                         _powerControl._txt3.setText("已开");
                     else
                         _powerControl._txt3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if (lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equals("1"))
                         _powerControl._txt4.setText("已开");
                     else
                         _powerControl._txt4.setText("已关");
@@ -289,22 +289,22 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
-                    if (doorState1.equalsIgnoreCase("1"))
+                    if (doorState1.equals("1"))
                         _powerControl._txt1.setText("已开");
                     else
                         _powerControl._txt1.setText("已关");
                     String lockState1 = String.valueOf(bitStr.charAt(6));
-                    if (lockState1.equalsIgnoreCase("1"))
+                    if (lockState1.equals("1"))
                         _powerControl._txt2.setText("已开");
                     else
                         _powerControl._txt2.setText("已关");
                     String doorState2 = String.valueOf(bitStr.charAt(5));
-                    if (doorState2.equalsIgnoreCase("1"))
+                    if (doorState2.equals("1"))
                         _powerControl._txt3.setText("已开");
                     else
                         _powerControl._txt3.setText("已关");
                     String lockState2 = String.valueOf(bitStr.charAt(4));
-                    if (lockState2.equalsIgnoreCase("1"))
+                    if (lockState2.equals("1"))
                         _powerControl._txt4.setText("已开");
                     else
                         _powerControl._txt4.setText("已关");
@@ -349,42 +349,42 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl.
                                 _isOpenParamSetting = false;
                     } else {
-                        if (bitStr8.equalsIgnoreCase("1")) {
+                        if (bitStr8.equals("1")) {
                             _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【启用】\n");
                         } else {
                             _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【禁用】\n");
                         }
-                        if (bitStr7.equalsIgnoreCase("1")) {
+                        if (bitStr7.equals("1")) {
                             _powerControl._debugView.append("使用低磁检测阀值【启用】\n");
                         } else {
                             _powerControl._debugView.append("使用低磁检测阀值【禁用】\n");
                         }
-                        if (bitStr6.equalsIgnoreCase("1")) {
+                        if (bitStr6.equals("1")) {
                             _powerControl._debugView.append("不检测强磁【启用】\n");
                         } else {
                             _powerControl._debugView.append("不检测强磁【禁用】\n");
                         }
-                        if (bitStr5.equalsIgnoreCase("1")) {
+                        if (bitStr5.equals("1")) {
                             _powerControl._debugView.append("启用软关机【启用】\n");
                         } else {
                             _powerControl._debugView.append("启用软关机【禁用】\n");
                         }
-                        if (bitStr4.equalsIgnoreCase("1")) {
+                        if (bitStr4.equals("1")) {
                             _powerControl._debugView.append("有外电可以进入维护方式【启用】\n");
                         } else {
                             _powerControl._debugView.append("有外电可以进入维护方式【禁用】\n");
                         }
-                        if (bitStr3.equalsIgnoreCase("1")) {
+                        if (bitStr3.equals("1")) {
                             _powerControl._debugView.append("正常开锁不告警【启用】\n");
                         } else {
                             _powerControl._debugView.append("正常开锁不告警【禁用】\n");
                         }
-                        if (bitStr2.equalsIgnoreCase("1")) {
+                        if (bitStr2.equals("1")) {
                             _powerControl._debugView.append("锁检测开关(锁上开路)【启用】\n");
                         } else {
                             _powerControl._debugView.append("锁检测开关(锁上开路)【禁用】\n");
                         }
-                        if (bitStr1.equalsIgnoreCase("1")) {
+                        if (bitStr1.equals("1")) {
                             _powerControl._debugView.append("门检测开关(关门开路)【启用】\n");
                         } else {
                             _powerControl._debugView.append("门检测开关(关门开路)【禁用】\n");
