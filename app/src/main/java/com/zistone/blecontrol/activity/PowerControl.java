@@ -135,13 +135,13 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         public void run() {
                             try {
                                 BluetoothUtil.SendComm(BASEINFO_COMM);
-                                Log.i(TAG, "发送'读取设备基本信息'指令:" + BASEINFO_COMM);
+                                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
                                 Thread.sleep(100);
                                 BluetoothUtil.SendComm(LOCATION_COMM);
-                                Log.i(TAG, "发送'GPS位置'指令:" + LOCATION_COMM);
+                                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
                                 Thread.sleep(100);
                                 BluetoothUtil.SendComm(TESTA);
-                                Log.i(TAG, "发送'综合测试'指令:" + TESTA);
+                                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -299,7 +299,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     //门检测开关(关门开路)
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.
-                            i(TAG, String.format("收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                            i(TAG, String.format("收到查询到的参数(Bit)：\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerControl._isOpenParamSetting) {
                         if (_powerControl._paramSetting == null) {
@@ -313,9 +313,9 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                                 _isOpenParamSetting = false;
                     } else {
                         if (bitStr8.equalsIgnoreCase("1")) {
-                            _powerControl._debugView.append("\n收到:\n启用DEBUG软串口【启用】\n");
+                            _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【启用】\n");
                         } else {
-                            _powerControl._debugView.append("\n收到:\n启用DEBUG软串口【禁用】\n");
+                            _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【禁用】\n");
                         }
                         if (bitStr7.equalsIgnoreCase("1")) {
                             _powerControl._debugView.append("使用低磁检测阀值【启用】\n");
@@ -363,7 +363,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 break;
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
-                    Log.i(TAG, "发送参数设置:" + result);
+                    Log.i(TAG, "发送参数设置：" + result);
                     BluetoothUtil.SendComm(result);
                     _powerControl._debugView.append("发送参数设置指令 ");
                     int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
@@ -460,7 +460,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         String[] strArray = data.split(" ");
         Message message = new Message();
         /*
-         * 特殊处理:设备基本信息的通信协议和之前的协议不一样，需要留意
+         * 特殊处理：设备基本信息的通信协议和之前的协议不一样，需要留意
          *
          * */
         if (strArray[8].equals("A1") && strArray.length == 19) {
@@ -468,7 +468,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             message.obj = data;
         }
         /*
-         * 特殊处理:GPS位置信息的通信协议和之前的协议不一样，需要留意
+         * 特殊处理：GPS位置信息的通信协议和之前的协议不一样，需要留意
          *
          * */
         else if (strArray[8].equals("A2") && strArray.length == 20) {
@@ -655,19 +655,19 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             break;
             //开一号门锁
             case R.id.button2: {
-                Log.i(TAG, "发送开一号门锁:" + OPENDOOR1_COMM);
+                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
                 BluetoothUtil.SendComm(OPENDOOR1_COMM);
             }
             break;
             //开二号门锁
             case R.id.button3: {
-                Log.i(TAG, "发送开二号门锁:" + OPENDOOR2_COMM);
+                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
                 BluetoothUtil.SendComm(OPENDOOR2_COMM);
             }
             break;
             //开全部门锁
             case R.id.button4: {
-                Log.i(TAG, "发送开全部门锁:" + OPENDOORS_COMM);
+                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
                 BluetoothUtil.SendComm(OPENDOORS_COMM);
             }
             break;
@@ -732,7 +732,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     public void OnReadSuccess(byte[] byteArray) {
         String result = ConvertUtil.ByteArrayToHexStr(byteArray);
         result = ConvertUtil.HexStrAddCharacter(result, " ");
-        Log.i(TAG, "收到:" + result);
+        Log.i(TAG, "收到：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
         if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
