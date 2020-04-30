@@ -123,7 +123,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     //门检测开关（关门开路）
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
-                    //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
+                    //打开控制参数修改界面的时候将查询结果传递过去
                     if (_commandTest._isOpenParamSetting) {
                         if (_commandTest._paramSetting == null) {
                             _commandTest._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
@@ -139,10 +139,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case SEND_SET_CONTROLPARAM: {
                     Log.i(TAG, "发送参数设置：" + result);
                     BluetoothUtil.SendComm(result);
-                    int offset = _commandTest._txt.getLineCount() * _commandTest._txt.getLineHeight();
-                    if (offset > _commandTest._txt.getHeight()) {
-                        _commandTest._txt.scrollTo(0, offset - _commandTest._txt.getHeight());
-                    }
                 }
                 break;
             }
@@ -237,90 +233,76 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 return;
             }
             _nextEvent++;
-            //            receive = "第" + _nextEvent + "条内部存储的事件记录";
-            receive = "事件" + _nextEvent;
+            receive = data + "\r\n解析：事件" + _nextEvent;
             switch (strArray[10]) {
                 case "01":
-                    receive += " 开锁";
+                    receive += "【开锁】 ";
                     break;
                 case "02":
-                    receive += " 关锁";
+                    receive += "【关锁】 ";
                     break;
                 case "03":
-                    receive += " 开门";
+                    receive += "【开门】 ";
                     break;
                 case "04":
-                    receive += " 关门";
+                    receive += "【关门】 ";
                     break;
                 case "05":
-                    receive += " 窃电";
+                    receive += "【窃电】 ";
                     //窃电时间来源：strArray[17] + strArray[2]
                     //窃电电路数：strArray[3] + strArray[4]
                     switch (Integer.parseInt(strArray[17], 16)) {
                         case 0:
-                            receive += " 来源：门";
+                            receive += "来源【门】 ";
                             break;
                         case 1:
-                            receive += " 来源：锁";
+                            receive += "来源【锁】 ";
                             break;
                         case 2:
-                            receive += " 来源：摄像头";
+                            receive += "来源【摄像头】 ";
                             break;
                     }
                     switch (Integer.parseInt(strArray[2], 16)) {
                         case 0:
-                            receive += " 电路数：第一路";
+                            receive += "电路数【第一路】";
                             break;
                         case 1:
-                            receive += " 电路数：第二路";
+                            receive += "电路数【第二路】";
                             break;
                         case 2:
-                            receive += " 电路数：两路同时触发";
+                            receive += "电路数【两路同时触发】";
                             break;
                     }
                     break;
                 case "06":
-                    receive += " 振动";
+                    receive += "振动【";
                     //XYZ方向的加速度
-                    receive += " X：" + strArray[17] + strArray[2] + ", Y：" + strArray[3] + strArray[4] + ", Z：" + strArray[5] + strArray[6];
+                    receive += " X：" + strArray[17] + strArray[2] + ", Y：" + strArray[3] + strArray[4] + ", Z：" + strArray[5] + strArray[6] + "】";
                     break;
             }
             String yearStr = " 20" + strArray[11] + "/";
             String monthStr = strArray[12] + "/";
             String dayStr = strArray[13] + " ";
-            String hourStr = strArray[14] + "：";
-            String minuteStr = strArray[15] + "：";
+            String hourStr = strArray[14] + ":";
+            String minuteStr = strArray[15] + ":";
             String secondStr = strArray[16];
-            receive += yearStr + monthStr + dayStr + hourStr + minuteStr + secondStr + "\r\n";
+            receive += yearStr + monthStr + dayStr + hourStr + minuteStr + secondStr;
         } else {
             String indexStr = strArray[12];
             switch (indexStr) {
-                //开门
-                case "00":
-                    break;
-                //读卡
-                case "01":
-                    break;
-                //电池电压
-                case "02":
-                    break;
-                //磁场强度
-                case "03":
-                    String responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                    //                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                    break;
-                //测量门状态
-                case "04":
-                    break;
                 //综合测试A：全部门锁状态+强磁开关状态+外接电源状态+内部电池充电状态+电池电量+磁强
                 case "80": {
                     receive = data + "\r\n解析：";
                     byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
+                    receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
                     String lockState1 = String.valueOf(bitStr.charAt(6));
+                    receive += lockState1.equals("1") ? "锁一【已开】 " : "锁一【已关】 ";
                     String doorState2 = String.valueOf(bitStr.charAt(5));
+                    receive += doorState2.equals("1") ? "门二【已开】 " : "门二【已关】 ";
                     String lockState2 = String.valueOf(bitStr.charAt(4));
+                    receive += lockState2.equals("1") ? "锁二【已开】" : "锁二【已关】";
                     //强磁开关状态
                     String magneticState = String.valueOf(bitStr.charAt(3));
                     //外接电源状态
