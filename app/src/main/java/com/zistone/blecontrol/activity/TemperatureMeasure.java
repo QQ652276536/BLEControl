@@ -631,7 +631,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     protected void onResume() {
         //静态初始化OpenCV
         if (!OpenCVLoader.initDebug()) {
-            Log.i(TAG, "无法加载OpenCV本地库,将使用OpenCV Manager初始化");
+            Log.e(TAG, "无法加载OpenCV本地库,将使用OpenCV Manager初始化");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_3_0, this, _baseLoaderCallback);
         } else {
             Log.i(TAG, "成功加载OpenCV本地库");
