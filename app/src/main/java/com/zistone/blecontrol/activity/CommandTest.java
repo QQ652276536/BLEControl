@@ -64,9 +64,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public void handleMessage(Message message) {
-            if (_weakReference.get() == null) {
+            if (_weakReference.get() == null)
                 return;
-            }
             _commandTest = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
@@ -127,8 +126,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     if (_commandTest._isOpenParamSetting) {
                         if (_commandTest._paramSetting == null) {
                             _commandTest._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                              bitStr5, bitStr6, bitStr7,
-                                                                                                              bitStr8}, _commandTest._dialogFragmentListener);
+                                    bitStr5, bitStr6, bitStr7,
+                                    bitStr8}, _commandTest._dialogFragmentListener);
                             _commandTest._paramSetting.setCancelable(false);
                         }
                         _commandTest._paramSetting.show(_commandTest._fragmentManager, "DialogFragment_ParamSetting");
@@ -161,7 +160,35 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         }
         String receive = data.trim();
         /*
-         * 特殊处理：设备基本信息的通信协议和之前的协议不一样，需要留意
+         * 特殊处理：GPS位置信息的通信协议和之前的开关门协议不一样,需要留意
+         *
+         * 指令示例：68 03 00 37 00 00 01 68 A2 0B 00 00 00 00 00 00 00 00 B8 16
+         * 0B（Len）
+         * 00（定位状态，1表示定位成功）
+         * 00 00 00 00经度
+         * 00 00 00 00纬度
+         * 37 00（高度）
+         *
+         * */
+        if (strArray[8].equals("A2") && strArray.length == 20) {
+            receive = data + "\r\n解析：";
+            int state = Integer.parseInt(strArray[10], 16);
+            if (state == 1) {
+                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
+                int len = Integer.parseInt(strArray[1], 16);
+                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
+                //                    String heightStr = strArray[3] + strArray[4];
+                String heightStr = strArray[3];
+                int height = Integer.parseInt(heightStr, 16);
+                receive += "经度" + latNum + "纬度" + lotNum + "高度" + height;
+            } else {
+                receive += "定位失败";
+            }
+        }
+        /*
+         * 特殊处理：设备基本信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * 指令示例：68 00 00 00 00 00 01 68 A1 07 56 33 32 36 0E 00 04 7C 16
          * 07（Len）
@@ -170,7 +197,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 04（内部温度，为256补码，-127~127，实际温度数据为23+temperature/2）
          *
          * */
-        if (strArray[8].equals("A1") && strArray.length == 19) {
+        else if (strArray[8].equals("A1") && strArray.length == 19) {
             receive = data;
             String versionStr = ConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
             versionStr = ConvertUtil.StrAddCharacter(versionStr, ".");
@@ -191,20 +218,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃]", versionStr, voltage, temperature);
         }
         /*
-         * 特殊处理：GPS位置信息的通信协议和之前的协议不一样,需要留意
-         *
-         * 指令示例：68 03 00 37 00 00 01 68 A2 0B 00 00 00 00 00 00 00 00 B8 16
-         * 0B（Len）
-         * 00（定位状态，1表示定位成功）
-         * 00 00 00 00经度
-         * 00 00 00 00纬度
-         * 37 00（高度）
-         *
-         * */
-        if (strArray[8].equals("A2") && strArray.length == 19) {
-        }
-        /*
-         * 特殊处理：读取内部存储的事件记录的通信协议和之前的协议不一样,需要留意
+         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
          *
          * 指令示例：68 03 00 00 14 00 01 68 A0 0B 06 20 04 25 23 26 40 1A 85 16
          * 68
@@ -223,7 +237,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 执行读取事件记录的时候_btn12控件禁用,这个可以用来判断是否正在执行读取事件记录
          *
          * */
-        if (strArray[11].equals("20") && !_btn12.isEnabled()) {
+        else if (strArray[11].equals("20") && !_btn12.isEnabled()) {
             //超出8个字节后多出来的字节个数
             int excessNum = Integer.parseInt(strArray[1], 16);
             //数据长度
@@ -287,7 +301,11 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             String minuteStr = strArray[15] + ":";
             String secondStr = strArray[16];
             receive += yearStr + monthStr + dayStr + hourStr + minuteStr + secondStr;
-        } else {
+        }
+        /*
+         * 开关门协议
+         * */
+        else {
             String indexStr = strArray[12];
             switch (indexStr) {
                 //综合测试A：全部门锁状态+强磁开关状态+外接电源状态+内部电池充电状态+电池电量+磁强
@@ -386,46 +404,38 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     //启用DEBUG软串口
                     String str8 = String.valueOf(bitStr.charAt(0));
                     StringBuffer stringBuffer = new StringBuffer();
-                    if (str1.equals("1")) {
+                    if (str1.equals("1"))
                         stringBuffer.append("\r\n门检测开关（关门开路）【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("\r\n门检测开关（关门开路）【禁用】\n");
-                    }
-                    if (str2.equals("1")) {
+                    if (str2.equals("1"))
                         stringBuffer.append("锁检测开关（锁上开路）【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("锁检测开关（锁上开路）【禁用】\n");
-                    }
-                    if (str3.equals("1")) {
+                    if (str3.equals("1"))
                         stringBuffer.append("正常开锁不告警【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("正常开锁不告警【禁用】\n");
-                    }
-                    if (str4.equals("1")) {
+                    if (str4.equals("1"))
                         stringBuffer.append("有外电可以进入维护方式【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("有外电可以进入维护方式【禁用】\n");
-                    }
-                    if (str5.equals("1")) {
+                    if (str5.equals("1"))
                         stringBuffer.append("启用软关机【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("启用软关机【禁用】\n");
-                    }
-                    if (str6.equals("1")) {
+                    if (str6.equals("1"))
                         stringBuffer.append("不检测强磁【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("不检测强磁【禁用】\n");
-                    }
-                    if (str7.equals("1")) {
+                    if (str7.equals("1"))
                         stringBuffer.append("使用低磁检测阀值【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("使用低磁检测阀值【禁用】\n");
-                    }
-                    if (str8.equals("1")) {
+                    if (str8.equals("1"))
                         stringBuffer.append("启用DEBUG软串口【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("启用DEBUG软串口【禁用】");
-                    }
                     receive += "\r\n解析：" + stringBuffer.toString();
                 }
                 break;
@@ -454,9 +464,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
-        }
         return false;
     }
 
@@ -488,7 +497,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         String[] strArray = result.split(" ");
         String sendResult = "";
         /*
-         * 特殊处理：读取内部存储的事件记录的通信协议和之前的协议不一样,需要留意
+         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
          * 1、指令为13个字节
          * 2、执行读取事件记录的时候_btn12控件禁用
          * 以上2个条件可以用来判断是否正在执行读取事件记录

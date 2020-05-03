@@ -141,12 +141,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             public void OnCancel() {
             }
         };
-        _onAmountChangeListener = new AmountView.OnAmountChangeListener() {
-            @Override
-            public void onAmountChange(View view, double current) {
-                DeviceFilterShared.SetTemperatureParam(getApplicationContext(), String.valueOf(_amountView.getCurrent()));
-            }
-        };
+        _onAmountChangeListener = (view, current) -> DeviceFilterShared.SetTemperatureParam(getApplicationContext(), String.valueOf(_amountView.getCurrent()));
     }
 
     private BaseLoaderCallback _baseLoaderCallback = new BaseLoaderCallback(this) {
@@ -179,9 +174,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         }
                         _nativeDetector = new DetectionBasedTracker(_cascadeFile.getAbsolutePath(), "", 0);
                         cascadeDir.delete();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     //开启渲染Camera
@@ -209,14 +202,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 case MESSAGE_1: {
                     Speak("设备已连接");
                     //连接成功后再显示人脸检测
-                    _cameraView.setVisibility(View.VISIBLE);
+//                    _cameraView.setVisibility(View.VISIBLE);
                     _refreshTimer = new Timer();
                     _refreshTask = new TimerTask() {
                         @Override
                         public void run() {
                             try {
                                 BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                //                                    Log.i(TAG, "发送查询温度的指令...");
+                                Log.i(TAG, "发送查询温度的指令...");
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -273,9 +266,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 //                _mediaPlayer2.start();
             }
             //上一条语音播放完毕才播放下一条
-            if (_speechState == 3) {
+            if (_speechState == 3)
                 Speak(strAvValue + "度");
-            }
             _isCheckedFace = false;
         }
         _txt5.setText(strAvValue + "℃");
@@ -418,9 +410,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     }
 
     private void CheckResult(int result, String method) {
-        if (result != 0) {
+        if (result != 0)
             Log.e(TAG, String.format("方法%s执行失败,错误代码:%s", method, result));
-        }
     }
 
     /**
@@ -451,12 +442,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
      * 断开与BLE设备的连接
      */
     private void DisConnect() {
-        if (_refreshTask != null) {
-            _refreshTask.cancel();
-        }
-        if (_refreshTimer != null) {
-            _refreshTimer.cancel();
-        }
         BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
@@ -469,6 +454,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt5.setText("Null");
         _txt5.setTextColor(Color.GRAY);
         Speak("设备已断开");
+        if (_refreshTask != null)
+            _refreshTask.cancel();
+        if (_refreshTimer != null)
+            _refreshTimer.cancel();
     }
 
     /**
@@ -575,9 +564,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
-        }
         return false;
     }
 
@@ -595,13 +583,19 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature_measure);
-        _mediaPlayer1 = MediaPlayer.create(this, R.raw.dingdong);
-        _mediaPlayer2 = MediaPlayer.create(this, R.raw.didi);
-        //初始化TTS引擎
-        InitTTS();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
+        _mediaPlayer1 = MediaPlayer.create(this, R.raw.dingdong);
+        _mediaPlayer2 = MediaPlayer.create(this, R.raw.didi);
+        //初始化百度语音TTS引擎
+        InitTTS();
+        try {
+            Auth.getInstance(this);
+        } catch (Auth.AuthCheckException e) {
+            Log.e(TAG, e.getMessage());
+            return;
+        }
         //Toolbar
         _toolbar = findViewById(R.id.toolbar_temperature);
         _toolbar.setTitle("");
@@ -614,9 +608,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         _txt5 = findViewById(R.id.txt5_temperature);
         _btnReturn.setOnClickListener(this::onClick);
         _amountView = findViewById(R.id.amountView_temperature);
-        _amountView.setMax(10);
-        _amountView.setMin(-10);
-        _amountView.setStep(0.1);
+        _amountView.setMaxMinStep(10, -10, 0.1);
         _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(getApplicationContext())));
         _cameraView = findViewById(R.id.cameraView_face);
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
@@ -632,12 +624,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
             ProgressDialogUtil.ShowWarning(TemperatureMeasure.this, "警告", "未获取到蓝牙,请重试！");
-        }
-        try {
-            Auth.getInstance(this);
-        } catch (Auth.AuthCheckException e) {
-            Log.e(TAG, e.getMessage());
-            return;
         }
     }
 
@@ -664,16 +650,14 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onDestroy() {
-        if (_refreshTask != null) {
-            _refreshTask.cancel();
-        }
-        if (_refreshTimer != null) {
-            _refreshTimer.cancel();
-        }
         if (_mySyntherizer != null) {
             _mySyntherizer.Stop();
             _mySyntherizer.Release();
         }
+        if (_refreshTask != null)
+            _refreshTask.cancel();
+        if (_refreshTimer != null)
+            _refreshTimer.cancel();
         //停止渲染Camera
         if (_cameraView != null)
             _cameraView.disableView();

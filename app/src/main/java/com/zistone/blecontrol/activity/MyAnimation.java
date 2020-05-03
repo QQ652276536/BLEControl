@@ -31,9 +31,8 @@ public class MyAnimation extends AppCompatActivity {
 
         @Override
         public void handleMessage(Message message) {
-            if (_weakReference.get() == null) {
+            if (_weakReference.get() == null)
                 return;
-            }
             _myAnimation = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {

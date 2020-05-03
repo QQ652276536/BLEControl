@@ -113,16 +113,16 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void handleMessage(Message message) {
-            if (_weakReference.get() == null) {
+            if (_weakReference.get() == null)
                 return;
-            }
             _powerControl = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
-                case MESSAGE_ERROR_1:
+                case MESSAGE_ERROR_1: {
                     _powerControl.DisConnect();
                     ProgressDialogUtil.ShowWarning(_powerControl, "警告", "该设备的连接已断开！");
-                    break;
+                }
+                break;
                 //连接成功
                 case MESSAGE_1: {
                     _powerControl._btn2.setEnabled(true);
@@ -341,61 +341,52 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     if (_powerControl._isOpenParamSetting) {
                         if (_powerControl._paramSetting == null) {
                             _powerControl._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                               bitStr5, bitStr6, bitStr7,
-                                                                                                               bitStr8}, _powerControl._dialogFragmentListener);
+                                    bitStr5, bitStr6, bitStr7,
+                                    bitStr8}, _powerControl._dialogFragmentListener);
                             _powerControl._paramSetting.setCancelable(false);
                         }
                         _powerControl._paramSetting.show(_powerControl._fragmentManager, "DialogFragment_ParamSetting");
                         _powerControl.
                                 _isOpenParamSetting = false;
                     } else {
-                        if (bitStr8.equals("1")) {
+                        if (bitStr8.equals("1"))
                             _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【禁用】\n");
-                        }
-                        if (bitStr7.equals("1")) {
+                        if (bitStr7.equals("1"))
                             _powerControl._debugView.append("使用低磁检测阀值【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("使用低磁检测阀值【禁用】\n");
-                        }
-                        if (bitStr6.equals("1")) {
+                        if (bitStr6.equals("1"))
                             _powerControl._debugView.append("不检测强磁【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("不检测强磁【禁用】\n");
-                        }
-                        if (bitStr5.equals("1")) {
+                        if (bitStr5.equals("1"))
                             _powerControl._debugView.append("启用软关机【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("启用软关机【禁用】\n");
-                        }
-                        if (bitStr4.equals("1")) {
+                        if (bitStr4.equals("1"))
                             _powerControl._debugView.append("有外电可以进入维护方式【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("有外电可以进入维护方式【禁用】\n");
-                        }
-                        if (bitStr3.equals("1")) {
+                        if (bitStr3.equals("1"))
                             _powerControl._debugView.append("正常开锁不告警【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("正常开锁不告警【禁用】\n");
-                        }
-                        if (bitStr2.equals("1")) {
+                        if (bitStr2.equals("1"))
                             _powerControl._debugView.append("锁检测开关(锁上开路)【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("锁检测开关(锁上开路)【禁用】\n");
-                        }
-                        if (bitStr1.equals("1")) {
+                        if (bitStr1.equals("1"))
                             _powerControl._debugView.append("门检测开关(关门开路)【启用】\n");
-                        } else {
+                        else
                             _powerControl._debugView.append("门检测开关(关门开路)【禁用】\n");
-                        }
                     }
                     //定位到最后一行
                     int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的，就自动滑动
-                    if (offset > _powerControl._debugView.getHeight()) {
+                    if (offset > _powerControl._debugView.getHeight())
                         _powerControl._debugView.scrollTo(0, offset - _powerControl._debugView.getHeight());
-                    }
                 }
                 break;
                 //修改内部控制参数
@@ -404,9 +395,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     BluetoothUtil.SendComm(result);
                     _powerControl._debugView.append("发送参数设置指令 ");
                     int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
-                    if (offset > _powerControl._scrollView.getHeight()) {
+                    if (offset > _powerControl._scrollView.getHeight())
                         _powerControl._debugView.scrollTo(0, offset - _powerControl._scrollView.getHeight());
-                    }
                 }
                 break;
             }
@@ -422,7 +412,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         String[] strArray = data.split(" ");
         Message message = new Message();
         /*
-         * 特殊处理：设备基本信息的通信协议和之前的协议不一样，需要留意
+         * 特殊处理：设备基本信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
         if (strArray[8].equals("A1") && strArray.length == 19) {
@@ -430,7 +420,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             message.obj = data;
         }
         /*
-         * 特殊处理：GPS位置信息的通信协议和之前的协议不一样，需要留意
+         * 特殊处理：GPS位置信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
         else if (strArray[8].equals("A2") && strArray.length == 20) {
@@ -552,12 +542,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _btn2.setEnabled(false);
         _btn3.setEnabled(false);
         _btn4.setEnabled(false);
-        if (_refreshTask != null) {
-            _refreshTask.cancel();
-        }
-        if (_refreshTimer != null) {
-            _refreshTimer.cancel();
-        }
         BluetoothUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
@@ -572,6 +556,10 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _txt7.setText("Null");
         _txtVersion.setText("Null");
         _txtVersion.setTextColor(Color.GRAY);
+        if (_refreshTask != null)
+            _refreshTask.cancel();
+        if (_refreshTimer != null)
+            _refreshTimer.cancel();
     }
 
     @Override
@@ -581,9 +569,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
-        }
         return false;
     }
 
@@ -616,11 +603,10 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //OTA升级
                 case R.id.menu_4_power: {
                     Intent intent = GetAppOpenIntentByPackageName(PowerControl.this, "com.ambiqmicro.android.amota");
-                    if (intent != null) {
+                    if (intent != null)
                         ProgressDialogUtil.ShowConfirm(PowerControl.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
-                    } else {
+                    else
                         ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未安装OTA_ZM301，无法使用该功能！");
-                    }
                 }
                 break;
             }
@@ -804,8 +790,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        InitListener();
         BluetoothUtil.Init(PowerControl.this, this);
+        InitListener();
     }
 
     @Override
