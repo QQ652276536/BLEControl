@@ -78,12 +78,12 @@
         <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.zistone.blecontrol.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
+                android:resource="@xml/provider_paths" />
         </provider>
 
     </application>
