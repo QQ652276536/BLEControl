@@ -15,10 +15,10 @@ import java.util.List;
 
 public class InstallAPK {
 
-    public static void Install(Context context, String apkName) {
+    public static void Install(Context context, String apkName, String content) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("提示");
-        builder.setMessage("是否安装OTA升级插件？");
+        builder.setMessage(content);
         builder.setNegativeButton("好的", (dialog, which) -> {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + apkName + ".apk");

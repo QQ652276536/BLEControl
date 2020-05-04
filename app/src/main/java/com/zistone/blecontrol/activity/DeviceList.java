@@ -768,7 +768,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_ble_device_list);
         //安装第三方的OTA升级的APK
         if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
-            InstallAPK.Install(this, "ambiq_ota");
+            InstallAPK.Install(this, "ambiq_ota", "是否安装OTA升级插件？");
         }
         StartAnimation();
         RequestPermission();
