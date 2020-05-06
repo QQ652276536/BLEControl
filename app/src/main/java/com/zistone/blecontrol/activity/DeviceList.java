@@ -46,8 +46,9 @@ import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.util.InstallAPK;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -135,14 +136,12 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE,
                                     Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA, Manifest.permission.WRITE_SETTINGS};
             for (String perm : permissions) {
-                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm)) {
-                    //进入到这里代表没有权限
+                //进入到这里代表没有权限
+                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm))
                     permissionsList.add(perm);
-                }
             }
-            if (!permissionsList.isEmpty()) {
+            if (!permissionsList.isEmpty())
                 requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), 1);
-            }
         }
     }
 
@@ -430,7 +429,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
             _filterContent += _filterRssi * -1 + "dBm,";
         if (_isHideConnectSuccessDevice)
             _filterContent += "Yes,";
-        _filterContent = ConvertUtil.ReplaceLast(_filterContent, ",", "");
+        _filterContent = MyConvertUtil.ReplaceLast(_filterContent, ",", "");
         if (_filterContent.equals(""))
             _filterContent = " No filter";
         _btnFilterContent.setText(_filterContent);
@@ -612,42 +611,38 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         map.put("WRITE_UUID", WRITE_UUID);
         map.put("CONFIG_UUID", CONFIG_UUID);
         Intent intent = null;
-        if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
-            //电力控制
-            if (_rdoFunc1.isChecked()) {
-                intent = new Intent(DeviceList.this, PowerControl.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            //指令测试
-            else if (_rdoFunc2.isChecked()) {
-                intent = new Intent(DeviceList.this, CommandTest.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            //物料绑定
-            else if (_rdoFunc3.isChecked()) {
-                if (_rdoUUID4.isChecked()) {
-                    intent = new Intent(DeviceList.this, MaterialsInDB.class);
-                    intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                    intent.putExtra(ARG_PARAM2, (Serializable) map);
-                    intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
-                } else {
-                    ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
-                }
-            }
-            //测量体温
-            else if (_rdoFunc4.isChecked()) {
-                intent = new Intent(DeviceList.this, TemperatureMeasure.class);
-                intent.putExtra(ARG_PARAM1, bluetoothDevice);
-                intent.putExtra(ARG_PARAM2, (Serializable) map);
-            }
-            if (intent != null)
-                //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
-                startActivityForResult(intent, 2);
-        } else {
-            ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "请检查该设备是否被占用");
+        //电力控制
+        if (_rdoFunc1.isChecked()) {
+            intent = new Intent(DeviceList.this, PowerControl.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
+        //指令测试
+        else if (_rdoFunc2.isChecked()) {
+            intent = new Intent(DeviceList.this, CommandTest.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
+        //物料绑定
+        else if (_rdoFunc3.isChecked()) {
+            if (_rdoUUID4.isChecked()) {
+                intent = new Intent(DeviceList.this, MaterialsInDB.class);
+                intent.putExtra(ARG_PARAM1, bluetoothDevice);
+                intent.putExtra(ARG_PARAM2, (Serializable) map);
+                intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
+            } else {
+                ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
+            }
+        }
+        //测量体温
+        else if (_rdoFunc4.isChecked()) {
+            intent = new Intent(DeviceList.this, TemperatureMeasure.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
+        if (intent != null)
+            //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
+            startActivityForResult(intent, 2);
     }
 
     @Override
@@ -769,7 +764,12 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_device_list);
+        //安装第三方的OTA升级的APK
+        if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
+            InstallAPK.Install(this, "ambiq_ota", "是否安装OTA升级插件？");
+        }
         StartAnimation();
         RequestPermission();
         _context = getApplicationContext();
@@ -857,7 +857,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         _materialRefreshLayout.autoRefresh();
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备
         OpenBluetoothAdapter();
-        super.onCreate(savedInstanceState);
     }
 
 }

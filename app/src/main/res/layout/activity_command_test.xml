@@ -37,11 +37,47 @@
         <TextView
             android:id="@+id/txt"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="350dp"
             android:fadeScrollbars="false"
             android:scrollbars="vertical"
             android:text=""
             android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="right"
+        android:background="@color/darkgray"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/top" />
+
+        <ImageButton
+            android:id="@+id/btnBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bottom" />
+
+        <ImageButton
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/clear" />
     </LinearLayout>
 
     <ScrollView
@@ -55,112 +91,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="right"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btnTop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="40dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/top" />
-
-                <ImageButton
-                    android:id="@+id/btnBottom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="40dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/bottom" />
-
-                <ImageButton
-                    android:id="@+id/btnClear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/clear" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn1"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_openDoor"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn2"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_readCar"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn3"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_batteryVol"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn4"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_magStr"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btn5"
-                    style="@style/ButtonStyleA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:layout_weight="1"
-                    android:enabled="false"
-                    android:text="@string/btn_doorState"
-                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/btn6"
@@ -274,8 +206,42 @@
                     android:enabled="false"
                     android:text="读取内部存储的事件记录"
                     android:textSize="16sp" />
+
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn13"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="设备基本信息"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btn14"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="GPS位置信息"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

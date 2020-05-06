@@ -29,7 +29,7 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.pojo.Material;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.blecontrol.util.PropertiesUtil;
@@ -107,21 +107,21 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                     }
                     //物料绑定失败
                     else {
-                        ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "错误", "物料绑定失败,请重试!");
+                        ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "错误", "物料绑定失败,请重试！");
                     }
                     break;
                 //与蓝牙设备的连接已断开
                 case MESSAGE_ERROR_2:
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "该设备的连接已断开！");
                     break;
                 //网络异常
                 case MESSAGE_ERROR_3:
                     _materialRefreshLayout.finishRefresh();
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "网络连接失败,请检查!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "网络连接失败,请检查！");
                     break;
                 //服务异常
                 case MESSAGE_ERROR_4:
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "服务异常,请与管理员联系!");
+                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "服务异常,请与管理员联系！");
                     break;
             }
         }
@@ -193,7 +193,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             case R.id.btn2_db:
                 break;
             case R.id.btn1_db: {
-                ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, false, "正在绑定物料...");
+                ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, true, "正在绑定物料...");
                 URL = PropertiesUtil.GetValueProperties(MaterialsInDB.this).getProperty("URL") + "/Material/Update";
                 Material materiel = new Material();
                 materiel.setDeviceName(_txt2.getText().toString());
@@ -245,7 +245,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
             _txt2.setText(_bluetoothDevice.getName());
             //电池电量在连接成功后通过UUID获取
             Log.i(TAG, "开始连接...");
-            ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, false, "正在连接...");
+            ProgressDialogUtil.ShowProgressDialog(MaterialsInDB.this, true, "正在连接...");
             //连接蓝牙设备的回调
             _bluetoothGatt = _bluetoothDevice.connectGatt(MaterialsInDB.this, false, new BluetoothGattCallback() {
                 /**
@@ -257,11 +257,11 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                     if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothGatt.STATE_CONNECTED) {
-                        Log.i(TAG, "成功建立连接!");
+                        Log.i(TAG, "成功建立连接！");
                         //发现服务
                         gatt.discoverServices();
                     } else {
-                        Log.i(TAG, "连接已断开!");
+                        Log.i(TAG, "连接已断开！");
                         _bluetoothGatt.disconnect();
                         ProgressDialogUtil.Dismiss();
                         Message message = handler.obtainMessage(MESSAGE_ERROR_2, "");
@@ -283,16 +283,16 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         //写数据的服务和特征
                         _bluetoothGattCharacteristic_write = _bluetoothGattService.getCharacteristic(WRITE_UUID);
                         if (_bluetoothGattCharacteristic_write != null) {
-                            Log.i(TAG, "已找到写入数据的特征值!");
+                            Log.i(TAG, "已找到写入数据的特征值！");
                             Message message = handler.obtainMessage(MESSAGE_1, "");
                             handler.sendMessage(message);
                         } else {
-                            Log.e(TAG, "该UUID无写入数据的特征值!");
+                            Log.e(TAG, "该UUID无写入数据的特征值！");
                         }
                         //读取数据的服务和特征
                         _bluetoothGattCharacteristic_read = _bluetoothGattService.getCharacteristic(READ_UUID);
                         if (_bluetoothGattCharacteristic_read != null) {
-                            Log.i(TAG, "已找到读取数据的特征值!");
+                            Log.i(TAG, "已找到读取数据的特征值！");
                             //手动读取蓝牙设备的参数内容,所以不需要再订阅
                             //                            订阅读取通知
                             //                            gatt.setCharacteristicNotification(_bluetoothGattCharacteristic_read, true);
@@ -317,7 +317,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                             //返回时告知该设备已成功连接
                             setResult(2, new Intent());
                         } else {
-                            Log.e(TAG, "该UUID无读取数据的特征值!");
+                            Log.e(TAG, "该UUID无读取数据的特征值！");
                         }
                     }
                 }
@@ -325,8 +325,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = MyConvertUtil.HexStrAddCharacter(result, " ");
                     Log.i(TAG, "接收:" + result);
                     Message message = handler.obtainMessage(MESSAGE_2, result);
                     handler.sendMessage(message);
@@ -342,7 +342,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
                     Log.i(TAG, "发送:" + result);
                 }
 
@@ -354,8 +354,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = MyConvertUtil.HexStrAddCharacter(result, " ");
                     Log.i(TAG, "接收:" + result);
 
                 }
@@ -365,7 +365,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
         else {
             _btn1.setEnabled(false);
             ProgressDialogUtil.Dismiss();
-            ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "未获取到蓝牙设备,请重试!");
+            ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "未获取到蓝牙设备,请重试！");
         }
         //下拉刷新的监听
         _materialRefreshListener = new MaterialRefreshListener() {

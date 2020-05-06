@@ -181,7 +181,7 @@ public class BluetoothUtil {
      */
     public static int SendComm(String data) {
         if (_bluetoothGatt != null && _bluetoothGattCharacteristic_write != null && data != null && !data.equals("")) {
-            byte[] byteArray = ConvertUtil.HexStrToByteArray(data);
+            byte[] byteArray = MyConvertUtil.HexStrToByteArray(data);
             _bluetoothGattCharacteristic_write.setValue(byteArray);
             _bluetoothGatt.writeCharacteristic(_bluetoothGattCharacteristic_write);
             return 1;

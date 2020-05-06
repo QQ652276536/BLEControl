@@ -19,10 +19,11 @@ import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     private ImageButton _btnReturn, _btnClear, _btnTop, _btnBottom;
     private TextView _txt;
-    private Button _btn1, _btn2, _btn3, _btn4, _btn5, _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12;
+    private Button _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btn13, _btn14;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -51,17 +52,59 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private int _nextEvent = 0;
     //读取内部事件的线程开关
     private volatile boolean _isEventReadThread = false, _isEventReadOver = false;
+    private Myhandler _myhandler;
 
-    private Handler handler = new Handler() {
+    static class Myhandler extends Handler {
+        WeakReference<CommandTest> _weakReference;
+        CommandTest _commandTest;
+
+        public Myhandler(CommandTest activity) {
+            _weakReference = new WeakReference<>(activity);
+        }
+
         @Override
         public void handleMessage(Message message) {
-            super.handleMessage(message);
+            if (_weakReference.get() == null)
+                return;
+            _commandTest = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
+                //连接成功
+                case MESSAGE_1: {
+                    _commandTest._btn6.setEnabled(true);
+                    _commandTest._btn7.setEnabled(true);
+                    _commandTest._btn8.setEnabled(true);
+                    _commandTest._btn9.setEnabled(true);
+                    _commandTest._btn10.setEnabled(true);
+                    _commandTest._btn11.setEnabled(true);
+                    _commandTest._btn12.setEnabled(true);
+                    _commandTest._btn13.setEnabled(true);
+                    _commandTest._btn14.setEnabled(true);
+                    ProgressDialogUtil.Dismiss();
+                    _commandTest._connectedSuccess = true;
+                }
+                break;
+                //显示解析内容
+                case MESSAGE_2: {
+                    _commandTest._txt.append("\r\n" + result);
+                    //定位到最后一行
+                    int offset = _commandTest._txt.getLineCount() * _commandTest._txt.getLineHeight();
+                    //如果文本的高度大于ScrollView的,就自动滑动
+                    if (offset > _commandTest._txt.getHeight()) {
+                        _commandTest._txt.scrollTo(0, offset - _commandTest._txt.getHeight());
+                    }
+                    _commandTest._isEventReadOver = false;
+                }
+                break;
+                case MESSAGE_ERROR_1:
+                    _commandTest._connectedSuccess = false;
+                    ProgressDialogUtil.Dismiss();
+                    ProgressDialogUtil.ShowWarning(_commandTest, "警告", "该设备的连接已断开！");
+                    break;
                 //解析查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
                     String bitStr8 = String.valueOf(bitStr.charAt(7));
                     //使用低磁检测阀值
@@ -74,121 +117,127 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     String bitStr4 = String.valueOf(bitStr.charAt(3));
                     //正常开锁不告警
                     String bitStr3 = String.valueOf(bitStr.charAt(2));
-                    //锁检测开关(锁上开路)
+                    //锁检测开关（锁上开路）
                     String bitStr2 = String.valueOf(bitStr.charAt(1));
-                    //门检测开关(关门开路)
+                    //门检测开关（关门开路）
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
-                    Log.i(TAG, String.format("收到查询到的参数(Bit):\n门检测开关(关门开路)%s\n锁检测开关(锁上开路)%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
-                    //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
-                    if (_isOpenParamSetting) {
-                        if (_paramSetting == null) {
-                            _paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6,
-                                                                                                 bitStr7, bitStr8}, _dialogFragmentListener);
-                            _paramSetting.setCancelable(false);
+                    Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                    //打开控制参数修改界面的时候将查询结果传递过去
+                    if (_commandTest._isOpenParamSetting) {
+                        if (_commandTest._paramSetting == null) {
+                            _commandTest._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                                    bitStr5, bitStr6, bitStr7,
+                                    bitStr8}, _commandTest._dialogFragmentListener);
+                            _commandTest._paramSetting.setCancelable(false);
                         }
-                        _paramSetting.show(_fragmentManager, "DialogFragment_ParamSetting");
+                        _commandTest._paramSetting.show(_commandTest._fragmentManager, "DialogFragment_ParamSetting");
                     }
                 }
                 break;
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
-                    Log.i(TAG, "发送参数设置:" + result);
+                    Log.i(TAG, "发送参数设置：" + result);
                     BluetoothUtil.SendComm(result);
-                    int offset = _txt.getLineCount() * _txt.getLineHeight();
-                    if (offset > _txt.getHeight()) {
-                        _txt.scrollTo(0, offset - _txt.getHeight());
-                    }
-                }
-                break;
-                case MESSAGE_ERROR_1:
-                    _connectedSuccess = false;
-                    ProgressDialogUtil.Dismiss();
-                    ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "该设备的连接已断开,如需再次连接请重试!");
-                    break;
-                case MESSAGE_1: {
-                    _btn1.setEnabled(true);
-                    _btn2.setEnabled(true);
-                    _btn3.setEnabled(true);
-                    _btn4.setEnabled(true);
-                    _btn5.setEnabled(true);
-                    _btn6.setEnabled(true);
-                    _btn7.setEnabled(true);
-                    _btn8.setEnabled(true);
-                    _btn9.setEnabled(true);
-                    _btn10.setEnabled(true);
-                    _btn11.setEnabled(true);
-                    _btn12.setEnabled(true);
-                    ProgressDialogUtil.Dismiss();
-                    _connectedSuccess = true;
-                }
-                break;
-                case MESSAGE_2: {
-                    _txt.append("\r\n" + result);
-                    //定位到最后一行
-                    int offset = _txt.getLineCount() * _txt.getLineHeight();
-                    //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _txt.getHeight()) {
-                        _txt.scrollTo(0, offset - _txt.getHeight());
-                    }
-                    _isEventReadOver = false;
                 }
                 break;
             }
         }
-    };
-
-    private void InitListener() {
-        _dialogFragmentListener = new DialogFragmentListener() {
-            @Override
-            public void OnDismiss(String tag) {
-            }
-
-            @Override
-            public void OnComfirm(String tag, String str) {
-                Message message = handler.obtainMessage(SEND_SET_CONTROLPARAM, str);
-                handler.sendMessage(message);
-                //发送内部参数以后关闭设置窗口
-                _paramSetting.dismiss();
-                _paramSetting = null;
-            }
-        };
     }
 
     /**
-     * 内部事件
+     * 解析硬件返回的数据
      *
-     * @param data
+     * @param data 带空格的16进制
      */
     private void Resolve(String data) {
-        Log.i(TAG, "共接收:" + data);
+        Log.i(TAG, "共接收：" + data);
         String[] strArray = data.split(" ");
         //目前最短的指令是开门指令,为16位
         if (strArray.length < 15) {
-            Log.e(TAG, "指令长度" + strArray.length + "错误,不予解析!");
+            Log.e(TAG, "指令长度" + strArray.length + "错误，不予解析！");
             _isEventReadThread = true;
             return;
         }
-        String receive = "";
+        String receive = data.trim();
         /*
-         * 特殊处理:读取内部存储的事件记录的通信协议和之前的协议不一样,需要留意
-         * 指令示例:68 03 00 00 14 00 01 68 A0 0B 06 20 04 25 23 26 40 1A 85 16
+         * 特殊处理：GPS位置信息的通信协议和之前的开关门协议不一样,需要留意
+         *
+         * 指令示例：68 03 00 37 00 00 01 68 A2 0B 00 00 00 00 00 00 00 00 B8 16
+         * 0B（Len）
+         * 00（定位状态，1表示定位成功）
+         * 00 00 00 00经度
+         * 00 00 00 00纬度
+         * 37 00（高度）
+         *
+         * */
+        if (strArray[8].equals("A2") && strArray.length == 20) {
+            receive = data + "\r\n解析：";
+            int state = Integer.parseInt(strArray[10], 16);
+            if (state == 1) {
+                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
+                int len = Integer.parseInt(strArray[1], 16);
+                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
+                //                    String heightStr = strArray[3] + strArray[4];
+                String heightStr = strArray[3];
+                int height = Integer.parseInt(heightStr, 16);
+                receive += "经度" + latNum + "纬度" + lotNum + "高度" + height;
+            } else {
+                receive += "定位失败";
+            }
+        }
+        /*
+         * 特殊处理：设备基本信息的通信协议和之前的开关门协议不一样，需要留意
+         *
+         * 指令示例：68 00 00 00 00 00 01 68 A1 07 56 33 32 36 0E 00 04 7C 16
+         * 07（Len）
+         * 56 33 32 36（版本）
+         * 0E 00（电池电压）
+         * 04（内部温度，为256补码，-127~127，实际温度数据为23+temperature/2）
+         *
+         * */
+        else if (strArray[8].equals("A1") && strArray.length == 19) {
+            receive = data;
+            String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
+            versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
+            String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
+            //不足两位补齐，比如0->0、1->01
+            if (voltageStr1.length() == 1)
+                voltageStr1 = "0" + voltageStr1;
+            String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
+            if (voltageStr2.length() == 1)
+                voltageStr2 = "0" + voltageStr2;
+            double voltage = Double.valueOf(voltageStr1 + voltageStr2) / 1000;
+            double temperature = 23.0;
+            try {
+                temperature = 23 + Double.valueOf(strArray[16]) / 2;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃]", versionStr, voltage, temperature);
+        }
+        /*
+         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
+         *
+         * 指令示例：68 03 00 00 14 00 01 68 A0 0B 06 20 04 25 23 26 40 1A 85 16
          * 68
-         * 03(多余的字符个数,这个字节不计入DAT_R位数里)
-         * 00 00 14 00 01(DAT_R的第13位)
+         * 03（多余的字符个数,这个字节不计入DAT_R位数里）
+         * 00 00 14 00 01（DAT_R的第13位）
          * 68
          * A0
-         * 0B(Len)
-         * 06(事件)
-         * 20(年)04(月)25(日)23(时)26(分)40(秒)
-         * 1A(DAT_R的第8位)
-         * 85(校验位)16
+         * 0B（Len）
+         * 06（事件）
+         * 20（年）04（月）25（日）23（时）26（分）40（秒）
+         * 1A（DAT_R的第8位）
+         * 85（校验位）16
          * 当事件为窃电时,时间后面的4个字节分别表示SN和SR,SR[0]的0、1、2分别表示门、锁、摄像头,SR[1]的0、1、2分别表示第一路、第二路、两路同时触发
          * 当事件为振动时,时间后面的6个字节分别表示XYZ方向的加速度
          *
          * 执行读取事件记录的时候_btn12控件禁用,这个可以用来判断是否正在执行读取事件记录
          *
          * */
-        if (strArray[11].equals("20") && !_btn12.isEnabled()) {
+        else if (strArray[11].equals("20") && !_btn12.isEnabled()) {
             //超出8个字节后多出来的字节个数
             int excessNum = Integer.parseInt(strArray[1], 16);
             //数据长度
@@ -198,51 +247,51 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 return;
             }
             _nextEvent++;
-            receive = "第" + _nextEvent + "条内部存储的事件记录";
+            receive = data + "\r\n解析：事件" + _nextEvent;
             switch (strArray[10]) {
                 case "01":
-                    receive += " 开锁";
+                    receive += "【开锁】 ";
                     break;
                 case "02":
-                    receive += " 关锁";
+                    receive += "【关锁】 ";
                     break;
                 case "03":
-                    receive += " 开门";
+                    receive += "【开门】 ";
                     break;
                 case "04":
-                    receive += " 关门";
+                    receive += "【关门】 ";
                     break;
                 case "05":
-                    receive += " 窃电";
-                    //窃电时间来源:strArray[17] + strArray[2]
-                    //窃电电路数:strArray[3] + strArray[4]
+                    receive += "【窃电】 ";
+                    //窃电时间来源：strArray[17] + strArray[2]
+                    //窃电电路数：strArray[3] + strArray[4]
                     switch (Integer.parseInt(strArray[17], 16)) {
                         case 0:
-                            receive += " 来源:门";
+                            receive += "来源【门】 ";
                             break;
                         case 1:
-                            receive += " 来源:锁";
+                            receive += "来源【锁】 ";
                             break;
                         case 2:
-                            receive += " 来源:摄像头";
+                            receive += "来源【摄像头】 ";
                             break;
                     }
                     switch (Integer.parseInt(strArray[2], 16)) {
                         case 0:
-                            receive += " 电路数:第一路";
+                            receive += "电路数【第一路】";
                             break;
                         case 1:
-                            receive += " 电路数:第二路";
+                            receive += "电路数【第二路】";
                             break;
                         case 2:
-                            receive += " 电路数:两路同时触发";
+                            receive += "电路数【两路同时触发】";
                             break;
                     }
                     break;
                 case "06":
-                    receive += " 振动";
-                    //XYZ方向的加速度:strArray[17] + strArray[2] + strArray[3] + strArray[4] + strArray[5] + strArray[6]
-                    receive += " X:" + strArray[17] + strArray[2] + ", Y:" + strArray[3] + strArray[4] + ", Z:" + strArray[5] + strArray[6];
+                    receive += "振动【";
+                    //XYZ方向的加速度
+                    receive += " X：" + strArray[17] + strArray[2] + ", Y：" + strArray[3] + strArray[4] + ", Z：" + strArray[5] + strArray[6] + "】";
                     break;
             }
             String yearStr = " 20" + strArray[11] + "/";
@@ -251,36 +300,27 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             String hourStr = strArray[14] + ":";
             String minuteStr = strArray[15] + ":";
             String secondStr = strArray[16];
-            receive += yearStr + monthStr + dayStr + hourStr + minuteStr + secondStr + "\r\n";
-        } else {
+            receive += yearStr + monthStr + dayStr + hourStr + minuteStr + secondStr;
+        }
+        /*
+         * 开关门协议
+         * */
+        else {
             String indexStr = strArray[12];
             switch (indexStr) {
-                //开门
-                case "00":
-                    break;
-                //读卡
-                case "01":
-                    break;
-                //电池电压
-                case "02":
-                    break;
-                //磁场强度
-                case "03":
-                    String responseValue = strArray[9].equals("00") ? "OK" : "Fail";
-                    //                responseValue += " " + ConvertUtil.HexStrToStr(strArray[14] + strArray[15] + strArray[16] + strArray[17] + strArray[18] + strArray[19] + strArray[20] + strArray[21] + strArray[22] + strArray[23] + strArray[24]);
-                    break;
-                //测量门状态
-                case "04":
-                    break;
-                //综合测试A:68,04,07,5F,06,C3,01,68,10,00,07,00,80,03,0C,BF,07,57,72,16
+                //综合测试A：全部门锁状态+强磁开关状态+外接电源状态+内部电池充电状态+电池电量+磁强
                 case "80": {
-                    //全部门锁状态
-                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                    receive = data + "\r\n解析：";
+                    byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
+                    receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
                     String lockState1 = String.valueOf(bitStr.charAt(6));
+                    receive += lockState1.equals("1") ? "锁一【已开】 " : "锁一【已关】 ";
                     String doorState2 = String.valueOf(bitStr.charAt(5));
+                    receive += doorState2.equals("1") ? "门二【已开】 " : "门二【已关】 ";
                     String lockState2 = String.valueOf(bitStr.charAt(4));
+                    receive += lockState2.equals("1") ? "锁二【已开】" : "锁二【已关】";
                     //强磁开关状态
                     String magneticState = String.valueOf(bitStr.charAt(3));
                     //外接电源状态
@@ -297,48 +337,59 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                 }
                 break;
-                //开一号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,81,03,76,16
+                //开一号门锁
                 case "81": {
+                    receive = data + "\r\n解析：";
                     String result = strArray[13];
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    String doorState1 = String.valueOf(bitStr.charAt(7));
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
+                    String doorState = String.valueOf(bitStr.charAt(7));
+                    String lockState = String.valueOf(bitStr.charAt(6));
+                    receive += doorState.equals("1") ? "门一【已开】 " : "门一【已关】 ";
+                    receive += lockState.equals("1") ? "锁一【已开】 " : "锁一【已关】 ";
                 }
                 break;
-                //开二号门锁:68,00,00,00,00,00,01,68,10,00,03,0E,82,03,77,16
+                //开二号门锁
                 case "82": {
+                    receive = data + "\r\n解析：";
                     String result = strArray[13];
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    String doorState1 = String.valueOf(bitStr.charAt(7));
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
+                    String doorState = String.valueOf(bitStr.charAt(7));
+                    String lockState = String.valueOf(bitStr.charAt(6));
+                    receive += doorState.equals("1") ? "门二【已开】 " : "门二【已关】 ";
+                    receive += lockState.equals("1") ? "锁二【已开】" : "锁二【已关】";
                 }
                 break;
-                //开全部门锁:68,00,00,00,00,00,01,68,10,00,03,0E,83,03,78,16
+                //开全部门锁
                 case "83": {
-                    String result = strArray[13];
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    receive = data + "\r\n解析：";
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
+                    receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
                     String lockState1 = String.valueOf(bitStr.charAt(6));
+                    receive += lockState1.equals("1") ? "锁一【已开】 " : "锁一【已关】 ";
                     String doorState2 = String.valueOf(bitStr.charAt(5));
+                    receive += doorState2.equals("1") ? "门二【已开】 " : "门二【已关】 ";
                     String lockState2 = String.valueOf(bitStr.charAt(4));
+                    receive += lockState2.equals("1") ? "锁二【已开】" : "锁二【已关】";
                 }
                 break;
-                //查询内部控制参数:68,00,00,00,00,00,01,68,10,00,06,00,86,00,00,00,00,6D,16
+                //查询内部控制参数
                 case "86": {
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
-                        Message message = handler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
-                        handler.sendMessage(message);
+                        Message message = _myhandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
+                        _myhandler.sendMessage(message);
                         return;
                     }
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
-                    //门检测开关(关门开路)
+                    receive = data;
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
+                    //门检测开关（关门开路）
                     String str1 = String.valueOf(bitStr.charAt(7));
-                    //锁检测开关(锁上开路)
+                    //锁检测开关（锁上开路）
                     String str2 = String.valueOf(bitStr.charAt(6));
                     //正常开锁不告警
                     String str3 = String.valueOf(bitStr.charAt(5));
@@ -353,95 +404,100 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     //启用DEBUG软串口
                     String str8 = String.valueOf(bitStr.charAt(0));
                     StringBuffer stringBuffer = new StringBuffer();
-                    if (str1.equalsIgnoreCase("1")) {
-                        stringBuffer.append("\r\n门检测开关(关门开路)【启用】\n");
-                    } else {
-                        stringBuffer.append("\r\n门检测开关(关门开路)【禁用】\n");
-                    }
-                    if (str2.equalsIgnoreCase("1")) {
-                        stringBuffer.append("锁检测开关(锁上开路)【启用】\n");
-                    } else {
-                        stringBuffer.append("锁检测开关(锁上开路)【禁用】\n");
-                    }
-                    if (str3.equalsIgnoreCase("1")) {
+                    if (str1.equals("1"))
+                        stringBuffer.append("\r\n门检测开关（关门开路）【启用】\n");
+                    else
+                        stringBuffer.append("\r\n门检测开关（关门开路）【禁用】\n");
+                    if (str2.equals("1"))
+                        stringBuffer.append("锁检测开关（锁上开路）【启用】\n");
+                    else
+                        stringBuffer.append("锁检测开关（锁上开路）【禁用】\n");
+                    if (str3.equals("1"))
                         stringBuffer.append("正常开锁不告警【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("正常开锁不告警【禁用】\n");
-                    }
-                    if (str4.equalsIgnoreCase("1")) {
+                    if (str4.equals("1"))
                         stringBuffer.append("有外电可以进入维护方式【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("有外电可以进入维护方式【禁用】\n");
-                    }
-                    if (str5.equalsIgnoreCase("1")) {
+                    if (str5.equals("1"))
                         stringBuffer.append("启用软关机【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("启用软关机【禁用】\n");
-                    }
-                    if (str6.equalsIgnoreCase("1")) {
+                    if (str6.equals("1"))
                         stringBuffer.append("不检测强磁【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("不检测强磁【禁用】\n");
-                    }
-                    if (str7.equalsIgnoreCase("1")) {
+                    if (str7.equals("1"))
                         stringBuffer.append("使用低磁检测阀值【启用】\n");
-                    } else {
+                    else
                         stringBuffer.append("使用低磁检测阀值【禁用】\n");
-                    }
-                    if (str8.equalsIgnoreCase("1")) {
+                    if (str8.equals("1"))
                         stringBuffer.append("启用DEBUG软串口【启用】\n");
-                    } else {
-                        stringBuffer.append("启用DEBUG软串口【禁用】\n");
-                    }
-                    receive = stringBuffer.toString() + "\r\n";
+                    else
+                        stringBuffer.append("启用DEBUG软串口【禁用】");
+                    receive += "\r\n解析：" + stringBuffer.toString();
                 }
                 break;
-                //修改内部控制参数:68000000000001681000020087EB16
-                case "87":
-                    break;
             }
         }
-        Message message = handler.obtainMessage(MESSAGE_2, "接收:" + receive);
-        handler.sendMessage(message);
+        Message message = _myhandler.obtainMessage(MESSAGE_2, "接收：" + receive);
+        _myhandler.sendMessage(message);
+    }
+
+    private void InitListener() {
+        _dialogFragmentListener = new DialogFragmentListener() {
+            @Override
+            public void OnDismiss(String tag) {
+            }
+
+            @Override
+            public void OnComfirm(String tag, String str) {
+                Message message = _myhandler.obtainMessage(SEND_SET_CONTROLPARAM, str);
+                _myhandler.sendMessage(message);
+                //发送内部参数以后关闭设置窗口
+                _paramSetting.dismiss();
+                _paramSetting = null;
+            }
+        };
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
-        }
         return false;
     }
 
     @Override
     public void OnConnected() {
-        Log.i(TAG, "成功建立连接!");
-        Message message = handler.obtainMessage(MESSAGE_1, "");
-        handler.sendMessage(message);
+        Log.i(TAG, "成功建立连接！");
+        Message message = _myhandler.obtainMessage(MESSAGE_1, "");
+        _myhandler.sendMessage(message);
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
     }
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, false, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, true, "正在连接...");
     }
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开!");
-        Message message = handler.obtainMessage(MESSAGE_ERROR_1, "");
-        handler.sendMessage(message);
+        Log.i(TAG, "连接已断开！");
+        Message message = _myhandler.obtainMessage(MESSAGE_ERROR_1, "");
+        _myhandler.sendMessage(message);
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String sendResult = "";
         /*
-         * 特殊处理:读取内部存储的事件记录的通信协议和之前的协议不一样,需要留意
+         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
          * 1、指令为13个字节
          * 2、执行读取事件记录的时候_btn12控件禁用
          * 以上2个条件可以用来判断是否正在执行读取事件记录
@@ -449,6 +505,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * */
         if (strArray[8].equals("20") && byteArray.length == 13 && !_btn12.isEnabled()) {
             sendResult = "读取内部存储的事件记录";
+        } else if (strArray[8].equals("21")) {
+            sendResult = "读取基本信息";
+        } else if (strArray[8].equals("22")) {
+            sendResult = "读取GPS位置信息";
         } else {
             String indexStr = strArray[11];
             switch (indexStr) {
@@ -483,17 +543,17 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     sendResult = "修改内部控制参数";
                     break;
             }
-            Message message = handler.obtainMessage(MESSAGE_2, "发送:" + ConvertUtil.StrArrayToStr(strArray));
-            handler.sendMessage(message);
         }
+        Message message = _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray));
+        _myhandler.sendMessage(message);
         Log.i(TAG, "成功发送'" + sendResult + "'的指令");
     }
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
-        Log.i(TAG, "接收:" + result);
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        Log.i(TAG, "接收：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
         if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
@@ -551,65 +611,35 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             case R.id.btnClear:
                 _txt.setText("");
                 break;
-            //开门
-            case R.id.btn1: {
-                hexStr = "680000000000006810000100E116";
-                logStr = "发送'开门'指令:" + hexStr;
-            }
-            break;
-            //读卡
-            case R.id.btn2: {
-                hexStr = "680000000000006810000101E216";
-                logStr = "发送'读卡'指令:" + hexStr;
-            }
-            break;
-            //测量电池电压
-            case R.id.btn3: {
-                hexStr = "680000000000006810000102E316";
-                logStr = "发送'测量电池电压'指令:" + hexStr;
-            }
-            break;
-            //测量磁场强度
-            case R.id.btn4: {
-                hexStr = "680000000000006810000103E416";
-                logStr = "发送'测量磁场强度'指令:" + hexStr;
-            }
-            break;
-            //测量门状态
-            case R.id.btn5: {
-                hexStr = "680000000000006810000104E516";
-                logStr = "发送'测量门状态'指令:" + hexStr;
-            }
-            break;
             //综合测试A
             case R.id.btn6: {
                 hexStr = "680000000000006810000180E616";
-                logStr = "发送'综合测试A'指令:" + hexStr;
+                logStr = "发送'综合测试A'指令：" + hexStr;
             }
             break;
             //开一号门锁
             case R.id.btn7: {
                 hexStr = "680000000000006810000181E716";
-                logStr = "发送'开一号门锁'指令:" + hexStr;
+                logStr = "发送'开一号门锁'指令：" + hexStr;
             }
             break;
             //开二号门锁
             case R.id.btn8: {
                 hexStr = "680000000000006810000182E816";
-                logStr = "发送'开二号门锁'指令:" + hexStr;
+                logStr = "发送'开二号门锁'指令：" + hexStr;
             }
             break;
             //开全部门锁
             case R.id.btn9: {
                 hexStr = "680000000000006810000183E916";
-                logStr = "发送'开全部门锁'指令:" + hexStr;
+                logStr = "发送'开全部门锁'指令：" + hexStr;
             }
             break;
             //查询内部控制参数
             case R.id.btn10: {
                 _isOpenParamSetting = false;
                 hexStr = "680000000000006810000186EA16";
-                logStr = "发送'查询内部控制参数'指令:" + hexStr;
+                logStr = "发送'查询内部控制参数'指令：" + hexStr;
             }
             break;
             //修改内部控制参数
@@ -617,7 +647,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 _isOpenParamSetting = true;
                 //先查询内部控制参数,再打开修改参数的界面
                 hexStr = "680000000000006810000186EA16";
-                logStr = "发送'修改内部控制参数'指令:" + hexStr;
+                logStr = "发送'修改内部控制参数'指令：" + hexStr;
             }
             break;
             //读取内部存储的事件记录
@@ -637,12 +667,12 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (_nextEvent > 0) {
-                                            BluetoothUtil.SendComm("6800000000000068200101EC16");
-                                            Log.i(TAG, "发送'读取内部存储的下一条记录'指令:6800000000000068200101EC16");
-                                        } else {
+                                        if (_nextEvent == 0) {
                                             BluetoothUtil.SendComm("6800000000000068200100EC16");
-                                            Log.i(TAG, "发送'读取内部存储的事件记录'指令:6800000000000068200100EC16");
+                                            Log.i(TAG, "发送'读取内部存储的事件记录'指令：6800000000000068200100EC16");
+                                        } else {
+                                            BluetoothUtil.SendComm("6800000000000068200101EC16");
+                                            Log.i(TAG, "发送'读取内部存储的【下一条】记录'指令：6800000000000068200101EC16");
                                         }
                                     }
                                 });
@@ -657,6 +687,18 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                         });
                     }
                 }).start();
+            }
+            break;
+            //读取基本信息
+            case R.id.btn13: {
+                hexStr = "6800000000000068210100EC16";
+                logStr = "发送'读取基本信息'指令：" + hexStr;
+            }
+            break;
+            //读取GPS位置信息
+            case R.id.btn14: {
+                hexStr = "6800000000000068220100EC16";
+                logStr = "发送'读取GPS位置信息'指令：" + hexStr;
             }
             break;
         }
@@ -682,6 +724,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _myhandler = new Myhandler(this);
         setContentView(R.layout.activity_command_test);
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
@@ -697,16 +740,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btnTop.setOnClickListener(this);
         _btnBottom = findViewById(R.id.btnBottom);
         _btnBottom.setOnClickListener(this);
-        _btn1 = findViewById(R.id.btn1);
-        _btn1.setOnClickListener(this);
-        _btn2 = findViewById(R.id.btn2);
-        _btn2.setOnClickListener(this);
-        _btn3 = findViewById(R.id.btn3);
-        _btn3.setOnClickListener(this);
-        _btn4 = findViewById(R.id.btn4);
-        _btn4.setOnClickListener(this);
-        _btn5 = findViewById(R.id.btn5);
-        _btn5.setOnClickListener(this);
         _btn6 = findViewById(R.id.btn6);
         _btn6.setOnClickListener(this);
         _btn7 = findViewById(R.id.btn7);
@@ -721,12 +754,16 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn11.setOnClickListener(this);
         _btn12 = findViewById(R.id.btn12);
         _btn12.setOnClickListener(this);
+        _btn13 = findViewById(R.id.btn13);
+        _btn13.setOnClickListener(this);
+        _btn14 = findViewById(R.id.btn14);
+        _btn14.setOnClickListener(this);
         BluetoothUtil.Init(CommandTest.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "未获取到蓝牙,请重试!");
+            ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "未获取到蓝牙,请重试！");
         }
         InitListener();
     }

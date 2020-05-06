@@ -100,15 +100,9 @@ public class AmountView extends LinearLayout implements View.OnClickListener, Te
         this._lister = lister;
     }
 
-    public void setMin(int min) {
-        this._min = min;
-    }
-
-    public void setMax(int max) {
+    public void setMaxMinStep(int max, int min, double step) {
         this._max = max;
-    }
-
-    public void setStep(double step) {
+        this._min = min;
         this._step = step;
     }
 

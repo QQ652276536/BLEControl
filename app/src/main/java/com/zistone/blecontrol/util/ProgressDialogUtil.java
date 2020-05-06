@@ -17,6 +17,26 @@ public class ProgressDialogUtil {
 
     public interface Listener {
         void OnDismiss();
+
+        void OnConfirm();
+
+        void OnCancel();
+    }
+
+    public static void ShowConfirm(Context context, String title, String content) {
+        //确保创建Dialog的Activity没有finish才显示
+        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(title);
+            builder.setMessage(content);
+            builder.setNegativeButton("好的", (dialog, which) -> {
+                _listener.OnConfirm();
+            });
+            builder.setPositiveButton("不了", (dialog, which) -> {
+                _listener.OnCancel();
+            });
+            builder.show();
+        }
     }
 
     public static void ShowWarning(Context context, String title, String content) {

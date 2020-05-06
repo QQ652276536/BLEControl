@@ -6,7 +6,9 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.InstallAPK;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,25 +19,36 @@ public class MyAnimation extends AppCompatActivity {
     private Timer _timer;
     private TimerTask _timerTask;
     private int _count = 3;
+    private MyHandler _myHandler;
 
-    private Handler _handler = new Handler() {
+    static class MyHandler extends Handler {
+        WeakReference<MyAnimation> _weakReference;
+        MyAnimation _myAnimation;
+
+        public MyHandler(MyAnimation activity) {
+            _myAnimation = activity;
+        }
+
         @Override
         public void handleMessage(Message message) {
-            super.handleMessage(message);
+            if (_weakReference.get() == null)
+                return;
+            _myAnimation = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1: {
-                    _timerTask.cancel();
-                    _timer.cancel();
-                    finish();
+                    _myAnimation._timerTask.cancel();
+                    _myAnimation._timer.cancel();
+                    _myAnimation.finish();
                 }
             }
         }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_animation);
         _timer = new Timer();
         _timerTask = new TimerTask() {
@@ -44,7 +57,7 @@ public class MyAnimation extends AppCompatActivity {
                 if (_count > 0)
                     _count--;
                 else
-                    _handler.sendMessage(_handler.obtainMessage(MESSAGE_1, ""));
+                    _myHandler.sendMessage(_myHandler.obtainMessage(MESSAGE_1, ""));
             }
         };
         //_timer.schedule(_timerTask, 0, 800);

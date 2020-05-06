@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
  * 字符转换工具类
  * 不支持特殊字符
  */
-public class ConvertUtil {
+public class MyConvertUtil {
 
     //16进制数字字符集
     public static final String HEXSTRING = "0123456789ABCDEF";
@@ -136,6 +136,27 @@ public class ConvertUtil {
             n = n * 10;
         }
         return result;
+    }
+
+    /**
+     * 不带空格的16进制字符串插入指定字符
+     *
+     * @param str       不带空格的字符串
+     * @param character 指定字符
+     * @return
+     */
+    public static String StrAddCharacter(String str, String character) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < str.length(); i++) {
+            if (i != str.length() - 1) {
+                stringBuffer.append(str.charAt(i));
+                stringBuffer.append(character);
+
+            } else {
+                stringBuffer.append(str.charAt(i));
+            }
+        }
+        return stringBuffer.toString();
     }
 
     /**
