@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -27,7 +25,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.zistone.blecontrol.R;
@@ -37,7 +34,7 @@ import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -156,8 +153,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //设备基本信息
                 case RECEIVE_BASEINFO: {
                     String[] strArray = result.split(" ");
-                    String versionStr = ConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
-                    versionStr = ConvertUtil.StrAddCharacter(versionStr, ".");
+                    String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
+                    versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
                     String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
                     //不足两位补齐，比如0->0、1->01
                     if (voltageStr1.length() == 1)
@@ -199,8 +196,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //综合测试
                 case RECEIVE_TESTA: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                    byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     String lockState1 = String.valueOf(bitStr.charAt(6));
                     String doorState2 = String.valueOf(bitStr.charAt(5));
@@ -252,8 +249,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //一号门锁
                 case RECEIVE_OPENDOORS1: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
                     if (doorState2.equals("1"))
                         _powerControl._txt1.setText("已开");
@@ -269,8 +266,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //二号门锁
                 case RECEIVE_OPENDOORS2: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
                     if (doorState2.equals("1"))
                         _powerControl._txt3.setText("已开");
@@ -286,8 +283,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //全部门锁
                 case RECEIVE_OPENALLDOORS: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     if (doorState1.equals("1"))
                         _powerControl._txt1.setText("已开");
@@ -318,8 +315,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
                     String bitStr8 = String.valueOf(bitStr.charAt(7));
                     //使用低磁检测阀值
@@ -696,8 +693,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
         String sendResult = "";
@@ -723,8 +720,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         Log.i(TAG, "收到：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)

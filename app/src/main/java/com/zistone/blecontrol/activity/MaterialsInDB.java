@@ -29,7 +29,7 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.pojo.Material;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.blecontrol.util.PropertiesUtil;
@@ -325,8 +325,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = MyConvertUtil.HexStrAddCharacter(result, " ");
                     Log.i(TAG, "接收:" + result);
                     Message message = handler.obtainMessage(MESSAGE_2, result);
                     handler.sendMessage(message);
@@ -342,7 +342,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
                     Log.i(TAG, "发送:" + result);
                 }
 
@@ -354,8 +354,8 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                     byte[] byteArray = characteristic.getValue();
-                    String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-                    result = ConvertUtil.HexStrAddCharacter(result, " ");
+                    String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                    result = MyConvertUtil.HexStrAddCharacter(result, " ");
                     Log.i(TAG, "接收:" + result);
 
                 }

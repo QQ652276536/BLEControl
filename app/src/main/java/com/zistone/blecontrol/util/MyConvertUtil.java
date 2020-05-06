@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
  * 字符转换工具类
  * 不支持特殊字符
  */
-public class ConvertUtil {
+public class MyConvertUtil {
 
     //16进制数字字符集
     public static final String HEXSTRING = "0123456789ABCDEF";

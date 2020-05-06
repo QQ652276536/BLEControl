@@ -33,7 +33,7 @@ import com.zistone.blecontrol.controls.AmountView;
 import com.zistone.blecontrol.opencv.DetectionBasedTracker;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -51,7 +51,6 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -472,8 +471,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         Message message = new Message();
         switch (indexStr) {
             case "80": {
-                byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                 String doorState1 = String.valueOf(bitStr.charAt(7));
                 String lockState1 = String.valueOf(bitStr.charAt(6));
                 String doorState2 = String.valueOf(bitStr.charAt(5));
@@ -526,8 +525,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
         switch (indexStr) {
@@ -536,8 +535,8 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         //Log.i(TAG, "接收:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)

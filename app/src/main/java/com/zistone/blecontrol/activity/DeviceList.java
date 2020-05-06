@@ -46,7 +46,7 @@ import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.InstallAPK;
 import com.zistone.blecontrol.util.MyActivityManager;
@@ -429,7 +429,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
             _filterContent += _filterRssi * -1 + "dBm,";
         if (_isHideConnectSuccessDevice)
             _filterContent += "Yes,";
-        _filterContent = ConvertUtil.ReplaceLast(_filterContent, ",", "");
+        _filterContent = MyConvertUtil.ReplaceLast(_filterContent, ",", "");
         if (_filterContent.equals(""))
             _filterContent = " No filter";
         _btnFilterContent.setText(_filterContent);

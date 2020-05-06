@@ -19,7 +19,7 @@ import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
-import com.zistone.blecontrol.util.ConvertUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -103,8 +103,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     break;
                 //解析查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
                     String bitStr8 = String.valueOf(bitStr.charAt(7));
                     //使用低磁检测阀值
@@ -199,8 +199,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * */
         else if (strArray[8].equals("A1") && strArray.length == 19) {
             receive = data;
-            String versionStr = ConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
-            versionStr = ConvertUtil.StrAddCharacter(versionStr, ".");
+            String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
+            versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
             String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
             //不足两位补齐，比如0->0、1->01
             if (voltageStr1.length() == 1)
@@ -311,8 +311,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 //综合测试A：全部门锁状态+强磁开关状态+外接电源状态+内部电池充电状态+电池电量+磁强
                 case "80": {
                     receive = data + "\r\n解析：";
-                    byte[] bytes1 = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes1[0]);
+                    byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
                     String lockState1 = String.valueOf(bitStr.charAt(6));
@@ -341,8 +341,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case "81": {
                     receive = data + "\r\n解析：";
                     String result = strArray[13];
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState = String.valueOf(bitStr.charAt(7));
                     String lockState = String.valueOf(bitStr.charAt(6));
                     receive += doorState.equals("1") ? "门一【已开】 " : "门一【已关】 ";
@@ -353,8 +353,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case "82": {
                     receive = data + "\r\n解析：";
                     String result = strArray[13];
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(result);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState = String.valueOf(bitStr.charAt(7));
                     String lockState = String.valueOf(bitStr.charAt(6));
                     receive += doorState.equals("1") ? "门二【已开】 " : "门二【已关】 ";
@@ -364,8 +364,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 //开全部门锁
                 case "83": {
                     receive = data + "\r\n解析：";
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
                     receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
                     String lockState1 = String.valueOf(bitStr.charAt(6));
@@ -385,8 +385,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                         return;
                     }
                     receive = data;
-                    byte[] bytes = ConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = ConvertUtil.ByteToBit(bytes[0]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //门检测开关（关门开路）
                     String str1 = String.valueOf(bitStr.charAt(7));
                     //锁检测开关（锁上开路）
@@ -492,8 +492,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         String[] strArray = result.split(" ");
         String sendResult = "";
         /*
@@ -544,15 +544,15 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     break;
             }
         }
-        Message message = _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + ConvertUtil.StrArrayToStr(strArray));
+        Message message = _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray));
         _myhandler.sendMessage(message);
         Log.i(TAG, "成功发送'" + sendResult + "'的指令");
     }
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-        String result = ConvertUtil.ByteArrayToHexStr(byteArray);
-        result = ConvertUtil.HexStrAddCharacter(result, " ");
+        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+        result = MyConvertUtil.HexStrAddCharacter(result, " ");
         Log.i(TAG, "接收：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
