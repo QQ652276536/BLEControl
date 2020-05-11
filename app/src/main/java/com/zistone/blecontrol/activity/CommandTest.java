@@ -126,8 +126,8 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     if (_commandTest._isOpenParamSetting) {
                         if (_commandTest._paramSetting == null) {
                             _commandTest._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                    bitStr5, bitStr6, bitStr7,
-                                    bitStr8}, _commandTest._dialogFragmentListener);
+                                                                                                              bitStr5, bitStr6, bitStr7,
+                                                                                                              bitStr8}, _commandTest._dialogFragmentListener);
                             _commandTest._paramSetting.setCancelable(false);
                         }
                         _commandTest._paramSetting.show(_commandTest._fragmentManager, "DialogFragment_ParamSetting");
@@ -195,6 +195,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 56 33 32 36（版本）
          * 0E 00（电池电压）
          * 04（内部温度，为256补码，-127~127，实际温度数据为23+temperature/2）
+         * 00（连接状态，0待机，1已连接主机）
+         * 00（连接类型，0未定，1软件串口，2SPI，3硬件串口）
+         * 00（远程下载百分比）
          *
          * */
         else if (strArray[8].equals("A1") && strArray.length == 19) {
@@ -215,7 +218,25 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃]", versionStr, voltage, temperature);
+            String connectState = Integer.parseInt(strArray[2], 16) == 0 ? "待机" : "已连接主机";
+            String connectType = "未定";
+            switch (Integer.parseInt(strArray[3], 16)) {
+                case 0:
+                    connectType = "未定";
+                    break;
+                case 1:
+                    connectType = "软件串口";
+                    break;
+                case 2:
+                    connectType = "SPI";
+                    break;
+                case 3:
+                    connectType = "硬件串口";
+                    break;
+            }
+            int downloadPer = Integer.parseInt(strArray[4], 16);
+            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃] 连接状态[%s] 连接类型[%s] 远程下载百分比[%s%%]", versionStr, voltage, temperature,
+                    connectState, connectType, downloadPer);
         }
         /*
          * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
