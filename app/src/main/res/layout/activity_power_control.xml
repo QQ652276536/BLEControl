@@ -73,23 +73,9 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="50dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:text="门1"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txt1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:text="锁1"
+                        android:text="门锁状态"
                         android:textSize="18sp" />
 
                     <TextView
@@ -106,29 +92,16 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="50dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:text="门2"
+                        android:text="内部温度"
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/txt3"
+                        android:id="@+id/txt6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Null"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:text="锁2"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txt4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:singleLine="false"
                         android:text="Null"
                         android:textSize="18sp" />
                 </LinearLayout>
@@ -151,20 +124,6 @@
                         android:text="Null"
                         android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
-                        android:text="内部温度"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txt6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:singleLine="false"
-                        android:text="Null"
-                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
