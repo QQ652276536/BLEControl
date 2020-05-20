@@ -182,14 +182,18 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt7.setText("定位失败");
                         return;
                     }
-                    String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                    //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                    String latStr = strArray[14] + strArray[13] + strArray[12] + strArray[11];
                     double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
                     int len = Integer.parseInt(strArray[1], 16);
-                    String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                    //                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                    String lotStr = strArray[2] + strArray[17] + strArray[16] + strArray[15];
                     double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
                     //                    String heightStr = strArray[3] + strArray[4];
-                    String heightStr = strArray[3];
-                    int height = Integer.parseInt(heightStr, 16);
+                    String heightStr1 = strArray[4];
+                    int height = Integer.parseInt(heightStr1, 16);
+                    String heightStr2 = strArray[3];
+                    height += Integer.parseInt(heightStr2, 16);
                     _powerControl._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
                 }
                 break;

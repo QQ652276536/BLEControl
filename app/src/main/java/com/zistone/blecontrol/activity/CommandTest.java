@@ -182,8 +182,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 String lotStr = strArray[2] + strArray[17] + strArray[16] + strArray[15];
                 double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
                 //                    String heightStr = strArray[3] + strArray[4];
-                String heightStr = strArray[3];
-                int height = Integer.parseInt(heightStr, 16);
+                String heightStr1 = strArray[4];
+                int height = Integer.parseInt(heightStr1, 16);
+                String heightStr2 = strArray[3];
+                height += Integer.parseInt(heightStr2, 16);
                 receive += "经度" + latNum + "纬度" + lotNum + "高度" + height;
             } else {
                 receive += "定位失败";
