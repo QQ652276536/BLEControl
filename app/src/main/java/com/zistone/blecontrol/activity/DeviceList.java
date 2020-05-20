@@ -442,9 +442,9 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         if (_myBluetoothDevice == null)
             return;
         String address = _myBluetoothDevice.getAddress();
-        Log.i(TAG, String.format("设备%s连接成功", address));
         //选择设备后会停止扫描,隐藏连接成功的设备后再调用一次筛选
         if (_isHideConnectSuccessDevice) {
+            Log.i(TAG, String.format("隐藏连接成功的设备%s", address));
             //根据条件筛选设备
             _connectSuccessMap.put(address, _myBluetoothDevice);
             Map<String, MyBluetoothDevice> map = HideConnectSuccessDevice(_deviceMap);

@@ -7,7 +7,7 @@ android {
         applicationId "com.zistone.blecontrol"
         minSdkVersion 22
         targetSdkVersion 28
-        versionName "2.5.2"
+        versionName "2.5.3"
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang", "-DCMAKE_BUILD_TYPE=Release"

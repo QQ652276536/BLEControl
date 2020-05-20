@@ -83,7 +83,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private ImageButton _btnReturn, _btnClear;
     private TextView _debugView;
     private Button _btn1, _btn2, _btn3, _btn4;
-    private TextView _txt1, _txt2, _txt3, _txt4, _txt5, _txt6, _txt7, _txtVersion;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
@@ -182,14 +182,18 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         _powerControl._txt7.setText("定位失败");
                         return;
                     }
-                    String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                    //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                    String latStr = strArray[14] + strArray[13] + strArray[12] + strArray[11];
                     double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
                     int len = Integer.parseInt(strArray[1], 16);
-                    String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                    //                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                    String lotStr = strArray[2] + strArray[17] + strArray[16] + strArray[15];
                     double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
                     //                    String heightStr = strArray[3] + strArray[4];
-                    String heightStr = strArray[3];
-                    int height = Integer.parseInt(heightStr, 16);
+                    String heightStr1 = strArray[4];
+                    int height = Integer.parseInt(heightStr1, 16);
+                    String heightStr2 = strArray[3];
+                    height += Integer.parseInt(heightStr2, 16);
                     _powerControl._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
                 }
                 break;
@@ -217,32 +221,11 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     //前端磁强
                     int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                     if (doorState1.equals("1")) {
-                        _powerControl._txt1.setText("已开");
-                        _powerControl._txt1.setTextColor(Color.GREEN);
-                    } else {
-                        _powerControl._txt1.setText("已关");
-                        _powerControl._txt1.setTextColor(Color.RED);
-                    }
-                    if (lockState1.equals("1")) {
                         _powerControl._txt2.setText("已开");
                         _powerControl._txt2.setTextColor(Color.GREEN);
                     } else {
                         _powerControl._txt2.setText("已关");
                         _powerControl._txt2.setTextColor(Color.RED);
-                    }
-                    if (doorState2.equals("1")) {
-                        _powerControl._txt3.setText("已开");
-                        _powerControl._txt3.setTextColor(Color.GREEN);
-                    } else {
-                        _powerControl._txt3.setText("已关");
-                        _powerControl._txt3.setTextColor(Color.RED);
-                    }
-                    if (lockState2.equals("1")) {
-                        _powerControl._txt4.setText("已开");
-                        _powerControl._txt4.setTextColor(Color.GREEN);
-                    } else {
-                        _powerControl._txt4.setText("已关");
-                        _powerControl._txt4.setTextColor(Color.RED);
                     }
                 }
                 break;
@@ -252,15 +235,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if (doorState2.equals("1"))
-                        _powerControl._txt1.setText("已开");
-                    else
-                        _powerControl._txt1.setText("已关");
-                    String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if (lockState2.equals("1"))
-                        _powerControl._txt2.setText("已开");
-                    else
-                        _powerControl._txt2.setText("已关");
                 }
                 break;
                 //二号门锁
@@ -269,15 +243,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState2 = String.valueOf(bitStr.charAt(7));
-                    if (doorState2.equals("1"))
-                        _powerControl._txt3.setText("已开");
-                    else
-                        _powerControl._txt3.setText("已关");
-                    String lockState2 = String.valueOf(bitStr.charAt(6));
-                    if (lockState2.equals("1"))
-                        _powerControl._txt4.setText("已开");
-                    else
-                        _powerControl._txt4.setText("已关");
                 }
                 break;
                 //全部门锁
@@ -286,25 +251,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
-                    if (doorState1.equals("1"))
-                        _powerControl._txt1.setText("已开");
-                    else
-                        _powerControl._txt1.setText("已关");
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
-                    if (lockState1.equals("1"))
-                        _powerControl._txt2.setText("已开");
-                    else
-                        _powerControl._txt2.setText("已关");
-                    String doorState2 = String.valueOf(bitStr.charAt(5));
-                    if (doorState2.equals("1"))
-                        _powerControl._txt3.setText("已开");
-                    else
-                        _powerControl._txt3.setText("已关");
-                    String lockState2 = String.valueOf(bitStr.charAt(4));
-                    if (lockState2.equals("1"))
-                        _powerControl._txt4.setText("已开");
-                    else
-                        _powerControl._txt4.setText("已关");
                 }
                 break;
                 //发送查询内部控制参数的指令
@@ -338,8 +284,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     if (_powerControl._isOpenParamSetting) {
                         if (_powerControl._paramSetting == null) {
                             _powerControl._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                    bitStr5, bitStr6, bitStr7,
-                                    bitStr8}, _powerControl._dialogFragmentListener);
+                                                                                                               bitStr5, bitStr6, bitStr7,
+                                                                                                               bitStr8}, _powerControl._dialogFragmentListener);
                             _powerControl._paramSetting.setCancelable(false);
                         }
                         _powerControl._paramSetting.show(_powerControl._fragmentManager, "DialogFragment_ParamSetting");
@@ -409,22 +355,25 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         String[] strArray = data.split(" ");
         Message message = new Message();
         /*
-         * 特殊处理：设备基本信息的通信协议和之前的开关门协议不一样，需要留意
+         * 设备基本信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
-        if (strArray[8].equals("A1") && strArray.length == 19) {
+        if (strArray[8].equals("A1")) {
             message.what = RECEIVE_BASEINFO;
             message.obj = data;
         }
         /*
-         * 特殊处理：GPS位置信息的通信协议和之前的开关门协议不一样，需要留意
+         * GPS位置信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
-        else if (strArray[8].equals("A2") && strArray.length == 20) {
+        else if (strArray[8].equals("A2")) {
             message.what = RECEIVE_LOCATION;
         }
-        //开关门的协议
-        else {
+        /*
+         * 开关门协议
+         *
+         * */
+        else if (strArray[8].equals("10")) {
             String indexStr = strArray[12];
             switch (indexStr) {
                 //全部门锁状态
@@ -540,14 +489,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _btn3.setEnabled(false);
         _btn4.setEnabled(false);
         BluetoothUtil.DisConnGatt();
-        _txt1.setText("Null");
-        _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
         _txt2.setTextColor(Color.GRAY);
-        _txt3.setText("Null");
-        _txt3.setTextColor(Color.GRAY);
-        _txt4.setText("Null");
-        _txt4.setTextColor(Color.GRAY);
         _txt5.setText("Null");
         _txt6.setText("Null");
         _txt7.setText("Null");
@@ -763,10 +706,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _toolbar = findViewById(R.id.toolbar_powercontrol);
         _toolbar.setTitle("");
         setSupportActionBar(_toolbar);
-        _txt1 = findViewById(R.id.txt1);
         _txt2 = findViewById(R.id.txt2);
-        _txt3 = findViewById(R.id.txt3);
-        _txt4 = findViewById(R.id.txt4);
         _txt5 = findViewById(R.id.txt5);
         _txt6 = findViewById(R.id.txt6);
         _txt7 = findViewById(R.id.txt7);

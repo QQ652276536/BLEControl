@@ -160,7 +160,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         }
         String receive = data.trim();
         /*
-         * 特殊处理：GPS位置信息的通信协议和之前的开关门协议不一样,需要留意
+         * GPS位置信息的通信协议
          *
          * 指令示例：68 03 00 37 00 00 01 68 A2 0B 00 00 00 00 00 00 00 00 B8 16
          * 0B（Len）
@@ -170,25 +170,29 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 37 00（高度）
          *
          * */
-        if (strArray[8].equals("A2") && strArray.length == 20) {
+        if (strArray[8].equals("A2")) {
             receive = data + "\r\n解析：";
             int state = Integer.parseInt(strArray[10], 16);
             if (state == 1) {
-                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                String latStr = strArray[14] + strArray[13] + strArray[12] + strArray[11];
                 double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
                 int len = Integer.parseInt(strArray[1], 16);
-                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                //                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                String lotStr = strArray[2] + strArray[17] + strArray[16] + strArray[15];
                 double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
                 //                    String heightStr = strArray[3] + strArray[4];
-                String heightStr = strArray[3];
-                int height = Integer.parseInt(heightStr, 16);
+                String heightStr1 = strArray[4];
+                int height = Integer.parseInt(heightStr1, 16);
+                String heightStr2 = strArray[3];
+                height += Integer.parseInt(heightStr2, 16);
                 receive += "经度" + latNum + "纬度" + lotNum + "高度" + height;
             } else {
                 receive += "定位失败";
             }
         }
         /*
-         * 特殊处理：设备基本信息的通信协议和之前的开关门协议不一样，需要留意
+         * 设备基本信息的通信协议
          *
          * 指令示例：68 00 00 00 00 00 01 68 A1 07 56 33 32 36 0E 00 04 7C 16
          * 07（Len）
@@ -200,7 +204,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 00（远程下载百分比）
          *
          * */
-        else if (strArray[8].equals("A1") && strArray.length == 19) {
+        else if (strArray[8].equals("A1")) {
             receive = data;
             String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
             versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
@@ -235,11 +239,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     break;
             }
             int downloadPer = Integer.parseInt(strArray[4], 16);
-            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃] 连接状态[%s] 连接类型[%s] 远程下载百分比[%s%%]", versionStr, voltage, temperature,
-                    connectState, connectType, downloadPer);
+            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃] 连接状态[%s] 连接类型[%s] 远程下载百分比[%s%%]", versionStr, voltage, temperature, connectState, connectType, downloadPer);
         }
         /*
-         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
+         * 读取内部存储的事件记录的通信协议
          *
          * 指令示例：68 03 00 00 14 00 01 68 A0 0B 06 20 04 25 23 26 40 1A 85 16
          * 68
@@ -258,7 +261,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
          * 执行读取事件记录的时候_btn12控件禁用,这个可以用来判断是否正在执行读取事件记录
          *
          * */
-        else if (strArray[11].equals("20") && !_btn12.isEnabled()) {
+        else if (strArray[8].equals("A0") && !_btn12.isEnabled()) {
             //超出8个字节后多出来的字节个数
             int excessNum = Integer.parseInt(strArray[1], 16);
             //数据长度
@@ -325,8 +328,9 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         }
         /*
          * 开关门协议
+         *
          * */
-        else {
+        else if (strArray[8].equals("10")) {
             String indexStr = strArray[12];
             switch (indexStr) {
                 //综合测试A：全部门锁状态+强磁开关状态+外接电源状态+内部电池充电状态+电池电量+磁强
@@ -335,13 +339,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
-                    receive += doorState1.equals("1") ? "门一【已开】 " : "门一【已关】 ";
-                    String lockState1 = String.valueOf(bitStr.charAt(6));
-                    receive += lockState1.equals("1") ? "锁一【已开】 " : "锁一【已关】 ";
-                    String doorState2 = String.valueOf(bitStr.charAt(5));
-                    receive += doorState2.equals("1") ? "门二【已开】 " : "门二【已关】 ";
-                    String lockState2 = String.valueOf(bitStr.charAt(4));
-                    receive += lockState2.equals("1") ? "锁二【已开】" : "锁二【已关】";
+                    receive += doorState1.equals("1") ? "门锁【已开】 " : "门锁【已关】 ";
                     //强磁开关状态
                     String magneticState = String.valueOf(bitStr.charAt(3));
                     //外接电源状态
@@ -518,7 +516,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         String[] strArray = result.split(" ");
         String sendResult = "";
         /*
-         * 特殊处理：读取内部存储的事件记录的通信协议和之前的开关门协议不一样,需要留意
+         * 读取内部存储的事件记录的通信协议
          * 1、指令为13个字节
          * 2、执行读取事件记录的时候_btn12控件禁用
          * 以上2个条件可以用来判断是否正在执行读取事件记录
