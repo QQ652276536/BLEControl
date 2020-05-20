@@ -174,10 +174,12 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             receive = data + "\r\n解析：";
             int state = Integer.parseInt(strArray[10], 16);
             if (state == 1) {
-                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
+                String latStr = strArray[14] + strArray[13] + strArray[12] + strArray[11];
                 double latNum = Double.valueOf(Integer.valueOf(latStr, 16)) / 1000000;
                 int len = Integer.parseInt(strArray[1], 16);
-                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                //                String lotStr = strArray[15] + strArray[16] + strArray[17] + strArray[2];
+                String lotStr = strArray[2] + strArray[17] + strArray[16] + strArray[15];
                 double lotNum = Double.valueOf(Integer.valueOf(lotStr, 16)) / 1000000;
                 //                    String heightStr = strArray[3] + strArray[4];
                 String heightStr = strArray[3];

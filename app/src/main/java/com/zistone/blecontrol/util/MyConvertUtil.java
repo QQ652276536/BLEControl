@@ -12,19 +12,34 @@ public class MyConvertUtil {
     public static final String HEXSTRING = "0123456789ABCDEF";
 
     public static void main(String[] args) throws Exception {
-        System.out.println("生成的检验码为:" + CreateCheckCode("80 01 00 05 05 51 03 00 63 34 19 97 23 04 01 02 00"));
+
+        System.out.println("生成的检验码为:" + CreateCheckCode("AA 31 1B 00 03 31 39 30 32 41 51 36 38 30 30 30 30 30 32 35 34 32 00 01" + "00 01 05 98 25"));
+        System.out.println("CRC_16_CCITT_FALSE生成的校验码:" + CRC_16_CCITT_FALSE(new byte[]{(byte) 0xAA, 0x31, 0x1B, 0x00, 0x03, 0x31, 0x39, 0x30, 0x32,
+                0x41, 0x51, 0x36, 0x38, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32,
+                0x35, 0x34, 0x32, 0x00, 0x01, 0x00, 0x01, 0x05}, 27));
+        byte[] reverseArray = ReverseByteArray(new byte[]{(byte) 0xAA, 0x31, 0x1B, 0x00, 0x03, 0x31, 0x39, 0x30, 0x32, 0x41, 0x51, 0x36,
+                0x38, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32, 0x35, 0x34, 0x32, 0x00, 0x01, 0x00,
+                0x01, 0x05});
+        System.out.println("反转byte[]:");
+        for (byte b : reverseArray) {
+            System.out.print(ByteToHexStr(b)+" ");
+        }
+        System.out.println();
         System.out.println("____________________________________________________________________");
 
-        System.out.println(ByteArrayToHexStr(new byte[]{(byte) 2, (byte) 97, (byte) 51, (byte) 52}));
+        System.out.println("byte转bit:" + ByteToBit((byte) 0x01) + ByteToBit((byte) 0x05));
+        System.out.println("bit添加空格:" + MyConvertUtil.StrAddCharacter(ByteToBit((byte) 0x05) + ByteToBit((byte) 0x01), " "));
+        System.out.println("byte转16进制的Str:" + ByteToHexStr((byte) 0xAA));
+        System.out.println("byte转int:" + MyConvertUtil.ByteToInt((byte) 0x03));
+        System.out.println("byte[2]转int:" + ByteArray2ToInt(new byte[]{0x01, 0x2D}));
+        System.out.println("byte[]转16进制的Str:" + MyConvertUtil.ByteArrayToHexStr(new byte[]{(byte) 0x98, 0x25}));
+        System.out.println("byte[]转16进制的Str:" + ByteArrayToHexStr(new byte[]{(byte) 2, (byte) 97, (byte) 51, (byte) 52}));
         System.out.println((double) ByteArray4ToLong(new byte[]{(byte) 6, (byte) -18, (byte) -9, (byte) -15}) / 1000000);
         System.out.println("____________________________________________________________________");
-        //测试通过
         System.out.println("普通Str转16进制Str:" + StrToHexStr("rD9TcH"));
 
         int aaa = Integer.parseInt("1997", 16);
-        System.out.println("下端:" + Integer.parseInt("0757", 16));
-        System.out.println("上端:" + Integer.parseInt("075F", 16));
-        System.out.println("前端:" + Integer.parseInt("06C3", 16));
+        System.out.println("Byte[]转int:" + Integer.parseInt("1B00", 16));
 
         System.out.println("16进制Str转普通Str:" + HexStrToStr("075772075F06C3"));
         System.out.println("____________________________________________________________________");
@@ -33,7 +48,7 @@ public class MyConvertUtil {
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("674E5C0F4F1F"));
         System.out.println("16进制的Str转成Unicode编码的中文:" + EnUnicode("004C0069005700650069"));
         System.out.println("____________________________________________________________________");
-        TestBinaryStrToInt();
+        //        TestBinaryStrToInt();
     }
 
     private static void TestBinaryStrToInt() {
@@ -61,6 +76,22 @@ public class MyConvertUtil {
         System.out.println(bitStr10 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr10, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr10, 2)));
         System.out.println(bitStr11 + "\t二进制Str转十进制Int:" + Integer.parseInt(bitStr11, 2) + "\t\t" + "十进制Int转十六进制Int" + ":" + Integer.toHexString(Integer.parseInt(bitStr11, 2)));
         System.out.println("____________________________________________________________________");
+    }
+
+    /**
+     * 反转byte[]
+     *
+     * @param byteArray
+     * @return
+     */
+    public static byte[] ReverseByteArray(byte[] byteArray) {
+        byte tempByte;
+        for (int start = 0, end = byteArray.length - 1; start < end; start++, end--) {
+            tempByte = byteArray[end];
+            byteArray[end] = byteArray[start];
+            byteArray[start] = tempByte;
+        }
+        return byteArray;
     }
 
     /**
@@ -188,7 +219,7 @@ public class MyConvertUtil {
      * 将收到的消息还原转义后去除标识和校验位,然后按位异或得到的结果就是校验码
      *
      * @param hexStr 带空格不带0x的16进制字符串,比如81 03 00
-     * @return
+     * @return 不足2位前面补零
      */
     public static String CreateCheckCode(String hexStr) throws Exception {
         if (!hexStr.contains(" ") || hexStr.contains("0x") || hexStr.contains("0X")) {
@@ -204,7 +235,38 @@ public class MyConvertUtil {
                 binaryNum ^= tempHexNum;
             }
         }
-        return Integer.toHexString(binaryNum);
+        String result = Integer.toHexString(binaryNum);
+        if (result.length() < 2) {
+            result = "0" + result;
+        }
+        return result;
+    }
+
+    /**
+     * 生成校验码
+     * CRC-16/CCITT_FALSE方式生成校验码
+     *
+     * @param bytes
+     * @param length
+     * @return
+     */
+    public static String CRC_16_CCITT_FALSE(byte[] bytes, int length) {
+        int crc = 0xffff;
+        int polynomial = 0x1021;
+        for (int index = 0; index < bytes.length; index++) {
+            byte b = bytes[index];
+            for (int i = 0; i < 8; i++) {
+                boolean bit = ((b >> (7 - i) & 1) == 1);
+                boolean c15 = ((crc >> 15 & 1) == 1);
+                crc <<= 1;
+                if (c15 ^ bit)
+                    crc ^= polynomial;
+            }
+        }
+        crc &= 0xffff;
+        //输出String字样的16进制
+        String strCrc = Integer.toHexString(crc).toUpperCase();
+        return strCrc;
     }
 
     /**
@@ -382,7 +444,7 @@ public class MyConvertUtil {
      * @param b
      * @return
      */
-    public static int ByteArray1ToInt(byte b) {
+    public static int ByteToInt(byte b) {
         return (int) b & 0xFF;
     }
 
@@ -399,6 +461,20 @@ public class MyConvertUtil {
             byteArray[i] = ((byte) Integer.parseInt(subStr, 16));
         }
         return byteArray;
+    }
+
+    /**
+     * byte转16进制Str
+     *
+     * @param b
+     */
+    public static String ByteToHexStr(byte b) {
+        char[] hexArray = HEXSTRING.toCharArray();
+        char[] hexChars = new char[2];
+        int temp = b & 0xFF;
+        hexChars[0] = hexArray[temp >>> 4];
+        hexChars[1] = hexArray[temp & 0x0F];
+        return new String(hexChars);
     }
 
     /**
