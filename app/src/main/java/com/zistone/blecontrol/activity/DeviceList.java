@@ -78,7 +78,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private Toolbar _toolbar;
     private ListView _listView;
     private BluetoothAdapter _bluetoothAdapter;
-    private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4;
+    private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
     private Button _btnFilterContent;
@@ -640,6 +640,12 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
+        //地理位置
+        else if (_rdoFunc5.isChecked()) {
+            intent = new Intent(DeviceList.this, Location.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
         if (intent != null)
             //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
             startActivityForResult(intent, 2);
@@ -810,6 +816,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         _rdoFunc2 = findViewById(R.id.rdo_func2_bleList);
         _rdoFunc3 = findViewById(R.id.rdo_func3_bleList);
         _rdoFunc4 = findViewById(R.id.rdo_func4_bleList);
+        _rdoFunc5 = findViewById(R.id.rdo_func5_bleList);
         _listView = findViewById(R.id.lv_bleList);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);

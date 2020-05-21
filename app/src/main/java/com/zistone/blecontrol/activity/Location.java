@@ -7,16 +7,15 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -33,7 +32,6 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.animation.Animation;
 import com.baidu.mapapi.animation.Transformation;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
@@ -42,14 +40,11 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.BluetoothListener;
@@ -61,7 +56,6 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -74,6 +68,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     private static final String TAG = "Location";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final SimpleDateFormat SIMPLEDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     //查询内部控制参数
     private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
     //读取基本信息：版本，电池电压，内部温度
@@ -105,7 +100,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     private Toolbar _toolbar;
     private ImageButton _btnReturn, _btnHideBle;
     private Button _btn1, _btn2, _btn3, _btn4;
-    private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion, _txtVerifySDK;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
@@ -114,70 +109,21 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     private boolean _connectedSuccess = false;
     private Map<String, UUID> _uuidMap;
     private ProgressDialogUtil.Listener _progressDialogUtilListener;
-    private FragmentManager _fragmentManager;
     private MyHandler _myHandler;
-
-    private static final SimpleDateFormat SIMPLEDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final BitmapDescriptor ICON_MARKER1 = BitmapDescriptorFactory.fromResource(R.drawable.icon_mark1);
-    private static final BitmapDescriptor ICON_MARKER2 = BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2);
-    private static final BitmapDescriptor ICON_MARKER3 = BitmapDescriptorFactory.fromResource(R.drawable.icon_mark3);
-    private static final int MESSAGE_QUERYLOCATION_RREQUEST_FAIL = 1;
-    private static final int MESSAGE_QUERYLOCATION_RESPONSE_FAIL = 2;
-    private static final int MESSAGE_QUERYLOCATION_RESPONSE_SUCCESS = 3;
-    private static final int MESSAGE_FENCE_ADD_RREQUEST_FAIL = 4;
-    private static final int MESSAGE_FENCE_ADD_RESPONSE_FAIL = 5;
-    private static final int MESSAGE_FENCE_ADD_RESPONSE_SUCCESS = 6;
-    private static final int MESSAGE_FENCE_DEL_RREQUEST_FAIL = 7;
-    private static final int MESSAGE_FENCE_DEL_RESPONSE_FAIL = 8;
-    private static final int MESSAGE_FENCE_DEL_RESPONSE_SUCCESS = 9;
-    private static final int MESSAGE_FENCE_QUERY_RREQUEST_FAIL = 13;
-    private static final int MESSAGE_FENCE_QUERY_RESPONSE_FAIL = 14;
-    private static final int MESSAGE_FENCE_QUERY_RESPONSE_SUCCESS = 15;
-    private static String URL_LOCATION_LASTDAYS;
-    private static String URL_FENCE_ADD;
-    private static String URL_FENCE_DEL;
-    private static String URL_FENCE_UPDATE;
-    private static String URL_FENCE_QUERY;
-    private Context _context;
-    private View _mapView;
-    private TextView _txtVerifySDK;
     private MapView _baiduMapView;
     private BaiduMap _baiduMap;
-    private SensorManager _sensorManager;
-    //是否首次定位
-    private boolean _isFirstLoc = true;
-    private double _lastX;
-    private MyLocationData _locationData;
-    private int _currentDirection;
-    //当前纬度
-    private double _currentLat;
-    //当前经度
-    private double _currentLon;
-    //当前定位精度
-    private float _currentAccracy;
     private boolean _isPermissionRequested;
     private SDKReceiver _sdkReceiver;
     //设备标记
     private Marker _marker;
     //经纬度对应的地址信息
     private String _latLngStr = "";
-    //地理编码搜索
-    private GeoCoder _geoCoder;
     //设备的经纬度
     private LatLng _latLng;
     private ImageButton _btnLocation;
-    private ImageButton _btnTraffic;
-    private ImageButton _btnLocus;
-    private ImageButton _btnTask;
-    private ImageButton _btnDefense;
-    private Button _btnMonitorTarget;
-    //是否显示城市热力图
-    private boolean _trafficEnabled = false;
-    //圆形围栏中心点坐标
-    private LatLng _circleCenter;
-    private Map<String, Overlay> _overlayMap = new HashMap<>();
-    private boolean _isShowCreateFenceDialog = false;
-    private boolean _isClickDeviceMark = false;
+    //地理编码搜索
+    private GeoCoder _geoCoder;
+    boolean bbb = false;
 
     static class MyHandler extends Handler {
         WeakReference<Location> _weakReference;
@@ -274,9 +220,15 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
                     _location._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                    if (_location.bbb)
+                        return;
+                    _location.bbb = true;
                     _location._latLng = new LatLng(latNum, lotNum);
-                    //经纬度->地址
-                    _location._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_location._latLng).newVersion(1).radius(500));
+//                    //经纬度->地址
+//                    _location._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_location._latLng).newVersion(1).radius(500));
+//                    MapStatus mapStatus = new MapStatus.Builder().target(_location._latLng).zoom(16).build();
+//                    MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
+//                    _location._baiduMap.setMapStatus(mapStatusUpdate);
                 }
                 break;
                 //综合测试
@@ -342,24 +294,32 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     /**
      * 构造广播监听类,监听SDK的Key验证以及网络异常广播
      */
-    public class SDKReceiver extends BroadcastReceiver {
+    public class SDKReceiver extends BroadcastReceiver
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
-            if (TextUtils.isEmpty(action)) {
+            if(TextUtils.isEmpty(action))
+            {
                 return;
             }
             //鉴权错误信息描述
             _txtVerifySDK.setTextColor(Color.RED);
-            if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
+            if(action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR))
+            {
                 _txtVerifySDK.setText("Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
                 _txtVerifySDK.setTextColor(Color.RED);
                 _txtVerifySDK.setVisibility(View.INVISIBLE);
-            } else if (action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
+            }
+            else if(action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR))
+            {
                 _txtVerifySDK.setText("网络出错");
                 _txtVerifySDK.setTextColor(Color.RED);
                 _txtVerifySDK.setVisibility(View.INVISIBLE);
-            } else if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK)) {
+            }
+            else if(action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK))
+            {
                 _txtVerifySDK.setText("Key验证成功!功能可以正常使用");
                 _txtVerifySDK.setTextColor(Color.GREEN);
                 _txtVerifySDK.setVisibility(View.GONE);
@@ -379,7 +339,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                                     Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.WRITE_SETTINGS, Manifest.permission.ACCESS_WIFI_STATE,};
             for (String perm : permissions) {
-                if (PackageManager.PERMISSION_GRANTED != _context.checkSelfPermission(perm)) {
+                if (PackageManager.PERMISSION_GRANTED != this.checkSelfPermission(perm)) {
                     //进入到这里代表没有权限
                     permissionsList.add(perm);
                 }
@@ -585,7 +545,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
         if (null == geoCodeResult || SearchResult.ERRORNO.NO_ERROR != geoCodeResult.error) {
-            Toast.makeText(_context, "经纬度查询异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "经纬度查询异常", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -599,7 +559,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
         if (null == reverseGeoCodeResult || SearchResult.ERRORNO.NO_ERROR != reverseGeoCodeResult.error) {
-            Toast.makeText(_context, "地理位置查询异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "地理位置查询异常", Toast.LENGTH_SHORT).show();
         } else {
             _latLngStr = reverseGeoCodeResult.getAddress();
         }
@@ -614,7 +574,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         //设置标记的位置和图标
-        MarkerOptions markerOptions = new MarkerOptions().position(_latLng).icon(ICON_MARKER2);
+        MarkerOptions markerOptions = new MarkerOptions().position(_latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
         //标记添加至地图中
         _marker = (Marker) (_baiduMap.addOverlay(markerOptions));
         //定义地图缩放级别3~16,值越大地图越精细
@@ -790,7 +750,6 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_location);
-        _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -821,6 +780,25 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         _btnLocation.setOnClickListener(this::onClick);
         BluetoothUtil.Init(Location.this, this);
         InitListener();
+        //动态获取权限
+        RequestPermission();
+        _baiduMapView = findViewById(R.id.mapView_location);
+        //地理编码
+        _geoCoder = GeoCoder.newInstance();
+        _geoCoder.setOnGetGeoCodeResultListener(this);
+        //注册SDK广播监听者
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK);
+        iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
+        iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
+        _sdkReceiver = new SDKReceiver();
+        this.registerReceiver(_sdkReceiver, iFilter);
+        //地图初始化
+        _baiduMap = _baiduMapView.getMap();
+        _baiduMap.setOnMapClickListener(this);
+        _baiduMap.setOnMarkerClickListener(this::onMarkerClick);
+        //地图加载完毕回调
+        _baiduMap.setOnMapLoadedCallback(this::onMapLoaded);
     }
 
     @Override
@@ -842,6 +820,11 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             _refreshTask.cancel();
         BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
 }
