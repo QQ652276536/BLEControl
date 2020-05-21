@@ -45,6 +45,7 @@ import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.BluetoothListener;
@@ -220,15 +221,16 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
                     _location._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
-                    if (_location.bbb)
-                        return;
-                    _location.bbb = true;
-                    _location._latLng = new LatLng(latNum, lotNum);
-//                    //经纬度->地址
-//                    _location._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_location._latLng).newVersion(1).radius(500));
-//                    MapStatus mapStatus = new MapStatus.Builder().target(_location._latLng).zoom(16).build();
-//                    MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-//                    _location._baiduMap.setMapStatus(mapStatusUpdate);
+                    _location._latLng = new LatLng(lotNum, latNum);
+                    //经纬度->地址
+                    _location._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_location._latLng).newVersion(1).radius(500));
+                    MapStatus mapStatus = new MapStatus.Builder().target(_location._latLng).zoom(16).build();
+                    MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
+                    _location._baiduMap.setMapStatus(mapStatusUpdate);
+                    MarkerOptions markerOptions = new MarkerOptions().position(_location._latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
+                    //标记添加至地图中
+                    _location._baiduMap.clear();
+                    _location._baiduMap.addOverlay(markerOptions);
                 }
                 break;
                 //综合测试
@@ -294,32 +296,24 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     /**
      * 构造广播监听类,监听SDK的Key验证以及网络异常广播
      */
-    public class SDKReceiver extends BroadcastReceiver
-    {
+    public class SDKReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(TextUtils.isEmpty(action))
-            {
+            if (TextUtils.isEmpty(action)) {
                 return;
             }
             //鉴权错误信息描述
             _txtVerifySDK.setTextColor(Color.RED);
-            if(action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR))
-            {
+            if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
                 _txtVerifySDK.setText("Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
                 _txtVerifySDK.setTextColor(Color.RED);
                 _txtVerifySDK.setVisibility(View.INVISIBLE);
-            }
-            else if(action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR))
-            {
+            } else if (action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
                 _txtVerifySDK.setText("网络出错");
                 _txtVerifySDK.setTextColor(Color.RED);
                 _txtVerifySDK.setVisibility(View.INVISIBLE);
-            }
-            else if(action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK))
-            {
+            } else if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK)) {
                 _txtVerifySDK.setText("Key验证成功!功能可以正常使用");
                 _txtVerifySDK.setTextColor(Color.GREEN);
                 _txtVerifySDK.setVisibility(View.GONE);
@@ -610,6 +604,8 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             break;
             //隐藏蓝牙信息
             case R.id.btn_hide_ble: {
+
+
                 if (_llBle.getVisibility() == View.VISIBLE) {
                     _llBle.setVisibility(View.GONE);
                     _btnHideBle.setImageResource(R.drawable.down);
