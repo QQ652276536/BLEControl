@@ -58,4 +58,5 @@
     <string name="temperature">体温测量</string>
     <string name="btn_top">顶部</string>
     <string name="btn_bottom">底部</string>
+    <string name="title_location">地理位置</string>
 </resources>

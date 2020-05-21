@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zistone.blecontrol">
-
     <!-- 允许安装未知应用 -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <!-- 震动提示 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 震动提示 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!--
     摄像头权限
@@ -47,6 +45,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
+        <activity android:name=".activity.Location"></activity>
         <activity
             android:name=".activity.MyAnimation"
             android:label="动画界面" />
@@ -73,9 +72,7 @@
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:label="这个Activity没用到" />
-
-        <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
+            android:label="这个Activity没用到" /> <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -85,7 +82,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
     </application>
 
 </manifest>
