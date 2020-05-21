@@ -31,9 +31,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -46,10 +48,10 @@ import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
-import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.InstallAPK;
 import com.zistone.blecontrol.util.MyActivityManager;
+import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
@@ -78,6 +80,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private Toolbar _toolbar;
     private ListView _listView;
     private BluetoothAdapter _bluetoothAdapter;
+    private HorizontalScrollView _uuidScrollView, _funcScrollView;
     private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
@@ -808,6 +811,15 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         _gifImageView = _toolbar.findViewById(R.id.toolbar_gifView);
         //下拉刷新控件
         _materialRefreshLayout = findViewById(R.id.refresh_bleList);
+        _uuidScrollView = findViewById(R.id.scrollView_uuid);
+        _funcScrollView = findViewById(R.id.scrollView_func);
+        //fullScroll被调用的时候，ScrollView可能还没显示，所以用消息队列来保证同步
+        _funcScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                _funcScrollView.fullScroll(ScrollView.FOCUS_RIGHT);
+            }
+        });
         _rdoUUID1 = findViewById(R.id.rdo_uuid1_bleList);
         _rdoUUID2 = findViewById(R.id.rdo_uuid2_bleList);
         _rdoUUID3 = findViewById(R.id.rdo_uuid3_bleList);
