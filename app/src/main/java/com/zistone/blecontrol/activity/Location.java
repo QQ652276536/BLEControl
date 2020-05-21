@@ -306,15 +306,18 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             //鉴权错误信息描述
             _txtVerifySDK.setTextColor(Color.RED);
             if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
+                Log.e(TAG, "Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
                 _txtVerifySDK.setText("Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
                 _txtVerifySDK.setTextColor(Color.RED);
-                _txtVerifySDK.setVisibility(View.INVISIBLE);
+                _txtVerifySDK.setVisibility(View.VISIBLE);
             } else if (action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
+                Log.e(TAG, "网络出错");
                 _txtVerifySDK.setText("网络出错");
                 _txtVerifySDK.setTextColor(Color.RED);
-                _txtVerifySDK.setVisibility(View.INVISIBLE);
+                _txtVerifySDK.setVisibility(View.VISIBLE);
             } else if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK)) {
-                _txtVerifySDK.setText("Key验证成功!功能可以正常使用");
+                Log.e(TAG, "Key验证成功！功能可以正常使用");
+                _txtVerifySDK.setText("Key验证成功！功能可以正常使用");
                 _txtVerifySDK.setTextColor(Color.GREEN);
                 _txtVerifySDK.setVisibility(View.GONE);
             }
@@ -788,7 +791,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
         iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
         _sdkReceiver = new SDKReceiver();
-        this.registerReceiver(_sdkReceiver, iFilter);
+        registerReceiver(_sdkReceiver, iFilter);
         //地图初始化
         _baiduMap = _baiduMapView.getMap();
         _baiduMap.setOnMapClickListener(this);
@@ -800,6 +803,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(_sdkReceiver);
         if (null != _baiduMap) {
             _baiduMap.clear();
             _baiduMap = null;

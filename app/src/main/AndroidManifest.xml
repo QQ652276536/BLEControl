@@ -92,12 +92,6 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" />
-        <!-- 声明service组件 -->
-        <!--地图定位-->
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote"></service>
     </application>
 
 </manifest>
