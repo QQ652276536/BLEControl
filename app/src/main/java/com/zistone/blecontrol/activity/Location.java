@@ -121,7 +121,6 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     private String _latLngStr = "";
     //设备的经纬度
     private LatLng _latLng;
-    private ImageButton _btnLocation;
     //地理编码搜索
     private GeoCoder _geoCoder;
     boolean bbb = false;
@@ -652,13 +651,6 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                 BluetoothUtil.SendComm(OPENDOORS_COMM);
             }
             break;
-            //当前位置
-            case R.id.btn_location_baidu: {
-                MapStatus mapStatus = new MapStatus.Builder().target(_latLng).zoom(16).build();
-                MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-                _baiduMap.setMapStatus(mapStatusUpdate);
-            }
-            break;
         }
 
     }
@@ -768,7 +760,6 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         _btn2 = findViewById(R.id.button2_location);
         _btn3 = findViewById(R.id.button3_location);
         _btn4 = findViewById(R.id.button4_location);
-        _btnLocation = findViewById(R.id.btn_location_baidu);
         _llBle = findViewById(R.id.ll_location_ble);
         _btnReturn.setOnClickListener(this::onClick);
         _btnHideBle.setOnClickListener(this::onClick);
@@ -776,7 +767,6 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
-        _btnLocation.setOnClickListener(this::onClick);
         BluetoothUtil.Init(Location.this, this);
         InitListener();
         //动态获取权限
