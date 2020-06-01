@@ -84,7 +84,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private ListView _listView;
     private BluetoothAdapter _bluetoothAdapter;
     private HorizontalScrollView _uuidScrollView, _funcScrollView;
-    private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5;
+    private RadioButton _rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5, _rdoFunc6;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
     private Button _btnFilterContent;
@@ -116,7 +116,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private MyHandler _myHandler;
 
     static class MyHandler extends Handler {
-
         private WeakReference<DeviceList> _weakReference;
         private DeviceList _deviceList;
 
@@ -678,6 +677,12 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
+        //基站设置
+        else if (_rdoFunc6.isChecked()) {
+            intent = new Intent(null, Location.class);
+            intent.putExtra(ARG_PARAM1, bluetoothDevice);
+            intent.putExtra(ARG_PARAM2, (Serializable) map);
+        }
         if (intent != null)
             //使用startActivityForResult跳转而不是startActivity,用于接收目标Activity返回的数据,与目标Activity里的setResult()对应
             startActivityForResult(intent, 2);
@@ -859,6 +864,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         _rdoFunc3 = findViewById(R.id.rdo_func3_bleList);
         _rdoFunc4 = findViewById(R.id.rdo_func4_bleList);
         _rdoFunc5 = findViewById(R.id.rdo_func5_bleList);
+        _rdoFunc6 = findViewById(R.id.rdo_func6_bleList);
         _listView = findViewById(R.id.lv_bleList);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
@@ -902,6 +908,21 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         ShowSetFilterContent();
         //所有的控件、对象都实例化后再初始化回调方法
         InitListener();
+        //界面设置，这里使用的数组，注意控件对应的下标
+        Object[] objectArray = DeviceFilterShared.GetIsShowDeviceAndFunc(_context);
+        RadioButton[] rdoArray = new RadioButton[]{_rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5,
+                                                   _rdoFunc6};
+        int i = 0;
+        for (; i < objectArray.length; i++) {
+            for (; i < rdoArray.length; i++) {
+                if ((boolean) objectArray[i])
+                    rdoArray[i].setVisibility(View.VISIBLE);
+                else
+                    rdoArray[i].setVisibility(View.GONE);
+                break;
+            }
+        }
+        //下拉刷新
         _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
         _materialRefreshLayout.autoRefresh();
         //控件、对象、事件监听都加载完毕后才开始扫描蓝牙设备

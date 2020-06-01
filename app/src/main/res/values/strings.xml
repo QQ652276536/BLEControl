@@ -59,4 +59,9 @@
     <string name="btn_top">顶部</string>
     <string name="btn_bottom">底部</string>
     <string name="title_location">地理位置</string>
+    <string name="bluenrg">BlueNRG</string>
+    <string name="amdtp">Amdtp</string>
+    <string name="ota">OTA</string>
+    <string name="tag">TAG</string>
+    <string name="title_station">基站设置</string>
 </resources>

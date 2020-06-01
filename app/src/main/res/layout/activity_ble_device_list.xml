@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
-                    android:text="BlueNRG"
+                    android:text="@string/bluenrg"
                     android:textColor="@color/gray" />
 
                 <RadioButton
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
-                    android:text="Amdtp"
+                    android:text="@string/amdtp"
                     android:textColor="@color/gray" />
 
                 <RadioButton
@@ -84,7 +84,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:checked="true"
-                    android:text="OTA"
+                    android:text="@string/ota"
                     android:textColor="@color/gray" />
 
                 <RadioButton
@@ -93,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
-                    android:text="Tag"
+                    android:text="@string/tag"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </HorizontalScrollView>
@@ -169,8 +169,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
-                    android:checked="true"
                     android:text="@string/title_location"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/rdo_func6_bleList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:button="@drawable/rad_selector"
+                    android:checked="true"
+                    android:text="@string/title_station"
                     android:textColor="@color/gray" />
             </RadioGroup>
         </HorizontalScrollView>

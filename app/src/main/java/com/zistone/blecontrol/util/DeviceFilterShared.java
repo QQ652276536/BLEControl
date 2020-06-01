@@ -3,6 +3,9 @@ package com.zistone.blecontrol.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+
 public class DeviceFilterShared {
     public static SharedPreferences Share(Context context) {
         return context.getSharedPreferences("DEVICEFILTER", Context.MODE_PRIVATE);
@@ -55,6 +58,19 @@ public class DeviceFilterShared {
     public static boolean SetTemperatureParam(Context context, String value) {
         SharedPreferences.Editor editor = Share(context).edit();
         editor.putString("setTemperatureParam", value);
+        return editor.commit();
+    }
+
+    public static Object[] GetIsShowDeviceAndFunc(Context context) {
+        String result = Share(context).getString("setIsShowDeviceAndFunc", "[true,true,true,true,true,true,true,true,true,true]");
+        JSONArray jsonArray = JSON.parseArray(result);
+        return jsonArray.toArray();
+    }
+
+    public static boolean SetIsShowDeviceAndFunc(Context context, Object[] objectArray) {
+        SharedPreferences.Editor editor = Share(context).edit();
+        String jsonString = JSON.toJSONString(objectArray);
+        editor.putString("setIsShowDeviceAndFunc", jsonString);
         return editor.commit();
     }
 
