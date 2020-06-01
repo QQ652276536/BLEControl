@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.List;
 
 public class InstallAPK {
-
     public static void Install(Context context, String apkName, String content) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("提示");

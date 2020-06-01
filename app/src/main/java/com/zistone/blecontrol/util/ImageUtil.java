@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import java.io.ByteArrayOutputStream;
 
 public class ImageUtil {
-
     /**
      * byte[]转Bitmap
      *

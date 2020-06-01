@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CommandTest extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
-
     private static final String TAG = "CommandTest";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -399,8 +398,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case "86": {
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
-                        Message message = _myhandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]);
-                        _myhandler.sendMessage(message);
+                        _myhandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]).sendToTarget();
                         return;
                     }
                     receive = data;
@@ -460,8 +458,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         }
-        Message message = _myhandler.obtainMessage(MESSAGE_2, "接收：" + receive);
-        _myhandler.sendMessage(message);
+        _myhandler.obtainMessage(MESSAGE_2, "接收：" + receive).sendToTarget();
     }
 
     private void InitListener() {
@@ -472,8 +469,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
             @Override
             public void OnComfirm(String tag, String str) {
-                Message message = _myhandler.obtainMessage(SEND_SET_CONTROLPARAM, str);
-                _myhandler.sendMessage(message);
+                _myhandler.obtainMessage(SEND_SET_CONTROLPARAM, str).sendToTarget();
                 //发送内部参数以后关闭设置窗口
                 _paramSetting.dismiss();
                 _paramSetting = null;
@@ -491,8 +487,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     public void OnConnected() {
         Log.i(TAG, "成功建立连接！");
-        Message message = _myhandler.obtainMessage(MESSAGE_1, "");
-        _myhandler.sendMessage(message);
+        _myhandler.obtainMessage(MESSAGE_1, "").sendToTarget();
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
     }
@@ -505,8 +500,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     public void OnDisConnected() {
         Log.i(TAG, "连接已断开！");
-        Message message = _myhandler.obtainMessage(MESSAGE_ERROR_1, "");
-        _myhandler.sendMessage(message);
+        _myhandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override
@@ -563,8 +557,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     break;
             }
         }
-        Message message = _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray));
-        _myhandler.sendMessage(message);
+        _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
         Log.i(TAG, "成功发送'" + sendResult + "'的指令");
     }
 

@@ -9,7 +9,6 @@ import android.os.Build;
 import com.zistone.blecontrol.R;
 
 public class SoundPlayUtils {
-
     private static Context _context;
     private static SoundPool _soundPool;
     private static SoundPlayUtils _soundPlayUtils;

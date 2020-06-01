@@ -38,13 +38,10 @@ import java.util.TreeSet;
  * 调试时使用,上线时删除调用
  */
 public class AutoCheck {
-
     private static AutoCheck instance;
-
-    private LinkedHashMap<String, Check> checks;
-
     private static Context context;
 
+    private LinkedHashMap<String, Check> checks;
     private boolean hasError = false;
 
     volatile boolean isFinished = false;

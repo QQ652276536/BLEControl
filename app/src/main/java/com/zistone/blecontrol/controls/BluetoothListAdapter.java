@@ -13,7 +13,6 @@ import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import java.util.List;
 
 public class BluetoothListAdapter extends BaseAdapter {
-
     private static final String TAG = "BluetoothListAdapter";
     private Context _context;
     private LayoutInflater _layoutInflater;

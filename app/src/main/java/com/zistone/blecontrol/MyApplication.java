@@ -10,7 +10,6 @@ import com.baidu.mapapi.SDKInitializer;
 import com.zistone.blecontrol.util.MyActivityManager;
 
 public class MyApplication extends Application {
-
     private static final String TAG = "MyApplication";
 
     /**

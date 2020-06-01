@@ -4,7 +4,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 
 public class DetectionBasedTracker {
-
     private long mNativeObj = 0;
 
     // 构造方法：初始化人脸检测引擎

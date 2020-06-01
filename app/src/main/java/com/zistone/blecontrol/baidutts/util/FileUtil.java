@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FileUtil {
-
     /**
      * 创建一个临时目录,用于复制临时文件,如assets目录下的离线资源文件
      *

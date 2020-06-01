@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +66,6 @@ import java.util.UUID;
 
 public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
         CameraBridgeViewBase.CvCameraViewListener2 {
-
     private static final String TAG = "TemperatureMeasure";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -123,6 +123,66 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private CascadeClassifier _javaDetector;
     private File _cascadeFile;
     private MediaPlayer _mediaPlayer1, _mediaPlayer2;
+    private MyHandler _myHandler;
+
+    static class MyHandler extends Handler {
+        private WeakReference<TemperatureMeasure> _weakReference;
+        private TemperatureMeasure _temperatureMeasure;
+
+        public MyHandler(TemperatureMeasure activity) {
+            _weakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message message) {
+            if (_weakReference.get() == null)
+                return;
+            _temperatureMeasure = _weakReference.get();
+            String result = (String) message.obj;
+            switch (message.what) {
+                case MESSAGE_1:
+                    _temperatureMeasure.Speak("设备已连接");
+                    //连接成功后再显示人脸检测
+                    //                    _cameraView.setVisibility(View.VISIBLE);
+                    _temperatureMeasure._refreshTimer = new Timer();
+                    _temperatureMeasure._refreshTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                                Log.i(TAG, "发送查询温度的指令...");
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
+                    _temperatureMeasure._refreshTimer.schedule(_temperatureMeasure._refreshTask, 0, 1 * 1000);
+                    break;
+                case RECEIVE:
+                    String strs[] = result.split(",");
+                    //最高温度
+                    double value1 = Double.valueOf(strs[0]) / 100;
+                    //最低温度
+                    double value2 = Double.valueOf(strs[1]) / 100;
+                    //环境温度
+                    double value3 = Double.valueOf(strs[2]) / 100;
+                    //平均温度
+                    double value4 = Double.valueOf(strs[3]) / 100;
+                    _temperatureMeasure._txt1.setText(value1 + "℃");
+                    _temperatureMeasure._txt1.setTextColor(Color.RED);
+                    _temperatureMeasure._txt2.setText(value2 + "℃");
+                    _temperatureMeasure._txt2.setTextColor(Color.YELLOW);
+                    _temperatureMeasure._txt3.setText(value3 + "℃");
+                    _temperatureMeasure._txt3.setTextColor(Color.BLUE);
+                    _temperatureMeasure._txt4.setText(value4 + "℃");
+                    _temperatureMeasure._txt4.setTextColor(Color.CYAN);
+                    _temperatureMeasure.ReadySpeak(value1, value2, value3, value4);
+                    break;
+            }
+        }
+    }
 
     private void InitListener() {
         _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
@@ -189,58 +249,6 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         public void handleMessage(Message message) {
             super.handleMessage(message);
             _speechState = message.what;
-        }
-    };
-
-    private Handler _handler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-            String result = (String) message.obj;
-            switch (message.what) {
-                case MESSAGE_1: {
-                    Speak("设备已连接");
-                    //连接成功后再显示人脸检测
-//                    _cameraView.setVisibility(View.VISIBLE);
-                    _refreshTimer = new Timer();
-                    _refreshTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
-                                Log.i(TAG, "发送查询温度的指令...");
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
-                }
-                break;
-                case RECEIVE: {
-                    String strs[] = result.split(",");
-                    //最高温度
-                    double value1 = Double.valueOf(strs[0]) / 100;
-                    //最低温度
-                    double value2 = Double.valueOf(strs[1]) / 100;
-                    //环境温度
-                    double value3 = Double.valueOf(strs[2]) / 100;
-                    //平均温度
-                    double value4 = Double.valueOf(strs[3]) / 100;
-                    _txt1.setText(value1 + "℃");
-                    _txt1.setTextColor(Color.RED);
-                    _txt2.setText(value2 + "℃");
-                    _txt2.setTextColor(Color.YELLOW);
-                    _txt3.setText(value3 + "℃");
-                    _txt3.setTextColor(Color.BLUE);
-                    _txt4.setText(value4 + "℃");
-                    _txt4.setTextColor(Color.CYAN);
-                    ReadySpeak(value1, value2, value3, value4);
-                }
-                break;
-            }
         }
     };
 
@@ -468,9 +476,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         Log.i(TAG, "共接收:" + data);
         String[] strArray = data.split(" ");
         String indexStr = strArray[12];
-        Message message = new Message();
+        int what = 0;
+        String obj = "";
         switch (indexStr) {
-            case "80": {
+            case "80":
                 byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
                 String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                 String doorState1 = String.valueOf(bitStr.charAt(7));
@@ -491,13 +500,12 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                 int magneticUp = Integer.parseInt(strArray[2] + strArray[3], 16);
                 //前端磁强(环境温度)
                 int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
-                message.what = RECEIVE;
+                what = RECEIVE;
                 //注意几个温度的顺序,最高->最低->环境->平均,后面解析也是这个顺序来的
-                message.obj = magneticUp + "," + magneticDown + "," + magneticBefore + "," + battery;
-            }
-            break;
+                obj = magneticUp + "," + magneticDown + "," + magneticBefore + "," + battery;
+                break;
         }
-        _handler.sendMessage(message);
+        _myHandler.obtainMessage(what, obj).sendToTarget();
     }
 
     @Override
@@ -505,8 +513,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         ProgressDialogUtil.Dismiss();
         Log.i(TAG, "成功建立连接！");
         //轮询
-        Message message = _handler.obtainMessage(MESSAGE_1, "");
-        _handler.sendMessage(message);
+        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
         _connectedSuccess = true;
@@ -581,6 +588,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_temperature_measure);
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);

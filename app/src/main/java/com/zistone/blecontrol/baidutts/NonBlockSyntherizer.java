@@ -11,7 +11,6 @@ import android.util.Log;
  * 在新线程中初始化合成引擎,防止UI阻塞
  */
 public class NonBlockSyntherizer extends MySyntherizer {
-
     private static final String TAG = "NonBlockSyntherizer";
     private static final int MESSAGE1 = 1;
     private static final int MESSAGE2 = 2;

@@ -13,7 +13,6 @@ import com.zistone.blecontrol.R;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final String TAG = "MainActivity";
 
     private boolean _isPermissionRequested = false;

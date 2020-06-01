@@ -18,7 +18,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MyOkHttpUtil implements Callback {
-
     private static final String TAG = "MyOkHttpUtil";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_ERROR_1 = -1;

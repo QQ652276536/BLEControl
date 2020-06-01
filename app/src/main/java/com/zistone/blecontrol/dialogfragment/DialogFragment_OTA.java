@@ -27,14 +27,12 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * 设备空中升级
  */
 public class DialogFragment_OTA extends DialogFragment implements View.OnClickListener {
-
     private static final String TAG = "DialogFragment_OTA";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";

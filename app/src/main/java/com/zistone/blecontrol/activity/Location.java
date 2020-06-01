@@ -65,7 +65,6 @@ import java.util.UUID;
 
 public class Location extends AppCompatActivity implements View.OnClickListener, BluetoothListener, BaiduMap.OnMapClickListener,
         OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener, BaiduMap.OnMapLoadedCallback {
-
     private static final String TAG = "Location";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -353,21 +352,20 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
      */
     private void Resolve(String data) {
         String[] strArray = data.split(" ");
-        Message message = new Message();
+        int what = 0;
         /*
          * 设备基本信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
         if (strArray[8].equals("A1")) {
-            message.what = RECEIVE_BASEINFO;
-            message.obj = data;
+            what = RECEIVE_BASEINFO;
         }
         /*
          * GPS位置信息的通信协议和之前的开关门协议不一样，需要留意
          *
          * */
         else if (strArray[8].equals("A2")) {
-            message.what = RECEIVE_LOCATION;
+            what = RECEIVE_LOCATION;
         }
         /*
          * 开关门协议
@@ -377,40 +375,33 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             String indexStr = strArray[12];
             switch (indexStr) {
                 //全部门锁状态
-                case "80": {
-                    message.what = RECEIVE_TESTA;
-                }
-                break;
+                case "80":
+                    what = RECEIVE_TESTA;
+                    break;
                 //开一号门锁
-                case "81": {
-                    message.what = RECEIVE_OPENDOORS1;
-                }
-                break;
+                case "81":
+                    what = RECEIVE_OPENDOORS1;
+                    break;
                 //开二号门锁
-                case "82": {
-                    message.what = RECEIVE_OPENDOORS2;
-                }
-                break;
+                case "82":
+                    what = RECEIVE_OPENDOORS2;
+                    break;
                 //开全部门锁
-                case "83": {
-                    message.what = RECEIVE_OPENALLDOORS;
-                }
-                break;
+                case "83":
+                    what = RECEIVE_OPENALLDOORS;
+                    break;
                 //查询内部控制参数
-                case "86": {
-                    message.what = RECEIVE_SEARCH_CONTROLPARAM;
-                }
-                break;
+                case "86":
+                    what = RECEIVE_SEARCH_CONTROLPARAM;
+                    break;
                 //修改内部控制参数
-                case "87": {
+                case "87":
                     //先查询再修改
-                    message.what = SEND_SEARCH_CONTROLPARAM;
-                }
-                break;
+                    what = SEND_SEARCH_CONTROLPARAM;
+                    break;
             }
         }
-        message.obj = data;
-        _myHandler.sendMessage(message);
+        _myHandler.obtainMessage(what, data).sendToTarget();
     }
 
     private void InitListener() {
@@ -659,8 +650,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     public void OnConnected() {
         ProgressDialogUtil.Dismiss();
         Log.i(TAG, "成功建立连接！");
-        Message message = _myHandler.obtainMessage(MESSAGE_1, "");
-        _myHandler.sendMessage(message);
+        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
     }
@@ -673,8 +663,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void OnDisConnected() {
         Log.i(TAG, "连接已断开！");
-        Message message = _myHandler.obtainMessage(MESSAGE_ERROR_1, "");
-        _myHandler.sendMessage(message);
+        _myHandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override

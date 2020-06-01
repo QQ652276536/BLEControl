@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Auth {
-
     private static volatile Auth ourInstance;
 
     private String appId;

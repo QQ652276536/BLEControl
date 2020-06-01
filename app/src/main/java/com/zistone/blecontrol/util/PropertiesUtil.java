@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertiesUtil {
-
     public static Properties GetValueProperties(Context context) {
         Properties properties = new Properties();
         InputStream inputStream = context.getClassLoader().getResourceAsStream("assets/config.properties");

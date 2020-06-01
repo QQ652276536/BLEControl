@@ -1,10 +1,8 @@
 package com.zistone.blecontrol.dialogfragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,12 +22,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.activity.MainActivity;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 
 public class DialogFragment_WriteValue extends DialogFragment implements View.OnClickListener, TabLayout.OnTabSelectedListener {
-
     private static final String TAG = "DialogFragment_WriteValue";
     private static final String ARG_PARAM1 = "param1";
     private static DialogFragmentListener _dialogFragmentListener;

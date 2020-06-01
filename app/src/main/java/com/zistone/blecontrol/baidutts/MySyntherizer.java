@@ -16,7 +16,6 @@ import java.util.Map;
  * 对SpeechSynthesizer的封装
  */
 public class MySyntherizer {
-
     private static final String TAG = "MySyntherizer";
     private static volatile boolean _isInitied = false;
     private SpeechSynthesizer _speechSynthesizer;

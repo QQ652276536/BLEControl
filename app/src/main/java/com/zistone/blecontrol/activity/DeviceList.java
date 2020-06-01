@@ -55,6 +55,7 @@ import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +71,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class DeviceList extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
-
     private static final String TAG = "DeviceList", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
@@ -105,26 +105,36 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private Map<String, MyBluetoothDevice> _deviceMap = new HashMap<>(), _connectSuccessMap = new HashMap<>();
     //传递进来的参数1、传递进来的参数2、根据名称筛选设备、根据地址过滤设备
     private String _param1, _param2, _filterName, _filterAddress, _filterContent;
-    //根据信号强度筛选设备,动画倒计时
+    //根据信号强度筛选设备、动画倒计时
     private int _filterRssi = 100, _count = 3;
     private boolean _isHideConnectSuccessDevice = false, _isBtnUpDownFlag = false, _isStartOrStopScan = false, _isPermissionRequested = false;
     private Timer _timer;
     private TimerTask _timerTask;
+    private MyHandler _myHandler;
 
-    private Handler _handler = new Handler() {
+    static class MyHandler extends Handler {
+
+        private WeakReference<DeviceList> _weakReference;
+        private DeviceList _deviceList;
+
+        public MyHandler(DeviceList activity) {
+            _weakReference = new WeakReference<>(activity);
+        }
+
         @Override
         public void handleMessage(Message message) {
-            super.handleMessage(message);
-            String result = (String) message.obj;
+            if (_weakReference.get() == null)
+                return;
+            _deviceList = _weakReference.get();
             switch (message.what) {
-                case MESSAGE_1: {
-                    _timerTask.cancel();
-                    _timer.cancel();
+                case MESSAGE_1:
+                    _deviceList._timerTask.cancel();
+                    _deviceList._timer.cancel();
                     MyActivityManager.getInstance().FinishActivity(MyAnimation.class);
-                }
+                    break;
             }
         }
-    };
+    }
 
     /**
      * Android6.0之后需要动态申请权限
@@ -211,7 +221,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                 if (_count > 0)
                     _count--;
                 else
-                    _handler.sendMessage(_handler.obtainMessage(MESSAGE_1, ""));
+                    _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
             }
         };
         _timer.schedule(_timerTask, 0, 800);
@@ -774,6 +784,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_ble_device_list);
         //安装第三方的OTA升级的APK
         if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {

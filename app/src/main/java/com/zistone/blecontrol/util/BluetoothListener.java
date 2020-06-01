@@ -1,7 +1,6 @@
 package com.zistone.blecontrol.util;
 
 public interface BluetoothListener {
-
     /**
      * 连接成功
      */

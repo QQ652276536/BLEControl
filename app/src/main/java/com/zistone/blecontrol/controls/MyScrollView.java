@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import android.widget.ScrollView;
 
 public class MyScrollView extends ScrollView {
-
     public MyScrollView(Context context) {
         this(context, null);
     }

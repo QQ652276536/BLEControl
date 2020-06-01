@@ -29,7 +29,6 @@ import com.zistone.blecontrol.util.DialogFragmentListener;
  * 要查看修改的结果需要发送内部控制参数的查询指令,因为该指令与开门的指令索引冲突导致发送以后收到的会是开门的结果
  */
 public class DialogFragment_ParamSetting extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-
     private static final String TAG = "DialogFragment_ParamSetting";
     private static final String ARG_PARAM1 = "param1";
     private static DialogFragmentListener _dialogFragmentListener;

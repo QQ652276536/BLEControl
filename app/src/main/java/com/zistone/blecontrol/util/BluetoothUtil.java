@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class BluetoothUtil {
-
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static Context _context;
     private static BluetoothListener _listener;

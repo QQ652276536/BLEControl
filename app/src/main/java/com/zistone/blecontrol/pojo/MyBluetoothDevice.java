@@ -3,7 +3,6 @@ package com.zistone.blecontrol.pojo;
 import android.bluetooth.BluetoothDevice;
 
 public class MyBluetoothDevice {
-
     private int id;
     private String name;
     private String address;

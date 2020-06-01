@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class OfflineResource implements IOfflineResourceConst {
-
     private static final String TAG = "OfflineResource";
     private static HashMap<String, Boolean> mapInitied = new HashMap<String, Boolean>();
 

@@ -10,7 +10,6 @@ import com.baidu.tts.client.SpeechSynthesizerListener;
  * SpeechSynthesizerListener简单地实现,用于记录日志和播放状态的监听回调
  */
 public class MessageListener implements SpeechSynthesizerListener {
-
     private static final String TAG = "MessageListener";
 
     private Handler _handler;

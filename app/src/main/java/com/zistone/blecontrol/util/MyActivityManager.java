@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Stack;
 
 public class MyActivityManager {
-
     private static MyActivityManager _myActivityManager = new MyActivityManager();
     private Stack<WeakReference<Activity>> _stack;
 

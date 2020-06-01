@@ -66,8 +66,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:text="BlueNRG"
-                    android:textColor="@color/gray"
-                    android:visibility="gone" />
+                    android:textColor="@color/gray" />
 
                 <RadioButton
                     android:id="@+id/rdo_uuid2_bleList"
@@ -76,8 +75,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:text="Amdtp"
-                    android:textColor="@color/gray"
-                    android:visibility="gone" />
+                    android:textColor="@color/gray" />
 
                 <RadioButton
                     android:id="@+id/rdo_uuid3_bleList"
@@ -96,8 +94,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:text="Tag"
-                    android:textColor="@color/gray"
-                    android:visibility="gone" />
+                    android:textColor="@color/gray" />
             </RadioGroup>
         </HorizontalScrollView>
     </LinearLayout>
@@ -155,8 +152,7 @@
                     android:layout_marginRight="5dp"
                     android:button="@drawable/rad_selector"
                     android:text="@string/inDB"
-                    android:textColor="@color/gray"
-                    android:visibility="gone" />
+                    android:textColor="@color/gray" />
 
                 <RadioButton
                     android:id="@+id/rdo_func4_bleList"

@@ -34,12 +34,12 @@ import com.zistone.blecontrol.util.MyOkHttpUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 import com.zistone.blecontrol.util.PropertiesUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class MaterialsInDB extends AppCompatActivity implements View.OnClickListener, MyOkHttpUtil.MyOkHttpListener, Spinner.OnItemSelectedListener {
-
     private static final String TAG = "MaterialsInDB";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -71,61 +71,72 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     private int _rssi;
     private MaterialRefreshLayout _materialRefreshLayout;
     private MaterialRefreshListener _materialRefreshListener;
-    private Handler handler = new Handler() {
+    private MyHandler _myHandler;
+
+    static class MyHandler extends Handler {
+        private WeakReference<MaterialsInDB> _weakReference;
+        private MaterialsInDB _materialsInDB;
+
+        private MyHandler(MaterialsInDB activity) {
+            _weakReference = new WeakReference<>(activity);
+        }
+
         @Override
         public void handleMessage(Message message) {
-            super.handleMessage(message);
+            if (_weakReference.get() == null)
+                return;
+            _materialsInDB = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 //成功连接蓝牙设备
                 case MESSAGE_1:
-                    _btn1.setEnabled(true);
+                    _materialsInDB._btn1.setEnabled(true);
                     ProgressDialogUtil.Dismiss();
                     break;
                 //成功读取到蓝牙设备的电量
                 case MESSAGE_2:
-                    _txt4.setText(result + "%");
+                    _materialsInDB._txt4.setText(result + "%");
                     break;
                 //物料绑定成功
                 case MESSAGE_3:
-                    _materialRefreshLayout.finishRefresh();
+                    _materialsInDB._materialRefreshLayout.finishRefresh();
                     Material material = JSON.parseObject(result, Material.class);
                     if (material != null) {
                         int row = material.getDepotRow();
                         int column = material.getDepotColumn();
-                        _txt5.setText(String.valueOf(material.getId()));
-                        _edt1.setText(material.getMaterialName());
+                        _materialsInDB._txt5.setText(String.valueOf(material.getId()));
+                        _materialsInDB._edt1.setText(material.getMaterialName());
                         //这里可通过Spinner的选中事件进行赋值
-                        //_txt7.setText(String.valueOf(row));
-                        //_txt8.setText(String.valueOf(column));
-                        _spinner1.setSelection(row--, true);
-                        _spinner2.setSelection(column--, true);
+                        //_materialsInDB._txt7.setText(String.valueOf(row));
+                        //_materialsInDB._txt8.setText(String.valueOf(column));
+                        _materialsInDB._spinner1.setSelection(row--, true);
+                        _materialsInDB._spinner2.setSelection(column--, true);
                         if (URL.contains("FindByDeviceAddress")) {
                         } else if (URL.contains("UPDATE")) {
-                            ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "提示", "物料绑定成功");
+                            ProgressDialogUtil.ShowWarning(_materialsInDB, "提示", "物料绑定成功");
                         }
                     }
                     //物料绑定失败
                     else {
-                        ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "错误", "物料绑定失败,请重试！");
+                        ProgressDialogUtil.ShowWarning(_materialsInDB, "错误", "物料绑定失败,请重试！");
                     }
                     break;
                 //与蓝牙设备的连接已断开
                 case MESSAGE_ERROR_2:
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "该设备的连接已断开！");
+                    ProgressDialogUtil.ShowWarning(_materialsInDB, "警告", "该设备的连接已断开！");
                     break;
                 //网络异常
                 case MESSAGE_ERROR_3:
-                    _materialRefreshLayout.finishRefresh();
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "网络连接失败,请检查！");
+                    _materialsInDB._materialRefreshLayout.finishRefresh();
+                    ProgressDialogUtil.ShowWarning(_materialsInDB, "警告", "网络连接失败,请检查！");
                     break;
                 //服务异常
                 case MESSAGE_ERROR_4:
-                    ProgressDialogUtil.ShowWarning(MaterialsInDB.this, "警告", "服务异常,请与管理员联系！");
+                    ProgressDialogUtil.ShowWarning(_materialsInDB, "警告", "服务异常,请与管理员联系！");
                     break;
             }
         }
-    };
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -162,8 +173,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                 what = MESSAGE_ERROR_3;
                 break;
         }
-        Message message = handler.obtainMessage(what, content);
-        handler.sendMessage(message);
+        _myHandler.obtainMessage(what, content).sendToTarget();
     }
 
     @Override
@@ -211,6 +221,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_materials_in_d_b);
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
@@ -264,8 +275,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         Log.i(TAG, "连接已断开！");
                         _bluetoothGatt.disconnect();
                         ProgressDialogUtil.Dismiss();
-                        Message message = handler.obtainMessage(MESSAGE_ERROR_2, "");
-                        handler.sendMessage(message);
+                        _myHandler.obtainMessage(MESSAGE_ERROR_2, "").sendToTarget();
                     }
                 }
 
@@ -284,8 +294,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                         _bluetoothGattCharacteristic_write = _bluetoothGattService.getCharacteristic(WRITE_UUID);
                         if (_bluetoothGattCharacteristic_write != null) {
                             Log.i(TAG, "已找到写入数据的特征值！");
-                            Message message = handler.obtainMessage(MESSAGE_1, "");
-                            handler.sendMessage(message);
+                            _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
                         } else {
                             Log.e(TAG, "该UUID无写入数据的特征值！");
                         }
@@ -328,8 +337,7 @@ public class MaterialsInDB extends AppCompatActivity implements View.OnClickList
                     String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
                     result = MyConvertUtil.HexStrAddCharacter(result, " ");
                     Log.i(TAG, "接收:" + result);
-                    Message message = handler.obtainMessage(MESSAGE_2, result);
-                    handler.sendMessage(message);
+                    _myHandler.obtainMessage(MESSAGE_2, result).sendToTarget();
                 }
 
                 /**

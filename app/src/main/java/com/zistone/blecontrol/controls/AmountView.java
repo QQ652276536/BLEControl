@@ -17,7 +17,6 @@ import com.zistone.blecontrol.R;
 import java.text.DecimalFormat;
 
 public class AmountView extends LinearLayout implements View.OnClickListener, TextWatcher {
-
     private static final String TAG = "AmountView";
 
     private OnAmountChangeListener _lister;

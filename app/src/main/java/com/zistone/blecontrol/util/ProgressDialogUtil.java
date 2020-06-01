@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.zistone.blecontrol.R;
 
 public class ProgressDialogUtil {
-
     private static AlertDialog _alertDialog;
     private static Listener _listener;
 

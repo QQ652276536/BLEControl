@@ -9,7 +9,6 @@ import android.content.Context;
 import java.util.List;
 
 public class BLEUtil {
-
     private static Context _context;
     private static BLEListener _listener;
     private static BluetoothAdapter _bluetoothAdapter;

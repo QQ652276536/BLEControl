@@ -10,7 +10,6 @@ import java.util.Map;
  * 合成引擎的初始化参数
  */
 public class InitConfig {
-
     private String appId;
 
     private String appKey;

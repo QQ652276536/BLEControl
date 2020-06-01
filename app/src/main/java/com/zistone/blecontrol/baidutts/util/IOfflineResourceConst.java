@@ -3,7 +3,6 @@ package com.zistone.blecontrol.baidutts.util;
 import com.baidu.tts.client.TtsMode;
 
 public interface IOfflineResourceConst {
-
     //离线女声
     String VOICE_FEMALE = "F";
 

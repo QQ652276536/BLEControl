@@ -6,14 +6,12 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.util.InstallAPK;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MyAnimation extends AppCompatActivity {
-
     private static final int MESSAGE_1 = 1;
 
     private Timer _timer;
@@ -57,7 +55,7 @@ public class MyAnimation extends AppCompatActivity {
                 if (_count > 0)
                     _count--;
                 else
-                    _myHandler.sendMessage(_myHandler.obtainMessage(MESSAGE_1, ""));
+                    _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
             }
         };
         //_timer.schedule(_timerTask, 0, 800);

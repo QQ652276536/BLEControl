@@ -11,7 +11,6 @@ import android.util.Log;
  * 蓝牙广播
  */
 public class BluetoothReceiver extends BroadcastReceiver {
-
     private static final String TAG = "BluetoothReceiver";
     private Listener _listener;
 

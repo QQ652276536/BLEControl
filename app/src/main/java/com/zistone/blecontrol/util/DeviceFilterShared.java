@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class DeviceFilterShared {
-
     public static SharedPreferences Share(Context context) {
         return context.getSharedPreferences("DEVICEFILTER", Context.MODE_PRIVATE);
     }
