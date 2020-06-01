@@ -24,6 +24,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -531,6 +534,22 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         else if (s == _editAddress.getEditableText())
             _filterAddress = _editAddress.getText().toString();
         ShowSetFilterContent();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.menu_1_list:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.devicelist_menu_setting, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

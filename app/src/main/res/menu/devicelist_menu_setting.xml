@@ -3,14 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_1_setting"
+        android:id="@+id/menu_1_list"
         android:orderInCategory="80"
-        android:title="OTA"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_2_setting"
-        android:orderInCategory="80"
-        android:title="..."
+        android:title="界面设置"
         app:showAsAction="never" />
 </menu>
