@@ -429,7 +429,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _dialogFragmentListener = new DialogFragmentListener() {
             @Override
             public void OnDismiss(String tag) {
-
             }
 
             @Override
@@ -438,6 +437,10 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //发送内部参数以后关闭设置窗口
                 _paramSetting.dismiss();
                 _paramSetting = null;
+            }
+
+            @Override
+            public void OnComfirm(String tag, Object[] objectArray) {
             }
         };
     }

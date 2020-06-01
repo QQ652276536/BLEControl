@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -48,10 +49,12 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.controls.BluetoothListAdapter;
+import com.zistone.blecontrol.dialogfragment.DialogFragment_DeviceListSetting;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BLEListener;
 import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
+import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.InstallAPK;
 import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.MyConvertUtil;
@@ -114,6 +117,10 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private Timer _timer;
     private TimerTask _timerTask;
     private MyHandler _myHandler;
+    private DialogFragment_DeviceListSetting _deviceListSetting;
+    private DialogFragmentListener _dialogFragmentListener;
+    private RadioButton[] _rdoArray;
+    private FragmentManager _fragmentManager;
 
     static class MyHandler extends Handler {
         private WeakReference<DeviceList> _weakReference;
@@ -164,7 +171,30 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
      * 统一初始化监听
      */
     private void InitListener() {
-        //下拉刷新
+        _dialogFragmentListener = new DialogFragmentListener() {
+            @Override
+            public void OnDismiss(String tag) {
+            }
+
+            @Override
+            public void OnComfirm(String tag, String str) {
+            }
+
+            @Override
+            public void OnComfirm(String tag, Object[] objectArray) {
+                int i = 0;
+                for (; i < _rdoArray.length; i++) {
+                    for (; i < objectArray.length; i++) {
+                        if ((boolean) objectArray[i]) {
+                            _rdoArray[i].setVisibility(View.VISIBLE);
+                        } else {
+                            _rdoArray[i].setVisibility(View.GONE);
+                        }
+                        break;
+                    }
+                }
+            }
+        };
         _materialRefreshListener = new MaterialRefreshListener() {
             /**
              * 下拉刷新
@@ -540,6 +570,8 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case R.id.menu_1_list:
+                _deviceListSetting = DialogFragment_DeviceListSetting.newInstance(_dialogFragmentListener);
+                _deviceListSetting.show(_fragmentManager, "DialogFragment_DeviceListSetting");
                 break;
         }
         return true;
@@ -810,6 +842,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_ble_device_list);
+        _fragmentManager = getSupportFragmentManager();
         //安装第三方的OTA升级的APK
         if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
             InstallAPK.Install(this, "ambiq_ota", "是否安装OTA升级插件？");
@@ -910,15 +943,14 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         InitListener();
         //界面设置，这里使用的数组，注意控件对应的下标
         Object[] objectArray = DeviceFilterShared.GetIsShowDeviceAndFunc(_context);
-        RadioButton[] rdoArray = new RadioButton[]{_rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5,
-                                                   _rdoFunc6};
+        _rdoArray = new RadioButton[]{_rdoUUID1, _rdoUUID2, _rdoUUID3, _rdoUUID4, _rdoFunc1, _rdoFunc2, _rdoFunc3, _rdoFunc4, _rdoFunc5, _rdoFunc6};
         int i = 0;
         for (; i < objectArray.length; i++) {
-            for (; i < rdoArray.length; i++) {
+            for (; i < _rdoArray.length; i++) {
                 if ((boolean) objectArray[i])
-                    rdoArray[i].setVisibility(View.VISIBLE);
+                    _rdoArray[i].setVisibility(View.VISIBLE);
                 else
-                    rdoArray[i].setVisibility(View.GONE);
+                    _rdoArray[i].setVisibility(View.GONE);
                 break;
             }
         }

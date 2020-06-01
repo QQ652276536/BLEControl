@@ -474,6 +474,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 _paramSetting.dismiss();
                 _paramSetting = null;
             }
+
+            @Override
+            public void OnComfirm(String tag, Object[] objectArray) {
+            }
         };
     }
 

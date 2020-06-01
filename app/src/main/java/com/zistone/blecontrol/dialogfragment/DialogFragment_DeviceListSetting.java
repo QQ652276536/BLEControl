@@ -17,13 +17,17 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.zistone.blecontrol.R;
+import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.DialogFragmentListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 修改基站参数
  */
-public class DialogFragment_Station extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private static final String TAG = "DialogFragment_Station";
+public class DialogFragment_DeviceListSetting extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+    private static final String TAG = "DialogFragment_DeviceListSetting";
     private static final String ARG_PARAM1 = "param1";
     private static DialogFragmentListener _dialogFragmentListener;
     private Context _context;
@@ -31,12 +35,9 @@ public class DialogFragment_Station extends DialogFragment implements View.OnCli
     private Button _btn1;
     private CheckBox _chk1, _chk2, _chk3, _chk4, _chk5, _chk6, _chk7, _chk8, _chk9, _chk10;
 
-    public static DialogFragment_Station newInstance(String[] strArray, DialogFragmentListener listener) {
+    public static DialogFragment_DeviceListSetting newInstance(DialogFragmentListener listener) {
         _dialogFragmentListener = listener;
-        DialogFragment_Station fragment = new DialogFragment_Station();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PARAM1, strArray);
-        fragment.setArguments(args);
+        DialogFragment_DeviceListSetting fragment = new DialogFragment_DeviceListSetting();
         return fragment;
     }
 
@@ -44,7 +45,50 @@ public class DialogFragment_Station extends DialogFragment implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn1_ok:
-
+                List<Object> list = new ArrayList<>();
+                if (_chk1.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk2.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk3.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk4.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk5.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk6.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk7.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk8.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk9.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                if (_chk10.isChecked())
+                    list.add(true);
+                else
+                    list.add(false);
+                Object[] objectArray = list.toArray();
+                DeviceFilterShared.SetIsShowDeviceAndFunc(_context, objectArray);
+                _dialogFragmentListener.OnComfirm(TAG, objectArray);
                 dismiss();
                 break;
         }
@@ -84,6 +128,19 @@ public class DialogFragment_Station extends DialogFragment implements View.OnCli
         _chk8.setOnCheckedChangeListener(this::onCheckedChanged);
         _chk9.setOnCheckedChangeListener(this::onCheckedChanged);
         _chk10.setOnCheckedChangeListener(this::onCheckedChanged);
+        //界面设置，这里使用的数组，注意控件对应的下标
+        Object[] objectArray = DeviceFilterShared.GetIsShowDeviceAndFunc(_context);
+        CheckBox[] chkArray = new CheckBox[]{_chk1, _chk2, _chk3, _chk4, _chk5, _chk6, _chk7, _chk8, _chk9, _chk10};
+        int i = 0;
+        for (; i < objectArray.length; i++) {
+            for (; i < chkArray.length; i++) {
+                if ((boolean) objectArray[i])
+                    chkArray[i].setChecked(true);
+                else
+                    chkArray[i].setChecked(false);
+                break;
+            }
+        }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

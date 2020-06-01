@@ -101,6 +101,12 @@
             android:button="@drawable/chk_selector"
             android:checked="true"
             android:text="@string/inDB" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/chk8_devicelist"
@@ -110,12 +116,6 @@
             android:button="@drawable/chk_selector"
             android:checked="true"
             android:text="@string/temperature" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/chk9_devicelist"
