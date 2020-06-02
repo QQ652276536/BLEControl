@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_bluetooth_read_write"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
@@ -29,28 +28,22 @@
             android:textSize="28sp" />
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/txt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txt"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:fadeScrollbars="false"
-            android:scrollbars="vertical"
-            android:text=""
-            android:textSize="18sp" />
-    </LinearLayout>
+        android:layout_height="350dp"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical"
+        android:text=""
+        android:textSize="18sp" />
 
     <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:gravity="right"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@color/darkgray"
+        android:gravity="right"
         android:orientation="horizontal">
 
         <ImageButton
@@ -82,7 +75,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -104,7 +97,7 @@
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
                     android:enabled="false"
-                    android:text="@string/btn_test1"
+                    android:text="综合测试A"
                     android:textSize="16sp" />
             </LinearLayout>
 

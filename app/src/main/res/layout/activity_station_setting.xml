@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_station"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimary">
+
+        <ImageButton
+            android:id="@+id/btnReturn_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/btn_return" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="@string/title_station"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+    </android.support.v7.widget.Toolbar>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="只需要输入参数即可，多个参数以英文逗号隔开，参数为空时表示查询"
+        android:textColor="@color/read" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn1_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="IP和端口"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt1_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn2_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="WIFI名称"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt2_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn3_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="WIFI密码"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt3_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn4_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="位置坐标"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt4_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn5_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="基站超时"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt5_station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textEmailAddress" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn6_station"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="查询基站状态"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/darkgray"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnTop_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/top" />
+
+        <ImageButton
+            android:id="@+id/btnBottom_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bottom" />
+
+        <ImageButton
+            android:id="@+id/btnClear_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/clear" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt1_station"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical"
+        android:text=""
+        android:textSize="18sp" />
+
+</LinearLayout>

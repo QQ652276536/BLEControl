@@ -51,7 +51,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private int _nextEvent = 0;
     //读取内部事件的线程开关
     private volatile boolean _isEventReadThread = false, _isEventReadOver = false;
-    private Myhandler _myhandler;
+    private Myhandler _myHandler;
 
     static class Myhandler extends Handler {
         WeakReference<CommandTest> _weakReference;
@@ -70,22 +70,14 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
             switch (message.what) {
                 //连接成功
                 case MESSAGE_1: {
-                    _commandTest._btn6.setEnabled(true);
-                    _commandTest._btn7.setEnabled(true);
-                    _commandTest._btn8.setEnabled(true);
-                    _commandTest._btn9.setEnabled(true);
-                    _commandTest._btn10.setEnabled(true);
-                    _commandTest._btn11.setEnabled(true);
-                    _commandTest._btn12.setEnabled(true);
-                    _commandTest._btn13.setEnabled(true);
-                    _commandTest._btn14.setEnabled(true);
+                    _commandTest.SetButtonEnable(true);
                     ProgressDialogUtil.Dismiss();
                     _commandTest._connectedSuccess = true;
                 }
                 break;
                 //显示解析内容
                 case MESSAGE_2: {
-                    _commandTest._txt.append("\r\n" + result);
+                    _commandTest._txt.append(result+"\r\n");
                     //定位到最后一行
                     int offset = _commandTest._txt.getLineCount() * _commandTest._txt.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
@@ -97,6 +89,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
                 case MESSAGE_ERROR_1:
                     _commandTest._connectedSuccess = false;
+                    _commandTest.SetButtonEnable(false);
                     ProgressDialogUtil.Dismiss();
                     ProgressDialogUtil.ShowWarning(_commandTest, "警告", "该设备的连接已断开！");
                     break;
@@ -141,6 +134,18 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         }
+    }
+
+    private void SetButtonEnable(boolean flag) {
+        _btn6.setEnabled(flag);
+        _btn7.setEnabled(flag);
+        _btn8.setEnabled(flag);
+        _btn9.setEnabled(flag);
+        _btn10.setEnabled(flag);
+        _btn11.setEnabled(flag);
+        _btn12.setEnabled(flag);
+        _btn13.setEnabled(flag);
+        _btn14.setEnabled(flag);
     }
 
     /**
@@ -398,7 +403,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case "86": {
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
-                        _myhandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]).sendToTarget();
+                        _myHandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]).sendToTarget();
                         return;
                     }
                     receive = data;
@@ -458,7 +463,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         }
-        _myhandler.obtainMessage(MESSAGE_2, "接收：" + receive).sendToTarget();
+        _myHandler.obtainMessage(MESSAGE_2, "接收：" + receive).sendToTarget();
     }
 
     private void InitListener() {
@@ -469,7 +474,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
             @Override
             public void OnComfirm(String tag, String str) {
-                _myhandler.obtainMessage(SEND_SET_CONTROLPARAM, str).sendToTarget();
+                _myHandler.obtainMessage(SEND_SET_CONTROLPARAM, str).sendToTarget();
                 //发送内部参数以后关闭设置窗口
                 _paramSetting.dismiss();
                 _paramSetting = null;
@@ -491,7 +496,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     public void OnConnected() {
         Log.i(TAG, "成功建立连接！");
-        _myhandler.obtainMessage(MESSAGE_1, "").sendToTarget();
+        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
     }
@@ -504,7 +509,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     public void OnDisConnected() {
         Log.i(TAG, "连接已断开！");
-        _myhandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
+        _myHandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override
@@ -561,7 +566,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     break;
             }
         }
-        _myhandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
+        _myHandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
         Log.i(TAG, "成功发送'" + sendResult + "'的指令");
     }
 
@@ -591,10 +596,6 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 _stringBuffer = new StringBuffer();
             }
         }
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
     }
 
     @Override
@@ -740,7 +741,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _myhandler = new Myhandler(this);
+        _myHandler = new Myhandler(this);
         setContentView(R.layout.activity_command_test);
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();

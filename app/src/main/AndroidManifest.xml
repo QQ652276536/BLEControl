@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zistone.blecontrol">
-
     <!-- 允许安装未知应用 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 震动提示 -->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -27,10 +26,8 @@
         android:required="false" /> <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 蓝牙权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 位置权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!-- 这个权限用于访问GPS定位 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" /> <!-- 往SDCard写入数据权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
@@ -50,8 +47,11 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
+            android:name=".activity.StationSetting"
+            android:label="基站设置" />
+        <activity
             android:name=".activity.Location"
-            android:label="设备定位"></activity>
+            android:label="设备定位" />
         <activity
             android:name=".activity.MyAnimation"
             android:label="动画界面" />
@@ -87,8 +87,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
-        </provider>
-        <!-- 百度地图AK鉴权 -->
+        </provider> <!-- 百度地图AK鉴权 -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" />

@@ -711,7 +711,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         }
         //基站设置
         else if (_rdoFunc6.isChecked()) {
-            intent = new Intent(null, Location.class);
+            intent = new Intent(DeviceList.this, StationSetting.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
