@@ -14,14 +14,13 @@ public class MyConvertUtil {
 
         System.out.println("生成的检验码为:" + CreateCheckCode("AA 31 1B 00 03 31 39 30 32 41 51 36 38 30 30 30 30 30 32 35 34 32 00 01" + "00 01 05 98 25"));
         System.out.println("CRC_16_CCITT_FALSE生成的校验码:" + CRC_16_CCITT_FALSE(new byte[]{(byte) 0xAA, 0x31, 0x1B, 0x00, 0x03, 0x31, 0x39, 0x30, 0x32,
-                0x41, 0x51, 0x36, 0x38, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32,
-                0x35, 0x34, 0x32, 0x00, 0x01, 0x00, 0x01, 0x05}, 27));
-        byte[] reverseArray = ReverseByteArray(new byte[]{(byte) 0xAA, 0x31, 0x1B, 0x00, 0x03, 0x31, 0x39, 0x30, 0x32, 0x41, 0x51, 0x36,
-                0x38, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32, 0x35, 0x34, 0x32, 0x00, 0x01, 0x00,
-                0x01, 0x05});
+                                                                                       0x41, 0x51, 0x36, 0x38, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32,
+                                                                                       0x35, 0x34, 0x32, 0x00, 0x01, 0x00, 0x01, 0x05}));
+        byte[] reverseArray = ReverseByteArray(new byte[]{(byte) 0xAA, 0x31, 0x1B, 0x00, 0x03, 0x31, 0x39, 0x30, 0x32, 0x41, 0x51, 0x36, 0x38, 0x30,
+                                                          0x30, 0x30, 0x30, 0x30, 0x32, 0x35, 0x34, 0x32, 0x00, 0x01, 0x00, 0x01, 0x05});
         System.out.println("反转byte[]:");
         for (byte b : reverseArray) {
-            System.out.print(ByteToHexStr(b)+" ");
+            System.out.print(ByteToHexStr(b) + " ");
         }
         System.out.println();
         System.out.println("____________________________________________________________________");
@@ -181,7 +180,6 @@ public class MyConvertUtil {
             if (i != str.length() - 1) {
                 stringBuffer.append(str.charAt(i));
                 stringBuffer.append(character);
-
             } else {
                 stringBuffer.append(str.charAt(i));
             }
@@ -215,15 +213,11 @@ public class MyConvertUtil {
 
     /**
      * 生成校验码
-     * 将收到的消息还原转义后去除标识和校验位,然后按位异或得到的结果就是校验码
      *
      * @param hexStr 带空格不带0x的16进制字符串,比如81 03 00
      * @return 不足2位前面补零
      */
-    public static String CreateCheckCode(String hexStr) throws Exception {
-        if (!hexStr.contains(" ") || hexStr.contains("0x") || hexStr.contains("0X")) {
-            throw new Exception("参数必须为带空格不带0x的16进制字符串");
-        }
+    public static String CreateCheckCode(String hexStr) {
         int binaryNum = 0;
         String[] strArray = hexStr.split(" ");
         for (int i = 0; i < strArray.length; i++) {
@@ -246,10 +240,9 @@ public class MyConvertUtil {
      * CRC-16/CCITT_FALSE方式生成校验码
      *
      * @param bytes
-     * @param length
      * @return
      */
-    public static String CRC_16_CCITT_FALSE(byte[] bytes, int length) {
+    public static String CRC_16_CCITT_FALSE(byte[] bytes) {
         int crc = 0xffff;
         int polynomial = 0x1021;
         for (int index = 0; index < bytes.length; index++) {
@@ -295,7 +288,11 @@ public class MyConvertUtil {
             stringBuffer = stringBuffer.append(charArray[value % 16]);
             value = value / 16;
         }
-        return stringBuffer.reverse().toString();
+        String result = stringBuffer.reverse().toString();
+        if (result.length() < 2) {
+            result = "0" + result;
+        }
+        return result;
     }
 
     /**
@@ -333,12 +330,12 @@ public class MyConvertUtil {
         StringBuilder stringBuilder = new StringBuilder(bytes.length * 2);
         //将字节数组中每个字节拆解成2位16进制整数
         for (int i = 0; i < bytes.length; i++) {
-            stringBuilder.append("0x");
+            //            stringBuilder.append("0x");
             stringBuilder.append(HEXSTRING.charAt((bytes[i] & 0xf0) >> 4));
             stringBuilder.append(HEXSTRING.charAt((bytes[i] & 0x0f) >> 0));
             //去掉末尾的逗号
             if (i != bytes.length - 1) {
-                stringBuilder.append(",");
+                //                stringBuilder.append(",");
             }
         }
         return stringBuilder.toString();

@@ -221,6 +221,9 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
+        String hexStr = "";
+        String logStr = "";
+        String edtStr = "";
         switch (v.getId()) {
             case R.id.btnReturn_station:
                 this.finish();
@@ -237,18 +240,108 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
             case R.id.btnClear_station:
                 _txt1.setText("");
                 break;
+            /*
+             * 设置/查询IP及端口
+             *
+             * 指令示例：68 03 00 00 00 00 00 68 30 0B 00 00 00 00 00 00 00 00 B8 16
+             * 68
+             * 03（多余的字符个数，这个字节不计入DAT_R位数里）
+             * 00 00 00 00 00（DAT_R的9~13位）
+             * 68
+             * 30（表示设置/查询IP及端口指令）
+             * 0B（Len）
+             * 00 00 00 00 00 00 00 00（DAT_R的1~8位）
+             * B8（校验码）
+             *
+             * */
             case R.id.btn1_station:
+                edtStr = _edt1.getText().toString();
+                if (edtStr.equals("")) {
+                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                    String str1 = "0000000000006830000000000000000000";
+                    String checkCode = MyConvertUtil.CreateCheckCode(str1);
+                    //
+                    hexStr = "68" + str1 + checkCode + "16";
+                    logStr = "发送'查询IP及端口'指令：" + hexStr;
+                } else {
+                    String[] edtStrArray = edtStr.split(",");
+                    if (edtStrArray.length == 2) {
+                        String ip = edtStrArray[0];
+                        String[] ipArray = ip.split(".");
+                        String ipStr1 = MyConvertUtil.IntToHexStr(Integer.valueOf(ipArray[0]));
+                        String ipStr2 = MyConvertUtil.IntToHexStr(Integer.valueOf(ipArray[1]));
+                        String ipStr3 = MyConvertUtil.IntToHexStr(Integer.valueOf(ipArray[2]));
+                        String ipStr4 = MyConvertUtil.IntToHexStr(Integer.valueOf(ipArray[3]));
+                        String port = edtStrArray[1];
+                        String[] portArray = MyConvertUtil.StrAddCharacter(port, " ").split(" ");
+                        String port1 = MyConvertUtil.IntToHexStr(Integer.valueOf(portArray[0]));
+                        String port2 = MyConvertUtil.IntToHexStr(Integer.valueOf(portArray[1]));
+                        //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                        String str1 = "000000000000683006";
+                        String str2 = ipStr1 + ipStr2 + ipStr3 + ipStr4 + port1 + port2 + "00" + "00";
+                        String checkCode = MyConvertUtil.CreateCheckCode(str1 + str2);
+                        hexStr = "68" + str1 + str2 + checkCode + "16";
+                        logStr = "发送'设置IP及端口'指令：" + hexStr;
+                    } else {
+                        _txt1.append("IP及端口错误，请检查！");
+                        return;
+                    }
+                }
                 break;
+            //设置WIFI名称
             case R.id.btn2_station:
+                edtStr = _edt2.getText().toString();
+                if (edtStr.equals("")) {
+                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                    String str1 = "0000000000006831000000000000000000";
+                    String checkCode = MyConvertUtil.CreateCheckCode(str1);
+                    hexStr = "68" + str1 + checkCode + "16";
+                    logStr = "发送'查询WIFI名称'指令：" + hexStr;
+                } else {
+                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                    String str1 = "00000000006831";
+                    String hexEdtStr = MyConvertUtil.StrToHexStr(edtStr);
+                    //后面最多只能存储8位，超过8位则需要存储在前面
+                    int len = hexEdtStr.length() / 2;
+                    //不超过8位则直接在后面拼接，前面表示长度的为0
+                    if (len <= 8) {
+                        String hexLen = MyConvertUtil.IntToHexStr(len);
+                        String str2 = "00" + str1 + hexLen + hexEdtStr;
+                        String checkCode = MyConvertUtil.CreateCheckCode(str2);
+                        hexStr = "68" + str2 + checkCode + "16";
+                    }
+                    //超过8位但不超过13位除了后面拼接，前面表示长度的为总长度减8，后面再拼接剩余字段
+                    else if (len > 8 && len <= 13) {
+                        String secondLen = MyConvertUtil.IntToHexStr(len - 8);
+                        //这里是当作字符串来截取，对应第9个字节，即下标为8的那一位
+                        String secondStr = edtStr.substring(16);
+                        String str2 = secondLen + secondStr + str1 + "08" + hexEdtStr;
+                        String checkCode = MyConvertUtil.CreateCheckCode(str2);
+                        hexStr = "68" + str2 + checkCode + "16";
+                    }
+                    //指令最多只能存储13位
+                    else {
+                        _txt1.append("WIFI名称错误，尽量以简短英文命名！");
+                        return;
+                    }
+                    logStr = "发送'设置WIFI名称'指令：" + hexStr;
+                }
                 break;
             case R.id.btn3_station:
+                edtStr = _edt3.getText().toString();
                 break;
             case R.id.btn4_station:
+                edtStr = _edt4.getText().toString();
                 break;
             case R.id.btn5_station:
+                edtStr = _edt5.getText().toString();
                 break;
             case R.id.btn6_station:
                 break;
+        }
+        if (!hexStr.equals("")) {
+            BluetoothUtil.SendComm(hexStr);
+            Log.i(TAG, logStr);
         }
     }
 
