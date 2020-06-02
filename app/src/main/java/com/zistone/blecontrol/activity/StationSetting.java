@@ -128,6 +128,46 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
         _btn6.setEnabled(flag);
     }
 
+    /**
+     * 判断要指令里的数据内容是否超过最大长度
+     *
+     * @param data Str数据
+     * @return Hex指令
+     */
+    private String IfDataIsTooLong(String data) {
+        String result = "";
+        //因为计算校验码不需要68，为了方便计算校验码在后面加上68
+        String str1 = "00000000006831";
+        String hexData = MyConvertUtil.StrToHexStr(data);
+        //后面最多只能存储8位，超过8位则需要存储在前面，这里计算的是字符串的长度，除以2即字节长度
+        int len = hexData.length() / 2;
+        //不超过8位则直接在后面拼接，前面部分表示长度的位数为0
+        if (len <= 8) {
+            String hexLen = MyConvertUtil.IntToHexStr(len);
+            String str2 = "00" + str1 + hexLen + data;
+            String checkCode = MyConvertUtil.CreateCheckCode(str2);
+            result = "68" + str2 + checkCode + "16";
+        }
+        //超过8位但不超过13位除了后面拼接，前面表示长度的为总长度减8，后面再拼接剩余字段
+        else if (len > 8 && len <= 13) {
+            String secondLen = MyConvertUtil.IntToHexStr(len - 8);
+            //这里是当作字符串来截取，对应下标为8的那一位
+            String firstStr = data.substring(0, 16);
+            String secondStr = data.substring(16);
+            //不足5位后面补0
+            int supplement = 5 - secondStr.length() / 2;
+            for (int i = 0; i < supplement; i++) {
+                secondStr += "00";
+            }
+            String str2 = secondLen + secondStr + str1 + "08" + firstStr;
+            String checkCode = MyConvertUtil.CreateCheckCode(str2);
+            result = "68" + str2 + checkCode + "16";
+        } else {
+            result = "";
+        }
+        return result;
+    }
+
     @Override
     public void OnConnected() {
         Log.i(TAG, "成功建立连接！");
@@ -257,10 +297,9 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
             case R.id.btn1_station:
                 edtStr = _edt1.getText().toString();
                 if (edtStr.equals("")) {
-                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                    //计算校验码不需要加上68
                     String str1 = "0000000000006830000000000000000000";
                     String checkCode = MyConvertUtil.CreateCheckCode(str1);
-                    //
                     hexStr = "68" + str1 + checkCode + "16";
                     logStr = "发送'查询IP及端口'指令：" + hexStr;
                 } else {
@@ -276,7 +315,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                         String[] portArray = MyConvertUtil.StrAddCharacter(port, " ").split(" ");
                         String port1 = MyConvertUtil.IntToHexStr(Integer.valueOf(portArray[0]));
                         String port2 = MyConvertUtil.IntToHexStr(Integer.valueOf(portArray[1]));
-                        //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                        //计算校验码不需要加上68
                         String str1 = "000000000000683006";
                         String str2 = ipStr1 + ipStr2 + ipStr3 + ipStr4 + port1 + port2 + "00" + "00";
                         String checkCode = MyConvertUtil.CreateCheckCode(str1 + str2);
@@ -288,54 +327,56 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                     }
                 }
                 break;
-            //设置WIFI名称
+            /*
+             * 设置/查询WIFI名称
+             *
+             * */
             case R.id.btn2_station:
                 edtStr = _edt2.getText().toString();
                 if (edtStr.equals("")) {
-                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
+                    //计算校验码不需要加上68
                     String str1 = "0000000000006831000000000000000000";
                     String checkCode = MyConvertUtil.CreateCheckCode(str1);
                     hexStr = "68" + str1 + checkCode + "16";
                     logStr = "发送'查询WIFI名称'指令：" + hexStr;
                 } else {
-                    //因为计算校验码不需要带头，为了方便计算校验码在后面加上头
-                    String str1 = "00000000006831";
-                    String hexEdtStr = MyConvertUtil.StrToHexStr(edtStr);
-                    //后面最多只能存储8位，超过8位则需要存储在前面
-                    int len = hexEdtStr.length() / 2;
-                    //不超过8位则直接在后面拼接，前面表示长度的为0
-                    if (len <= 8) {
-                        String hexLen = MyConvertUtil.IntToHexStr(len);
-                        String str2 = "00" + str1 + hexLen + hexEdtStr;
-                        String checkCode = MyConvertUtil.CreateCheckCode(str2);
-                        hexStr = "68" + str2 + checkCode + "16";
-                    }
-                    //超过8位但不超过13位除了后面拼接，前面表示长度的为总长度减8，后面再拼接剩余字段
-                    else if (len > 8 && len <= 13) {
-                        String secondLen = MyConvertUtil.IntToHexStr(len - 8);
-                        //这里是当作字符串来截取，对应第9个字节，即下标为8的那一位
-                        String secondStr = edtStr.substring(16);
-                        String str2 = secondLen + secondStr + str1 + "08" + hexEdtStr;
-                        String checkCode = MyConvertUtil.CreateCheckCode(str2);
-                        hexStr = "68" + str2 + checkCode + "16";
-                    }
-                    //指令最多只能存储13位
-                    else {
+                    hexStr = IfDataIsTooLong(edtStr);
+                    if (!hexStr.equals("")) {
+                        logStr = "发送'设置WIFI名称'指令：" + hexStr;
+                    } else {
                         _txt1.append("WIFI名称错误，尽量以简短英文命名！");
                         return;
                     }
-                    logStr = "发送'设置WIFI名称'指令：" + hexStr;
                 }
                 break;
+            /*
+             * 设置/查询WIFI密码
+             *
+             * */
             case R.id.btn3_station:
                 edtStr = _edt3.getText().toString();
+                if (edtStr.equals("")) {
+                } else {
+                }
                 break;
+            /*
+             * 设置/查询基站位置坐标
+             *
+             * */
             case R.id.btn4_station:
                 edtStr = _edt4.getText().toString();
                 break;
+            /*
+             * 设置/查询基站超时参数
+             *
+             * */
             case R.id.btn5_station:
                 edtStr = _edt5.getText().toString();
                 break;
+            /*
+             * 查询基站状态
+             *
+             * */
             case R.id.btn6_station:
                 break;
         }
