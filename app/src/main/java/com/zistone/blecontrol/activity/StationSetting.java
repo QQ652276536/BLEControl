@@ -131,13 +131,14 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
     /**
      * 判断要指令里的数据内容是否超过最大长度
      *
+     * @param cmd  指令
      * @param data Str数据
      * @return Hex指令
      */
-    private String IfDataIsTooLong(String data) {
+    private String IfDataIsTooLong(String cmd, String data) {
         String result = "";
         //因为计算校验码不需要68，为了方便计算校验码在后面加上68
-        String str1 = "00000000006831";
+        String str1 = "000000000068" + cmd;
         String hexData = MyConvertUtil.StrToHexStr(data);
         //后面最多只能存储8位，超过8位则需要存储在前面，这里计算的是字符串的长度，除以2即字节长度
         int len = hexData.length() / 2;
@@ -281,7 +282,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                 _txt1.setText("");
                 break;
             /*
-             * 设置/查询IP及端口
+             * 设置/查询IP及端口【30】
              *
              * 指令示例：68 03 00 00 00 00 00 68 30 0B 00 00 00 00 00 00 00 00 B8 16
              * 68
@@ -328,7 +329,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             /*
-             * 设置/查询WIFI名称
+             * 设置/查询WIFI名称【31】
              *
              * */
             case R.id.btn2_station:
@@ -340,7 +341,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                     hexStr = "68" + str1 + checkCode + "16";
                     logStr = "发送'查询WIFI名称'指令：" + hexStr;
                 } else {
-                    hexStr = IfDataIsTooLong(edtStr);
+                    hexStr = IfDataIsTooLong("31", edtStr);
                     if (!hexStr.equals("")) {
                         logStr = "发送'设置WIFI名称'指令：" + hexStr;
                     } else {
@@ -350,31 +351,66 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             /*
-             * 设置/查询WIFI密码
+             * 设置/查询WIFI密码【32】
              *
              * */
             case R.id.btn3_station:
                 edtStr = _edt3.getText().toString();
                 if (edtStr.equals("")) {
+                    //计算校验码不需要加上68
+                    String str1 = "0000000000006832000000000000000000";
+                    String checkCode = MyConvertUtil.CreateCheckCode(str1);
+                    hexStr = "68" + str1 + checkCode + "16";
+                    logStr = "发送'查询WIFI密码'指令：" + hexStr;
                 } else {
+                    hexStr = IfDataIsTooLong("32", edtStr);
+                    if (!hexStr.equals("")) {
+                        logStr = "发送'设置WIFI密码'指令：" + hexStr;
+                    } else {
+                        _txt1.append("WIFI密码错误，请检查！");
+                        return;
+                    }
                 }
                 break;
             /*
-             * 设置/查询基站位置坐标
+             * 设置/查询基站位置坐标【33】
              *
              * */
             case R.id.btn4_station:
                 edtStr = _edt4.getText().toString();
+                if (edtStr.equals("")) {
+                    //计算校验码不需要加上68
+                    String str1 = "0000000000006833000000000000000000";
+                    String checkCode = MyConvertUtil.CreateCheckCode(str1);
+                    hexStr = "68" + str1 + checkCode + "16";
+                    logStr = "发送'查询基站位置坐标'指令：" + hexStr;
+                } else {
+                    String[] edtStrArray = edtStr.split(",");
+                    if (edtStrArray.length == 4) {
+                        String typeStr = MyConvertUtil.IntToHexStr(Integer.valueOf(edtStrArray[0]));
+                        String latStr = MyConvertUtil.IntToHexStr(Integer.valueOf(edtStrArray[1]));
+                        String lotStr = MyConvertUtil.IntToHexStr(Integer.valueOf(edtStrArray[2]));
+                        String altStr = MyConvertUtil.IntToHexStr(Integer.valueOf(edtStrArray[3]));
+                    } else {
+                        _txt1.append("位置坐标错误，请检查！");
+                        return;
+                    }
+                    hexStr = IfDataIsTooLong("33", edtStr);
+                    if (!hexStr.equals("")) {
+                        logStr = "发送'设置基站位置坐标'指令：" + hexStr;
+                    } else {
+                    }
+                }
                 break;
             /*
-             * 设置/查询基站超时参数
+             * 设置/查询基站超时参数【34】
              *
              * */
             case R.id.btn5_station:
                 edtStr = _edt5.getText().toString();
                 break;
             /*
-             * 查询基站状态
+             * 查询基站状态【35】
              *
              * */
             case R.id.btn6_station:
