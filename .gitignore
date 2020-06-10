@@ -4,7 +4,6 @@ app/release/
 app/build/
 /caches/gradle_models.ser
 
-
 # Built application files
 *.apk
 *.aar
