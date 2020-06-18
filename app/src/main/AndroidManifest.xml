@@ -2,11 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zistone.blecontrol">
+
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" /> <!-- 允许装载卸载文件 -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" /> <!-- 修改系统设置 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 开机自启动 -->
     <!-- 允许安装未知应用 -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 震动提示 -->
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 请求安装第三方APK -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 震动提示 -->
     <!--
-    摄像头权限
+    以下权限用于开启摄像头
     required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
     required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
     -->
@@ -23,18 +33,22 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.front.autofocus"
-        android:required="false" /> <!-- 网络权限 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 蓝牙权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 位置权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 这个权限用于访问GPS定位 -->
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 网络权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!--
+    以下权限用于访问GPS定位
+     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" /> <!-- 往SDCard写入数据权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 访问网络状态,主要用于监视网络连接 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Wifi状态 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 修改声音设置 -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 往SDCard写入数据权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 访问网络状态,主要用于监视网络连接 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Wifi状态 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> <!-- 修改声音设置 -->
 
     <application
         android:name=".MyApplication"
