@@ -39,6 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * 不检测活体
+ */
 public class FaceRGBDetectActivity extends BaseActivity {
     private AutoTexturePreviewView mPreviewView;
     private ImageView testImageview;

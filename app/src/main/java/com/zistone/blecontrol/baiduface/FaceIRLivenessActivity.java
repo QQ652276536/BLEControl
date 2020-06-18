@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * RGB+IR 检测页面（活体+非活体）
+ * RGB+IR检测页面（活体+非活体）
  */
 public class FaceIRLivenessActivity extends BaseActivity {
     private int source;

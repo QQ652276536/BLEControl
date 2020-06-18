@@ -61,6 +61,27 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
+            android:name=".activity.FaceIdCompareActivity"
+            android:label="1：1人证比对">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".baiduface.FaceDepthLivenessActivity"
+            android:label="RGB+Depth检测页面（活体+非活体）" />
+        <activity
+            android:name=".baiduface.FaceIRLivenessActivity"
+            android:label="RGB+IR检测页面（活体+非活体）" />
+        <activity
+            android:name=".baiduface.FaceRGBDetectActivity"
+            android:label="不检测活体" />
+        <activity
+            android:name=".baiduface.PicoFaceDepthLivenessActivity"
+            android:label="RGB+Depth检测页面（活体+非活体）" />
+        <activity
             android:name=".activity.StationSetting"
             android:label="基站设置" />
         <activity
@@ -83,16 +104,11 @@
             android:label="电力控制" />
         <activity
             android:name=".activity.DeviceList"
-            android:label="低功耗蓝牙设备列表">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:label="低功耗蓝牙设备列表"></activity>
         <activity
             android:name=".activity.MainActivity"
-            android:label="这个Activity没用到" /> <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
+            android:label="这个Activity没用到" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -101,10 +117,11 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
-        </provider> <!-- 百度地图AK鉴权 -->
+        </provider> <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
+
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" />
+            android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" /> <!-- 百度地图AK鉴权 -->
     </application>
 
 </manifest>

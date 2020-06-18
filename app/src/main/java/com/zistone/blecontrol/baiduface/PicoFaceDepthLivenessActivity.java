@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * RGB+Depth 检测页面（活体+非活体）
+ * RGB+Depth检测页面（活体+非活体）
  */
 public class PicoFaceDepthLivenessActivity extends BaseActivity {
     private static final String TAG = "PicoLivenessActivity";

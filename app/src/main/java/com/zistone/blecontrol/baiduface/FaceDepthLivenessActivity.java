@@ -63,7 +63,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 /**
- * RGB+Depth 检测页面（活体+非活体）
+ * RGB+Depth检测页面（活体+非活体）
  */
 public class FaceDepthLivenessActivity extends BaseOrbbecActivity implements OpenNIHelper.DeviceOpenListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
