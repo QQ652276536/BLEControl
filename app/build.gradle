@@ -74,4 +74,11 @@ dependencies {
      * OpenCV视觉库
      */
     implementation project(path: ':openCVLibrary341')
+
+    /**
+     * 百度离线人证比对
+     */
+    implementation project(path: ':facelibrary')
+    compile files('libs/orbbec_module-debug.aar')
+    compile files('libs/picozensesdk-release.aar')
 }

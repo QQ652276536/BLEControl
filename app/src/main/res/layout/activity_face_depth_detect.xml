@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <FrameLayout
+        android:id="@+id/depth_detect_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="220dp">
+
+        // RGB预览
+        <com.baidu.idl.face.main.camera.AutoTexturePreviewView
+            android:id="@+id/rgb_depth_preview_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></com.baidu.idl.face.main.camera.AutoTexturePreviewView>
+
+        <TextureView
+            android:id="@+id/texture_view_draw"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    // 遮罩视图
+    <com.baidu.idl.face.main.view.FaceRoundView
+        android:id="@+id/rect_view_depth_detect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="220dp"
+        android:visibility="gone" />
+
+    // Depth 预览图
+    <org.openni.android.OpenNIView
+        android:id="@+id/depth_camera_preview_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@+id/depth_detect_view_layout"
+        android:layout_alignBottom="@+id/depth_detect_view_layout"
+        android:visibility="invisible" />
+
+    // RGB 检测图片测试
+    <ImageView
+        android:id="@+id/rgb_depth_test_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignRight="@+id/depth_detect_view_layout"
+        android:layout_alignBottom="@+id/depth_detect_view_layout"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tip_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="双目活体"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_marginTop="20dp"
+            android:text="请正对平视屏幕"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="16dp" />
+    </LinearLayout>
+
+    // 检测信息
+
+    <include
+        android:id="@+id/detect_info"
+        layout="@layout/activity_detect_item"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="visible" />
+
+</RelativeLayout>
