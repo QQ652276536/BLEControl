@@ -70,16 +70,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".baiduface.FaceDepthLivenessActivity"
+            android:name="com.baidu.idl.face.main.activity.FaceDepthLivenessActivity"
             android:label="RGB+Depth检测页面（活体+非活体）" />
         <activity
-            android:name=".baiduface.FaceIRLivenessActivity"
+            android:name="com.baidu.idl.face.main.activity.FaceIRLivenessActivity"
             android:label="RGB+IR检测页面（活体+非活体）" />
         <activity
-            android:name=".baiduface.FaceRGBDetectActivity"
+            android:name="com.baidu.idl.face.main.activity.FaceRGBDetectActivity"
             android:label="不检测活体" />
         <activity
-            android:name=".baiduface.PicoFaceDepthLivenessActivity"
+            android:name="com.baidu.idl.face.main.activity.PicoFaceDepthLivenessActivity"
             android:label="RGB+Depth检测页面（活体+非活体）" />
         <activity
             android:name=".activity.StationSetting"

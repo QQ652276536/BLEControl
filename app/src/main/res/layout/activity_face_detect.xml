@@ -13,7 +13,7 @@
         android:layout_marginBottom="220dp">
 
         // RGB预览
-        <com.zistone.blecontrol.baiduface.camera.AutoTexturePreviewView
+        <com.baidu.idl.face.main.camera.AutoTexturePreviewView
             android:id="@+id/auto_rgb_preview_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -25,7 +25,7 @@
     </FrameLayout>
 
     // 遮罩视图
-    <com.zistone.blecontrol.baiduface.view.FaceRoundView
+    <com.baidu.idl.face.main.view.FaceRoundView
         android:id="@+id/rect_view_rgb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
