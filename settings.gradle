@@ -1,3 +1,2 @@
 include ':app'
 include ':openCVLibrary341'
-include ':facelibrary'

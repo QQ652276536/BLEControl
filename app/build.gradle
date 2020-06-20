@@ -7,6 +7,7 @@ android {
         applicationId "com.zistone.blecontrol"
         minSdkVersion 19
         targetSdkVersion 28
+        versionCode 2
         versionName "2.5.3"
         externalNativeBuild {
             cmake {
@@ -16,15 +17,6 @@ android {
         }
         ndk {
             abiFilters 'armeabi-v7a'
-        }
-    }
-    buildTypes {
-        //正式版本
-        release {
-            //不加密
-            minifyEnabled false
-            //代码加密原则
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -75,10 +67,4 @@ dependencies {
      */
     implementation project(path: ':openCVLibrary341')
 
-    /**
-     * 百度离线人证比对
-     */
-    implementation project(path: ':facelibrary')
-    compile files('libs/orbbec_module-debug.aar')
-    compile files('libs/picozensesdk-release.aar')
 }

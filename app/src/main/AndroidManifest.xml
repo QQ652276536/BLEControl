@@ -61,27 +61,6 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
-            android:name=".activity.FaceIdCompareActivity"
-            android:label="1：1人证比对">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.baidu.idl.face.main.activity.FaceDepthLivenessActivity"
-            android:label="RGB+Depth检测页面（活体+非活体）" />
-        <activity
-            android:name="com.baidu.idl.face.main.activity.FaceIRLivenessActivity"
-            android:label="RGB+IR检测页面（活体+非活体）" />
-        <activity
-            android:name="com.baidu.idl.face.main.activity.FaceRGBDetectActivity"
-            android:label="不检测活体" />
-        <activity
-            android:name="com.baidu.idl.face.main.activity.PicoFaceDepthLivenessActivity"
-            android:label="RGB+Depth检测页面（活体+非活体）" />
-        <activity
             android:name=".activity.StationSetting"
             android:label="基站设置" />
         <activity
@@ -104,7 +83,13 @@
             android:label="电力控制" />
         <activity
             android:name=".activity.DeviceList"
-            android:label="低功耗蓝牙设备列表"></activity>
+            android:label="低功耗蓝牙设备列表">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.MainActivity"
             android:label="这个Activity没用到" />
