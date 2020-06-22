@@ -66,9 +66,8 @@ public class BluetoothListAdapter extends BaseAdapter {
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = _layoutInflater.inflate(R.layout.item_bluetooth, null);
-            holder.tv_blue_name = convertView.findViewById(R.id.tv_blue_name);
-            holder.tv_blue_address = convertView.findViewById(R.id.tv_blue_address);
-            holder.tv_blue_rssi = convertView.findViewById(R.id.tv_blue_rssi);
+            holder._txt1 = convertView.findViewById(R.id.txt_bluetoothItem1);
+            holder._txt2 = convertView.findViewById(R.id.txt_bluetoothItem2);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -77,19 +76,20 @@ public class BluetoothListAdapter extends BaseAdapter {
         String name = device.getName();
         String address = device.getAddress();
         int rssi = device.getRssi();
+        String str;
         if (name != null)
-            holder.tv_blue_name.setText(name);
+            str = name;
         else
-            holder.tv_blue_name.setText("Null");
-        holder.tv_blue_address.setText(address);
-        holder.tv_blue_rssi.setText(rssi + "dBm");
+            str = "Null";
+        str += "\r\n" + address;
+        holder._txt1.setText(str);
+        holder._txt2.setText("\r\n" + rssi + "dBm");
         return convertView;
     }
 
     public final class ViewHolder {
-        public TextView tv_blue_name;
-        public TextView tv_blue_address;
-        public TextView tv_blue_rssi;
+        public TextView _txt1;
+        public TextView _txt2;
     }
 
 }
