@@ -9,11 +9,10 @@ public class MyBluetoothDevice {
     private int rssi;
     private int boundState;
     private BluetoothDevice bluetoothDevice;
-    private int materialId;
 
     @Override
     public String toString() {
-        return "MyBluetoothDevice{" + "id=" + id + ", name='" + name + '\'' + ", address='" + address + '\'' + ", rssi=" + rssi + ", boundState=" + boundState + ", bluetoothDevice=" + bluetoothDevice + ", materialId=" + materialId + '}';
+        return "MyBluetoothDevice{" + "id=" + id + ", name='" + name + '\'' + ", address='" + address + '\'' + ", rssi=" + rssi + ", boundState=" + boundState + ", bluetoothDevice=" + bluetoothDevice + '}';
     }
 
     public int getId() {
@@ -62,13 +61,5 @@ public class MyBluetoothDevice {
 
     public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
         this.bluetoothDevice = bluetoothDevice;
-    }
-
-    public int getMaterialId() {
-        return materialId;
-    }
-
-    public void setMaterialId(int materialId) {
-        this.materialId = materialId;
     }
 }
