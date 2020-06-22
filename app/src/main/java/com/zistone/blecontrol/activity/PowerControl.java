@@ -446,7 +446,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 根据包名启动APK
+     * 根据包名启动第三方APK，如果已经启动APK，则直接将APK从后台调到前台运行（类似Home键之后再点击APK图标启动），如果未启动APK，则重新启动
      *
      * @param context
      * @param packageName
@@ -461,7 +461,6 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键，如果任务队列中已经存在，则重建程序
         intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-
         @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
         for (int i = 0; i < list.size(); i++) {
             ResolveInfo info = list.get(i);
