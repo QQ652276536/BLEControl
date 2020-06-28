@@ -26,7 +26,7 @@
     </style>
 
     <style name="ButtonStyleA" parent="@android:style/Widget.Button">
-        <item name="android:background">@drawable/btn_enable</item>
+        <item name="android:background">@drawable/button_drawable</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
