@@ -403,11 +403,11 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                 case "86": {
                     //打开控制参数修改界面的时候将查询结果传递过去,此时可以不输出调试信息
                     if (_isOpenParamSetting) {
-                        _myHandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[13]).sendToTarget();
+                        _myHandler.obtainMessage(RECEIVE_SEARCH_CONTROLPARAM, strArray[16]).sendToTarget();
                         return;
                     }
                     receive = data;
-                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[16]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口、使用低磁检测阀值、不检测强磁、启用软关机、有外电可以进入维护方式、正常开锁不告警、锁检测开关（锁上开路）、门检测开关（关门开路）
                     String str1 = String.valueOf(bitStr.charAt(7));

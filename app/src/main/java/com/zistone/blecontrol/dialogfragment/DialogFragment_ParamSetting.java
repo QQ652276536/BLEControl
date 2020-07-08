@@ -83,7 +83,7 @@ public class DialogFragment_ParamSetting extends DialogFragment implements View.
                 int value = Integer.parseInt(bitStr, 2);
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
-                String data = "680000000000006810000587" + hexStr.toUpperCase() + "000000EB16";
+                String data = "680000000000006810000587000000" + hexStr.toUpperCase() + "EB16";
                 _dialogFragmentListener.OnComfirm(TAG, data);
             }
             break;

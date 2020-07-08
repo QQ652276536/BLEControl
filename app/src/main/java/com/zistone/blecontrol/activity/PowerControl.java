@@ -267,7 +267,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 //查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
                     String[] strArray = result.split(" ");
-                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
+                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[16]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
                     String bitStr8 = String.valueOf(bitStr.charAt(7));
