@@ -409,52 +409,45 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     receive = data;
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
-                    //门检测开关（关门开路）
+                    //启用DEBUG软串口、使用低磁检测阀值、不检测强磁、启用软关机、有外电可以进入维护方式、正常开锁不告警、锁检测开关（锁上开路）、门检测开关（关门开路）
                     String str1 = String.valueOf(bitStr.charAt(7));
-                    //锁检测开关（锁上开路）
                     String str2 = String.valueOf(bitStr.charAt(6));
-                    //正常开锁不告警
                     String str3 = String.valueOf(bitStr.charAt(5));
-                    //有外电可以进入维护方式
                     String str4 = String.valueOf(bitStr.charAt(4));
-                    //启用软关机
                     String str5 = String.valueOf(bitStr.charAt(3));
-                    //不检测强磁
                     String str6 = String.valueOf(bitStr.charAt(2));
-                    //使用低磁检测阀值
                     String str7 = String.valueOf(bitStr.charAt(1));
-                    //启用DEBUG软串口
                     String str8 = String.valueOf(bitStr.charAt(0));
                     StringBuffer stringBuffer = new StringBuffer();
-                    if (str1.equals("1"))
+                    if (str8.equals("1"))
                         stringBuffer.append("\r\n门检测开关（关门开路）【启用】\n");
                     else
                         stringBuffer.append("\r\n门检测开关（关门开路）【禁用】\n");
-                    if (str2.equals("1"))
+                    if (str7.equals("1"))
                         stringBuffer.append("锁检测开关（锁上开路）【启用】\n");
                     else
                         stringBuffer.append("锁检测开关（锁上开路）【禁用】\n");
-                    if (str3.equals("1"))
+                    if (str6.equals("1"))
                         stringBuffer.append("正常开锁不告警【启用】\n");
                     else
                         stringBuffer.append("正常开锁不告警【禁用】\n");
-                    if (str4.equals("1"))
+                    if (str5.equals("1"))
                         stringBuffer.append("有外电可以进入维护方式【启用】\n");
                     else
                         stringBuffer.append("有外电可以进入维护方式【禁用】\n");
-                    if (str5.equals("1"))
+                    if (str4.equals("1"))
                         stringBuffer.append("启用软关机【启用】\n");
                     else
                         stringBuffer.append("启用软关机【禁用】\n");
-                    if (str6.equals("1"))
+                    if (str3.equals("1"))
                         stringBuffer.append("不检测强磁【启用】\n");
                     else
                         stringBuffer.append("不检测强磁【禁用】\n");
-                    if (str7.equals("1"))
+                    if (str2.equals("1"))
                         stringBuffer.append("使用低磁检测阀值【启用】\n");
                     else
                         stringBuffer.append("使用低磁检测阀值【禁用】\n");
-                    if (str8.equals("1"))
+                    if (str1.equals("1"))
                         stringBuffer.append("启用DEBUG软串口【启用】\n");
                     else
                         stringBuffer.append("启用DEBUG软串口【禁用】");

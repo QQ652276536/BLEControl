@@ -15,9 +15,10 @@
 
         <ImageButton
             android:id="@+id/btn_return_db"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitStart"
             app:srcCompat="@drawable/btn_return" />
 
         <TextView

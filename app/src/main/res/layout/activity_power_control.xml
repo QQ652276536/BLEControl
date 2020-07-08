@@ -75,11 +75,30 @@
                     <TextView
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:text="门锁状态"
+                        android:text="门磁状态"
                         android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/txt2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Null"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="门锁状态"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/txt8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Null"

@@ -13,8 +13,9 @@
         android:background="@color/colorPrimary">
 
         <ImageButton
+            android:scaleType="fitStart"
             android:id="@+id/btnReturn_station"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/btn_return" />

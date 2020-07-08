@@ -82,7 +82,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private ImageButton _btnReturn, _btnClear;
     private TextView _debugView;
     private Button _btn1, _btn2, _btn3, _btn4;
-    private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
     private TimerTask _refreshTask;
@@ -225,6 +225,13 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     } else {
                         _powerControl._txt2.setText("已关");
                         _powerControl._txt2.setTextColor(Color.RED);
+                    }
+                    if (lockState1.equals("1")) {
+                        _powerControl._txt8.setText("已开");
+                        _powerControl._txt8.setTextColor(Color.GREEN);
+                    } else {
+                        _powerControl._txt8.setText("已关");
+                        _powerControl._txt8.setTextColor(Color.RED);
                     }
                 }
                 break;
@@ -486,6 +493,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _txt5.setText("Null");
         _txt6.setText("Null");
         _txt7.setText("Null");
+        _txt8.setText("Null");
         _txtVersion.setText("Null");
         _txtVersion.setTextColor(Color.GRAY);
         if (_refreshTask != null)
@@ -700,6 +708,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _txt5 = findViewById(R.id.txt5);
         _txt6 = findViewById(R.id.txt6);
         _txt7 = findViewById(R.id.txt7);
+        _txt8 = findViewById(R.id.txt8);
         _txtVersion = findViewById(R.id.txtVersion);
         _debugView = findViewById(R.id.debug_view);
         _btnReturn = findViewById(R.id.btn_return);

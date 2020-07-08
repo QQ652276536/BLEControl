@@ -114,8 +114,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     //根据信号强度筛选设备、动画倒计时
     private int _filterRssi = 100, _count = 3;
     private boolean _isHideConnectSuccessDevice = false, _isBtnUpDownFlag = false, _isStartOrStopScan = false, _isPermissionRequested = false;
-    private Timer _timer;
-    private TimerTask _timerTask;
     private MyHandler _myHandler;
     private DialogFragment_DeviceListSetting _deviceListSetting;
     private DialogFragmentListener _dialogFragmentListener;
@@ -136,11 +134,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                 return;
             _deviceList = _weakReference.get();
             switch (message.what) {
-                case MESSAGE_1:
-                    _deviceList._timerTask.cancel();
-                    _deviceList._timer.cancel();
-                    MyActivityManager.getInstance().FinishActivity(MyAnimation.class);
-                    break;
             }
         }
     }
@@ -238,25 +231,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                 Toast.makeText(DeviceList.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
-    }
-
-    /**
-     * 动画
-     */
-    private void StartAnimation() {
-        Intent intent = new Intent(getApplicationContext(), MyAnimation.class);
-        startActivity(intent);
-        _timer = new Timer();
-        _timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (_count > 0)
-                    _count--;
-                else
-                    _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
-            }
-        };
-        _timer.schedule(_timerTask, 0, 800);
     }
 
     private void BeginScan() {
@@ -847,7 +821,6 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
             InstallAPK.Install(this, "ambiq_ota", "是否安装OTA升级插件？");
         }
-        StartAnimation();
         RequestPermission();
         _context = getApplicationContext();
         Intent intent = getIntent();
