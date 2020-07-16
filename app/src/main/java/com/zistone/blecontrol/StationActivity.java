@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
@@ -24,8 +23,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 
-public class StationSetting extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
-    private static final String TAG = "StationSetting";
+public class StationActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+    private static final String TAG = "StationActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
@@ -42,10 +41,10 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
     private Map<String, UUID> _uuidMap;
 
     static class MyHandler extends Handler {
-        private WeakReference<StationSetting> _weakReference;
-        private StationSetting _stationSetting;
+        private WeakReference<StationActivity> _weakReference;
+        private StationActivity _stationActivity;
 
-        public MyHandler(StationSetting activity) {
+        public MyHandler(StationActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -53,20 +52,20 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _stationSetting = _weakReference.get();
+            _stationActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1:
-                    _stationSetting.SetButtonEnable(true);
+                    _stationActivity.SetButtonEnable(true);
                     ProgressDialogUtil.Dismiss();
                     break;
                 case MESSAGE_2: {
-                    _stationSetting._txt1.append(result + "\r\n");
+                    _stationActivity._txt1.append(result + "\r\n");
                     //定位到最后一行
-                    int offset = _stationSetting._txt1.getLineCount() * _stationSetting._txt1.getLineHeight();
+                    int offset = _stationActivity._txt1.getLineCount() * _stationActivity._txt1.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _stationSetting._txt1.getHeight()) {
-                        _stationSetting._txt1.scrollTo(0, offset - _stationSetting._txt1.getHeight());
+                    if (offset > _stationActivity._txt1.getHeight()) {
+                        _stationActivity._txt1.scrollTo(0, offset - _stationActivity._txt1.getHeight());
                     }
                 }
             }
@@ -179,7 +178,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(StationSetting.this, true, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(StationActivity.this, true, "正在连接...");
     }
 
     @Override
@@ -434,7 +433,7 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
-        setContentView(R.layout.activity_station_setting);
+        setContentView(R.layout.activity_station);
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -464,12 +463,12 @@ public class StationSetting extends AppCompatActivity implements View.OnClickLis
         _edt4 = findViewById(R.id.edt4_station);
         _edt5 = findViewById(R.id.edt5_station);
         _txt1 = findViewById(R.id.txt1_station);
-        BluetoothUtil.Init(StationSetting.this, this);
+        BluetoothUtil.Init(StationActivity.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(StationSetting.this, "警告", "未获取到蓝牙,请重试！");
+            ProgressDialogUtil.ShowWarning(StationActivity.this, "警告", "未获取到蓝牙,请重试！");
         }
     }
 

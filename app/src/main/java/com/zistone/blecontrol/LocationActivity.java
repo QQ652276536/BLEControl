@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -47,7 +47,6 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
@@ -63,9 +62,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class Location extends AppCompatActivity implements View.OnClickListener, BluetoothListener, BaiduMap.OnMapClickListener,
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener, BaiduMap.OnMapClickListener,
         OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener, BaiduMap.OnMapLoadedCallback {
-    private static final String TAG = "Location";
+    private static final String TAG = "LocationActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final SimpleDateFormat SIMPLEDATEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -125,10 +124,10 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
     boolean bbb = false;
 
     static class MyHandler extends Handler {
-        WeakReference<Location> _weakReference;
-        Location _location;
+        WeakReference<LocationActivity> _weakReference;
+        LocationActivity _locationActivity;
 
-        public MyHandler(Location activity) {
+        public MyHandler(LocationActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -136,22 +135,22 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _location = _weakReference.get();
+            _locationActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_ERROR_1: {
-                    _location.DisConnect();
-                    ProgressDialogUtil.ShowWarning(_location, "警告", "该设备的连接已断开！");
+                    _locationActivity.DisConnect();
+                    ProgressDialogUtil.ShowWarning(_locationActivity, "警告", "该设备的连接已断开！");
                 }
                 break;
                 //连接成功
                 case MESSAGE_1: {
-                    _location._btn2.setEnabled(true);
-                    _location._btn3.setEnabled(true);
-                    _location._btn4.setEnabled(true);
-                    _location._refreshTimer = new Timer();
+                    _locationActivity._btn2.setEnabled(true);
+                    _locationActivity._btn3.setEnabled(true);
+                    _locationActivity._btn4.setEnabled(true);
+                    _locationActivity._refreshTimer = new Timer();
                     //综合测试
-                    _location._refreshTask = new TimerTask() {
+                    _locationActivity._refreshTask = new TimerTask() {
                         @Override
                         public void run() {
                             try {
@@ -170,8 +169,8 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
-                    _location._refreshTimer.schedule(_location._refreshTask, 0, 2 * 1000);
-                    _location._connectedSuccess = true;
+                    _locationActivity._refreshTimer.schedule(_locationActivity._refreshTask, 0, 2 * 1000);
+                    _locationActivity._connectedSuccess = true;
                 }
                 break;
                 //设备基本信息
@@ -193,9 +192,9 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    _location._txtVersion.setText(versionStr);
-                    _location._txt5.setText(voltage + "V");
-                    _location._txt6.setText(temperature + "℃");
+                    _locationActivity._txtVersion.setText(versionStr);
+                    _locationActivity._txt5.setText(voltage + "V");
+                    _locationActivity._txt6.setText(temperature + "℃");
                 }
                 break;
                 //设备位置信息
@@ -203,7 +202,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     String[] strArray = result.split(" ");
                     int state = Integer.parseInt(strArray[10], 16);
                     if (state != 1) {
-                        _location._txt7.setText("定位失败");
+                        _locationActivity._txt7.setText("定位失败");
                         return;
                     }
                     //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
@@ -218,17 +217,17 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     int height = Integer.parseInt(heightStr1, 16);
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
-                    _location._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
-                    _location._latLng = new LatLng(lotNum, latNum);
+                    _locationActivity._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                    _locationActivity._latLng = new LatLng(lotNum, latNum);
                     //经纬度->地址
-                    _location._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_location._latLng).newVersion(1).radius(500));
-                    MapStatus mapStatus = new MapStatus.Builder().target(_location._latLng).zoom(16).build();
+                    _locationActivity._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_locationActivity._latLng).newVersion(1).radius(500));
+                    MapStatus mapStatus = new MapStatus.Builder().target(_locationActivity._latLng).zoom(16).build();
                     MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-                    _location._baiduMap.setMapStatus(mapStatusUpdate);
-                    MarkerOptions markerOptions = new MarkerOptions().position(_location._latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
+                    _locationActivity._baiduMap.setMapStatus(mapStatusUpdate);
+                    MarkerOptions markerOptions = new MarkerOptions().position(_locationActivity._latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
                     //标记添加至地图中
-                    _location._baiduMap.clear();
-                    _location._baiduMap.addOverlay(markerOptions);
+                    _locationActivity._baiduMap.clear();
+                    _locationActivity._baiduMap.addOverlay(markerOptions);
                 }
                 break;
                 //综合测试
@@ -255,11 +254,11 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                     //前端磁强
                     int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                     if (doorState1.equals("1")) {
-                        _location._txt2.setText("已开");
-                        _location._txt2.setTextColor(Color.GREEN);
+                        _locationActivity._txt2.setText("已开");
+                        _locationActivity._txt2.setTextColor(Color.GREEN);
                     } else {
-                        _location._txt2.setText("已关");
-                        _location._txt2.setTextColor(Color.RED);
+                        _locationActivity._txt2.setText("已关");
+                        _locationActivity._txt2.setTextColor(Color.RED);
                     }
                 }
                 break;
@@ -418,7 +417,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
             public void OnConfirm() {
                 _btn1.setText("连接");
                 DisConnect();
-                Intent intent = GetAppOpenIntentByPackageName(Location.this, "com.ambiqmicro.android.amota");
+                Intent intent = GetAppOpenIntentByPackageName(LocationActivity.this, "com.ambiqmicro.android.amota");
                 startActivity(intent);
             }
 
@@ -620,7 +619,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
                         DisConnect();
                     }
                 } else {
-                    ProgressDialogUtil.ShowWarning(Location.this, "提示", "未获取到蓝牙，请重试！");
+                    ProgressDialogUtil.ShowWarning(LocationActivity.this, "提示", "未获取到蓝牙，请重试！");
                 }
             }
             break;
@@ -657,7 +656,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(Location.this, true, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(LocationActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -756,7 +755,7 @@ public class Location extends AppCompatActivity implements View.OnClickListener,
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
-        BluetoothUtil.Init(Location.this, this);
+        BluetoothUtil.Init(LocationActivity.this, this);
         InitListener();
         //动态获取权限
         RequestPermission();

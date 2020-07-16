@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
 import com.zistone.blecontrol.util.BluetoothListener;
 import com.zistone.blecontrol.util.BluetoothUtil;
@@ -27,8 +26,8 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 
-public class CommandTest extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
-    private static final String TAG = "CommandTest";
+public class CmdActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+    private static final String TAG = "CmdActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int MESSAGE_1 = 1;
@@ -54,10 +53,10 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     private Myhandler _myHandler;
 
     static class Myhandler extends Handler {
-        WeakReference<CommandTest> _weakReference;
-        CommandTest _commandTest;
+        WeakReference<CmdActivity> _weakReference;
+        CmdActivity _cmdActivity;
 
-        public Myhandler(CommandTest activity) {
+        public Myhandler(CmdActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -65,33 +64,33 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _commandTest = _weakReference.get();
+            _cmdActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 //连接成功
                 case MESSAGE_1: {
-                    _commandTest.SetButtonEnable(true);
+                    _cmdActivity.SetButtonEnable(true);
                     ProgressDialogUtil.Dismiss();
-                    _commandTest._connectedSuccess = true;
+                    _cmdActivity._connectedSuccess = true;
                 }
                 break;
                 //显示解析内容
                 case MESSAGE_2: {
-                    _commandTest._txt.append(result+"\r\n");
+                    _cmdActivity._txt.append(result+"\r\n");
                     //定位到最后一行
-                    int offset = _commandTest._txt.getLineCount() * _commandTest._txt.getLineHeight();
+                    int offset = _cmdActivity._txt.getLineCount() * _cmdActivity._txt.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
-                    if (offset > _commandTest._txt.getHeight()) {
-                        _commandTest._txt.scrollTo(0, offset - _commandTest._txt.getHeight());
+                    if (offset > _cmdActivity._txt.getHeight()) {
+                        _cmdActivity._txt.scrollTo(0, offset - _cmdActivity._txt.getHeight());
                     }
-                    _commandTest._isEventReadOver = false;
+                    _cmdActivity._isEventReadOver = false;
                 }
                 break;
                 case MESSAGE_ERROR_1:
-                    _commandTest._connectedSuccess = false;
-                    _commandTest.SetButtonEnable(false);
+                    _cmdActivity._connectedSuccess = false;
+                    _cmdActivity.SetButtonEnable(false);
                     ProgressDialogUtil.Dismiss();
-                    ProgressDialogUtil.ShowWarning(_commandTest, "警告", "该设备的连接已断开！");
+                    ProgressDialogUtil.ShowWarning(_cmdActivity, "警告", "该设备的连接已断开！");
                     break;
                 //解析查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
@@ -115,14 +114,14 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改界面的时候将查询结果传递过去
-                    if (_commandTest._isOpenParamSetting) {
-                        if (_commandTest._paramSetting == null) {
-                            _commandTest._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                    if (_cmdActivity._isOpenParamSetting) {
+                        if (_cmdActivity._paramSetting == null) {
+                            _cmdActivity._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
                                                                                                               bitStr5, bitStr6, bitStr7,
-                                                                                                              bitStr8}, _commandTest._dialogFragmentListener);
-                            _commandTest._paramSetting.setCancelable(false);
+                                                                                                              bitStr8}, _cmdActivity._dialogFragmentListener);
+                            _cmdActivity._paramSetting.setCancelable(false);
                         }
-                        _commandTest._paramSetting.show(_commandTest._fragmentManager, "DialogFragment_ParamSetting");
+                        _cmdActivity._paramSetting.show(_cmdActivity._fragmentManager, "DialogFragment_ParamSetting");
                     }
                 }
                 break;
@@ -496,7 +495,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(CommandTest.this, true, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(CmdActivity.this, true, "正在连接...");
     }
 
     @Override
@@ -735,7 +734,7 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new Myhandler(this);
-        setContentView(R.layout.activity_command_test);
+        setContentView(R.layout.activity_cmd);
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
@@ -768,12 +767,12 @@ public class CommandTest extends AppCompatActivity implements View.OnClickListen
         _btn13.setOnClickListener(this);
         _btn14 = findViewById(R.id.btn14);
         _btn14.setOnClickListener(this);
-        BluetoothUtil.Init(CommandTest.this, this);
+        BluetoothUtil.Init(CmdActivity.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(CommandTest.this, "警告", "未获取到蓝牙,请重试！");
+            ProgressDialogUtil.ShowWarning(CmdActivity.this, "警告", "未获取到蓝牙,请重试！");
         }
         InitListener();
     }

@@ -10,7 +10,6 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" /> <!-- 修改系统设置 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 开机自启动 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 允许安装未知应用/请求安装第三方APK -->
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- 震动提示 -->
@@ -60,35 +59,35 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
-            android:name=".activity.StationSetting"
+            android:name=".StationActivity"
             android:label="基站设置" />
         <activity
-            android:name=".activity.Location"
+            android:name=".LocationActivity"
             android:label="设备定位" />
         <activity
-            android:name=".activity.TemperatureMeasure"
+            android:name=".TemperatureActivity"
             android:label="体温测量" />
         <activity
-            android:name=".activity.MaterialsInDB"
+            android:name=".MaterialsActivity"
             android:label="物料绑定" />
         <activity
-            android:name=".activity.CommandTest"
+            android:name=".CmdActivity"
             android:label="指令测试" />
         <activity
-            android:name=".activity.PowerControl"
+            android:name=".PowerActivity"
             android:label="电力控制" />
         <activity
-            android:name=".activity.DeviceList"
-            android:label="低功耗蓝牙设备列表">
+            android:name=".ListActivity"
+            android:label="设备列表" />
+        <activity
+            android:name=".MainActivity"
+            android:label="低功耗蓝牙">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="这个Activity没用到" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

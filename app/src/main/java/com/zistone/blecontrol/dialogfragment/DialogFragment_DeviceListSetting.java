@@ -146,7 +146,7 @@ public class DialogFragment_DeviceListSetting extends DialogFragment implements 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_devicelistsetting, null);
+        _view = LayoutInflater.from(getActivity()).inflate(R.layout.dialogfragment_list_setting, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
         builder.setView(_view);
         return builder.create();

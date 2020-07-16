@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
@@ -27,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.controls.MyScrollView;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
@@ -45,8 +44,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class PowerControl extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
-    private static final String TAG = "PowerControl";
+public class PowerActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+    private static final String TAG = "PowerActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     //查询内部控制参数
@@ -100,10 +99,10 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     private MyHandler _myHandler;
 
     static class MyHandler extends Handler {
-        WeakReference<PowerControl> _weakReference;
-        PowerControl _powerControl;
+        WeakReference<PowerActivity> _weakReference;
+        PowerActivity _powerActivity;
 
-        public MyHandler(PowerControl activity) {
+        public MyHandler(PowerActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -111,22 +110,22 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _powerControl = _weakReference.get();
+            _powerActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_ERROR_1: {
-                    _powerControl.DisConnect();
-                    ProgressDialogUtil.ShowWarning(_powerControl, "警告", "该设备的连接已断开！");
+                    _powerActivity.DisConnect();
+                    ProgressDialogUtil.ShowWarning(_powerActivity, "警告", "该设备的连接已断开！");
                 }
                 break;
                 //连接成功
                 case MESSAGE_1: {
-                    _powerControl._btn2.setEnabled(true);
-                    _powerControl._btn3.setEnabled(true);
-                    _powerControl._btn4.setEnabled(true);
-                    _powerControl._refreshTimer = new Timer();
+                    _powerActivity._btn2.setEnabled(true);
+                    _powerActivity._btn3.setEnabled(true);
+                    _powerActivity._btn4.setEnabled(true);
+                    _powerActivity._refreshTimer = new Timer();
                     //综合测试
-                    _powerControl._refreshTask = new TimerTask() {
+                    _powerActivity._refreshTask = new TimerTask() {
                         @Override
                         public void run() {
                             try {
@@ -145,8 +144,8 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
-                    _powerControl._refreshTimer.schedule(_powerControl._refreshTask, 0, 2 * 1000);
-                    _powerControl._connectedSuccess = true;
+                    _powerActivity._refreshTimer.schedule(_powerActivity._refreshTask, 0, 2 * 1000);
+                    _powerActivity._connectedSuccess = true;
                 }
                 break;
                 //设备基本信息
@@ -168,9 +167,9 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    _powerControl._txtVersion.setText(versionStr);
-                    _powerControl._txt5.setText(voltage + "V");
-                    _powerControl._txt6.setText(temperature + "℃");
+                    _powerActivity._txtVersion.setText(versionStr);
+                    _powerActivity._txt5.setText(voltage + "V");
+                    _powerActivity._txt6.setText(temperature + "℃");
                 }
                 break;
                 //设备位置信息
@@ -178,7 +177,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     String[] strArray = result.split(" ");
                     int state = Integer.parseInt(strArray[10], 16);
                     if (state != 1) {
-                        _powerControl._txt7.setText("定位失败");
+                        _powerActivity._txt7.setText("定位失败");
                         return;
                     }
                     //                String latStr = strArray[11] + strArray[12] + strArray[13] + strArray[14];
@@ -193,7 +192,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     int height = Integer.parseInt(heightStr1, 16);
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
-                    _powerControl._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                    _powerActivity._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
                 }
                 break;
                 //综合测试
@@ -220,18 +219,18 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     //前端磁强
                     int magneticBefore = Integer.parseInt(strArray[4] + strArray[5], 16);
                     if (doorState1.equals("1")) {
-                        _powerControl._txt2.setText("已开");
-                        _powerControl._txt2.setTextColor(Color.GREEN);
+                        _powerActivity._txt2.setText("已开");
+                        _powerActivity._txt2.setTextColor(Color.GREEN);
                     } else {
-                        _powerControl._txt2.setText("已关");
-                        _powerControl._txt2.setTextColor(Color.RED);
+                        _powerActivity._txt2.setText("已关");
+                        _powerActivity._txt2.setTextColor(Color.RED);
                     }
                     if (lockState1.equals("1")) {
-                        _powerControl._txt8.setText("已开");
-                        _powerControl._txt8.setTextColor(Color.GREEN);
+                        _powerActivity._txt8.setText("已开");
+                        _powerActivity._txt8.setTextColor(Color.GREEN);
                     } else {
-                        _powerControl._txt8.setText("已关");
-                        _powerControl._txt8.setTextColor(Color.RED);
+                        _powerActivity._txt8.setText("已关");
+                        _powerActivity._txt8.setTextColor(Color.RED);
                     }
                 }
                 break;
@@ -287,65 +286,65 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
                     Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
-                    if (_powerControl._isOpenParamSetting) {
-                        if (_powerControl._paramSetting == null) {
-                            _powerControl._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                               bitStr5, bitStr6, bitStr7,
-                                                                                                               bitStr8}, _powerControl._dialogFragmentListener);
-                            _powerControl._paramSetting.setCancelable(false);
+                    if (_powerActivity._isOpenParamSetting) {
+                        if (_powerActivity._paramSetting == null) {
+                            _powerActivity._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                                                                                                                bitStr5, bitStr6, bitStr7,
+                                                                                                                bitStr8}, _powerActivity._dialogFragmentListener);
+                            _powerActivity._paramSetting.setCancelable(false);
                         }
-                        _powerControl._paramSetting.show(_powerControl._fragmentManager, "DialogFragment_ParamSetting");
-                        _powerControl.
+                        _powerActivity._paramSetting.show(_powerActivity._fragmentManager, "DialogFragment_ParamSetting");
+                        _powerActivity.
                                 _isOpenParamSetting = false;
                     } else {
                         if (bitStr8.equals("1"))
-                            _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【启用】\n");
+                            _powerActivity._debugView.append("\n收到：\n启用DEBUG软串口【启用】\n");
                         else
-                            _powerControl._debugView.append("\n收到：\n启用DEBUG软串口【禁用】\n");
+                            _powerActivity._debugView.append("\n收到：\n启用DEBUG软串口【禁用】\n");
                         if (bitStr7.equals("1"))
-                            _powerControl._debugView.append("使用低磁检测阀值【启用】\n");
+                            _powerActivity._debugView.append("使用低磁检测阀值【启用】\n");
                         else
-                            _powerControl._debugView.append("使用低磁检测阀值【禁用】\n");
+                            _powerActivity._debugView.append("使用低磁检测阀值【禁用】\n");
                         if (bitStr6.equals("1"))
-                            _powerControl._debugView.append("不检测强磁【启用】\n");
+                            _powerActivity._debugView.append("不检测强磁【启用】\n");
                         else
-                            _powerControl._debugView.append("不检测强磁【禁用】\n");
+                            _powerActivity._debugView.append("不检测强磁【禁用】\n");
                         if (bitStr5.equals("1"))
-                            _powerControl._debugView.append("启用软关机【启用】\n");
+                            _powerActivity._debugView.append("启用软关机【启用】\n");
                         else
-                            _powerControl._debugView.append("启用软关机【禁用】\n");
+                            _powerActivity._debugView.append("启用软关机【禁用】\n");
                         if (bitStr4.equals("1"))
-                            _powerControl._debugView.append("有外电可以进入维护方式【启用】\n");
+                            _powerActivity._debugView.append("有外电可以进入维护方式【启用】\n");
                         else
-                            _powerControl._debugView.append("有外电可以进入维护方式【禁用】\n");
+                            _powerActivity._debugView.append("有外电可以进入维护方式【禁用】\n");
                         if (bitStr3.equals("1"))
-                            _powerControl._debugView.append("正常开锁不告警【启用】\n");
+                            _powerActivity._debugView.append("正常开锁不告警【启用】\n");
                         else
-                            _powerControl._debugView.append("正常开锁不告警【禁用】\n");
+                            _powerActivity._debugView.append("正常开锁不告警【禁用】\n");
                         if (bitStr2.equals("1"))
-                            _powerControl._debugView.append("锁检测开关(锁上开路)【启用】\n");
+                            _powerActivity._debugView.append("锁检测开关(锁上开路)【启用】\n");
                         else
-                            _powerControl._debugView.append("锁检测开关(锁上开路)【禁用】\n");
+                            _powerActivity._debugView.append("锁检测开关(锁上开路)【禁用】\n");
                         if (bitStr1.equals("1"))
-                            _powerControl._debugView.append("门检测开关(关门开路)【启用】\n");
+                            _powerActivity._debugView.append("门检测开关(关门开路)【启用】\n");
                         else
-                            _powerControl._debugView.append("门检测开关(关门开路)【禁用】\n");
+                            _powerActivity._debugView.append("门检测开关(关门开路)【禁用】\n");
                     }
                     //定位到最后一行
-                    int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
+                    int offset = _powerActivity._debugView.getLineCount() * _powerActivity._debugView.getLineHeight();
                     //如果文本的高度大于ScrollView的，就自动滑动
-                    if (offset > _powerControl._debugView.getHeight())
-                        _powerControl._debugView.scrollTo(0, offset - _powerControl._debugView.getHeight());
+                    if (offset > _powerActivity._debugView.getHeight())
+                        _powerActivity._debugView.scrollTo(0, offset - _powerActivity._debugView.getHeight());
                 }
                 break;
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
                     Log.i(TAG, "发送参数设置：" + result);
                     BluetoothUtil.SendComm(result);
-                    _powerControl._debugView.append("发送参数设置指令 ");
-                    int offset = _powerControl._debugView.getLineCount() * _powerControl._debugView.getLineHeight();
-                    if (offset > _powerControl._scrollView.getHeight())
-                        _powerControl._debugView.scrollTo(0, offset - _powerControl._scrollView.getHeight());
+                    _powerActivity._debugView.append("发送参数设置指令 ");
+                    int offset = _powerActivity._debugView.getLineCount() * _powerActivity._debugView.getLineHeight();
+                    if (offset > _powerActivity._scrollView.getHeight())
+                        _powerActivity._debugView.scrollTo(0, offset - _powerActivity._scrollView.getHeight());
                 }
                 break;
             }
@@ -425,7 +424,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
             public void OnConfirm() {
                 _btn1.setText("连接");
                 DisConnect();
-                Intent intent = GetAppOpenIntentByPackageName(PowerControl.this, "com.ambiqmicro.android.amota");
+                Intent intent = GetAppOpenIntentByPackageName(PowerActivity.this, "com.ambiqmicro.android.amota");
                 startActivity(intent);
             }
 
@@ -542,16 +541,16 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                 break;
                 //OTA升级
                 case R.id.menu_4_power: {
-                    Intent intent = GetAppOpenIntentByPackageName(PowerControl.this, "com.ambiqmicro.android.amota");
+                    Intent intent = GetAppOpenIntentByPackageName(PowerActivity.this, "com.ambiqmicro.android.amota");
                     if (intent != null)
-                        ProgressDialogUtil.ShowConfirm(PowerControl.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
+                        ProgressDialogUtil.ShowConfirm(PowerActivity.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
                     else
-                        ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未安装OTA_ZM301，无法使用该功能！");
+                        ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "未安装OTA_ZM301，无法使用该功能！");
                 }
                 break;
             }
         } else {
-            ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "请连接蓝牙设备！");
+            ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "请连接蓝牙设备！");
         }
         return true;
     }
@@ -582,7 +581,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
                         DisConnect();
                     }
                 } else {
-                    ProgressDialogUtil.ShowWarning(PowerControl.this, "提示", "未获取到蓝牙，请重试！");
+                    ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "未获取到蓝牙，请重试！");
                 }
             }
             break;
@@ -623,7 +622,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(PowerControl.this, true, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(PowerActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -695,7 +694,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
-        setContentView(R.layout.activity_power_control);
+        setContentView(R.layout.activity_power);
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
@@ -726,7 +725,7 @@ public class PowerControl extends AppCompatActivity implements View.OnClickListe
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        BluetoothUtil.Init(PowerControl.this, this);
+        BluetoothUtil.Init(PowerActivity.this, this);
         InitListener();
     }
 

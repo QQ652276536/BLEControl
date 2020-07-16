@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -47,7 +47,6 @@ import android.widget.Toast;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.dialogfragment.DialogFragment_DeviceListSetting;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
@@ -56,7 +55,6 @@ import com.zistone.blecontrol.util.BLEUtil;
 import com.zistone.blecontrol.util.DeviceFilterShared;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.InstallAPK;
-import com.zistone.blecontrol.util.MyActivityManager;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.ProgressDialogUtil;
 
@@ -69,15 +67,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
 
-public class DeviceList extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
+public class ListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
         CompoundButton.OnCheckedChangeListener, TextWatcher, SeekBar.OnSeekBarChangeListener, BLEListener {
-    private static final String TAG = "DeviceList", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
+    private static final String TAG = "ListActivity", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
     //已知服务、写入特征的UUID、读取特征的UUID、客户端特征配置
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -121,10 +117,10 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     private FragmentManager _fragmentManager;
 
     static class MyHandler extends Handler {
-        private WeakReference<DeviceList> _weakReference;
-        private DeviceList _deviceList;
+        private WeakReference<ListActivity> _weakReference;
+        private ListActivity _ListActivity;
 
-        public MyHandler(DeviceList activity) {
+        public MyHandler(ListActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -132,31 +128,9 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _deviceList = _weakReference.get();
+            _ListActivity = _weakReference.get();
             switch (message.what) {
             }
-        }
-    }
-
-    /**
-     * Android6.0之后需要动态申请权限
-     */
-    private void RequestPermission() {
-        if (Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested) {
-            _isPermissionRequested = true;
-            ArrayList<String> permissionsList = new ArrayList<>();
-            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION,
-                                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET,
-                                    Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE,
-                                    Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA, Manifest.permission.WRITE_SETTINGS};
-            for (String perm : permissions) {
-                //进入到这里代表没有权限
-                if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm))
-                    permissionsList.add(perm);
-            }
-            if (!permissionsList.isEmpty())
-                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), 1);
         }
     }
 
@@ -218,7 +192,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
              */
             @Override
             public void onfinish() {
-                //Toast.makeText(DeviceList.this, "完成", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ListActivity.this, "完成", Toast.LENGTH_LONG).show();
             }
 
             /**
@@ -228,7 +202,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
              */
             @Override
             public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
-                Toast.makeText(DeviceList.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, "别滑了,到底了", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -239,7 +213,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
             _gifImageView.setVisibility(View.VISIBLE);
             _toolbar.setNavigationIcon(R.drawable.stop);
         } else {
-            ProgressDialogUtil.ShowWarning(DeviceList.this, "提示", "请确认系统蓝牙是否开启");
+            ProgressDialogUtil.ShowWarning(ListActivity.this, "提示", "请确认系统蓝牙是否开启");
         }
     }
 
@@ -268,7 +242,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                     case BluetoothAdapter.STATE_TURNING_ON:
                         _toolbar.setNavigationIcon(R.drawable.stop);
                         _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                        BLEUtil.Init(DeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
+                        BLEUtil.Init(ListActivity.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                         break;
                     //蓝牙未开启
                     case BluetoothAdapter.STATE_OFF:
@@ -279,7 +253,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                 }
             }
         } else {
-            ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "该设备不支持BLE");
+            ProgressDialogUtil.ShowWarning(ListActivity.this, "错误", "该设备不支持BLE");
         }
     }
 
@@ -495,7 +469,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                 //用户授权开启蓝牙
                 if (requestCode != 0) {
                     _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
-                    BLEUtil.Init(DeviceList.this, this, _bluetoothAdapter, _bluetoothLeScanner);
+                    BLEUtil.Init(ListActivity.this, this, _bluetoothAdapter, _bluetoothLeScanner);
                     BeginScan();
                 }
                 //用户拒绝开启蓝牙
@@ -512,7 +486,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - _exitTime) > 2000) {
-                Toast.makeText(DeviceList.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 _exitTime = System.currentTimeMillis();
             } else {
                 this.finish();
@@ -589,7 +563,7 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
                     ShowHideFilter();
                     _isBtnUpDownFlag = false;
                     //隐藏键盘
-                    InputMethodManager imm = (InputMethodManager) DeviceList.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) ListActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(_btnFilterContent.getApplicationWindowToken(), 0);
                     _btnFilterContent.setCompoundDrawables(null, null, _drawableDown, null);
                     _filterName = _editName.getText().toString();
@@ -650,42 +624,42 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
         Intent intent = null;
         //电力控制
         if (_rdoFunc1.isChecked()) {
-            intent = new Intent(DeviceList.this, PowerControl.class);
+            intent = new Intent(ListActivity.this, PowerActivity.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
         //指令测试
         else if (_rdoFunc2.isChecked()) {
-            intent = new Intent(DeviceList.this, CommandTest.class);
+            intent = new Intent(ListActivity.this, CmdActivity.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
         //物料绑定
         else if (_rdoFunc3.isChecked()) {
             if (_rdoUUID4.isChecked()) {
-                intent = new Intent(DeviceList.this, MaterialsInDB.class);
+                intent = new Intent(ListActivity.this, MaterialsActivity.class);
                 intent.putExtra(ARG_PARAM1, bluetoothDevice);
                 intent.putExtra(ARG_PARAM2, (Serializable) map);
                 intent.putExtra(ARG_PARAM3, _deviceMap.get(address).getRssi());
             } else {
-                ProgressDialogUtil.ShowWarning(DeviceList.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
+                ProgressDialogUtil.ShowWarning(ListActivity.this, "错误", "【物料入库】的功能仅支持【Tag】模块");
             }
         }
         //测量体温
         else if (_rdoFunc4.isChecked()) {
-            intent = new Intent(DeviceList.this, TemperatureMeasure.class);
+            intent = new Intent(ListActivity.this, TemperatureActivity.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
         //地理位置
         else if (_rdoFunc5.isChecked()) {
-            intent = new Intent(DeviceList.this, Location.class);
+            intent = new Intent(ListActivity.this, LocationActivity.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
         //基站设置
         else if (_rdoFunc6.isChecked()) {
-            intent = new Intent(DeviceList.this, StationSetting.class);
+            intent = new Intent(ListActivity.this, StationActivity.class);
             intent.putExtra(ARG_PARAM1, bluetoothDevice);
             intent.putExtra(ARG_PARAM2, (Serializable) map);
         }
@@ -815,13 +789,12 @@ public class DeviceList extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
-        setContentView(R.layout.activity_ble_device_list);
+        setContentView(R.layout.activity_list);
         _fragmentManager = getSupportFragmentManager();
         //安装第三方的OTA升级的APK
         if (!InstallAPK.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
             InstallAPK.Install(this, "ambiq_ota", "是否安装OTA升级插件？");
         }
-        RequestPermission();
         _context = getApplicationContext();
         Intent intent = getIntent();
         _param1 = intent.getStringExtra(ARG_PARAM1);

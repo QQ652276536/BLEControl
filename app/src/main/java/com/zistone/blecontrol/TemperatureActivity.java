@@ -1,4 +1,4 @@
-package com.zistone.blecontrol.activity;
+package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -21,7 +21,6 @@ import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
-import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.baidutts.InitConfig;
 import com.zistone.blecontrol.baidutts.MySyntherizer;
 import com.zistone.blecontrol.baidutts.NonBlockSyntherizer;
@@ -64,9 +63,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureMeasure extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
+public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
         CameraBridgeViewBase.CvCameraViewListener2 {
-    private static final String TAG = "TemperatureMeasure";
+    private static final String TAG = "TemperatureActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String SEARCH_TEMPERATURE_COMM1 = "680000000000006810000180E616";
@@ -126,10 +125,10 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     private MyHandler _myHandler;
 
     static class MyHandler extends Handler {
-        private WeakReference<TemperatureMeasure> _weakReference;
-        private TemperatureMeasure _temperatureMeasure;
+        private WeakReference<TemperatureActivity> _weakReference;
+        private TemperatureActivity _temperatureActivity;
 
-        public MyHandler(TemperatureMeasure activity) {
+        public MyHandler(TemperatureActivity activity) {
             _weakReference = new WeakReference<>(activity);
         }
 
@@ -137,15 +136,15 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            _temperatureMeasure = _weakReference.get();
+            _temperatureActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
                 case MESSAGE_1:
-                    _temperatureMeasure.Speak("设备已连接");
+                    _temperatureActivity.Speak("设备已连接");
                     //连接成功后再显示人脸检测
                     //                    _cameraView.setVisibility(View.VISIBLE);
-                    _temperatureMeasure._refreshTimer = new Timer();
-                    _temperatureMeasure._refreshTask = new TimerTask() {
+                    _temperatureActivity._refreshTimer = new Timer();
+                    _temperatureActivity._refreshTask = new TimerTask() {
                         @Override
                         public void run() {
                             try {
@@ -158,7 +157,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                         }
                     };
                     //任务、延迟执行时间、重复调用间隔,Timer和TimerTask在调用cancel()取消后不能再执行schedule语句
-                    _temperatureMeasure._refreshTimer.schedule(_temperatureMeasure._refreshTask, 0, 1 * 1000);
+                    _temperatureActivity._refreshTimer.schedule(_temperatureActivity._refreshTask, 0, 1 * 1000);
                     break;
                 case RECEIVE:
                     String strs[] = result.split(",");
@@ -170,15 +169,15 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
                     double value3 = Double.valueOf(strs[2]) / 100;
                     //平均温度
                     double value4 = Double.valueOf(strs[3]) / 100;
-                    _temperatureMeasure._txt1.setText(value1 + "℃");
-                    _temperatureMeasure._txt1.setTextColor(Color.RED);
-                    _temperatureMeasure._txt2.setText(value2 + "℃");
-                    _temperatureMeasure._txt2.setTextColor(Color.YELLOW);
-                    _temperatureMeasure._txt3.setText(value3 + "℃");
-                    _temperatureMeasure._txt3.setTextColor(Color.BLUE);
-                    _temperatureMeasure._txt4.setText(value4 + "℃");
-                    _temperatureMeasure._txt4.setTextColor(Color.CYAN);
-                    _temperatureMeasure.ReadySpeak(value1, value2, value3, value4);
+                    _temperatureActivity._txt1.setText(value1 + "℃");
+                    _temperatureActivity._txt1.setTextColor(Color.RED);
+                    _temperatureActivity._txt2.setText(value2 + "℃");
+                    _temperatureActivity._txt2.setTextColor(Color.YELLOW);
+                    _temperatureActivity._txt3.setText(value3 + "℃");
+                    _temperatureActivity._txt3.setTextColor(Color.BLUE);
+                    _temperatureActivity._txt4.setText(value4 + "℃");
+                    _temperatureActivity._txt4.setTextColor(Color.CYAN);
+                    _temperatureActivity.ReadySpeak(value1, value2, value3, value4);
                     break;
             }
         }
@@ -292,7 +291,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         SpeechSynthesizerListener listener = messageListener;
         //设置初始化参数
         InitConfig config = GetInitConfig(listener);
-        _mySyntherizer = new NonBlockSyntherizer(TemperatureMeasure.this, config);
+        _mySyntherizer = new NonBlockSyntherizer(TemperatureActivity.this, config);
     }
 
     /**
@@ -521,7 +520,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(TemperatureMeasure.this, true, _progressDialogUtilListener, "正在连接...");
+        ProgressDialogUtil.ShowProgressDialog(TemperatureActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
@@ -589,7 +588,7 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
-        setContentView(R.layout.activity_temperature_measure);
+        setContentView(R.layout.activity_temperature);
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -621,16 +620,16 @@ public class TemperatureMeasure extends AppCompatActivity implements View.OnClic
         //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
         //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
         _cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
-        _cameraView.setCvCameraViewListener(TemperatureMeasure.this);
+        _cameraView.setCvCameraViewListener(TemperatureActivity.this);
         InitListener();
         //初始化完再设置监听
         _amountView.setLister(_onAmountChangeListener);
-        BluetoothUtil.Init(TemperatureMeasure.this, this);
+        BluetoothUtil.Init(TemperatureActivity.this, this);
         if (_bluetoothDevice != null) {
             Log.i(TAG, "开始连接...");
             BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
         } else {
-            ProgressDialogUtil.ShowWarning(TemperatureMeasure.this, "警告", "未获取到蓝牙,请重试！");
+            ProgressDialogUtil.ShowWarning(TemperatureActivity.this, "警告", "未获取到蓝牙,请重试！");
         }
     }
 
