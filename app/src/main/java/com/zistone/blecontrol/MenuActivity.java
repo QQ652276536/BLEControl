@@ -5,9 +5,6 @@ import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -17,7 +14,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.dialogfragment.ShowHideSettingDialogFragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+
 import com.zistone.blecontrol.util.BleListener;
 import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.MyBleUtil;
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MenuActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+
     private static final String TAG = "MenuActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -114,12 +115,11 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void OnConnected() {
         Log.i(TAG, "成功建立连接");
-        MyProgressDialogUtil.Dismiss();
+        MyProgressDialogUtil.DismissAlertDialog();
         SetConnectSuccess(true);
         //返回时告知该设备已成功连接
         setResult(2, new Intent());
     }
-
 
     @Override
     public void OnConnecting() {
@@ -128,19 +128,17 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "已断开连接");
-        MyProgressDialogUtil.Dismiss();
+        Log.e(TAG, "已断开连接");
+        MyProgressDialogUtil.DismissAlertDialog();
         SetConnectSuccess(false);
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-
     }
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-
     }
 
     @Override
@@ -158,7 +156,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_return_menu:
                 MyBleUtil.DisConnGatt();
-                MyProgressDialogUtil.Dismiss();
+                MyProgressDialogUtil.DismissAlertDialog();
                 this.finish();
                 break;
             case R.id.btn_power_menu:
@@ -180,14 +178,14 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_ota_menu:
                 //检查是否安装第三方的OTA升级工具
                 if (MyInstallAPKUtil.CheckInstalled(this, "com.ambiqmicro.android.amota")) {
-                    MyProgressDialogUtil.ShowWarning(this, "提示", "使用OTA升级功能会关闭当前与设备的连接", () -> {
+                    MyProgressDialogUtil.ShowWarning(this, "知道了", "警告", "使用OTA升级功能会关闭当前与设备的连接", false, () -> {
                         //启动第三方的OTA升级工具
                         Intent otaIntent = MyInstallAPKUtil.GetAppOpenIntentByPackageName(MenuActivity.this, "com.ambiqmicro.android.amota");
                         startActivity(otaIntent);
 
                     });
                 } else {
-                    MyProgressDialogUtil.ShowConfirm(this, "提示", "未安装OTA_ZM301，无法使用该功能！是否安装？", new MyProgressDialogUtil.ConfirmListener() {
+                    MyProgressDialogUtil.ShowConfirm(this, "好的", "不了", "提示", "未安装OTA_ZM301，无法使用该功能！是否安装？", true, new MyProgressDialogUtil.ConfirmListener() {
                         @Override
                         public void OnConfirm() {
                             MyInstallAPKUtil.InstallFromCopyAssets(MenuActivity.this, "ambiq_ota.apk", "sdcard");

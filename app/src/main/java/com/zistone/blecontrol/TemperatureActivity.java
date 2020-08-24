@@ -8,14 +8,15 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
 import com.baidu.tts.client.SpeechSynthesizer;
@@ -47,6 +48,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+
     private static final String TAG = "TemperatureActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -354,7 +356,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
      * 断开与BLE设备的连接
      */
     private void DisConnect() {
-        MyBleUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
@@ -427,6 +428,7 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void OnDisConnected() {
+        DisConnect();
     }
 
     @Override
@@ -485,6 +487,44 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (_mySyntherizer != null) {
+            _mySyntherizer.Stop();
+            _mySyntherizer.Release();
+        }
+        if (_refreshTask != null)
+            _refreshTask.cancel();
+        if (_refreshTimer != null)
+            _refreshTimer.cancel();
+        if (_mediaPlayer1 != null)
+            _mediaPlayer1.release();
+        if (_mediaPlayer2 != null)
+            _mediaPlayer2.release();
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
@@ -518,40 +558,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
         _amountView.setCurrent(Double.valueOf(MyDeviceFilterShared.GetTemperatureParam(getApplicationContext())));
         //初始化完再设置监听
         _amountView.setLister(_onAmountChangeListener);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (_mySyntherizer != null) {
-            _mySyntherizer.Stop();
-            _mySyntherizer.Release();
-        }
-        if (_refreshTask != null)
-            _refreshTask.cancel();
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
-        if (_mediaPlayer1 != null)
-            _mediaPlayer1.release();
-        if (_mediaPlayer2 != null)
-            _mediaPlayer2.release();
-        MyBleUtil.DisConnGatt();
-        _bluetoothDevice = null;
-        super.onDestroy();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
 }

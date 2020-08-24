@@ -17,9 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -37,10 +34,13 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.controls.BluetoothListAdapter;
-import com.zistone.blecontrol.dialogfragment.ShowHideSettingDialogFragment;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.BleListener;
 import com.zistone.blecontrol.util.MyBleUtil;
@@ -63,7 +63,11 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
         TextWatcher, SeekBar.OnSeekBarChangeListener, BleListener {
-    private static final String TAG = "ListActivity", ARG_PARAM1 = "param1", ARG_PARAM2 = "param2", ARG_PARAM3 = "param3";
+
+    private static final String TAG = "ListActivity";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
     private static final int MESSAGE_1 = 1;
     //客户端特征配置、已知服务、写入特征的UUID、读取特征的UUID
     private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -212,7 +216,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             _gifImageView.setVisibility(View.VISIBLE);
             _toolbar.setNavigationIcon(R.drawable.stop);
         } else {
-            MyProgressDialogUtil.ShowWarning(ListActivity.this, "提示", "请确认系统蓝牙是否开启", null);
+            MyProgressDialogUtil.ShowWarning(ListActivity.this, "知道了", "提示", "请确认系统蓝牙是否开启", false, null);
         }
     }
 
@@ -253,7 +257,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         } else {
-            MyProgressDialogUtil.ShowWarning(ListActivity.this, "错误", "该设备不支持BLE", null);
+            MyProgressDialogUtil.ShowWarning(ListActivity.this, "错误", "错误", "该设备不支持BLE", false, null);
         }
     }
 
@@ -573,27 +577,22 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnConnected() {
-
     }
 
     @Override
     public void OnConnecting() {
-
     }
 
     @Override
     public void OnDisConnected() {
-
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
-
     }
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
-
     }
 
     @Override
@@ -602,7 +601,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDestroy() {
-        MyProgressDialogUtil.Dismiss();
+        MyProgressDialogUtil.DismissAlertDialog();
         StopScan();
         _deviceList.clear();
         super.onDestroy();
@@ -632,7 +631,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         RequestPermission();
         _fragmentManager = getSupportFragmentManager();
         _context = getApplicationContext();
-        Intent intent = getIntent();
         //扫描的过滤条件
         _filterContent = " No filter";
         _filterName = MyDeviceFilterShared.GetFilterName(_context);

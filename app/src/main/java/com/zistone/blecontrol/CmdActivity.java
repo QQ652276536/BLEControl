@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
 import com.zistone.blecontrol.util.BleListener;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CmdActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+
     private static final String TAG = "CmdActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -317,7 +319,9 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                     byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
-                    receive += doorState1.equals("1") ? "门锁【已开】 " : "门锁【已关】 ";
+                    String lockState1 = String.valueOf(bitStr.charAt(6));
+                    String doorState2 = String.valueOf(bitStr.charAt(5));
+                    String lockState2 = String.valueOf(bitStr.charAt(4));
                     //强磁开关状态
                     String magneticState = String.valueOf(bitStr.charAt(3));
                     //外接电源状态
@@ -691,7 +695,6 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     public void onDestroy() {
         super.onDestroy();
         _isEventReadThread = true;
-        _bluetoothDevice = null;
         if (_paramSetting != null) {
             _paramSetting.dismiss();
             _paramSetting = null;

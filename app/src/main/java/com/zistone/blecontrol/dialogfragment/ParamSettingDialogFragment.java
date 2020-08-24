@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.util.DialogFragmentListener;
@@ -26,6 +27,7 @@ import com.zistone.blecontrol.util.DialogFragmentListener;
  * 要查看修改的结果需要发送内部控制参数的查询指令,因为该指令与开门的指令索引冲突导致发送以后收到的会是开门的结果
  */
 public class ParamSettingDialogFragment extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+
     private static final String TAG = "ParamSettingDialogFragment";
     private static final String ARG_PARAM1 = "param1";
     private static DialogFragmentListener _dialogFragmentListener;

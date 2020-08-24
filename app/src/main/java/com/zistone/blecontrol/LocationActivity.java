@@ -17,8 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -28,6 +26,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.animation.Animation;
@@ -63,8 +64,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BleListener, BaiduMap.OnMapClickListener,
-        OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener, BaiduMap.OnMapLoadedCallback {
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BleListener,
+        BaiduMap.OnMapClickListener, OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener,
+        BaiduMap.OnMapLoadedCallback {
+
     private static final String TAG = "LocationActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -321,9 +324,11 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             _isPermissionRequested = true;
             ArrayList<String> permissionsList = new ArrayList<>();
             String[] permissions = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.INTERNET,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.WRITE_SETTINGS, Manifest.permission.ACCESS_WIFI_STATE,};
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_SETTINGS,
+                                    Manifest.permission.ACCESS_WIFI_STATE,};
             for (String perm : permissions) {
                 if (PackageManager.PERMISSION_GRANTED != this.checkSelfPermission(perm)) {
                     //进入到这里代表没有权限
@@ -431,7 +436,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _btn2.setEnabled(false);
         _btn3.setEnabled(false);
         _btn4.setEnabled(false);
-        MyBleUtil.DisConnGatt();
         _txt2.setText("Null");
         _txt2.setTextColor(Color.GRAY);
         _txt5.setText("Null");
@@ -558,7 +562,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             //返回
             case R.id.btn_return_location: {
-                MyProgressDialogUtil.Dismiss();
+                MyProgressDialogUtil.DismissAlertDialog();
                 this.finish();
             }
             break;
@@ -587,7 +591,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                         DisConnect();
                     }
                 } else {
-                    MyProgressDialogUtil.ShowWarning(this, "提示", "未获取到蓝牙，请重试！", null);
+                    MyProgressDialogUtil.ShowWarning(this, "提示", "错误", "未获取到蓝牙，请重试！", false, null);
                 }
             }
             break;
@@ -734,12 +738,11 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             _baiduMapView.onDestroy();
             _baiduMapView = null;
         }
-        MyProgressDialogUtil.Dismiss();
+        MyProgressDialogUtil.DismissAlertDialog();
         if (_refreshTimer != null)
             _refreshTimer.cancel();
         if (_refreshTask != null)
             _refreshTask.cancel();
-        MyBleUtil.DisConnGatt();
         _bluetoothDevice = null;
     }
 

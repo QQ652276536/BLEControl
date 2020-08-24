@@ -7,9 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,6 +17,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
 import com.zistone.blecontrol.util.BleListener;
@@ -33,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PowerActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+
     private static final String TAG = "PowerActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -248,8 +250,13 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerActivity._isOpenParamSetting) {
                         if (_powerActivity._paramSetting == null) {
-                            _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                               bitStr5, bitStr6, bitStr7,
+                            _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1,
+                                                                                                               bitStr2,
+                                                                                                               bitStr3,
+                                                                                                               bitStr4,
+                                                                                                               bitStr5,
+                                                                                                               bitStr6,
+                                                                                                               bitStr7,
                                                                                                                bitStr8}, _powerActivity._dialogFragmentListener);
                             _powerActivity._paramSetting.setCancelable(false);
                         }
@@ -427,7 +434,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnReturn_power: {
-                MyProgressDialogUtil.Dismiss();
+                MyProgressDialogUtil.DismissAlertDialog();
                 this.finish();
             }
             //回到顶部
