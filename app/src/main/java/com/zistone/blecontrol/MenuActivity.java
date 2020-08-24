@@ -38,7 +38,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     private TextView _txt1;
     private BluetoothDevice _bluetoothDevice;
     private Map<String, UUID> _uuidMap;
-    private ShowHideSettingDialogFragment _showHideSettingDialogFragment;
     private FragmentManager _fragmentManager;
     private Toolbar _toolbar;
 
@@ -80,24 +79,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
-            case R.id.item1_menu:
-                if (_showHideSettingDialogFragment == null) {
-                    _showHideSettingDialogFragment = ShowHideSettingDialogFragment.NewInstance(new DialogFragmentListener() {
-                        @Override
-                        public void OnDismiss(String tag) {
-                        }
-
-                        @Override
-                        public void OnComfirm(String tag, String str) {
-                        }
-
-                        @Override
-                        public void OnComfirm(String tag, Object[] objectArray) {
-                        }
-                    });
-                }
-                _showHideSettingDialogFragment.show(_fragmentManager, "ShowHideSettingDialogFragment");
-                break;
         }
         return true;
     }
@@ -123,7 +104,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void OnConnecting() {
-        MyProgressDialogUtil.ShowProgressDialog(this, false, null, "正在连接...");
+        Log.i(TAG, "正在建立连接...");
+        MyProgressDialogUtil.ShowProgressDialog(this, true, null, "正在连接...\n如长时间未连\n接请返回重试");
     }
 
     @Override

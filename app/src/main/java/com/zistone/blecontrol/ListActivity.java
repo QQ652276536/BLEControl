@@ -16,7 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -114,7 +114,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private int _filterRssi = 100;
     private boolean _isBtnUpDownFlag = false, _isStartOrStopScan = false, _isPermissionRequested = false;
     private MyHandler _myHandler;
-    private ShowHideSettingDialogFragment _deviceListSetting;
     private FragmentManager _fragmentManager;
 
     static class MyHandler extends Handler {
