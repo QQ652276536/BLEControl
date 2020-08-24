@@ -1,7 +1,7 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
+import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -29,30 +29,13 @@ import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 import com.zistone.blecontrol.baidutts.util.MessageListener;
 import com.zistone.blecontrol.baidutts.util.OfflineResource;
 import com.zistone.blecontrol.controls.AmountView;
-import com.zistone.blecontrol.opencv.DetectionBasedTracker;
-import com.zistone.blecontrol.util.BluetoothListener;
-import com.zistone.blecontrol.util.BluetoothUtil;
+import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
-import com.zistone.blecontrol.util.DeviceFilterShared;
-import com.zistone.blecontrol.util.ProgressDialogUtil;
+import com.zistone.blecontrol.util.MyDeviceFilterShared;
+import com.zistone.blecontrol.util.MyProgressDialogUtil;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -63,8 +46,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener,
-        CameraBridgeViewBase.CvCameraViewListener2 {
+public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
     private static final String TAG = "TemperatureActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -75,12 +57,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
     private static final int RECEIVE = 8002;
-    //OpenCV部分
-    //修改DetectionBasedTracker类里的deliverAndDrawFrame()方法可旋转角度,旋转角度后如果要重绘内容也得加上旋转角度
-    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0);
-    private static final Scalar READ_COLOR = new Scalar(255, 0, 0);
-    private static final int JAVA_DETECTOR = 0;
-    private static final int NATIVE_DETECTOR = 1;
 
     private BluetoothDevice _bluetoothDevice;
     private Toolbar _toolbar;
@@ -88,7 +64,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     private TextView _txt1, _txt2, _txt3, _txt4, _txt5;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
-    private ProgressDialogUtil.Listener _progressDialogUtilListener;
     //是否连接成功,是否检测到人脸
     private boolean _connectedSuccess = false, _isCheckedFace = false;
     private Timer _refreshTimer;
@@ -112,15 +87,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     private MySyntherizer _mySyntherizer;
     //语音合成状态:-1表示合成或播放过程中出现错误,1表示合成结束,2表示开始播放,3表示播放结束
     private int _speechState = 3;
-    private CameraBridgeViewBase _cameraView;
-    //灰度图像,R、G、B彩色图像
-    private Mat _gray, _rgba;
-    //OpenCV的调用方式,脸部大小
-    private int _detectorType = NATIVE_DETECTOR, _absoluteFaceSize = 0;
-    private float _relativeFaceSize = 0.2f;
-    private DetectionBasedTracker _nativeDetector;
-    private CascadeClassifier _javaDetector;
-    private File _cascadeFile;
     private MediaPlayer _mediaPlayer1, _mediaPlayer2;
     private MyHandler _myHandler;
 
@@ -148,7 +114,7 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void run() {
                             try {
-                                BluetoothUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
+                                MyBleUtil.SendComm(SEARCH_TEMPERATURE_COMM1);
                                 Log.i(TAG, "发送查询温度的指令...");
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
@@ -182,66 +148,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
             }
         }
     }
-
-    private void InitListener() {
-        _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
-            @Override
-            public void OnDismiss() {
-                if (!_connectedSuccess)
-                    DisConnect();
-            }
-
-            @Override
-            public void OnConfirm() {
-            }
-
-            @Override
-            public void OnCancel() {
-            }
-        };
-        _onAmountChangeListener = (view, current) -> DeviceFilterShared.SetTemperatureParam(getApplicationContext(), String.valueOf(_amountView.getCurrent()));
-    }
-
-    private BaseLoaderCallback _baseLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                    //OpenCV初始化加载成功,再加载本地so库
-                    System.loadLibrary("opencv341");
-                    try {
-                        //加载人脸检测模式文件
-                        InputStream is = getResources().openRawResource(R.raw.lbpcascade_frontalface);
-                        File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                        _cascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
-                        FileOutputStream os = new FileOutputStream(_cascadeFile);
-                        byte[] buffer = new byte[4096];
-                        int byteesRead;
-                        while ((byteesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, byteesRead);
-                        }
-                        is.close();
-                        os.close();
-                        //使用模型文件初始化人脸检测引擎
-                        _javaDetector = new CascadeClassifier(_cascadeFile.getAbsolutePath());
-                        if (_javaDetector.empty()) {
-                            Log.e(TAG, "加载cascade classifier失败");
-                            _javaDetector = null;
-                        } else {
-                            Log.i(TAG, "Loaded cascade classifier from " + _cascadeFile.getAbsolutePath());
-                        }
-                        _nativeDetector = new DetectionBasedTracker(_cascadeFile.getAbsolutePath(), "", 0);
-                        cascadeDir.delete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    //开启渲染Camera
-                    _cameraView.enableView();
-                    break;
-            }
-            super.onManagerConnected(status);
-        }
-    };
 
     private Handler _speechStateHandler = new Handler() {
         @Override
@@ -448,7 +354,7 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
      * 断开与BLE设备的连接
      */
     private void DisConnect() {
-        BluetoothUtil.DisConnGatt();
+        MyBleUtil.DisConnGatt();
         _txt1.setText("Null");
         _txt1.setTextColor(Color.GRAY);
         _txt2.setText("Null");
@@ -508,31 +414,25 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
+    public void OnScanLeResult(ScanResult result) {
+    }
+
+    @Override
     public void OnConnected() {
-        ProgressDialogUtil.Dismiss();
-        Log.i(TAG, "成功建立连接！");
-        //轮询
-        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
-        //返回时告知该设备已成功连接
-        setResult(2, new Intent());
-        _connectedSuccess = true;
     }
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(TemperatureActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开！");
-        _connectedSuccess = false;
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
         switch (indexStr) {
@@ -542,7 +442,7 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void OnReadSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         //Log.i(TAG, "接收:" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
@@ -615,42 +515,18 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
         _btnReturn.setOnClickListener(this::onClick);
         _amountView = findViewById(R.id.amountView_temperature);
         _amountView.setMaxMinStep(10, -10, 0.1);
-        _amountView.setCurrent(Double.valueOf(DeviceFilterShared.GetTemperatureParam(getApplicationContext())));
-        _cameraView = findViewById(R.id.cameraView_face);
-        //前置摄像头CameraBridgeViewBase.CAMERA_ID_FRONT
-        //后置摄像头CameraBridgeViewBase.CAMERA_ID_BACK
-        _cameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
-        _cameraView.setCvCameraViewListener(TemperatureActivity.this);
-        InitListener();
+        _amountView.setCurrent(Double.valueOf(MyDeviceFilterShared.GetTemperatureParam(getApplicationContext())));
         //初始化完再设置监听
         _amountView.setLister(_onAmountChangeListener);
-        BluetoothUtil.Init(TemperatureActivity.this, this);
-        if (_bluetoothDevice != null) {
-            Log.i(TAG, "开始连接...");
-            BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-        } else {
-            ProgressDialogUtil.ShowWarning(TemperatureActivity.this, "警告", "未获取到蓝牙,请重试！");
-        }
     }
 
     @Override
     protected void onResume() {
-        //静态初始化OpenCV
-        if (!OpenCVLoader.initDebug()) {
-            Log.e(TAG, "无法加载OpenCV本地库,将使用OpenCV Manager初始化");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_3_0, this, _baseLoaderCallback);
-        } else {
-            Log.i(TAG, "成功加载OpenCV本地库");
-            _baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        //停止渲染Camera
-        if (_cameraView != null)
-            _cameraView.disableView();
         super.onPause();
     }
 
@@ -664,14 +540,11 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
             _refreshTask.cancel();
         if (_refreshTimer != null)
             _refreshTimer.cancel();
-        //停止渲染Camera
-        if (_cameraView != null)
-            _cameraView.disableView();
         if (_mediaPlayer1 != null)
             _mediaPlayer1.release();
         if (_mediaPlayer2 != null)
             _mediaPlayer2.release();
-        BluetoothUtil.DisConnGatt();
+        MyBleUtil.DisConnGatt();
         _bluetoothDevice = null;
         super.onDestroy();
     }
@@ -679,65 +552,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onStart() {
         super.onStart();
-    }
-
-    @Override
-    public void onCameraViewStarted(int width, int height) {
-        _gray = new Mat();
-        _rgba = new Mat();
-    }
-
-    @Override
-    public void onCameraViewStopped() {
-        _gray.release();
-        _rgba.release();
-    }
-
-    @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        _rgba = inputFrame.rgba();
-        _gray = inputFrame.gray();
-        //设置脸部大小
-        if (_absoluteFaceSize == 0) {
-            int height = _gray.rows();
-            if (Math.round(height * _relativeFaceSize) > 0) {
-                _absoluteFaceSize = Math.round(height * _relativeFaceSize);
-            }
-            _nativeDetector.setMinFaceSize(_absoluteFaceSize);
-        }
-        //获取检测到的脸部数据
-        MatOfRect faces = new MatOfRect();
-        if (_detectorType == JAVA_DETECTOR) {
-            if (_javaDetector != null) {
-                _javaDetector.detectMultiScale(_gray, faces, 1.1, 2, 2, new Size(_absoluteFaceSize, _absoluteFaceSize), new Size());
-            }
-        } else if (_detectorType == NATIVE_DETECTOR) {
-            if (_nativeDetector != null) {
-                //检测人脸
-                _nativeDetector.detect(_gray, faces);
-            }
-        } else {
-            Log.e(TAG, "Detection method is not selected！");
-        }
-        Rect[] facesArray = faces.toArray();
-        //绘制检测框
-        for (int i = 0; i < facesArray.length; i++) {
-            Imgproc.rectangle(_rgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
-            _isCheckedFace = true;
-        }
-        //绘制不同颜色的边框
-        int a = _rgba.cols();
-        int b = _rgba.rows();
-        Point point1 = new Point(0, 0);
-        Point point2 = new Point(a, b);
-        if (_measuringValue >= 34 && _measuringValue <= 37.5) {
-            Imgproc.rectangle(_rgba, point1, point2, FACE_RECT_COLOR, 80);
-        } else if (_measuringValue > 37.5) {
-            Imgproc.rectangle(_rgba, point1, point2, READ_COLOR, 80);
-        }
-        //绘制文字
-        //Imgproc.putText(_rgba, "36.78", point, 36, 1, FACE_RECT_COLOR);
-        return _rgba;
     }
 
 }

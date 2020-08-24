@@ -3,6 +3,7 @@ package com.zistone.blecontrol;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -47,10 +48,10 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.zistone.blecontrol.util.BluetoothListener;
-import com.zistone.blecontrol.util.BluetoothUtil;
+import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
-import com.zistone.blecontrol.util.ProgressDialogUtil;
+import com.zistone.blecontrol.util.MyProgressDialogUtil;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -62,7 +63,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener, BaiduMap.OnMapClickListener,
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BleListener, BaiduMap.OnMapClickListener,
         OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener, BaiduMap.OnMapLoadedCallback {
     private static final String TAG = "LocationActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -82,9 +83,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private static final String OPENDOOR2_COMM = "680000000000006810000182E716";
     //开全部门锁
     private static final String OPENDOORS_COMM = "680000000000006810000183E716";
-    private static final int MESSAGE_ERROR_1 = -1;
-    private static final int MESSAGE_ERROR_2 = -2;
-    private static final int MESSAGE_ERROR_3 = -3;
     private static final int MESSAGE_1 = 100;
     private static final int RECEIVE_BASEINFO = 21;
     private static final int RECEIVE_LOCATION = 22;
@@ -107,7 +105,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     //是否连接成功、是否打开参数设置界面
     private boolean _connectedSuccess = false;
     private Map<String, UUID> _uuidMap;
-    private ProgressDialogUtil.Listener _progressDialogUtilListener;
     private MyHandler _myHandler;
     private MapView _baiduMapView;
     private BaiduMap _baiduMap;
@@ -138,11 +135,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             _locationActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
-                case MESSAGE_ERROR_1: {
-                    _locationActivity.DisConnect();
-                    ProgressDialogUtil.ShowWarning(_locationActivity, "警告", "该设备的连接已断开！");
-                }
-                break;
                 //连接成功
                 case MESSAGE_1: {
                     _locationActivity._btn2.setEnabled(true);
@@ -154,13 +146,13 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void run() {
                             try {
-                                BluetoothUtil.SendComm(BASEINFO_COMM);
+                                MyBleUtil.SendComm(BASEINFO_COMM);
                                 Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
                                 Thread.sleep(100);
-                                BluetoothUtil.SendComm(LOCATION_COMM);
+                                MyBleUtil.SendComm(LOCATION_COMM);
                                 Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
                                 Thread.sleep(100);
-                                BluetoothUtil.SendComm(TESTA);
+                                MyBleUtil.SendComm(TESTA);
                                 Log.i(TAG, "发送'综合测试'指令：" + TESTA);
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
@@ -177,9 +169,9 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                 case RECEIVE_BASEINFO: {
                     String[] strArray = result.split(" ");
                     String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
-                    versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
+                    versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
                     String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
-                    //不足两位补齐，比如0->0、1->01
+                    //不足两位补齐，比如1->01
                     if (voltageStr1.length() == 1)
                         voltageStr1 = "0" + voltageStr1;
                     String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
@@ -403,30 +395,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _myHandler.obtainMessage(what, data).sendToTarget();
     }
 
-    private void InitListener() {
-        _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
-            @Override
-            public void OnDismiss() {
-                if (_btn1.getText().toString().equals("断开") && !_connectedSuccess) {
-                    _btn1.setText("连接");
-                    DisConnect();
-                }
-            }
-
-            @Override
-            public void OnConfirm() {
-                _btn1.setText("连接");
-                DisConnect();
-                Intent intent = GetAppOpenIntentByPackageName(LocationActivity.this, "com.ambiqmicro.android.amota");
-                startActivity(intent);
-            }
-
-            @Override
-            public void OnCancel() {
-            }
-        };
-    }
-
     /**
      * 根据包名启动APK
      *
@@ -463,7 +431,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _btn2.setEnabled(false);
         _btn3.setEnabled(false);
         _btn4.setEnabled(false);
-        BluetoothUtil.DisConnGatt();
+        MyBleUtil.DisConnGatt();
         _txt2.setText("Null");
         _txt2.setTextColor(Color.GRAY);
         _txt5.setText("Null");
@@ -590,7 +558,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             //返回
             case R.id.btn_return_location: {
-                ProgressDialogUtil.Dismiss();
+                MyProgressDialogUtil.Dismiss();
                 this.finish();
             }
             break;
@@ -613,32 +581,32 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     if (_btn1.getText().toString().equals("连接")) {
                         _btn1.setText("断开");
                         Log.i(TAG, "开始连接...");
-                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
+                        MyBleUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
                     } else {
                         _btn1.setText("连接");
                         DisConnect();
                     }
                 } else {
-                    ProgressDialogUtil.ShowWarning(LocationActivity.this, "提示", "未获取到蓝牙，请重试！");
+                    MyProgressDialogUtil.ShowWarning(this, "提示", "未获取到蓝牙，请重试！", null);
                 }
             }
             break;
             //开一号门锁
             case R.id.button2_location: {
                 Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
-                BluetoothUtil.SendComm(OPENDOOR1_COMM);
+                MyBleUtil.SendComm(OPENDOOR1_COMM);
             }
             break;
             //开二号门锁
             case R.id.button3_location: {
                 Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
-                BluetoothUtil.SendComm(OPENDOOR2_COMM);
+                MyBleUtil.SendComm(OPENDOOR2_COMM);
             }
             break;
             //开全部门锁
             case R.id.button4_location: {
                 Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
-                BluetoothUtil.SendComm(OPENDOORS_COMM);
+                MyBleUtil.SendComm(OPENDOORS_COMM);
             }
             break;
         }
@@ -646,56 +614,33 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public void OnScanLeResult(ScanResult result) {
+    }
+
+    @Override
     public void OnConnected() {
-        ProgressDialogUtil.Dismiss();
-        Log.i(TAG, "成功建立连接！");
-        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
-        //返回时告知该设备已成功连接
-        setResult(2, new Intent());
     }
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(LocationActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开！");
-        _myHandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
-        String sendResult = "";
-        switch (indexStr) {
-            //发送综合测量指令
-            case "80":
-                sendResult = "综合测试A";
-                break;
-            //发送开一号门锁指令
-            case "81":
-                sendResult = "开一号门锁";
-                break;
-            //发送开二号门锁指令
-            case "82":
-                sendResult = "开二号门锁";
-                break;
-            //发送开全部门锁指令
-            case "83":
-                sendResult = "开全部门锁";
-                break;
-        }
     }
 
     @Override
     public void OnReadSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         Log.i(TAG, "收到：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
@@ -755,8 +700,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
-        BluetoothUtil.Init(LocationActivity.this, this);
-        InitListener();
         //动态获取权限
         RequestPermission();
         _baiduMapView = findViewById(R.id.mapView_location);
@@ -791,12 +734,12 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             _baiduMapView.onDestroy();
             _baiduMapView = null;
         }
-        ProgressDialogUtil.Dismiss();
+        MyProgressDialogUtil.Dismiss();
         if (_refreshTimer != null)
             _refreshTimer.cancel();
         if (_refreshTask != null)
             _refreshTask.cancel();
-        BluetoothUtil.DisConnGatt();
+        MyBleUtil.DisConnGatt();
         _bluetoothDevice = null;
     }
 

@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorAccent">
 
         <ImageButton
             android:id="@+id/btn_return_temperature"
@@ -148,11 +148,4 @@
             app:btnWidth="40dp"
             app:tvWidth="50dp" />
     </LinearLayout>
-
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/cameraView_face"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        opencv:camera_id="front"
-        opencv:show_fps="true" />
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,18 +16,17 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
-import com.zistone.blecontrol.util.BluetoothListener;
-import com.zistone.blecontrol.util.BluetoothUtil;
+import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
+import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.DialogFragmentListener;
-import com.zistone.blecontrol.util.ProgressDialogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 
-public class CmdActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+public class CmdActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
     private static final String TAG = "CmdActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -42,9 +42,9 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
-    private DialogFragment_ParamSetting _paramSetting;
+    private ParamSettingDialogFragment _paramSetting;
     //是否连接成功、是否打开参数设置界面
-    private boolean _connectedSuccess = false, _isOpenParamSetting = false;
+    private boolean _isOpenParamSetting = false;
     private FragmentManager _fragmentManager;
     private DialogFragmentListener _dialogFragmentListener;
     private int _nextEvent = 0;
@@ -67,16 +67,9 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
             _cmdActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
-                //连接成功
-                case MESSAGE_1: {
-                    _cmdActivity.SetButtonEnable(true);
-                    ProgressDialogUtil.Dismiss();
-                    _cmdActivity._connectedSuccess = true;
-                }
-                break;
                 //显示解析内容
                 case MESSAGE_2: {
-                    _cmdActivity._txt.append(result+"\r\n");
+                    _cmdActivity._txt.append(result + "\r\n");
                     //定位到最后一行
                     int offset = _cmdActivity._txt.getLineCount() * _cmdActivity._txt.getLineHeight();
                     //如果文本的高度大于ScrollView的,就自动滑动
@@ -86,12 +79,6 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                     _cmdActivity._isEventReadOver = false;
                 }
                 break;
-                case MESSAGE_ERROR_1:
-                    _cmdActivity._connectedSuccess = false;
-                    _cmdActivity.SetButtonEnable(false);
-                    ProgressDialogUtil.Dismiss();
-                    ProgressDialogUtil.ShowWarning(_cmdActivity, "警告", "该设备的连接已断开！");
-                    break;
                 //解析查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(result);
@@ -116,35 +103,23 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                     //打开控制参数修改界面的时候将查询结果传递过去
                     if (_cmdActivity._isOpenParamSetting) {
                         if (_cmdActivity._paramSetting == null) {
-                            _cmdActivity._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                              bitStr5, bitStr6, bitStr7,
-                                                                                                              bitStr8}, _cmdActivity._dialogFragmentListener);
+                            _cmdActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                                                                                                             bitStr5, bitStr6, bitStr7,
+                                                                                                             bitStr8}, _cmdActivity._dialogFragmentListener);
                             _cmdActivity._paramSetting.setCancelable(false);
                         }
-                        _cmdActivity._paramSetting.show(_cmdActivity._fragmentManager, "DialogFragment_ParamSetting");
+                        _cmdActivity._paramSetting.show(_cmdActivity._fragmentManager, "ParamSettingDialogFragment");
                     }
                 }
                 break;
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
                     Log.i(TAG, "发送参数设置：" + result);
-                    BluetoothUtil.SendComm(result);
+                    MyBleUtil.SendComm(result);
                 }
                 break;
             }
         }
-    }
-
-    private void SetButtonEnable(boolean flag) {
-        _btn6.setEnabled(flag);
-        _btn7.setEnabled(flag);
-        _btn8.setEnabled(flag);
-        _btn9.setEnabled(flag);
-        _btn10.setEnabled(flag);
-        _btn11.setEnabled(flag);
-        _btn12.setEnabled(flag);
-        _btn13.setEnabled(flag);
-        _btn14.setEnabled(flag);
     }
 
     /**
@@ -210,7 +185,7 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         else if (strArray[8].equals("A1")) {
             receive = data;
             String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
-            versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
+            versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
             String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
             //不足两位补齐，比如0->0、1->01
             if (voltageStr1.length() == 1)
@@ -486,28 +461,25 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
+    public void OnScanLeResult(ScanResult result) {
+    }
+
+    @Override
     public void OnConnected() {
-        Log.i(TAG, "成功建立连接！");
-        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
-        //返回时告知该设备已成功连接
-        setResult(2, new Intent());
     }
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(CmdActivity.this, true, "正在连接...");
     }
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开！");
-        _myHandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String sendResult = "";
         /*
@@ -565,7 +537,7 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void OnReadSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         Log.i(TAG, "接收：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
@@ -601,7 +573,6 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         String logStr = "";
         switch (v.getId()) {
             case R.id.btn_return: {
-                ProgressDialogUtil.Dismiss();
                 this.finish();
             }
             break;
@@ -612,9 +583,8 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
             //回到底部
             case R.id.btnBottom:
                 int offset = _txt.getLineCount() * _txt.getLineHeight();
-                if (offset > _txt.getHeight()) {
+                if (offset > _txt.getHeight())
                     _txt.scrollTo(0, offset - _txt.getHeight());
-                }
                 break;
             //清屏
             case R.id.btnClear:
@@ -677,10 +647,10 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                                     @Override
                                     public void run() {
                                         if (_nextEvent == 0) {
-                                            BluetoothUtil.SendComm("6800000000000068200100EC16");
+                                            MyBleUtil.SendComm("6800000000000068200100EC16");
                                             Log.i(TAG, "发送'读取内部存储的事件记录'指令：6800000000000068200100EC16");
                                         } else {
-                                            BluetoothUtil.SendComm("6800000000000068200101EC16");
+                                            MyBleUtil.SendComm("6800000000000068200101EC16");
                                             Log.i(TAG, "发送'读取内部存储的【下一条】记录'指令：6800000000000068200101EC16");
                                         }
                                     }
@@ -712,22 +682,20 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
             break;
         }
         if (!hexStr.equals("")) {
-            BluetoothUtil.SendComm(hexStr);
+            MyBleUtil.SendComm(hexStr);
             Log.i(TAG, logStr);
         }
     }
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         _isEventReadThread = true;
-        ProgressDialogUtil.Dismiss();
-        BluetoothUtil.DisConnGatt();
         _bluetoothDevice = null;
         if (_paramSetting != null) {
             _paramSetting.dismiss();
             _paramSetting = null;
         }
-        super.onDestroy();
     }
 
     @Override
@@ -767,13 +735,6 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         _btn13.setOnClickListener(this);
         _btn14 = findViewById(R.id.btn14);
         _btn14.setOnClickListener(this);
-        BluetoothUtil.Init(CmdActivity.this, this);
-        if (_bluetoothDevice != null) {
-            Log.i(TAG, "开始连接...");
-            BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-        } else {
-            ProgressDialogUtil.ShowWarning(CmdActivity.this, "警告", "未获取到蓝牙,请重试！");
-        }
         InitListener();
     }
 

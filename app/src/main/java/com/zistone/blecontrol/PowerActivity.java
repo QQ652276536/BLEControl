@@ -1,12 +1,8 @@
 package com.zistone.blecontrol;
 
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
-import android.content.Context;
+import android.bluetooth.le.ScanResult;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +10,6 @@ import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,27 +19,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zistone.blecontrol.controls.MyScrollView;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_OTA;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_ParamSetting;
-import com.zistone.blecontrol.dialogfragment.DialogFragment_WriteValue;
-import com.zistone.blecontrol.util.BluetoothListener;
-import com.zistone.blecontrol.util.BluetoothUtil;
-import com.zistone.blecontrol.util.MyConvertUtil;
+import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
+import com.zistone.blecontrol.util.BleListener;
 import com.zistone.blecontrol.util.DialogFragmentListener;
-import com.zistone.blecontrol.util.ProgressDialogUtil;
+import com.zistone.blecontrol.util.MyBleUtil;
+import com.zistone.blecontrol.util.MyConvertUtil;
+import com.zistone.blecontrol.util.MyProgressDialogUtil;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
-public class PowerActivity extends AppCompatActivity implements View.OnClickListener, BluetoothListener {
+public class PowerActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
     private static final String TAG = "PowerActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -62,10 +50,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private static final String OPENDOOR2_COMM = "680000000000006810000182E716";
     //开全部门锁
     private static final String OPENDOORS_COMM = "680000000000006810000183E716";
-    private static final int MESSAGE_ERROR_1 = -1;
-    private static final int MESSAGE_ERROR_2 = -2;
-    private static final int MESSAGE_ERROR_3 = -3;
-    private static final int MESSAGE_1 = 100;
     private static final int RECEIVE_BASEINFO = 21;
     private static final int RECEIVE_LOCATION = 22;
     private static final int RECEIVE_TESTA = 8002;
@@ -78,25 +62,36 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
 
     private BluetoothDevice _bluetoothDevice;
     private Toolbar _toolbar;
-    private ImageButton _btnReturn, _btnClear;
+    private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
     private TextView _debugView;
-    private Button _btn1, _btn2, _btn3, _btn4;
+    private Button _btn2, _btn3, _btn4;
     private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion;
     private StringBuffer _stringBuffer = new StringBuffer();
-    private Timer _refreshTimer;
-    private TimerTask _refreshTask;
-    private MyScrollView _scrollView;
-    private LinearLayout _llPowerControl;
-    private DialogFragment_WriteValue _writeValue;
-    private DialogFragment_ParamSetting _paramSetting;
-    private DialogFragment_OTA _ota;
-    //是否连接成功、是否打开参数设置界面
-    private boolean _connectedSuccess = false, _isOpenParamSetting = false;
-    private Map<String, UUID> _uuidMap;
-    private ProgressDialogUtil.Listener _progressDialogUtilListener;
     private DialogFragmentListener _dialogFragmentListener;
-    private FragmentManager _fragmentManager;
     private MyHandler _myHandler;
+    //是否打开参数设置界面
+    private boolean _isOpenParamSetting = false;
+    private Timer _refreshTimer = new Timer();
+    private ParamSettingDialogFragment _paramSetting;
+    private FragmentManager _fragmentManager;
+    //定时发送综合测试指令
+    private TimerTask _refreshTask = new TimerTask() {
+        @Override
+        public void run() {
+            try {
+                MyBleUtil.SendComm(BASEINFO_COMM);
+                //                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
+                Thread.sleep(100);
+                MyBleUtil.SendComm(LOCATION_COMM);
+                //                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
+                Thread.sleep(100);
+                MyBleUtil.SendComm(TESTA);
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     static class MyHandler extends Handler {
         WeakReference<PowerActivity> _weakReference;
@@ -113,46 +108,11 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
             _powerActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
-                case MESSAGE_ERROR_1: {
-                    _powerActivity.DisConnect();
-                    ProgressDialogUtil.ShowWarning(_powerActivity, "警告", "该设备的连接已断开！");
-                }
-                break;
-                //连接成功
-                case MESSAGE_1: {
-                    _powerActivity._btn2.setEnabled(true);
-                    _powerActivity._btn3.setEnabled(true);
-                    _powerActivity._btn4.setEnabled(true);
-                    _powerActivity._refreshTimer = new Timer();
-                    //综合测试
-                    _powerActivity._refreshTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                BluetoothUtil.SendComm(BASEINFO_COMM);
-                                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
-                                Thread.sleep(100);
-                                BluetoothUtil.SendComm(LOCATION_COMM);
-                                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
-                                Thread.sleep(100);
-                                BluetoothUtil.SendComm(TESTA);
-                                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
-                    _powerActivity._refreshTimer.schedule(_powerActivity._refreshTask, 0, 2 * 1000);
-                    _powerActivity._connectedSuccess = true;
-                }
-                break;
                 //设备基本信息
                 case RECEIVE_BASEINFO: {
                     String[] strArray = result.split(" ");
                     String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
-                    versionStr = MyConvertUtil.StrAddCharacter(versionStr, ".");
+                    versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
                     String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
                     //不足两位补齐，比如0->0、1->01
                     if (voltageStr1.length() == 1)
@@ -260,7 +220,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 break;
                 //发送查询内部控制参数的指令
                 case SEND_SEARCH_CONTROLPARAM: {
-                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                    MyBleUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
                 }
                 break;
                 //查询到的内部控制参数
@@ -288,12 +248,12 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerActivity._isOpenParamSetting) {
                         if (_powerActivity._paramSetting == null) {
-                            _powerActivity._paramSetting = DialogFragment_ParamSetting.newInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                                bitStr5, bitStr6, bitStr7,
-                                                                                                                bitStr8}, _powerActivity._dialogFragmentListener);
+                            _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                                                                                                               bitStr5, bitStr6, bitStr7,
+                                                                                                               bitStr8}, _powerActivity._dialogFragmentListener);
                             _powerActivity._paramSetting.setCancelable(false);
                         }
-                        _powerActivity._paramSetting.show(_powerActivity._fragmentManager, "DialogFragment_ParamSetting");
+                        _powerActivity._paramSetting.show(_powerActivity._fragmentManager, "ParamSettingDialogFragment");
                         _powerActivity.
                                 _isOpenParamSetting = false;
                     } else {
@@ -340,11 +300,11 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 //修改内部控制参数
                 case SEND_SET_CONTROLPARAM: {
                     Log.i(TAG, "发送参数设置：" + result);
-                    BluetoothUtil.SendComm(result);
+                    MyBleUtil.SendComm(result);
                     _powerActivity._debugView.append("发送参数设置指令 ");
                     int offset = _powerActivity._debugView.getLineCount() * _powerActivity._debugView.getLineHeight();
-                    if (offset > _powerActivity._scrollView.getHeight())
-                        _powerActivity._debugView.scrollTo(0, offset - _powerActivity._scrollView.getHeight());
+                    if (offset > _powerActivity._debugView.getHeight())
+                        _powerActivity._debugView.scrollTo(0, offset - _powerActivity._debugView.getHeight());
                 }
                 break;
             }
@@ -411,27 +371,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void InitListener() {
-        _progressDialogUtilListener = new ProgressDialogUtil.Listener() {
-            @Override
-            public void OnDismiss() {
-                if (_btn1.getText().toString().equals("断开") && !_connectedSuccess) {
-                    _btn1.setText("连接");
-                    DisConnect();
-                }
-            }
-
-            @Override
-            public void OnConfirm() {
-                _btn1.setText("连接");
-                DisConnect();
-                Intent intent = GetAppOpenIntentByPackageName(PowerActivity.this, "com.ambiqmicro.android.amota");
-                startActivity(intent);
-            }
-
-            @Override
-            public void OnCancel() {
-            }
-        };
         _dialogFragmentListener = new DialogFragmentListener() {
             @Override
             public void OnDismiss(String tag) {
@@ -451,56 +390,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         };
     }
 
-    /**
-     * 根据包名启动第三方APK，如果已经启动APK，则直接将APK从后台调到前台运行（类似Home键之后再点击APK图标启动），如果未启动APK，则重新启动
-     *
-     * @param context
-     * @param packageName
-     * @return
-     */
-    private Intent GetAppOpenIntentByPackageName(Context context, String packageName) {
-        String mainAct = null;
-        PackageManager pkgMag = context.getPackageManager();
-        //ACTION_MAIN是隐藏启动的action， 你也可以自定义
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        //CATEGORY_LAUNCHER有了这个，你的程序就会出现在桌面上
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键，如果任务队列中已经存在，则重建程序
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-        @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
-        for (int i = 0; i < list.size(); i++) {
-            ResolveInfo info = list.get(i);
-            if (info.activityInfo.packageName.equals(packageName)) {
-                mainAct = info.activityInfo.name;
-                break;
-            }
-        }
-        if (TextUtils.isEmpty(mainAct))
-            return null;
-        intent.setComponent(new ComponentName(packageName, mainAct));
-        return intent;
-    }
-
-    private void DisConnect() {
-        _connectedSuccess = false;
-        _btn2.setEnabled(false);
-        _btn3.setEnabled(false);
-        _btn4.setEnabled(false);
-        BluetoothUtil.DisConnGatt();
-        _txt2.setText("Null");
-        _txt2.setTextColor(Color.GRAY);
-        _txt5.setText("Null");
-        _txt6.setText("Null");
-        _txt7.setText("Null");
-        _txt8.setText("Null");
-        _txtVersion.setText("Null");
-        _txtVersion.setTextColor(Color.GRAY);
-        if (_refreshTask != null)
-            _refreshTask.cancel();
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -516,144 +405,97 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (_connectedSuccess) {
-            switch (item.getItemId()) {
-                //内部控制参数设置
-                case R.id.menu_1_power: {
-                    //先查询内部控制参数，再打开修改参数的界面
-                    BluetoothUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
-                    _isOpenParamSetting = true;
-                }
-                break;
-                //写入指令
-                case R.id.menu_2_power: {
-                    _writeValue = new DialogFragment_WriteValue();
-                    _writeValue.setCancelable(false);
-                    _writeValue.show(_fragmentManager, "DialogFragment_WriteValue");
-                }
-                break;
-                //文件传输
-                case R.id.menu_3_power: {
-                    _ota = DialogFragment_OTA.newInstance(_bluetoothDevice);
-                    _ota.setCancelable(false);
-                    _ota.show(_fragmentManager, "DialogFragment_OTA");
-                }
-                break;
-                //OTA升级
-                case R.id.menu_4_power: {
-                    Intent intent = GetAppOpenIntentByPackageName(PowerActivity.this, "com.ambiqmicro.android.amota");
-                    if (intent != null)
-                        ProgressDialogUtil.ShowConfirm(PowerActivity.this, "提示", "使用OTA升级功能会关闭当前与设备的连接");
-                    else
-                        ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "未安装OTA_ZM301，无法使用该功能！");
-                }
-                break;
+        switch (item.getItemId()) {
+            //内部控制参数设置
+            case R.id.item1_power: {
+                //先查询内部控制参数，再打开修改参数的界面
+                MyBleUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
+                _isOpenParamSetting = true;
             }
-        } else {
-            ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "请连接蓝牙设备！");
+            break;
         }
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        new MenuInflater(this).inflate(R.menu.powercontrol_menu_setting, menu);
+        new MenuInflater(this).inflate(R.menu.power_setting, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_return: {
-                ProgressDialogUtil.Dismiss();
+            case R.id.btnReturn_power: {
+                MyProgressDialogUtil.Dismiss();
                 this.finish();
             }
-            break;
-            //连接
-            case R.id.button1: {
-                if (_bluetoothDevice != null) {
-                    if (_btn1.getText().toString().equals("连接")) {
-                        _btn1.setText("断开");
-                        Log.i(TAG, "开始连接...");
-                        BluetoothUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-                    } else {
-                        _btn1.setText("连接");
-                        DisConnect();
-                    }
-                } else {
-                    ProgressDialogUtil.ShowWarning(PowerActivity.this, "提示", "未获取到蓝牙，请重试！");
-                }
-            }
-            break;
+            //回到顶部
+            case R.id.btnTop_power:
+                _debugView.scrollTo(0, 0);
+                break;
+            //回到底部
+            case R.id.btnBottom_power:
+                int offset = _debugView.getLineCount() * _debugView.getLineHeight();
+                if (offset > _debugView.getHeight())
+                    _debugView.scrollTo(0, offset - _debugView.getHeight());
+                break;
+            //清屏
+            case R.id.btnClear_power:
+                _debugView.setText("");
+                break;
             //开一号门锁
-            case R.id.button2: {
-                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
-                BluetoothUtil.SendComm(OPENDOOR1_COMM);
+            case R.id.button2_power: {
+                MyBleUtil.SendComm(OPENDOOR1_COMM);
             }
             break;
             //开二号门锁
-            case R.id.button3: {
-                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
-                BluetoothUtil.SendComm(OPENDOOR2_COMM);
+            case R.id.button3_power: {
+                MyBleUtil.SendComm(OPENDOOR2_COMM);
             }
             break;
             //开全部门锁
-            case R.id.button4: {
-                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
-                BluetoothUtil.SendComm(OPENDOORS_COMM);
+            case R.id.button4_power: {
+                MyBleUtil.SendComm(OPENDOORS_COMM);
             }
             break;
-            //清屏
-            case R.id.btnClear:
-                _debugView.setText("");
-                break;
         }
+    }
 
+    @Override
+    public void OnScanLeResult(ScanResult result) {
     }
 
     @Override
     public void OnConnected() {
-        ProgressDialogUtil.Dismiss();
-        Log.i(TAG, "成功建立连接！");
-        _myHandler.obtainMessage(MESSAGE_1, "").sendToTarget();
-        //返回时告知该设备已成功连接
-        setResult(2, new Intent());
     }
 
     @Override
     public void OnConnecting() {
-        ProgressDialogUtil.ShowProgressDialog(PowerActivity.this, true, _progressDialogUtilListener, "正在连接...");
     }
 
     @Override
     public void OnDisConnected() {
-        Log.i(TAG, "连接已断开！");
-        _myHandler.obtainMessage(MESSAGE_ERROR_1, "").sendToTarget();
     }
 
     @Override
     public void OnWriteSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
-        String sendResult = "";
         switch (indexStr) {
-            //发送综合测量指令
             case "80":
-                sendResult = "综合测试A";
+                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
                 break;
-            //发送开一号门锁指令
             case "81":
-                sendResult = "开一号门锁";
+                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
                 break;
-            //发送开二号门锁指令
             case "82":
-                sendResult = "开二号门锁";
+                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
                 break;
-            //发送开全部门锁指令
             case "83":
-                sendResult = "开全部门锁";
+                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
                 break;
         }
     }
@@ -661,7 +503,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void OnReadSuccess(byte[] byteArray) {
         String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.HexStrAddCharacter(result, " ");
+        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         Log.i(TAG, "收到：" + result);
         String[] strArray = result.split(" ");
         //一个包(20个字节)
@@ -695,48 +537,47 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_power);
+        //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
+        _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
         _fragmentManager = getSupportFragmentManager();
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
-        _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
         //Toolbar
-        _toolbar = findViewById(R.id.toolbar_powercontrol);
+        _toolbar = findViewById(R.id.toolbar_power);
         _toolbar.setTitle("");
         setSupportActionBar(_toolbar);
-        _txt2 = findViewById(R.id.txt2);
-        _txt5 = findViewById(R.id.txt5);
-        _txt6 = findViewById(R.id.txt6);
-        _txt7 = findViewById(R.id.txt7);
-        _txt8 = findViewById(R.id.txt8);
-        _txtVersion = findViewById(R.id.txtVersion);
-        _debugView = findViewById(R.id.debug_view);
-        _btnReturn = findViewById(R.id.btn_return);
-        _btn1 = findViewById(R.id.button1);
-        _btn2 = findViewById(R.id.button2);
-        _btn3 = findViewById(R.id.button3);
-        _btn4 = findViewById(R.id.button4);
-        _btnClear = findViewById(R.id.btnClear);
-        _scrollView = findViewById(R.id.scrollView);
-        _llPowerControl = findViewById(R.id.fragment_bluetooth_powercontrol);
+        _txt2 = findViewById(R.id.txt2_power);
+        _txt5 = findViewById(R.id.txt5_power);
+        _txt6 = findViewById(R.id.txt6_power);
+        _txt7 = findViewById(R.id.txt7_power);
+        _txt8 = findViewById(R.id.txt8_power);
+        _txtVersion = findViewById(R.id.txtVersion_power);
+        _debugView = findViewById(R.id.debug_view_power);
+        _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        _btnReturn = findViewById(R.id.btnReturn_power);
+        _btn2 = findViewById(R.id.button2_power);
+        _btn3 = findViewById(R.id.button3_power);
+        _btn4 = findViewById(R.id.button4_power);
+        _btnTop = findViewById(R.id.btnTop_power);
+        _btnBottom = findViewById(R.id.btnBottom_power);
+        _btnClear = findViewById(R.id.btnClear_power);
         _btnReturn.setOnClickListener(this::onClick);
+        _btnTop.setOnClickListener(this::onClick);
+        _btnBottom.setOnClickListener(this::onClick);
         _btnClear.setOnClickListener(this::onClick);
-        _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        BluetoothUtil.Init(PowerActivity.this, this);
+        //初始化蓝牙
+        MyBleUtil.SetListener(this);
         InitListener();
     }
 
     @Override
     public void onDestroy() {
-        ProgressDialogUtil.Dismiss();
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
-        if (_refreshTask != null)
-            _refreshTask.cancel();
-        BluetoothUtil.DisConnGatt();
+        _refreshTimer.cancel();
+        _refreshTask.cancel();
         _bluetoothDevice = null;
         super.onDestroy();
     }

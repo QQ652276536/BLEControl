@@ -11,8 +11,7 @@ android {
         versionName "2.5.3"
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang", "-DCMAKE_BUILD_TYPE=Release"
-                cppFlags "-std=c++11", "-frtti", "-fexceptions"
+                cppFlags ""
             }
         }
         ndk {
@@ -25,7 +24,8 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
         }
     }
 }
@@ -35,6 +35,7 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
 
     /**
@@ -61,10 +62,5 @@ dependencies {
      * 百度离在线语音
      */
     implementation files('libs/com.baidu.tts_2.5.5.109.20191014_01b8485.jar')
-
-    /**
-     * OpenCV视觉库
-     */
-    implementation project(path: ':openCVLibrary341')
 
 }

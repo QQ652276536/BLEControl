@@ -1,14 +1,116 @@
 package com.zistone.blecontrol.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 字符转换工具类
  * 不支持特殊字符
  */
-public class MyConvertUtil {
+public final class MyConvertUtil {
+
     //16进制数字字符集
     public static final String HEXSTRING = "0123456789ABCDEF";
+
+    private MyConvertUtil() {
+    }
+
+    /**
+     * 隔指定位置插入字符
+     *
+     * @param input
+     * @param interval
+     * @param character
+     * @return
+     */
+    public static String StrAddCharacter(String input, int interval, String character) {
+        //字符串长度
+        int length = input.length();
+        //需要添加字符的数量
+        int count = 0;
+        if (length <= interval) {
+            count = 0;
+        } else {
+            count = length % interval > 0 ? length / interval : input.length() / interval - 1;
+        }
+        //插入空格
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                input = input.substring(0, (i + 1) * interval + i) + character + input.substring((i + 1) * interval + i, length + i);
+            }
+        }
+        //输入的字符串小于指定位，不需要添加字符
+        else {
+        }
+        return input;
+    }
+
+    /**
+     * Str前/后面补零
+     *
+     * @param str
+     * @param strLength
+     * @return
+     */
+    public static String AddZeroForNum(String str, int strLength, boolean isLeft) {
+        int strLen = str.length();
+        if (strLen < strLength) {
+            while (strLen < strLength) {
+                StringBuffer sb = new StringBuffer();
+                //左补零
+                if (isLeft) {
+                    sb.append("0").append(str);
+                }
+                //右补零
+                else {
+                    sb.append(str).append("0");
+                }
+                str = sb.toString();
+                strLen = str.length();
+            }
+        }
+        return str;
+    }
+
+    /**
+     * Str[]排序
+     *
+     * @param array
+     * @param asc
+     * @return
+     */
+    public static String SortStringArray(String[] array, boolean asc) {
+        //从小到大
+        if (asc) {
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array.length; j++) {
+                    if (Integer.parseInt(array[i], 16) < Integer.parseInt(array[j], 16)) {
+                        String temp = array[i];
+                        array[i] = array[j];
+                        array[j] = temp;
+                    }
+                }
+            }
+        }
+        //从大到小
+        else {
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array.length; j++) {
+                    if (Integer.parseInt(array[i], 16) > Integer.parseInt(array[j], 16)) {
+                        String temp = array[i];
+                        array[i] = array[j];
+                        array[j] = temp;
+                    }
+                }
+            }
+        }
+        String result = "";
+        for (String tempStr : array) {
+            result += tempStr;
+        }
+        return result;
+    }
 
     /**
      * 反转byte[]
@@ -102,56 +204,37 @@ public class MyConvertUtil {
     }
 
     /**
-     * 不带空格的16进制字符串插入指定字符
+     * 不带空格不带0x的16进制str转array
      *
-     * @param str       不带空格的字符串
-     * @param character 指定字符
+     * @param hexStr
      * @return
      */
-    public static String StrAddCharacter(String str, String character) {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 0; i < str.length(); i++) {
-            if (i != str.length() - 1) {
-                stringBuffer.append(str.charAt(i));
-                stringBuffer.append(character);
+    public static String[] HexStrSplit(String hexStr) {
+        int strLength = hexStr.length();
+        List<String> list = new ArrayList<>();
+        String str = "";
+        for (int i = 0; i < strLength; i++) {
+            if (i % 2 == 0) {
+                str = String.valueOf(hexStr.charAt(i));
             } else {
-                stringBuffer.append(str.charAt(i));
+                str += String.valueOf(hexStr.charAt(i));
+                list.add(str);
             }
         }
-        return stringBuffer.toString();
-    }
-
-    /**
-     * 不带空格的16进制字符串插入指定字符
-     *
-     * @param hexStr    不带空格不带0x的16进制字符串,比如810300
-     * @param character 指定字符
-     * @return
-     */
-    public static String HexStrAddCharacter(String hexStr, String character) {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 0; i < hexStr.length(); i++) {
-            if (i != hexStr.length() - 1) {
-                if (i % 2 != 0) {
-                    stringBuffer.append(hexStr.charAt(i));
-                    stringBuffer.append(character);
-                } else {
-                    stringBuffer.append(hexStr.charAt(i));
-                }
-            } else {
-                stringBuffer.append(hexStr.charAt(i));
-            }
-        }
-        return stringBuffer.toString();
+        return list.toArray(new String[0]);
     }
 
     /**
      * 生成校验码
+     * 将收到的消息还原转义后去除标识和校验位,然后按位异或得到的结果就是校验码
      *
      * @param hexStr 带空格不带0x的16进制字符串,比如81 03 00
      * @return 不足2位前面补零
      */
-    public static String CreateCheckCode(String hexStr) {
+    public static String CreateCheckCode(String hexStr) throws Exception {
+        if (!hexStr.contains(" ") || hexStr.contains("0x") || hexStr.contains("0X")) {
+            throw new Exception("参数必须为带空格不带0x的16进制字符串");
+        }
         int binaryNum = 0;
         String[] strArray = hexStr.split(" ");
         for (int i = 0; i < strArray.length; i++) {
@@ -171,12 +254,40 @@ public class MyConvertUtil {
 
     /**
      * 生成校验码
+     * 仅用于LP108的单片机
+     *
+     * @param src
+     * @return
+     * @throws NullPointerException
+     */
+    public static int CalculateCRC_Zistone_LP108(byte[] src) throws NullPointerException {
+        if (src == null) {
+            throw new NullPointerException("src");
+        }
+        int crc = 0;
+        for (byte ch : src) {
+            // 0x80 = 128
+            for (int i = 0x80; i != 0; i /= 2) {
+                crc *= 2;
+                // 0x10000 = 65536
+                if ((crc & 0x10000) != 0)
+                    crc ^= 0x11021; // 0x11021 = 69665
+                if ((ch & i) != 0)
+                    crc ^= 0x1021; // 0x1021 = 4129
+            }
+        }
+        return crc;
+    }
+
+    /**
+     * 生成校验码
      * CRC-16/CCITT_FALSE方式生成校验码
      *
      * @param bytes
+     * @param length
      * @return
      */
-    public static String CRC_16_CCITT_FALSE(byte[] bytes) {
+    public static String CRC_16_CCITT_FALSE(byte[] bytes, int length) {
         int crc = 0xffff;
         int polynomial = 0x1021;
         for (int index = 0; index < bytes.length; index++) {
@@ -435,10 +546,11 @@ public class MyConvertUtil {
     private static String GetHexStr(String str) {
         String hexStr = "";
         for (int i = str.length(); i < 4; i++) {
-            if (i == str.length())
+            if (i == str.length()) {
                 hexStr = "0";
-            else
+            } else {
                 hexStr = hexStr + "0";
+            }
         }
         return hexStr + str;
     }

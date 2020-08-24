@@ -47,7 +47,8 @@
     <string name="btn_clear">清屏</string>
     <string name="title_ep_control">电力控制</string>
     <string name="btn_conn">连接</string>
-    <string name="title_bluetooth_control">蓝牙控制</string>
+    <string name="title_bluetooth_list">蓝牙列表</string>
+    <string name="title_bluetooth_menu">功能菜单</string>
     <string name="title_ota">设备升级</string>
     <string name="title_db">设备入库</string>
     <string name="title_temperature">体温检测</string>

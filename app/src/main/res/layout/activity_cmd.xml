@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorAccent">
 
         <ImageButton
             android:id="@+id/btn_return"
@@ -97,7 +97,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="综合测试A"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -117,7 +116,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="开一号门锁"
                     android:textSize="16sp" />
 
@@ -130,7 +128,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="开二号门锁"
                     android:textSize="16sp" />
 
@@ -143,7 +140,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="开全部门锁"
                     android:textSize="16sp" />
 
@@ -164,7 +160,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="查询内部控制参数"
                     android:textSize="16sp" />
 
@@ -177,7 +172,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="修改内部控制参数"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -197,7 +191,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="读取内部存储的事件记录"
                     android:textSize="16sp" />
 
@@ -218,7 +211,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="设备基本信息"
                     android:textSize="16sp" />
 
@@ -231,7 +223,6 @@
                     android:layout_marginRight="3dp"
                     android:layout_marginBottom="3dp"
                     android:layout_weight="1"
-                    android:enabled="false"
                     android:text="GPS位置信息"
                     android:textSize="16sp" />
 

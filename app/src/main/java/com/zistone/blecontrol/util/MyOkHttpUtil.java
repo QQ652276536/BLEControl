@@ -17,7 +17,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MyOkHttpUtil implements Callback {
+public final class MyOkHttpUtil implements Callback {
     private static final String TAG = "MyOkHttpUtil";
     private static final int MESSAGE_1 = 1;
     private static final int MESSAGE_ERROR_1 = -1;
@@ -34,6 +34,9 @@ public class MyOkHttpUtil implements Callback {
 
     public interface MyOkHttpListener {
         void AsyOkHttpResult(int result, String content);
+    }
+
+    private MyOkHttpUtil() {
     }
 
     public static MyOkHttpUtil Init() {

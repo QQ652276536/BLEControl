@@ -38,15 +38,6 @@ public class DialogFragment_WriteValue extends DialogFragment implements View.On
     private Button _btn4;
     private TableLayout _table;
 
-    public static DialogFragment_ParamSetting newInstance(String[] strArray, DialogFragmentListener listener) {
-        _dialogFragmentListener = listener;
-        DialogFragment_ParamSetting fragment = new DialogFragment_ParamSetting();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PARAM1, strArray);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

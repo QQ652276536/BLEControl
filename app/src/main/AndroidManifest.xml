@@ -36,17 +36,15 @@
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 网络权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 蓝牙权限 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!--
-        以下权限用于访问GPS定位
-     -->
+
+    <!-- 以下权限用于访问GPS定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 往SDCard写入数据权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!--  从SDCard读取数据权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 访问网络状态,主要用于监视网络连接 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Wifi状态 -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> <!-- 修改声音设置 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:name=".MyApplication"
@@ -59,17 +57,14 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
-            android:name=".StationActivity"
-            android:label="基站设置" />
+            android:name=".MenuActivity"
+            android:label="功能菜单" />
         <activity
             android:name=".LocationActivity"
             android:label="设备定位" />
         <activity
             android:name=".TemperatureActivity"
             android:label="体温测量" />
-        <activity
-            android:name=".MaterialsActivity"
-            android:label="物料绑定" />
         <activity
             android:name=".CmdActivity"
             android:label="指令测试" />
@@ -78,10 +73,7 @@
             android:label="电力控制" />
         <activity
             android:name=".ListActivity"
-            android:label="设备列表" />
-        <activity
-            android:name=".MainActivity"
-            android:label="低功耗蓝牙">
+            android:label="设备列表" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -98,10 +90,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider> <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" /> <!-- 百度地图AK鉴权 -->
+            android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" />
     </application>
 
 </manifest>

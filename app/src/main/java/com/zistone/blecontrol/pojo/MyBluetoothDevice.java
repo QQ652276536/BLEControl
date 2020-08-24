@@ -2,6 +2,8 @@ package com.zistone.blecontrol.pojo;
 
 import android.bluetooth.BluetoothDevice;
 
+import java.util.Objects;
+
 public class MyBluetoothDevice {
     private int id;
     private String name;
@@ -13,6 +15,21 @@ public class MyBluetoothDevice {
     @Override
     public String toString() {
         return "MyBluetoothDevice{" + "id=" + id + ", name='" + name + '\'' + ", address='" + address + '\'' + ", rssi=" + rssi + ", boundState=" + boundState + ", bluetoothDevice=" + bluetoothDevice + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof MyBluetoothDevice))
+            return false;
+        MyBluetoothDevice that = (MyBluetoothDevice) o;
+        return address.equals(that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(address);
     }
 
     public int getId() {

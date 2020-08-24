@@ -10,17 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccent"
         app:navigationIcon="@drawable/start"
         app:titleTextColor="@color/white">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:text="@string/title_bluetooth_control"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
 
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/toolbar_gifView"
@@ -29,159 +21,15 @@
             android:layout_gravity="start"
             android:src="@drawable/scaning1" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="@string/title_bluetooth_list"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+
     </android.support.v7.widget.Toolbar>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/whiteSmoke"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center"
-            android:text="设备"
-            android:textSize="16sp" />
-
-        <HorizontalScrollView
-            android:id="@+id/scrollView_uuid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RadioGroup
-                android:id="@+id/radioGroup1_bleList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rdo_uuid1_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/bluenrg"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_uuid2_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/amdtp"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_uuid3_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/ota"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_uuid4_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/tag"
-                    android:textColor="@color/gray" />
-            </RadioGroup>
-        </HorizontalScrollView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/whiteSmoke"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center"
-            android:text="模块"
-            android:textSize="16sp" />
-
-        <HorizontalScrollView
-            android:id="@+id/scrollView_func"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RadioGroup
-                android:id="@+id/radioGroup2_bleList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rdo_func1_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/title_ep_control"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_func2_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/commandTest"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_func3_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/inDB"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_func4_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/temperature"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_func5_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/title_location"
-                    android:textColor="@color/gray" />
-
-                <RadioButton
-                    android:id="@+id/rdo_func6_bleList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:button="@drawable/rad_selector"
-                    android:text="@string/title_station"
-                    android:textColor="@color/gray" />
-            </RadioGroup>
-        </HorizontalScrollView>
-    </LinearLayout>
 
     <TableLayout
         android:id="@+id/table_filter"
@@ -315,35 +163,6 @@
                 android:text="-100dBm" />
         </TableRow>
 
-        <TableRow
-            android:id="@+id/row5_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.5"
-                android:src="@drawable/hide" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="5"
-                android:text=" Hide connect success device"
-                android:textSize="14sp" />
-
-            <CheckBox
-                android:id="@+id/chk_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0.5"
-                android:button="@drawable/chk_selector" />
-
-        </TableRow>
     </TableLayout>
 
     <LinearLayout
