@@ -126,6 +126,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            MyProgressDialogUtil.DismissAlertDialog();
             MyBleUtil.DisConnGatt();
             finish();
         }

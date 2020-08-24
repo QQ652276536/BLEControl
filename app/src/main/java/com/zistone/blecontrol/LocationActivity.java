@@ -99,7 +99,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private BluetoothDevice _bluetoothDevice;
     private Toolbar _toolbar;
     private ImageButton _btnReturn, _btnHideBle;
-    private Button _btn1, _btn2, _btn3, _btn4;
+    private Button _btn2, _btn3, _btn4;
     private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion, _txtVerifySDK;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Timer _refreshTimer;
@@ -558,66 +558,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            //返回
-            case R.id.btn_return_location: {
-                MyProgressDialogUtil.DismissAlertDialog();
-                this.finish();
-            }
-            break;
-            //隐藏蓝牙信息
-            case R.id.btn_hide_ble: {
-
-
-                if (_llBle.getVisibility() == View.VISIBLE) {
-                    _llBle.setVisibility(View.GONE);
-                    _btnHideBle.setImageResource(R.drawable.down);
-                } else {
-                    _llBle.setVisibility(View.VISIBLE);
-                    _btnHideBle.setImageResource(R.drawable.up);
-                }
-            }
-            break;
-            //连接
-            case R.id.button1_location: {
-                if (_bluetoothDevice != null) {
-                    if (_btn1.getText().toString().equals("连接")) {
-                        _btn1.setText("断开");
-                        Log.i(TAG, "开始连接...");
-                        MyBleUtil.ConnectDevice(_bluetoothDevice, _uuidMap);
-                    } else {
-                        _btn1.setText("连接");
-                        DisConnect();
-                    }
-                } else {
-                    MyProgressDialogUtil.ShowWarning(this, "提示", "错误", "未获取到蓝牙，请重试！", false, null);
-                }
-            }
-            break;
-            //开一号门锁
-            case R.id.button2_location: {
-                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
-                MyBleUtil.SendComm(OPENDOOR1_COMM);
-            }
-            break;
-            //开二号门锁
-            case R.id.button3_location: {
-                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
-                MyBleUtil.SendComm(OPENDOOR2_COMM);
-            }
-            break;
-            //开全部门锁
-            case R.id.button4_location: {
-                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
-                MyBleUtil.SendComm(OPENDOORS_COMM);
-            }
-            break;
-        }
-
-    }
-
-    @Override
     public void OnScanLeResult(ScanResult result) {
     }
 
@@ -674,6 +614,75 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            //返回
+            case R.id.btn_return_location: {
+                MyProgressDialogUtil.DismissAlertDialog();
+                this.finish();
+            }
+            break;
+            //隐藏蓝牙信息
+            case R.id.btn_hide_ble: {
+
+
+                if (_llBle.getVisibility() == View.VISIBLE) {
+                    _llBle.setVisibility(View.GONE);
+                    _btnHideBle.setImageResource(R.drawable.down);
+                } else {
+                    _llBle.setVisibility(View.VISIBLE);
+                    _btnHideBle.setImageResource(R.drawable.up);
+                }
+            }
+            break;
+            //开一号门锁
+            case R.id.button2_location: {
+                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
+                MyBleUtil.SendComm(OPENDOOR1_COMM);
+            }
+            break;
+            //开二号门锁
+            case R.id.button3_location: {
+                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
+                MyBleUtil.SendComm(OPENDOOR2_COMM);
+            }
+            break;
+            //开全部门锁
+            case R.id.button4_location: {
+                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
+                MyBleUtil.SendComm(OPENDOORS_COMM);
+            }
+            break;
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(_sdkReceiver);
+        if (null != _baiduMap) {
+            _baiduMap.clear();
+            _baiduMap = null;
+        }
+        //MapView的生命周期与Fragment同步,当Fragment销毁时需调用MapView.destroy()
+        if (null != _baiduMapView) {
+            _baiduMapView.onDestroy();
+            _baiduMapView = null;
+        }
+        MyProgressDialogUtil.DismissAlertDialog();
+        if (_refreshTimer != null)
+            _refreshTimer.cancel();
+        if (_refreshTask != null)
+            _refreshTask.cancel();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
@@ -693,14 +702,12 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _txtVersion = findViewById(R.id.txtVersion_location);
         _btnReturn = findViewById(R.id.btn_return_location);
         _btnHideBle = findViewById(R.id.btn_hide_ble);
-        _btn1 = findViewById(R.id.button1_location);
         _btn2 = findViewById(R.id.button2_location);
         _btn3 = findViewById(R.id.button3_location);
         _btn4 = findViewById(R.id.button4_location);
         _llBle = findViewById(R.id.ll_location_ble);
         _btnReturn.setOnClickListener(this::onClick);
         _btnHideBle.setOnClickListener(this::onClick);
-        _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
@@ -723,32 +730,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _baiduMap.setOnMarkerClickListener(this::onMarkerClick);
         //地图加载完毕回调
         _baiduMap.setOnMapLoadedCallback(this::onMapLoaded);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(_sdkReceiver);
-        if (null != _baiduMap) {
-            _baiduMap.clear();
-            _baiduMap = null;
-        }
-        //MapView的生命周期与Fragment同步,当Fragment销毁时需调用MapView.destroy()
-        if (null != _baiduMapView) {
-            _baiduMapView.onDestroy();
-            _baiduMapView = null;
-        }
-        MyProgressDialogUtil.DismissAlertDialog();
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
-        if (_refreshTask != null)
-            _refreshTask.cancel();
-        _bluetoothDevice = null;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
 }
