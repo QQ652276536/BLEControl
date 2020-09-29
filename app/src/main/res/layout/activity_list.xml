@@ -165,23 +165,17 @@
 
     </TableLayout>
 
-    <LinearLayout
+    <com.cjj.MaterialRefreshLayout
+        android:id="@+id/refresh_bleList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:orientation="vertical">
+        android:layout_margin="10dp">
 
-        <com.cjj.MaterialRefreshLayout
-            android:id="@+id/refresh_bleList"
+        <ListView
+            android:id="@+id/lv_bleList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice" />
+    </com.cjj.MaterialRefreshLayout>
 
-            <ListView
-                android:id="@+id/lv_bleList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:choiceMode="singleChoice" />
-        </com.cjj.MaterialRefreshLayout>
-
-    </LinearLayout>
 </LinearLayout>
