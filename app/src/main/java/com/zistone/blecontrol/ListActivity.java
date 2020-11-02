@@ -174,19 +174,15 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
              */
             @Override
             public void onRefresh(final MaterialRefreshLayout materialRefreshLayout) {
-                materialRefreshLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        _deviceList.clear();
-                        _bleListAdapter.setM_deviceList(_deviceList);
-                        //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                        //                        _bleListAdapter.notifyDataSetChanged();
-                        //使用setAdapter()不会保存当前的状态信息，会使页面回到顶部，不会停留在之前的位置
-                        _listView.setAdapter(_bleListAdapter);
-                        BeginScan();
-                        //结束下拉刷新
-                        materialRefreshLayout.finishRefresh();
-                    }
+                materialRefreshLayout.postDelayed(() -> {
+                    _deviceList.clear();
+                    _bleListAdapter.setM_deviceList(_deviceList);
+                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+                    _bleListAdapter.notifyDataSetChanged();
+                    _listView.setAdapter(_bleListAdapter);
+                    BeginScan();
+                    //结束下拉刷新
+                    materialRefreshLayout.finishRefresh();
                 }, 500);
             }
 
@@ -216,8 +212,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             _isStartOrStopScan = true;
             _gifImageView.setVisibility(View.VISIBLE);
             _toolbar.setNavigationIcon(R.drawable.stop);
-        } else {
-            MyProgressDialogUtil.ShowWarning(ListActivity.this, "知道了", "提示", "请确认系统蓝牙是否开启", false, null);
         }
     }
 
@@ -249,11 +243,8 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                         MyBleUtil.Init(this, _bluetoothAdapter, _bluetoothLeScanner);
                         MyBleUtil.SetListener(this);
                         break;
-                    //蓝牙未开启
-                    case BluetoothAdapter.STATE_OFF:
-                    case BluetoothAdapter.STATE_TURNING_OFF:
                     default:
-                        _toolbar.setNavigationIcon(R.drawable.start);
+                        StopScan();
                         break;
                 }
             }
@@ -386,7 +377,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode) {
             case 1:
                 //用户授权开启蓝牙
-                if (requestCode != 0) {
+                if (resultCode == -1) {
                     _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
                     MyBleUtil.Init(ListActivity.this, _bluetoothAdapter, _bluetoothLeScanner);
                     MyBleUtil.SetListener(this);
@@ -394,10 +385,9 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 //用户拒绝开启蓝牙
                 else {
+                    StopScan();
+                    Toast.makeText(this, "您拒绝了蓝牙权限", Toast.LENGTH_SHORT).show();
                 }
-                break;
-            //连接成功的蓝牙设备
-            case 2:
                 break;
         }
     }

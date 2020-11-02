@@ -57,6 +57,9 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
         <activity
+            android:name=".XYZActivity"
+            android:label="设备倾角" />
+        <activity
             android:name=".MenuActivity"
             android:label="功能菜单" />
         <activity
@@ -73,7 +76,7 @@
             android:label="电力控制" />
         <activity
             android:name=".ListActivity"
-            android:label="设备列表" >
+            android:label="设备列表">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

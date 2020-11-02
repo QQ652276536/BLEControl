@@ -159,6 +159,28 @@
                 android:layout_weight="1"
                 android:gravity="center" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5sp">
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btn_xyz_menu"
+                style="@style/ButtonStyleA"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="设备事件主动下发" />
+        </TableRow>
     </TableLayout>
 
 </LinearLayout>

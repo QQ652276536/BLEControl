@@ -39,6 +39,7 @@
     <string name="btn_receive">接收</string>
     <string name="btn_send">发送</string>
     <string name="title_read_write">通信测试</string>
+    <string name="title_read_xyz">倾角测试</string>
     <string name="btn_openDoor">开门</string>
     <string name="btn_readCar">读卡</string>
     <string name="btn_doorState">测量门状态</string>
