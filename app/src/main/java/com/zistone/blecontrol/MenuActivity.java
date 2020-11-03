@@ -19,7 +19,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
 import com.zistone.blecontrol.util.BleListener;
-import com.zistone.blecontrol.util.DialogFragmentListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyInstallAPKUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
