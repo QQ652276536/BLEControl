@@ -207,7 +207,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void BeginScan() {
-        MyBleUtil.DisConnGatt();
         if (MyBleUtil.StartScanLe() == 1) {
             _isStartOrStopScan = true;
             _gifImageView.setVisibility(View.VISIBLE);
@@ -532,6 +531,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         String address = bluetoothDevice.getAddress();
         int rssi = result.getRssi();
         int state = bluetoothDevice.getBondState();
+        Log.i(TAG, String.format("扫描到设备%s的信号强度%d", address, rssi));
         MyBluetoothDevice device = new MyBluetoothDevice();
         device.setName(name);
         device.setAddress(address);
@@ -557,13 +557,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 return 0;
             }
         });
-        if (null != _deviceList) {
-            _bleListAdapter.setM_deviceList(_deviceList);
-            Log.i(TAG, String.format("扫描到设备%s的信号强度%d", address, rssi));
-            //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-            _bleListAdapter.notifyDataSetChanged();
-            _listView.setOnItemClickListener(this);
-        }
+        _bleListAdapter.setM_deviceList(_deviceList);
+        //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+        _bleListAdapter.notifyDataSetChanged();
+        _listView.setOnItemClickListener(this);
     }
 
     @Override
