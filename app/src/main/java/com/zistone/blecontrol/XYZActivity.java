@@ -32,15 +32,6 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
     private static final String TAG = "XYZActivity";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    //查询内部控制参数
-    private static final String SEARCH_CONTROLPARAM_COMM = "680000000000006810000186EA16";
-    //读取基本信息：版本，电池电压，内部温度
-    private static final String BASEINFO_COMM = "6800000000000068210100EC16";
-    //读取GPS位置信息
-    private static final String LOCATION_COMM = "6800000000000068220100EC16";
-    //综合测试：循环发送检测门的状态
-    private static final String TESTA = "680000000000006810000180E616";
-    private static final int SEND_SET_CONTROLPARAM = 87;
 
     private BluetoothDevice _bluetoothDevice;
     private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
@@ -54,14 +45,8 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
         public void run() {
             try {
                 MyBleUtil.SendComm("6800000000000068000000EC16");
-                Log.i(TAG, "发送'读取设备基本信息'指令：6800000000000068000000EC16");
+                Log.i(TAG, "发送指令：6800000000000068000000EC16");
                 Thread.sleep(100);
-                //                MyBleUtil.SendComm(LOCATION_COMM);
-                //                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
-                //                Thread.sleep(100);
-                //                MyBleUtil.SendComm(TESTA);
-                //                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
-                //                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -75,13 +60,14 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
                 _refreshTimer.cancel();
             if (_refreshTask != null)
                 _refreshTask.cancel();
+            Log.i(TAG, "定时请求终止！");
         }
     };
     private Timer _refreshTimer2222 = new Timer();
 
     static class MyHandler extends Handler {
         WeakReference<XYZActivity> _weakReference;
-        XYZActivity Activity;
+        XYZActivity xyzActivity;
 
         public MyHandler(XYZActivity activity) {
             _weakReference = new WeakReference<>(activity);
@@ -91,14 +77,28 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
         public void handleMessage(Message message) {
             if (_weakReference.get() == null)
                 return;
-            Activity = _weakReference.get();
-            String result = (String) message.obj;
-            Activity._debugView.append(result+"\n");
+            xyzActivity = _weakReference.get();
+            String[] strArray = (String[]) message.obj;
+            switch (message.what) {
+                case 89:
+                    xyzActivity._debugView.append("收到：" + Arrays.toString(strArray) + "\n");
+                    //有符号16进制转10进制
+                    double x = Integer.valueOf(strArray[10] + strArray[11], 16).shortValue() / 100.0;
+                    double y = Integer.valueOf(strArray[12] + strArray[13], 16).shortValue() / 100.0;
+                    double z = Integer.valueOf(strArray[14] + strArray[15], 16).shortValue() / 100.0;
+                    int type = Integer.valueOf(strArray[16]);
+                    String cmdStr = Arrays.toString(strArray).replaceAll("[\\s|\\[|\\]|,]", "");
+                    cmdStr = MyConvertUtil.StrAddCharacter(cmdStr, 2, " ");
+                    String logStr = "X轴：" + x + "，Y轴：" + y + "，Z轴：" + z + "，事件类型：" + (type == 0 ? "振动" : "位移") + "\n";
+                    Log.i(TAG, logStr);
+                    xyzActivity._debugView.append(logStr);
+                    break;
+            }
             //定位到最后一行
-            int offset = Activity._debugView.getLineCount() * Activity._debugView.getLineHeight();
+            int offset = xyzActivity._debugView.getLineCount() * xyzActivity._debugView.getLineHeight();
             //如果文本的高度大于ScrollView的，就自动滑动
-            if (offset > Activity._debugView.getHeight())
-                Activity._debugView.scrollTo(0, offset - Activity._debugView.getHeight());
+            if (offset > xyzActivity._debugView.getHeight())
+                xyzActivity._debugView.scrollTo(0, offset - xyzActivity._debugView.getHeight());
         }
     }
 
@@ -109,7 +109,14 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
      */
     private void Resolve(String data) {
         String[] strArray = data.split(" ");
-        _myHandler.obtainMessage(1, Arrays.toString(strArray)).sendToTarget();
+        //目前最短的指令为14位
+        if (strArray.length < 14) {
+            Log.e(TAG, "指令长度" + strArray.length + "错误，不予解析！");
+            return;
+        }
+        String type = strArray[8].toUpperCase();
+        if ("89".equals(type))
+            _myHandler.obtainMessage(89, strArray).sendToTarget();
     }
 
     @Override
@@ -148,7 +155,8 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
                 break;
             //清屏
             case R.id.btnClear:
-                _debugView.setText("");
+                _debugView.setText(".");
+                _debugView.scrollTo(0, 0);
                 break;
         }
     }
@@ -175,7 +183,6 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
         result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
-        Log.i(TAG, "发送'" + indexStr + "'指令：" + TESTA);
     }
 
     @Override
@@ -189,20 +196,6 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
             Resolve(result);
             //清空缓存
             _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
         }
     }
 
