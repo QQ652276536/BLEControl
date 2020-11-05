@@ -82,12 +82,13 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         public void run() {
             try {
                 MyBleUtil.SendComm(BASEINFO_COMM);
-                //                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
+                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
                 Thread.sleep(100);
                 MyBleUtil.SendComm(LOCATION_COMM);
-                //                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
+                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
                 Thread.sleep(100);
                 MyBleUtil.SendComm(TESTA);
+                Log.i(TAG, "发送'综合测试A'指令：" + LOCATION_COMM);
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -122,10 +123,10 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
                     if (voltageStr2.length() == 1)
                         voltageStr2 = "0" + voltageStr2;
-                    double voltage = Double.valueOf(voltageStr1 + voltageStr2) / 1000;
+                    double voltage = Double.parseDouble(voltageStr1 + voltageStr2) / 1000;
                     double temperature = 23.0;
                     try {
-                        temperature = 23 + Double.valueOf(strArray[16]) / 2;
+                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -154,7 +155,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     int height = Integer.parseInt(heightStr1, 16);
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
-                    _powerActivity._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                    _powerActivity._txt7.setText(latNum + "，" + lotNum + "，" + height);
                 }
                 break;
                 //综合测试

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_bluetooth_powercontrol"
+    android:id="@+id/fragment_bluetooth_locationcontrol"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
@@ -31,15 +31,7 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/txt_verifySDK"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:visibility="gone" />
-
     <LinearLayout
-        android:id="@+id/ll_location_ble"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -47,10 +39,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_margin="5sp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -59,6 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
+                android:gravity="center"
                 android:text="Null"
                 android:textSize="18sp" />
 
@@ -70,13 +60,35 @@
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:text="门锁状态"
+                    android:layout_gravity="center"
+                    android:text="门磁状态"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/txt2_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Null"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="门锁状态"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt8_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="Null"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -89,6 +101,7 @@
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="内部温度"
                     android:textSize="18sp" />
 
@@ -96,7 +109,28 @@
                     android:id="@+id/txt6_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:singleLine="false"
+                    android:text="Null"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="电池电压"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt5_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="Null"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -109,26 +143,7 @@
                 <TextView
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:text="电池电压"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/txt5_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Null"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="位置信息"
                     android:textSize="18sp" />
 
@@ -136,49 +151,72 @@
                     android:id="@+id/txt7_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:singleLine="false"
                     android:text="Null"
                     android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
             </LinearLayout>
+        </LinearLayout>
 
-            <Button
-                android:id="@+id/button2_location"
-                style="@style/ButtonStyleA"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5sp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="门锁控制"
+                android:textSize="18sp" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
-                android:enabled="false"
-                android:text="开一号门锁"
-                android:textSize="16sp" />
+                android:layout_margin="5sp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button3_location"
-                style="@style/ButtonStyleA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
-                android:enabled="false"
-                android:text="开二号门锁"
-                android:textSize="16sp" />
+                <Button
+                    android:id="@+id/button2_location"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="150sp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="开一号门锁"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="5sp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/button3_location"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="150sp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="开二号门锁"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/button4_location"
                 style="@style/ButtonStyleA"
-                android:layout_width="match_parent"
+                android:layout_width="305sp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginBottom="10dp"
-                android:enabled="false"
+                android:layout_margin="5sp"
                 android:text="开全部门锁"
                 android:textSize="16sp" />
-        </LinearLayout>
 
+        </LinearLayout>
     </LinearLayout>
 
     <ImageButton
@@ -194,14 +232,4 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true" />
-
-    <LinearLayout
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginBottom="80dp"
-        android:background="@color/white"
-        android:orientation="vertical"></LinearLayout>
 </LinearLayout>

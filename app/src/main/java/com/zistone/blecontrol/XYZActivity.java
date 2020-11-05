@@ -61,6 +61,8 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
             if (_refreshTask != null)
                 _refreshTask.cancel();
             Log.i(TAG, "定时请求终止！");
+            _refreshTimer2222.cancel();
+            _refreshTask222.cancel();
         }
     };
     private Timer _refreshTimer2222 = new Timer();

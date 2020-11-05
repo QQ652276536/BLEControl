@@ -100,13 +100,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private Toolbar _toolbar;
     private ImageButton _btnReturn, _btnHideBle;
     private Button _btn2, _btn3, _btn4;
-    private TextView _txt2, _txt5, _txt6, _txt7, _txtVersion, _txtVerifySDK;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion;
     private StringBuffer _stringBuffer = new StringBuffer();
-    private Timer _refreshTimer;
-    private TimerTask _refreshTask;
-    private LinearLayout _llBle;
-    //是否连接成功、是否打开参数设置界面
-    private boolean _connectedSuccess = false;
     private Map<String, UUID> _uuidMap;
     private MyHandler _myHandler;
     private MapView _baiduMapView;
@@ -121,7 +116,26 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private LatLng _latLng;
     //地理编码搜索
     private GeoCoder _geoCoder;
-    boolean bbb = false;
+    private Timer _refreshTimer = new Timer();
+    //定时发送综合测试指令
+    private TimerTask _refreshTask = new TimerTask() {
+        @Override
+        public void run() {
+            try {
+                MyBleUtil.SendComm(BASEINFO_COMM);
+                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
+                Thread.sleep(100);
+                MyBleUtil.SendComm(LOCATION_COMM);
+                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
+                Thread.sleep(100);
+                MyBleUtil.SendComm(TESTA);
+                Log.i(TAG, "发送'综合测试A'指令：" + LOCATION_COMM);
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     static class MyHandler extends Handler {
         WeakReference<LocationActivity> _weakReference;
@@ -138,52 +152,22 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             _locationActivity = _weakReference.get();
             String result = (String) message.obj;
             switch (message.what) {
-                //连接成功
-                case MESSAGE_1: {
-                    _locationActivity._btn2.setEnabled(true);
-                    _locationActivity._btn3.setEnabled(true);
-                    _locationActivity._btn4.setEnabled(true);
-                    _locationActivity._refreshTimer = new Timer();
-                    //综合测试
-                    _locationActivity._refreshTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                MyBleUtil.SendComm(BASEINFO_COMM);
-                                Log.i(TAG, "发送'读取设备基本信息'指令：" + BASEINFO_COMM);
-                                Thread.sleep(100);
-                                MyBleUtil.SendComm(LOCATION_COMM);
-                                Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
-                                Thread.sleep(100);
-                                MyBleUtil.SendComm(TESTA);
-                                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
-                    _locationActivity._refreshTimer.schedule(_locationActivity._refreshTask, 0, 2 * 1000);
-                    _locationActivity._connectedSuccess = true;
-                }
-                break;
                 //设备基本信息
                 case RECEIVE_BASEINFO: {
                     String[] strArray = result.split(" ");
                     String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
                     versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
                     String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
-                    //不足两位补齐，比如1->01
+                    //不足两位补齐，比如0->0、1->01
                     if (voltageStr1.length() == 1)
                         voltageStr1 = "0" + voltageStr1;
                     String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
                     if (voltageStr2.length() == 1)
                         voltageStr2 = "0" + voltageStr2;
-                    double voltage = Double.valueOf(voltageStr1 + voltageStr2) / 1000;
+                    double voltage = Double.parseDouble(voltageStr1 + voltageStr2) / 1000;
                     double temperature = 23.0;
                     try {
-                        temperature = 23 + Double.valueOf(strArray[16]) / 2;
+                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -212,7 +196,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     int height = Integer.parseInt(heightStr1, 16);
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
-                    _locationActivity._txt7.setText("经度" + latNum + "纬度" + lotNum + "高度" + height);
+                    _locationActivity._txt7.setText(latNum + "，" + lotNum + "，" + height);
                     _locationActivity._latLng = new LatLng(lotNum, latNum);
                     //经纬度->地址
                     _locationActivity._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_locationActivity._latLng).newVersion(1).radius(500));
@@ -255,6 +239,13 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                         _locationActivity._txt2.setText("已关");
                         _locationActivity._txt2.setTextColor(Color.RED);
                     }
+                    if (lockState1.equals("1")) {
+                        _locationActivity._txt8.setText("已开");
+                        _locationActivity._txt8.setTextColor(Color.GREEN);
+                    } else {
+                        _locationActivity._txt8.setText("已关");
+                        _locationActivity._txt8.setTextColor(Color.RED);
+                    }
                 }
                 break;
                 //一号门锁
@@ -296,22 +287,12 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                 return;
             }
             //鉴权错误信息描述
-            _txtVerifySDK.setTextColor(Color.RED);
             if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
                 Log.e(TAG, "Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
-                _txtVerifySDK.setText("Key验证出错!错误码:" + intent.getIntExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE, 0) + ";错误信息:" + intent.getStringExtra(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_MESSAGE));
-                _txtVerifySDK.setTextColor(Color.RED);
-                _txtVerifySDK.setVisibility(View.VISIBLE);
             } else if (action.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
                 Log.e(TAG, "网络出错");
-                _txtVerifySDK.setText("网络出错");
-                _txtVerifySDK.setTextColor(Color.RED);
-                _txtVerifySDK.setVisibility(View.VISIBLE);
             } else if (action.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_OK)) {
                 Log.e(TAG, "Key验证成功！功能可以正常使用");
-                _txtVerifySDK.setText("Key验证成功！功能可以正常使用");
-                _txtVerifySDK.setTextColor(Color.GREEN);
-                _txtVerifySDK.setVisibility(View.GONE);
             }
         }
     }
@@ -398,55 +379,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             }
         }
         _myHandler.obtainMessage(what, data).sendToTarget();
-    }
-
-    /**
-     * 根据包名启动APK
-     *
-     * @param context
-     * @param packageName
-     * @return
-     */
-    private Intent GetAppOpenIntentByPackageName(Context context, String packageName) {
-        String mainAct = null;
-        PackageManager pkgMag = context.getPackageManager();
-        //ACTION_MAIN是隐藏启动的action， 你也可以自定义
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        //CATEGORY_LAUNCHER有了这个，你的程序就会出现在桌面上
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键，如果任务队列中已经存在，则重建程序
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
-        for (int i = 0; i < list.size(); i++) {
-            ResolveInfo info = list.get(i);
-            if (info.activityInfo.packageName.equals(packageName)) {
-                mainAct = info.activityInfo.name;
-                break;
-            }
-        }
-        if (TextUtils.isEmpty(mainAct))
-            return null;
-        intent.setComponent(new ComponentName(packageName, mainAct));
-        return intent;
-    }
-
-    private void DisConnect() {
-        _connectedSuccess = false;
-        _btn2.setEnabled(false);
-        _btn3.setEnabled(false);
-        _btn4.setEnabled(false);
-        _txt2.setText("Null");
-        _txt2.setTextColor(Color.GRAY);
-        _txt5.setText("Null");
-        _txt6.setText("Null");
-        _txt7.setText("Null");
-        _txtVersion.setText("Null");
-        _txtVersion.setTextColor(Color.GRAY);
-        if (_refreshTask != null)
-            _refreshTask.cancel();
-        if (_refreshTimer != null)
-            _refreshTimer.cancel();
     }
 
     /**
@@ -579,6 +511,20 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         result = MyConvertUtil.StrAddCharacter(result, 2, " ");
         String[] strArray = result.split(" ");
         String indexStr = strArray[11];
+        switch (indexStr) {
+            case "80":
+                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
+                break;
+            case "81":
+                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
+                break;
+            case "82":
+                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
+                break;
+            case "83":
+                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
+                break;
+        }
     }
 
     @Override
@@ -624,13 +570,11 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             break;
             //隐藏蓝牙信息
             case R.id.btn_hide_ble: {
-
-
-                if (_llBle.getVisibility() == View.VISIBLE) {
-                    _llBle.setVisibility(View.GONE);
+                if (_baiduMapView.getVisibility() == View.VISIBLE) {
+                    _baiduMapView.setVisibility(View.GONE);
                     _btnHideBle.setImageResource(R.drawable.down);
                 } else {
-                    _llBle.setVisibility(View.VISIBLE);
+                    _baiduMapView.setVisibility(View.VISIBLE);
                     _btnHideBle.setImageResource(R.drawable.up);
                 }
             }
@@ -687,6 +631,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         _myHandler = new MyHandler(this);
         setContentView(R.layout.activity_location);
+        //任务、延迟执行时间、重复调用间隔，Timer和TimerTask在调用cancel方法取消后不能再执行schedule语句
+        _refreshTimer.schedule(_refreshTask, 0, 1 * 1000);
         Intent intent = getIntent();
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
@@ -694,18 +640,17 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _toolbar = findViewById(R.id.toolbar_location);
         _toolbar.setTitle("");
         setSupportActionBar(_toolbar);
-        _txtVerifySDK = findViewById(R.id.txt_verifySDK);
         _txt2 = findViewById(R.id.txt2_location);
         _txt5 = findViewById(R.id.txt5_location);
         _txt6 = findViewById(R.id.txt6_location);
         _txt7 = findViewById(R.id.txt7_location);
+        _txt8 = findViewById(R.id.txt8_location);
         _txtVersion = findViewById(R.id.txtVersion_location);
         _btnReturn = findViewById(R.id.btn_return_location);
         _btnHideBle = findViewById(R.id.btn_hide_ble);
         _btn2 = findViewById(R.id.button2_location);
         _btn3 = findViewById(R.id.button3_location);
         _btn4 = findViewById(R.id.button4_location);
-        _llBle = findViewById(R.id.ll_location_ble);
         _btnReturn.setOnClickListener(this::onClick);
         _btnHideBle.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
@@ -730,6 +675,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _baiduMap.setOnMarkerClickListener(this::onMarkerClick);
         //地图加载完毕回调
         _baiduMap.setOnMapLoadedCallback(this::onMapLoaded);
+        //初始化蓝牙
+        MyBleUtil.SetListener(this);
     }
 
 }
