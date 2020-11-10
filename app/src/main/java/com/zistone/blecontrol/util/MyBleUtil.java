@@ -246,9 +246,6 @@ public final class MyBleUtil {
         WRITE_UUID = map.get("WRITE_UUID");
         READ_UUID = map.get("READ_UUID");
         CONFIG_UUID = map.get("CONFIG_UUID");
-        if (_bluetoothGatt != null)
-            _bluetoothGatt.close();
-        _bluetoothGatt = null;
         _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
         //设备正在连接中,如果连接成功会执行回调函数discoverServices()
         _bleListener.OnConnecting();
@@ -277,9 +274,7 @@ public final class MyBleUtil {
      */
     public static void DisConnGatt() {
         if (_bluetoothGatt != null)
-            if (_bluetoothGatt != null) {
-                _bluetoothGatt.disconnect();
-            }
+            _bluetoothGatt.disconnect();
     }
 
     /**

@@ -177,8 +177,9 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 materialRefreshLayout.postDelayed(() -> {
                     _deviceList.clear();
                     _bleListAdapter.setM_deviceList(_deviceList);
-                    //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-                    _bleListAdapter.notifyDataSetChanged();
+                    //使用notifyDataSetChanged()会保存当前的刷新状态，比如ListView滑动的位置
+                    //使用notifyDataSetInvalidated()会清空所有信息，重新布局
+                    _bleListAdapter.notifyDataSetInvalidated();
                     _listView.setAdapter(_bleListAdapter);
                     BeginScan();
                     //结束下拉刷新
@@ -240,7 +241,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                         _toolbar.setNavigationIcon(R.drawable.stop);
                         _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
                         MyBleUtil.Init(this, _bluetoothAdapter, _bluetoothLeScanner);
-                        MyBleUtil.SetListener(this);
                         break;
                     default:
                         StopScan();
@@ -379,7 +379,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 if (resultCode == -1) {
                     _bluetoothLeScanner = _bluetoothAdapter.getBluetoothLeScanner();
                     MyBleUtil.Init(ListActivity.this, _bluetoothAdapter, _bluetoothLeScanner);
-                    MyBleUtil.SetListener(this);
                     BeginScan();
                 }
                 //用户拒绝开启蓝牙
@@ -585,6 +584,14 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+    }
+
+    @Override
+    public void onResume()
+    {
+        //因为MyBleUtil为全局静态的，返回该界面的时候需要重新设置监听
+        MyBleUtil.SetListener(this);
+        super.onResume();
     }
 
     @Override
