@@ -13,6 +13,13 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.zistone.blecontrol.R;
 
+/**
+ * 各种类型的提示框
+ *
+ * @author LiWei
+ * @date 2020/7/18 9:33
+ * @email 652276536@qq.com
+ */
 public final class MyProgressDialogUtil {
 
     private static AlertDialog _alertDialog;
@@ -51,36 +58,33 @@ public final class MyProgressDialogUtil {
     public static void ShowCountDownTimerWarning(Context context, String btnStr, int timerCount, String title, String content, boolean touchOut, WarningListener listener) {
         //确保创建Dialog的Activity没有finish才显示
         if (context instanceof Activity && !((Activity) context).isFinishing()) {
-            if (null == _alertDialog) {
-                _alertDialog = new AlertDialog.Builder(context).create();
-                _alertDialog.setTitle(title);
-                _alertDialog.setMessage(content);
-                _alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, btnStr, (dialog, which) -> {
+            _alertDialog = new AlertDialog.Builder(context).create();
+            _alertDialog.setTitle(title);
+            _alertDialog.setMessage(content);
+            _alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, btnStr, (dialog, which) -> {
+                if (null != listener)
+                    listener.OnIKnow();
+            });
+            _alertDialog.setCancelable(touchOut);
+            _alertDialog.show();
+            Button btn = _alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            CountDownTimer countDownTimer = new CountDownTimer(timerCount, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    btn.setText(btnStr + "(" + millisUntilFinished / 1000 + ")");
+                }
+
+                @Override
+                public void onFinish() {
+                    if (null != _alertDialog) {
+                        _alertDialog.dismiss();
+                        _alertDialog = null;
+                    }
                     if (null != listener)
                         listener.OnIKnow();
-                });
-                _alertDialog.setCancelable(touchOut);
-                _alertDialog.show();
-                Button btn = _alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                CountDownTimer countDownTimer = new CountDownTimer(timerCount, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        btn.setText(btnStr + "(" + millisUntilFinished / 1000 + ")");
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        if (null != _alertDialog) {
-                            _alertDialog.dismiss();
-                            _alertDialog = null;
-                        }
-                        if (null != listener)
-                            listener.OnIKnow();
-                    }
-                };
-                countDownTimer.start();
-            }
-        } else {
+                }
+            };
+            countDownTimer.start();
             _alertDialog.show();
         }
     }
@@ -96,24 +100,20 @@ public final class MyProgressDialogUtil {
     public static void ShowProgressDialog(Context context, boolean touchOutSide, ProgressDialogListener listener, String str) {
         //确保创建Dialog的Activity没有finish才显示
         if (context instanceof Activity && !((Activity) context).isFinishing()) {
-            if (null == _alertDialog) {
-                _alertDialog = new AlertDialog.Builder(context, R.style.CustomProgressDialog).create();
-                View loadView = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null);
-                _alertDialog.setView(loadView, 0, 0, 0, 0);
-                _alertDialog.setCanceledOnTouchOutside(touchOutSide);
-                TextView textView = loadView.findViewById(R.id.txt_dialog);
-                textView.setText(str);
-                _alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (null != listener)
-                            listener.OnDismiss();
-                    }
-                });
-                _alertDialog.show();
-            } else {
-                _alertDialog.show();
-            }
+            _alertDialog = new AlertDialog.Builder(context, R.style.CustomProgressDialog).create();
+            View loadView = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null);
+            _alertDialog.setView(loadView, 0, 0, 0, 0);
+            _alertDialog.setCanceledOnTouchOutside(touchOutSide);
+            TextView textView = loadView.findViewById(R.id.txt_dialog);
+            textView.setText(str);
+            _alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (null != listener)
+                        listener.OnDismiss();
+                }
+            });
+            _alertDialog.show();
         }
     }
 
@@ -150,7 +150,7 @@ public final class MyProgressDialogUtil {
                     listener.OnCancel();
             });
             builder.setCancelable(touchOut);
-            builder.show();
+            _alertDialog = builder.show();
         }
     }
 
@@ -175,7 +175,7 @@ public final class MyProgressDialogUtil {
                     listener.OnIKnow();
             });
             builder.setCancelable(touchOut);
-            builder.show();
+            _alertDialog = builder.show();
         }
     }
 

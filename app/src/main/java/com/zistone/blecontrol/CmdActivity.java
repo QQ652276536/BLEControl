@@ -1,7 +1,6 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,16 +17,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
+import com.zistone.blecontrol.util.MyBleMessageListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
-import com.zistone.blecontrol.util.DialogFragmentListener;
+import com.zistone.blecontrol.util.MyProgressDialogListener;
+import com.zistone.blecontrol.util.MyProgressDialogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 
-public class CmdActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+public class CmdActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "CmdActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -48,11 +49,13 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     //是否连接成功、是否打开参数设置界面
     private boolean _isOpenParamSetting = false;
     private FragmentManager _fragmentManager;
-    private DialogFragmentListener _dialogFragmentListener;
+    private MyProgressDialogListener dialogListener;
     private int _nextEvent = 0;
     //读取内部事件的线程开关
     private volatile boolean _isEventReadThread = false, _isEventReadOver = false;
     private Myhandler _myHandler;
+    private MyBleConnectListener _connectListener;
+    private MyBleMessageListener _messageListener;
 
     static class Myhandler extends Handler {
         WeakReference<CmdActivity> _weakReference;
@@ -105,9 +108,14 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                     //打开控制参数修改界面的时候将查询结果传递过去
                     if (_cmdActivity._isOpenParamSetting) {
                         if (_cmdActivity._paramSetting == null) {
-                            _cmdActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                             bitStr5, bitStr6, bitStr7,
-                                                                                                             bitStr8}, _cmdActivity._dialogFragmentListener);
+                            _cmdActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1,
+                                                                                                             bitStr2,
+                                                                                                             bitStr3,
+                                                                                                             bitStr4,
+                                                                                                             bitStr5,
+                                                                                                             bitStr6,
+                                                                                                             bitStr7,
+                                                                                                             bitStr8}, _cmdActivity.dialogListener);
                             _cmdActivity._paramSetting.setCancelable(false);
                         }
                         _cmdActivity._paramSetting.show(_cmdActivity._fragmentManager, "ParamSettingDialogFragment");
@@ -438,7 +446,113 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void InitListener() {
-        _dialogFragmentListener = new DialogFragmentListener() {
+        _connectListener = new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+            }
+
+            @Override
+            public void OnConnecting() {
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                runOnUiThread(() -> MyProgressDialogUtil.ShowWarning(CmdActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> {
+                    Intent intent = new Intent(CmdActivity.this, ListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }));
+            }
+        };
+        _messageListener = new MyBleMessageListener() {
+            @Override
+            public void OnWriteSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                String[] strArray = result.split(" ");
+                String sendResult = "";
+                /*
+                 * 读取内部存储的事件记录的通信协议
+                 * 1、指令为13个字节
+                 * 2、执行读取事件记录的时候_btn12控件禁用
+                 * 以上2个条件可以用来判断是否正在执行读取事件记录
+                 *
+                 * */
+                if (strArray[8].equals("20") && byteArray.length == 13 && !_btn12.isEnabled()) {
+                    sendResult = "读取内部存储的事件记录";
+                } else if (strArray[8].equals("21")) {
+                    sendResult = "读取基本信息";
+                } else if (strArray[8].equals("22")) {
+                    sendResult = "读取GPS位置信息";
+                } else {
+                    String indexStr = strArray[11];
+                    switch (indexStr) {
+                        case "00":
+                            sendResult = "开门";
+                            break;
+                        case "01":
+                            sendResult = "读卡";
+                            break;
+                        case "02":
+                            sendResult = "测量电池电压";
+                            break;
+                        case "03":
+                            sendResult = "测量磁场强度";
+                            break;
+                        case "80":
+                            sendResult = "综合测试A";
+                            break;
+                        case "81":
+                            sendResult = "开一号门锁";
+                            break;
+                        case "82":
+                            sendResult = "开二号门锁";
+                            break;
+                        case "83":
+                            sendResult = "开全部门锁";
+                            break;
+                        case "86":
+                            sendResult = "查询内部控制参数";
+                            break;
+                        case "87":
+                            sendResult = "修改内部控制参数";
+                            break;
+                    }
+                }
+                _myHandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
+                Log.i(TAG, "成功发送'" + sendResult + "'的指令");
+            }
+
+            @Override
+            public void OnReadSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                Log.i(TAG, "接收：" + result);
+                String[] strArray = result.split(" ");
+                //一个包(20个字节)
+                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+                    Resolve(result);
+                    //清空缓存
+                    _stringBuffer = new StringBuffer();
+                }
+                //分包
+                else {
+                    if (!strArray[strArray.length - 1].equals("16")) {
+                        _stringBuffer.append(result + " ");
+                    }
+                    //最后一个包
+                    else {
+                        _stringBuffer.append(result);
+                        result = _stringBuffer.toString();
+                        Resolve(result);
+                        //清空缓存
+                        _stringBuffer = new StringBuffer();
+                    }
+                }
+            }
+        };
+        dialogListener = new MyProgressDialogListener() {
             @Override
             public void OnDismiss(String tag) {
             }
@@ -462,108 +576,6 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
         return false;
-    }
-
-    @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        String[] strArray = result.split(" ");
-        String sendResult = "";
-        /*
-         * 读取内部存储的事件记录的通信协议
-         * 1、指令为13个字节
-         * 2、执行读取事件记录的时候_btn12控件禁用
-         * 以上2个条件可以用来判断是否正在执行读取事件记录
-         *
-         * */
-        if (strArray[8].equals("20") && byteArray.length == 13 && !_btn12.isEnabled()) {
-            sendResult = "读取内部存储的事件记录";
-        } else if (strArray[8].equals("21")) {
-            sendResult = "读取基本信息";
-        } else if (strArray[8].equals("22")) {
-            sendResult = "读取GPS位置信息";
-        } else {
-            String indexStr = strArray[11];
-            switch (indexStr) {
-                case "00":
-                    sendResult = "开门";
-                    break;
-                case "01":
-                    sendResult = "读卡";
-                    break;
-                case "02":
-                    sendResult = "测量电池电压";
-                    break;
-                case "03":
-                    sendResult = "测量磁场强度";
-                    break;
-                case "80":
-                    sendResult = "综合测试A";
-                    break;
-                case "81":
-                    sendResult = "开一号门锁";
-                    break;
-                case "82":
-                    sendResult = "开二号门锁";
-                    break;
-                case "83":
-                    sendResult = "开全部门锁";
-                    break;
-                case "86":
-                    sendResult = "查询内部控制参数";
-                    break;
-                case "87":
-                    sendResult = "修改内部控制参数";
-                    break;
-            }
-        }
-        _myHandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
-        Log.i(TAG, "成功发送'" + sendResult + "'的指令");
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        Log.i(TAG, "接收：" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
-        }
     }
 
     @Override
@@ -739,6 +751,8 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         _btn14 = findViewById(R.id.btn14);
         _btn14.setOnClickListener(this);
         InitListener();
+        MyBleUtil.SetConnectListener(_connectListener);
+        MyBleUtil.SetMessageListener(_messageListener);
     }
 
 }

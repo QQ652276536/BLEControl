@@ -1,7 +1,6 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyInstallAPKUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
@@ -26,7 +25,7 @@ import com.zistone.blecontrol.util.MyProgressDialogUtil;
 import java.util.Map;
 import java.util.UUID;
 
-public class MenuActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+public class MenuActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MenuActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -87,40 +86,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_setting, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-        Log.i(TAG, "成功建立连接");
-        MyProgressDialogUtil.DismissAlertDialog();
-        SetConnectSuccess(true);
-        //返回时告知该设备已成功连接
-        setResult(2, new Intent());
-    }
-
-    @Override
-    public void OnConnecting() {
-        Log.i(TAG, "正在建立连接...");
-        MyProgressDialogUtil.ShowProgressDialog(this, true, null, "正在连接...\n如长时间未连\n接请返回重试");
-    }
-
-    @Override
-    public void OnDisConnected() {
-        Log.e(TAG, "已断开连接");
-        MyProgressDialogUtil.DismissAlertDialog();
-        SetConnectSuccess(false);
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
     }
 
     @Override
@@ -229,8 +194,32 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
         _btn5.setOnClickListener(this::onClick);
         _btn7.setOnClickListener(this::onClick);
         _btn8.setOnClickListener(this::onClick);
-        //蓝牙监听
-        MyBleUtil.SetListener(this);
+        MyBleUtil.SetConnectListener(new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+                Log.i(TAG, "成功建立连接");
+                MyProgressDialogUtil.DismissAlertDialog();
+                SetConnectSuccess(true);
+                //返回时告知该设备已成功连接
+                setResult(2, new Intent());
+            }
+
+            @Override
+            public void OnConnecting() {
+                Log.i(TAG, "正在建立连接...");
+                MyProgressDialogUtil.ShowProgressDialog(MenuActivity.this, true, null, "正在连接...\n如长时间未连\n接请返回重试");
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                SetConnectSuccess(false);
+                runOnUiThread(() -> {
+                    MyProgressDialogUtil.DismissAlertDialog();
+                    MyProgressDialogUtil.ShowWarning(MenuActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> finish());
+                });
+            }
+        });
         //连接
         Log.i(TAG, "开始连接蓝牙...");
         MyBleUtil.ConnectDevice(_bluetoothDevice, _uuidMap);

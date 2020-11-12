@@ -1,16 +1,13 @@
 package com.zistone.blecontrol;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanResult;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +17,6 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -44,7 +40,7 @@ import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.zistone.blecontrol.controls.BluetoothListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleScanListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyDeviceFilterShared;
 import com.zistone.blecontrol.util.MyConvertUtil;
@@ -54,7 +50,6 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +59,7 @@ import java.util.UUID;
 import pl.droidsonroids.gif.GifImageView;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
-        TextWatcher, SeekBar.OnSeekBarChangeListener, BleListener {
+        TextWatcher, SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = "ListActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -117,6 +112,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private boolean _isBtnUpDownFlag = false, _isStartOrStopScan = false, _isPermissionRequested = false;
     private MyHandler _myHandler;
     private FragmentManager _fragmentManager;
+    private MyBleScanListener _scanListener;
 
     static class MyHandler extends Handler {
         private WeakReference<ListActivity> _weakReference;
@@ -165,6 +161,47 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
      * 统一初始化监听
      */
     private void InitListener() {
+        _scanListener = new MyBleScanListener() {
+            /**
+             * 扫描到BLE设备
+             * @param result
+             */
+            @Override
+            public void OnScanLeResult(ScanResult result) {
+                BluetoothDevice bluetoothDevice = result.getDevice();
+                String name = bluetoothDevice.getName();
+                String address = bluetoothDevice.getAddress();
+                int rssi = result.getRssi();
+                int state = bluetoothDevice.getBondState();
+                Log.i(TAG, String.format("扫描到设备%s的信号强度%d", address, rssi));
+                MyBluetoothDevice device = new MyBluetoothDevice();
+                device.setName(name);
+                device.setAddress(address);
+                device.setRssi(rssi);
+                device.setBoundState(state);
+                device.setBluetoothDevice(bluetoothDevice);
+                //设备去重
+                if (!_deviceList.contains(device)) {
+                    _deviceList.add(device);
+                }
+                //根据条件筛选设备
+                OnlyShowSetNameSameDevice();
+                OnlyShowSetAddressSameDevice();
+                OnlyShowSetRssiSameDevice();
+                //按照信号强度降序排序
+                Collections.sort(_deviceList, (o1, o2) -> {
+                    if (o1.getRssi() > o2.getRssi())
+                        return -1;
+                    if (o1.getRssi() < o2.getRssi())
+                        return 1;
+                    return 0;
+                });
+                _bleListAdapter.setM_deviceList(_deviceList);
+                //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
+                _bleListAdapter.notifyDataSetChanged();
+                _listView.setOnItemClickListener(ListActivity.this::onItemClick);
+            }
+        };
         _materialRefreshListener = new MaterialRefreshListener() {
             /**
              * 下拉刷新
@@ -292,37 +329,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                     iterator.remove();
             }
         }
-    }
-
-    /**
-     * 根据包名启动APK
-     *
-     * @param context
-     * @param packageName
-     * @return
-     */
-    private Intent GetAppOpenIntentByPackageName(Context context, String packageName) {
-        String mainAct = null;
-        PackageManager pkgMag = context.getPackageManager();
-        //ACTION_MAIN是隐藏启动的action, 你也可以自定义
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        //CATEGORY_LAUNCHER有了这个,你的程序就会出现在桌面上
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        //FLAG_ACTIVITY_RESET_TASK_IF_NEEDED 按需启动的关键,如果任务队列中已经存在,则重建程序
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        @SuppressLint("WrongConstant") List<ResolveInfo> list = pkgMag.queryIntentActivities(intent, PackageManager.GET_ACTIVITIES);
-        for (int i = 0; i < list.size(); i++) {
-            ResolveInfo info = list.get(i);
-            if (info.activityInfo.packageName.equals(packageName)) {
-                mainAct = info.activityInfo.name;
-                break;
-            }
-        }
-        if (TextUtils.isEmpty(mainAct))
-            return null;
-        intent.setComponent(new ComponentName(packageName, mainAct));
-        return intent;
     }
 
     /**
@@ -518,79 +524,12 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         ShowSetFilterContent();
     }
 
-    /**
-     * 扫描到BLE设备
-     *
-     * @param result
-     */
-    @Override
-    public void OnScanLeResult(ScanResult result) {
-        BluetoothDevice bluetoothDevice = result.getDevice();
-        String name = bluetoothDevice.getName();
-        String address = bluetoothDevice.getAddress();
-        int rssi = result.getRssi();
-        int state = bluetoothDevice.getBondState();
-        Log.i(TAG, String.format("扫描到设备%s的信号强度%d", address, rssi));
-        MyBluetoothDevice device = new MyBluetoothDevice();
-        device.setName(name);
-        device.setAddress(address);
-        device.setRssi(rssi);
-        device.setBoundState(state);
-        device.setBluetoothDevice(bluetoothDevice);
-        //设备去重
-        if (!_deviceList.contains(device)) {
-            _deviceList.add(device);
-        }
-        //根据条件筛选设备
-        OnlyShowSetNameSameDevice();
-        OnlyShowSetAddressSameDevice();
-        OnlyShowSetRssiSameDevice();
-        //按照信号强度降序排序
-        Collections.sort(_deviceList, new Comparator<MyBluetoothDevice>() {
-            @Override
-            public int compare(MyBluetoothDevice o1, MyBluetoothDevice o2) {
-                if (o1.getRssi() > o2.getRssi())
-                    return -1;
-                if (o1.getRssi() < o2.getRssi())
-                    return 1;
-                return 0;
-            }
-        });
-        _bleListAdapter.setM_deviceList(_deviceList);
-        //使用notifyDataSetChanged()会保存当前的状态信息,然后更新适配器里的内容
-        _bleListAdapter.notifyDataSetChanged();
-        _listView.setOnItemClickListener(this);
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-    }
-
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
     }
 
     @Override
-    public void onResume()
-    {
-        //因为MyBleUtil为全局静态的，返回该界面的时候需要重新设置监听
-        MyBleUtil.SetListener(this);
+    public void onResume() {
         super.onResume();
     }
 
@@ -689,6 +628,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         ShowSetFilterContent();
         //所有的控件、对象都实例化后再初始化回调方法
         InitListener();
+        MyBleUtil.SetScanListener(_scanListener);
         //下拉刷新
         _materialRefreshLayout.setMaterialRefreshListener(_materialRefreshListener);
         _materialRefreshLayout.autoRefresh();

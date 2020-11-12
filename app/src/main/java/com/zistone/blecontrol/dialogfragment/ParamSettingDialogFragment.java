@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.zistone.blecontrol.R;
-import com.zistone.blecontrol.util.DialogFragmentListener;
+import com.zistone.blecontrol.util.MyProgressDialogListener;
 
 /**
  * 修改内部控制参数
@@ -30,7 +30,7 @@ public class ParamSettingDialogFragment extends DialogFragment implements View.O
 
     private static final String TAG = "ParamSettingDialogFragment";
     private static final String ARG_PARAM1 = "param1";
-    private static DialogFragmentListener _dialogFragmentListener;
+    private static MyProgressDialogListener dialogListener;
     private Context _context;
     private View _view;
     private Button _btn1;
@@ -44,8 +44,8 @@ public class ParamSettingDialogFragment extends DialogFragment implements View.O
     private CheckBox _chk7;
     private CheckBox _chk8;
 
-    public static ParamSettingDialogFragment NewInstance(String[] strArray, DialogFragmentListener listener) {
-        _dialogFragmentListener = listener;
+    public static ParamSettingDialogFragment NewInstance(String[] strArray, MyProgressDialogListener listener) {
+        dialogListener = listener;
         ParamSettingDialogFragment fragment = new ParamSettingDialogFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, strArray);
@@ -83,7 +83,7 @@ public class ParamSettingDialogFragment extends DialogFragment implements View.O
                 String hexStr = Integer.toHexString(value);
                 hexStr = hexStr.length() == 1 ? "0" + hexStr : hexStr;
                 String data = "680000000000006810000587000000" + hexStr.toUpperCase() + "EB16";
-                _dialogFragmentListener.OnComfirm(TAG, data);
+                dialogListener.OnComfirm(TAG, data);
             }
             break;
         }

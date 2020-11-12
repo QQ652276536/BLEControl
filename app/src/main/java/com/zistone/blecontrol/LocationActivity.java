@@ -1,16 +1,12 @@
 package com.zistone.blecontrol;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
@@ -23,7 +19,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +44,8 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
+import com.zistone.blecontrol.util.MyBleMessageListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
@@ -58,15 +54,13 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BleListener,
-        BaiduMap.OnMapClickListener, OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener,
-        BaiduMap.OnMapLoadedCallback {
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener, BaiduMap.OnMapClickListener,
+        OnGetGeoCoderResultListener, Serializable, BaiduMap.OnMarkerClickListener, BaiduMap.OnMapLoadedCallback {
 
     private static final String TAG = "LocationActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -136,6 +130,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     };
+    private MyBleConnectListener _connectListener;
+    private MyBleMessageListener _messageListener;
 
     static class MyHandler extends Handler {
         WeakReference<LocationActivity> _weakReference;
@@ -322,6 +318,81 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private void InitListener() {
+        _connectListener = new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+            }
+
+            @Override
+            public void OnConnecting() {
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                runOnUiThread(() -> {
+                    MyProgressDialogUtil.ShowWarning(LocationActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> {
+                        Intent intent = new Intent(LocationActivity.this, ListActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    });
+                });
+            }
+        };
+        _messageListener = new MyBleMessageListener() {
+            @Override
+            public void OnWriteSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                String[] strArray = result.split(" ");
+                String indexStr = strArray[11];
+                switch (indexStr) {
+                    case "80":
+                        Log.i(TAG, "发送'综合测试'指令：" + TESTA);
+                        break;
+                    case "81":
+                        Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
+                        break;
+                    case "82":
+                        Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
+                        break;
+                    case "83":
+                        Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
+                        break;
+                }
+            }
+
+            @Override
+            public void OnReadSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                Log.i(TAG, "收到：" + result);
+                String[] strArray = result.split(" ");
+                //一个包(20个字节)
+                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+                    Resolve(result);
+                    //清空缓存
+                    _stringBuffer = new StringBuffer();
+                }
+                //分包
+                else {
+                    if (!strArray[strArray.length - 1].equals("16")) {
+                        _stringBuffer.append(result + " ");
+                    }
+                    //最后一个包
+                    else {
+                        _stringBuffer.append(result);
+                        result = _stringBuffer.toString();
+                        Resolve(result);
+                        //清空缓存
+                        _stringBuffer = new StringBuffer();
+                    }
+                }
+            }
+        };
+    }
+
     /**
      * 解析硬件返回的数据
      *
@@ -490,72 +561,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        String[] strArray = result.split(" ");
-        String indexStr = strArray[11];
-        switch (indexStr) {
-            case "80":
-                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
-                break;
-            case "81":
-                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
-                break;
-            case "82":
-                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
-                break;
-            case "83":
-                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
-                break;
-        }
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        Log.i(TAG, "收到：" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
-        }
-    }
-
-    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
     }
 
@@ -675,8 +680,9 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         _baiduMap.setOnMarkerClickListener(this::onMarkerClick);
         //地图加载完毕回调
         _baiduMap.setOnMapLoadedCallback(this::onMapLoaded);
-        //初始化蓝牙
-        MyBleUtil.SetListener(this);
+        InitListener();
+        MyBleUtil.SetConnectListener(_connectListener);
+        MyBleUtil.SetMessageListener(_messageListener);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -30,7 +29,8 @@ import com.zistone.blecontrol.baidutts.util.IOfflineResourceConst;
 import com.zistone.blecontrol.baidutts.util.MessageListener;
 import com.zistone.blecontrol.baidutts.util.OfflineResource;
 import com.zistone.blecontrol.controls.AmountView;
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
+import com.zistone.blecontrol.util.MyBleMessageListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyDeviceFilterShared;
@@ -47,7 +47,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+public class TemperatureActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "TemperatureActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -91,6 +91,8 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     private int _speechState = 3;
     private MediaPlayer _mediaPlayer1, _mediaPlayer2;
     private MyHandler _myHandler;
+    private MyBleConnectListener _connectListener;
+    private MyBleMessageListener _messageListener;
 
     static class MyHandler extends Handler {
         private WeakReference<TemperatureActivity> _weakReference;
@@ -158,6 +160,53 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
             _speechState = message.what;
         }
     };
+
+    private void InitListener() {
+        _connectListener = new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+            }
+
+            @Override
+            public void OnConnecting() {
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                runOnUiThread(() -> MyProgressDialogUtil.ShowWarning(TemperatureActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> {
+                    Intent intent = new Intent(TemperatureActivity.this, ListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }));
+            }
+        };
+        _messageListener = new MyBleMessageListener() {
+            @Override
+            public void OnWriteSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                String[] strArray = result.split(" ");
+                String indexStr = strArray[11];
+                switch (indexStr) {
+                }
+            }
+
+            @Override
+            public void OnReadSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                //Log.i(TAG, "接收:" + result);
+                String[] strArray = result.split(" ");
+                //一个包(20个字节)
+                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+                    Resolve(result);
+                    //清空缓存
+                    _stringBuffer = new StringBuffer();
+                }
+            }
+        };
+    }
 
     /**
      * 准备语音合成的内容
@@ -415,61 +464,6 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-        DisConnect();
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        String[] strArray = result.split(" ");
-        String indexStr = strArray[11];
-        switch (indexStr) {
-        }
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        //Log.i(TAG, "接收:" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
-        }
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
             this.finish();
@@ -558,6 +552,9 @@ public class TemperatureActivity extends AppCompatActivity implements View.OnCli
         _amountView.setCurrent(Double.valueOf(MyDeviceFilterShared.GetTemperatureParam(getApplicationContext())));
         //初始化完再设置监听
         _amountView.setLister(_onAmountChangeListener);
+        InitListener();
+        MyBleUtil.SetConnectListener(_connectListener);
+        MyBleUtil.SetMessageListener(_messageListener);
     }
 
 }

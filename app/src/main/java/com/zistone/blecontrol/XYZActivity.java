@@ -1,7 +1,6 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +16,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zistone.blecontrol.util.BleListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
+import com.zistone.blecontrol.util.MyBleMessageListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class XYZActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+public class XYZActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "XYZActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -66,6 +66,8 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
         }
     };
     private Timer _refreshTimer2222 = new Timer();
+    private MyBleConnectListener _connectListener;
+    private MyBleMessageListener _messageListener;
 
     static class MyHandler extends Handler {
         WeakReference<XYZActivity> _weakReference;
@@ -102,6 +104,51 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
             if (offset > xyzActivity._debugView.getHeight())
                 xyzActivity._debugView.scrollTo(0, offset - xyzActivity._debugView.getHeight());
         }
+    }
+
+    private void InitListener() {
+        _connectListener = new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+            }
+
+            @Override
+            public void OnConnecting() {
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                runOnUiThread(() -> MyProgressDialogUtil.ShowWarning(XYZActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> {
+                    Intent intent = new Intent(XYZActivity.this, ListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }));
+            }
+        };
+        _messageListener = new MyBleMessageListener() {
+            @Override
+            public void OnWriteSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                String[] strArray = result.split(" ");
+                String indexStr = strArray[11];
+            }
+
+            @Override
+            public void OnReadSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                Log.i(TAG, "收到：" + result);
+                String[] strArray = result.split(" ");
+                //一个包(20个字节)
+                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+                    Resolve(result);
+                    //清空缓存
+                    _stringBuffer = new StringBuffer();
+                }
+            }
+        };
     }
 
     /**
@@ -164,44 +211,6 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        String[] strArray = result.split(" ");
-        String indexStr = strArray[11];
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        Log.i(TAG, "收到：" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-    }
-
-    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
     }
 
@@ -226,8 +235,9 @@ public class XYZActivity extends AppCompatActivity implements View.OnClickListen
         _btnBottom.setOnClickListener(this::onClick);
         _btnClear.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        //初始化蓝牙
-        MyBleUtil.SetListener(this);
+        InitListener();
+        MyBleUtil.SetConnectListener(_connectListener);
+        MyBleUtil.SetMessageListener(_messageListener);
     }
 
     @Override

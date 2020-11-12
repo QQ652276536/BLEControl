@@ -1,7 +1,6 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,8 +22,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
 import com.zistone.blecontrol.dialogfragment.ParamSettingDialogFragment;
-import com.zistone.blecontrol.util.BleListener;
-import com.zistone.blecontrol.util.DialogFragmentListener;
+import com.zistone.blecontrol.util.MyBleConnectListener;
+import com.zistone.blecontrol.util.MyBleMessageListener;
+import com.zistone.blecontrol.util.MyProgressDialogListener;
 import com.zistone.blecontrol.util.MyBleUtil;
 import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
@@ -33,7 +33,7 @@ import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PowerActivity extends AppCompatActivity implements View.OnClickListener, BleListener {
+public class PowerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "PowerActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -52,11 +52,14 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private static final String OPENDOOR2_COMM = "680000000000006810000182E716";
     //开全部门锁
     private static final String OPENDOORS_COMM = "680000000000006810000183E716";
+    //开三号门锁
+    private static final String OPENDOOR3_COMM = "680000000000006810000184E716";
     private static final int RECEIVE_BASEINFO = 21;
     private static final int RECEIVE_LOCATION = 22;
     private static final int RECEIVE_TESTA = 8002;
     private static final int RECEIVE_OPENDOORS1 = 8102;
     private static final int RECEIVE_OPENDOORS2 = 8202;
+    private static final int RECEIVE_OPENDOORS3 = 8402;
     private static final int RECEIVE_OPENALLDOORS = 8302;
     private static final int SEND_SEARCH_CONTROLPARAM = 86;
     private static final int RECEIVE_SEARCH_CONTROLPARAM = 8602;
@@ -66,10 +69,10 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private Toolbar _toolbar;
     private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
     private TextView _debugView;
-    private Button _btn2, _btn3, _btn4;
+    private Button _btn2, _btn3, _btn4, _btn5;
     private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion;
     private StringBuffer _stringBuffer = new StringBuffer();
-    private DialogFragmentListener _dialogFragmentListener;
+    private MyProgressDialogListener dialogListener;
     private MyHandler _myHandler;
     //是否打开参数设置界面
     private boolean _isOpenParamSetting = false;
@@ -95,6 +98,8 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
+    private MyBleConnectListener _connectListener;
+    private MyBleMessageListener _messageListener;
 
     static class MyHandler extends Handler {
         WeakReference<PowerActivity> _weakReference;
@@ -198,27 +203,17 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 }
                 break;
                 //一号门锁
-                case RECEIVE_OPENDOORS1: {
+                case RECEIVE_OPENDOORS1:
+                    //二号门锁
+                case RECEIVE_OPENDOORS2:
+                    //全部门锁
+                case RECEIVE_OPENALLDOORS:
+                    //开三号门锁
+                case RECEIVE_OPENDOORS3: {
                     String[] strArray = result.split(" ");
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
-                    String doorState2 = String.valueOf(bitStr.charAt(7));
-                }
-                break;
-                //二号门锁
-                case RECEIVE_OPENDOORS2: {
-                    String[] strArray = result.split(" ");
-                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
-                    String doorState2 = String.valueOf(bitStr.charAt(7));
-                }
-                break;
-                //全部门锁
-                case RECEIVE_OPENALLDOORS: {
-                    String[] strArray = result.split(" ");
-                    byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
-                    String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
-                    String doorState1 = String.valueOf(bitStr.charAt(7));
+                    String doorState = String.valueOf(bitStr.charAt(7));
                 }
                 break;
                 //发送查询内部控制参数的指令
@@ -258,7 +253,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                                                                                                                bitStr5,
                                                                                                                bitStr6,
                                                                                                                bitStr7,
-                                                                                                               bitStr8}, _powerActivity._dialogFragmentListener);
+                                                                                                               bitStr8}, _powerActivity.dialogListener);
                             _powerActivity._paramSetting.setCancelable(false);
                         }
                         _powerActivity._paramSetting.show(_powerActivity._fragmentManager, "ParamSettingDialogFragment");
@@ -379,7 +374,80 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void InitListener() {
-        _dialogFragmentListener = new DialogFragmentListener() {
+        _connectListener = new MyBleConnectListener() {
+            @Override
+            public void OnConnected() {
+            }
+
+            @Override
+            public void OnConnecting() {
+            }
+
+            @Override
+            public void OnDisConnected() {
+                Log.e(TAG, "连接已断开");
+                runOnUiThread(() -> MyProgressDialogUtil.ShowWarning(PowerActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", false, () -> {
+                    Intent intent = new Intent(PowerActivity.this, ListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }));
+            }
+        };
+        _messageListener = new MyBleMessageListener() {
+            @Override
+            public void OnWriteSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                String[] strArray = result.split(" ");
+                String indexStr = strArray[11];
+                switch (indexStr) {
+                    case "80":
+                        Log.i(TAG, "发送'综合测试'指令：" + TESTA);
+                        break;
+                    case "81":
+                        Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
+                        break;
+                    case "82":
+                        Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
+                        break;
+                    case "83":
+                        Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
+                        break;
+                    case "84":
+                        Log.i(TAG, "发送开三号门锁：" + OPENDOOR3_COMM);
+                        break;
+                }
+            }
+
+            @Override
+            public void OnReadSuccess(byte[] byteArray) {
+                String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
+                result = MyConvertUtil.StrAddCharacter(result, 2, " ");
+                Log.i(TAG, "收到：" + result);
+                String[] strArray = result.split(" ");
+                //一个包(20个字节)
+                if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
+                    Resolve(result);
+                    //清空缓存
+                    _stringBuffer = new StringBuffer();
+                }
+                //分包
+                else {
+                    if (!strArray[strArray.length - 1].equals("16")) {
+                        _stringBuffer.append(result + " ");
+                    }
+                    //最后一个包
+                    else {
+                        _stringBuffer.append(result);
+                        result = _stringBuffer.toString();
+                        Resolve(result);
+                        //清空缓存
+                        _stringBuffer = new StringBuffer();
+                    }
+                }
+            }
+        };
+        dialogListener = new MyProgressDialogListener() {
             @Override
             public void OnDismiss(String tag) {
             }
@@ -466,73 +534,11 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
             case R.id.button4_power: {
                 MyBleUtil.SendComm(OPENDOORS_COMM);
             }
+            //开三号门锁
+            case R.id.button5_power: {
+                MyBleUtil.SendComm(OPENDOOR3_COMM);
+            }
             break;
-        }
-    }
-
-    @Override
-    public void OnScanLeResult(ScanResult result) {
-    }
-
-    @Override
-    public void OnConnected() {
-    }
-
-    @Override
-    public void OnConnecting() {
-    }
-
-    @Override
-    public void OnDisConnected() {
-    }
-
-    @Override
-    public void OnWriteSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        String[] strArray = result.split(" ");
-        String indexStr = strArray[11];
-        switch (indexStr) {
-            case "80":
-                Log.i(TAG, "发送'综合测试'指令：" + TESTA);
-                break;
-            case "81":
-                Log.i(TAG, "发送开一号门锁：" + OPENDOOR1_COMM);
-                break;
-            case "82":
-                Log.i(TAG, "发送开二号门锁：" + OPENDOOR2_COMM);
-                break;
-            case "83":
-                Log.i(TAG, "发送开全部门锁：" + OPENDOORS_COMM);
-                break;
-        }
-    }
-
-    @Override
-    public void OnReadSuccess(byte[] byteArray) {
-        String result = MyConvertUtil.ByteArrayToHexStr(byteArray);
-        result = MyConvertUtil.StrAddCharacter(result, 2, " ");
-        Log.i(TAG, "收到：" + result);
-        String[] strArray = result.split(" ");
-        //一个包(20个字节)
-        if (strArray[0].equals("68") && strArray[strArray.length - 1].equals("16")) {
-            Resolve(result);
-            //清空缓存
-            _stringBuffer = new StringBuffer();
-        }
-        //分包
-        else {
-            if (!strArray[strArray.length - 1].equals("16")) {
-                _stringBuffer.append(result + " ");
-            }
-            //最后一个包
-            else {
-                _stringBuffer.append(result);
-                result = _stringBuffer.toString();
-                Resolve(result);
-                //清空缓存
-                _stringBuffer = new StringBuffer();
-            }
         }
     }
 
@@ -565,6 +571,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         _btnReturn = findViewById(R.id.btnReturn_power);
         _btn2 = findViewById(R.id.button2_power);
         _btn3 = findViewById(R.id.button3_power);
+        _btn5 = findViewById(R.id.button5_power);
         _btn4 = findViewById(R.id.button4_power);
         _btnTop = findViewById(R.id.btnTop_power);
         _btnBottom = findViewById(R.id.btnBottom_power);
@@ -576,10 +583,11 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         _btn2.setOnClickListener(this::onClick);
         _btn3.setOnClickListener(this::onClick);
         _btn4.setOnClickListener(this::onClick);
+        _btn5.setOnClickListener(this::onClick);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        //初始化蓝牙
-        MyBleUtil.SetListener(this);
         InitListener();
+        MyBleUtil.SetConnectListener(_connectListener);
+        MyBleUtil.SetMessageListener(_messageListener);
     }
 
     @Override

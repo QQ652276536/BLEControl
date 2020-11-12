@@ -39,7 +39,9 @@ public final class MyBleUtil {
     //    //时间:扫描到设置时间后执行onBatchScanResults的回调
     //    private static ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
-    private static BleListener _bleListener;
+    private static MyBleScanListener _scanListener;
+    private static MyBleConnectListener _connectListener;
+    private static MyBleMessageListener _messageListener;
     private static BluetoothGatt _bluetoothGatt;
     private static BluetoothGattService _bluetoothGattService;
     private static BluetoothGattCharacteristic _bluetoothGattCharacteristic_write, _bluetoothGattCharacteristic_read;
@@ -51,7 +53,7 @@ public final class MyBleUtil {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            _bleListener.OnScanLeResult(result);
+            _scanListener.OnScanLeResult(result);
         }
 
         @Override
@@ -82,8 +84,8 @@ public final class MyBleUtil {
         /**
          * 连接状态改变时回调
          * @param gatt
-         * @param status
-         * @param newState
+         * @param status Gatt的状态
+         * @param newState 连接状态
          */
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -94,6 +96,7 @@ public final class MyBleUtil {
             if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                 if (_bluetoothGatt != null)
                     _bluetoothGatt.close();
+                _connectListener.OnDisConnected();
             }
         }
 
@@ -116,7 +119,7 @@ public final class MyBleUtil {
                     BluetoothGattDescriptor descriptor = _bluetoothGattCharacteristic_read.getDescriptor(CONFIG_UUID);
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     _bluetoothGatt.writeDescriptor(descriptor);
-                    _bleListener.OnConnected();
+                    _connectListener.OnConnected();
                 }
             }
         }
@@ -131,7 +134,7 @@ public final class MyBleUtil {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             byte[] byteArray = characteristic.getValue();
-            _bleListener.OnWriteSuccess(byteArray);
+            _messageListener.OnWriteSuccess(byteArray);
         }
 
         /**
@@ -142,18 +145,41 @@ public final class MyBleUtil {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             byte[] byteArray = characteristic.getValue();
-            _bleListener.OnReadSuccess(byteArray);
+            _messageListener.OnReadSuccess(byteArray);
         }
     };
 
+    /**
+     * 私有构造方法，禁止外部实例化
+     */
     private MyBleUtil() {
     }
 
     /**
-     * @param listener 接口回调
+     * 设置扫描监听
+     *
+     * @param listener
      */
-    public static void SetListener(BleListener listener) {
-        _bleListener = listener;
+    public static void SetScanListener(MyBleScanListener listener) {
+        _scanListener = listener;
+    }
+
+    /**
+     * 设置连接监听
+     *
+     * @param listener
+     */
+    public static void SetConnectListener(MyBleConnectListener listener) {
+        _connectListener = listener;
+    }
+
+    /**
+     * 设置消息监听
+     *
+     * @param listener
+     */
+    public static void SetMessageListener(MyBleMessageListener listener) {
+        _messageListener = listener;
     }
 
     /**
@@ -248,22 +274,7 @@ public final class MyBleUtil {
         CONFIG_UUID = map.get("CONFIG_UUID");
         _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
         //设备正在连接中,如果连接成功会执行回调函数discoverServices()
-        _bleListener.OnConnecting();
-
-        //        if(_bluetoothGatt == null)
-        //        {
-        //            _bluetoothGatt = device.connectGatt(_context, false, _bluetoothGattCallback);
-        //            //设备正在连接中,如果连接成功会执行回调函数discoverServices()
-        //            _listener.OnConnecting();
-        //        }
-        //        else
-        //        {
-        //            _bluetoothGatt.close();
-        //            //设备没有连接过是调用connectGatt()来连接,已经连接过后因意外断开则调用connect()来连接.
-        //            _bluetoothGatt.connect();
-        //            //启用发现服务
-        //            _bluetoothGatt.discoverServices();
-        //        }
+        _connectListener.OnConnecting();
     }
 
     /**

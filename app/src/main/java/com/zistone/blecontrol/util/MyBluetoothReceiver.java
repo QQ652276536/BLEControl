@@ -10,8 +10,8 @@ import android.util.Log;
 /**
  * 蓝牙广播
  */
-public class BluetoothReceiver extends BroadcastReceiver {
-    private static final String TAG = "BluetoothReceiver";
+public class MyBluetoothReceiver extends BroadcastReceiver {
+    private static final String TAG = "MyBluetoothReceiver";
     private Listener _listener;
 
     public interface Listener {
@@ -41,7 +41,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
         void ScannOverListener();
     }
 
-    public BluetoothReceiver(Listener listener) {
+    public MyBluetoothReceiver(Listener listener) {
         this._listener = listener;
     }
 
