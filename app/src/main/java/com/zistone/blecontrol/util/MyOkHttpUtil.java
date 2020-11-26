@@ -2,8 +2,6 @@ package com.zistone.blecontrol.util;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +90,7 @@ public final class MyOkHttpUtil implements Callback {
      * @param e
      */
     @Override
-    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+    public void onFailure(Call call, IOException e) {
         String content = e.toString();
         Log.e(TAG, "网络连接失败:" + content);
         _myOkHttpListener.AsyOkHttpResult(MESSAGE_ERROR_2, content);
@@ -110,7 +108,7 @@ public final class MyOkHttpUtil implements Callback {
      * @throws IOException
      */
     @Override
-    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+    public void onResponse(Call call, Response response) throws IOException {
         String result = response.body().string();
         if (response.isSuccessful()) {
             Log.i(TAG, "响应成功:" + result);

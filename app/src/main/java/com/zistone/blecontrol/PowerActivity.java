@@ -206,8 +206,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 case RECEIVE_OPENDOORS1:
                     //二号门锁
                 case RECEIVE_OPENDOORS2:
-                    //全部门锁
-                case RECEIVE_OPENALLDOORS:
                     //开三号门锁
                 case RECEIVE_OPENDOORS3: {
                     String[] strArray = result.split(" ");
@@ -216,6 +214,12 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String doorState = String.valueOf(bitStr.charAt(7));
                 }
                 break;
+                //全部门锁
+                case RECEIVE_OPENALLDOORS: {
+                    //全部（一二号）门锁有响应再发送开三号门锁
+                    //                    MyBleUtil.SendComm(OPENDOOR3_COMM);
+                    break;
+                }
                 //发送查询内部控制参数的指令
                 case SEND_SEARCH_CONTROLPARAM: {
                     MyBleUtil.SendComm(SEARCH_CONTROLPARAM_COMM);
@@ -533,6 +537,12 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
             //开全部门锁
             case R.id.button4_power: {
                 MyBleUtil.SendComm(OPENDOORS_COMM);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                MyBleUtil.SendComm(OPENDOOR3_COMM);
             }
             //开三号门锁
             case R.id.button5_power: {
