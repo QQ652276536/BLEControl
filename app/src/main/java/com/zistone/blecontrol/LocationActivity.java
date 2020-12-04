@@ -198,11 +198,13 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     _locationActivity._geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(_locationActivity._latLng).newVersion(1).radius(500));
                     MapStatus mapStatus = new MapStatus.Builder().target(_locationActivity._latLng).zoom(16).build();
                     MapStatusUpdate mapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-                    _locationActivity._baiduMap.setMapStatus(mapStatusUpdate);
-                    MarkerOptions markerOptions = new MarkerOptions().position(_locationActivity._latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
-                    //标记添加至地图中
-                    _locationActivity._baiduMap.clear();
-                    _locationActivity._baiduMap.addOverlay(markerOptions);
+                    if (null != _locationActivity._baiduMap) {
+                        _locationActivity._baiduMap.setMapStatus(mapStatusUpdate);
+                        MarkerOptions markerOptions = new MarkerOptions().position(_locationActivity._latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mark2));
+                        //标记添加至地图中
+                        _locationActivity._baiduMap.clear();
+                        _locationActivity._baiduMap.addOverlay(markerOptions);
+                    }
                 }
                 break;
                 //综合测试
