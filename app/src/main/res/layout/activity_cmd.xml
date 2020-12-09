@@ -227,6 +227,41 @@
                     android:textSize="16sp" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edt_empId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:ems="12"
+                    android:inputType="textEmailAddress"
+                    android:hint="请输入8位工号，为空代表查询"
+                    android:maxLength="8"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btnSetEmpId"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_weight="1"
+                    android:text="设置/查询工号"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

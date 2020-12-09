@@ -1,6 +1,7 @@
 package com.zistone.blecontrol;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,10 +9,14 @@ import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -27,6 +32,8 @@ import com.zistone.blecontrol.util.MyProgressDialogUtil;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CmdActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -41,7 +48,8 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
 
     private ImageButton _btnReturn, _btnClear, _btnTop, _btnBottom;
     private TextView _txt;
-    private Button _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btn13, _btn14;
+    private EditText _edtEmpId;
+    private Button _btn6, _btn7, _btn8, _btn9, _btn10, _btn11, _btn12, _btn13, _btn14, _btnSetEmpId;
     private BluetoothDevice _bluetoothDevice;
     private StringBuffer _stringBuffer = new StringBuffer();
     private Map<String, UUID> _uuidMap;
@@ -130,6 +138,31 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         }
+    }
+
+    /**
+     * 判断点击区域是否在控件内
+     *
+     * @param v
+     * @param event
+     * @return
+     */
+    public boolean JudgeClickArea(View v, MotionEvent event) {
+        if (v != null && (v instanceof EditText)) {
+            int[] leftTop = {0, 0};
+            //获取输入框当前的location位置
+            v.getLocationInWindow(leftTop);
+            int left = leftTop[0];
+            int top = leftTop[1];
+            int bottom = top + v.getHeight();
+            int right = left + v.getWidth();
+            if (event.getX() > left && event.getX() < right && event.getY() > top && event.getY() < bottom) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -442,6 +475,12 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                 break;
             }
         }
+        //设置/查询工号（响应正确）
+        else if (strArray[8].equals("A7")) {
+        }
+        //设置/查询工号（响应失败）
+        else if (strArray[8].equals("E7")) {
+        }
         _myHandler.obtainMessage(MESSAGE_2, "接收：" + receive).sendToTarget();
     }
 
@@ -518,6 +557,9 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                         case "87":
                             sendResult = "修改内部控制参数";
                             break;
+                        case "27":
+                            sendResult = "设置/查询8位工号";
+                            break;
                     }
                 }
                 _myHandler.obtainMessage(MESSAGE_2, "\r\n发送：" + MyConvertUtil.StrArrayToStr(strArray)).sendToTarget();
@@ -569,6 +611,27 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
             public void OnComfirm(String tag, Object[] objectArray) {
             }
         };
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            //是点击的输入框区域，则需要显示键盘，同时显示光标，反之，需要隐藏键盘、光标
+            if (JudgeClickArea(v, ev)) {
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (null != inputMethodManager) {
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    _edtEmpId.clearFocus();
+                }
+            }
+            return super.dispatchTouchEvent(ev);
+        }
+        //必不可少，否则所有的组件都不会有TouchEvent了
+        if (getWindow().superDispatchTouchEvent(ev)) {
+            return true;
+        }
+        return onTouchEvent(ev);
     }
 
     @Override
@@ -696,6 +759,33 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                 logStr = "发送'读取GPS位置信息'指令：" + hexStr;
             }
             break;
+            //设置8位工号
+            case R.id.btnSetEmpId: {
+                String empId = _edtEmpId.getText().toString();
+                if ("".equals(empId)) {
+                    hexStr = "68000000000000682700E316";
+                    logStr = "发送'查询8位工号'指令：" + hexStr;
+                } else {
+                    Pattern pattern = Pattern.compile("[A-Z a-z 0-9]{8}");
+                    Matcher matcher = pattern.matcher(empId);
+                    if (!matcher.matches()) {
+                        Toast.makeText(this, "请输入正确的工号", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String str = "";
+                    for (int i = 0; i < empId.length(); i++) {
+                        String temp = String.valueOf(empId.charAt(i));
+                        temp = MyConvertUtil.StrToHexStr(temp);
+                        temp = MyConvertUtil.AddZeroForNum(temp, 2, true);
+                        str += temp;
+                        Log.e(TAG, "temp:" + temp);
+                    }
+                    String[] strArray = MyConvertUtil.StrAddCharacter(str, 2, " ").split(" ");
+                    hexStr = "68000000000000682708" + strArray[0] + strArray[1] + strArray[2] + strArray[3] + strArray[4] + strArray[5] + strArray[6] + strArray[7] + "E316";
+                    logStr = "发送'设置8位工号'指令：" + hexStr;
+                }
+            }
+            break;
         }
         if (!hexStr.equals("")) {
             MyBleUtil.SendComm(hexStr);
@@ -726,6 +816,7 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         _btnReturn.setOnClickListener(this);
         _txt = findViewById(R.id.txt);
         _txt.setMovementMethod(ScrollingMovementMethod.getInstance());
+        _edtEmpId = findViewById(R.id.edt_empId);
         _btnClear = findViewById(R.id.btnClear);
         _btnClear.setOnClickListener(this);
         _btnTop = findViewById(R.id.btnTop);
@@ -750,6 +841,8 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
         _btn13.setOnClickListener(this);
         _btn14 = findViewById(R.id.btn14);
         _btn14.setOnClickListener(this);
+        _btnSetEmpId = findViewById(R.id.btnSetEmpId);
+        _btnSetEmpId.setOnClickListener(this::onClick);
         InitListener();
         MyBleUtil.SetConnectListener(_connectListener);
         MyBleUtil.SetMessageListener(_messageListener);
