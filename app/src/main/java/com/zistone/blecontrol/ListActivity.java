@@ -68,14 +68,14 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private static final int MESSAGE_1 = 1;
     //客户端特征配置、已知服务、写入特征的UUID、读取特征的UUID
     private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    //ZM301
-    private static UUID SERVICE_UUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
-    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
-    private static UUID READ_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
-    //    //OTA
-    //    private static UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
-    //    private static UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
-    //    private static UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
+    //    //ZM301
+    //    private static UUID SERVICE_UUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
+    //    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+    //    private static UUID READ_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    //OTA
+    private static UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
+    private static UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
+    private static UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
     //    //BlueNRG
     //    private static UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
