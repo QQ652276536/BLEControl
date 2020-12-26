@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="@string/title_read_xyz"
+            android:text="倾角测试"
             android:textColor="@color/white"
             android:textSize="28sp" />
     </androidx.appcompat.widget.Toolbar>

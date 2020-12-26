@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="@string/title_bluetooth_menu"
+            android:text="功能列表"
             android:textColor="@color/white"
             android:textSize="28sp" />
     </androidx.appcompat.widget.Toolbar>
@@ -100,35 +100,6 @@
             android:layout_margin="5sp">
 
             <Button
-                android:id="@+id/btn_temperature_menu"
-                style="@style/ButtonStyleA"
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:enabled="false"
-                android:text="体温测量" />
-
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5sp">
-
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center" />
-
-            <Button
                 android:id="@+id/btn_location_menu"
                 style="@style/ButtonStyleA"
                 android:layout_width="0sp"
@@ -136,12 +107,26 @@
                 android:layout_weight="1"
                 android:enabled="false"
                 android:text="地理位置" />
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5sp">
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center" />
 
             <Button
                 android:id="@+id/btn_ota_menu"
@@ -151,26 +136,12 @@
                 android:layout_weight="1"
                 android:enabled="false"
                 android:text="OTA升级" />
-
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5sp">
-
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center" />
 
             <Button
                 android:id="@+id/btn_xyz_menu"
@@ -179,7 +150,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="设备事件主动下发" />
+                android:text="事件主动下发测试" />
+
+            <TextView
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center" />
         </TableRow>
     </TableLayout>
 

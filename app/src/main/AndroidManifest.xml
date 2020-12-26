@@ -66,9 +66,6 @@
             android:name=".LocationActivity"
             android:label="设备定位" />
         <activity
-            android:name=".TemperatureActivity"
-            android:label="体温测量" />
-        <activity
             android:name=".CmdActivity"
             android:label="指令测试" />
         <activity

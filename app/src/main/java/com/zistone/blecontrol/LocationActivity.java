@@ -163,7 +163,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                     double voltage = Double.parseDouble(voltageStr1 + voltageStr2) / 1000;
                     double temperature = 23.0;
                     try {
-                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
+                        //                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -70,9 +70,4 @@ dependencies {
      */
     implementation files('libs/BaiduLBS_Android.jar')
 
-    /**
-     * 百度离在线语音
-     */
-    implementation files('libs/com.baidu.tts_2.5.5.109.20191014_01b8485.jar')
-
 }

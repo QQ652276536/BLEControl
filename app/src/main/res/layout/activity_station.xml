@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="@string/title_station"
+            android:text="基站定位"
             android:textColor="@color/white"
             android:textSize="28sp" />
     </androidx.appcompat.widget.Toolbar>

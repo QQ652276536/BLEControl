@@ -32,7 +32,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     private static final String ARG_PARAM2 = "param2";
 
     private ImageButton _btnReturn;
-    private Button _btn1, _btn2, _btn4, _btn5, _btn7, _btn8;
+    private Button _btn1, _btn2, _btn5, _btn7, _btn8;
     private TextView _txt1;
     private BluetoothDevice _bluetoothDevice;
     private Map<String, UUID> _uuidMap;
@@ -42,7 +42,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     private void SetConnectSuccess(boolean flag) {
         UpdateBtn(_btn1, flag);
         UpdateBtn(_btn2, flag);
-        UpdateBtn(_btn4, flag);
         UpdateBtn(_btn5, flag);
         UpdateBtn(_btn7, flag);
         UpdateBtn(_btn8, flag);
@@ -84,7 +83,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_setting, menu);
+//        getMenuInflater().inflate(R.menu.xxx, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -113,10 +112,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_cmd_menu:
                 intent = new Intent(this, CmdActivity.class);
-                intent.putExtra(ARG_PARAM1, _bluetoothDevice);
-                break;
-            case R.id.btn_temperature_menu:
-                intent = new Intent(this, TemperatureActivity.class);
                 intent.putExtra(ARG_PARAM1, _bluetoothDevice);
                 break;
             case R.id.btn_location_menu:
@@ -184,13 +179,11 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
         _txt1.setText(_bluetoothDevice.getName() + "\r\n" + _bluetoothDevice.getAddress());
         _btn1 = findViewById(R.id.btn_power_menu);
         _btn2 = findViewById(R.id.btn_cmd_menu);
-        _btn4 = findViewById(R.id.btn_temperature_menu);
         _btn5 = findViewById(R.id.btn_location_menu);
         _btn7 = findViewById(R.id.btn_ota_menu);
         _btn8 = findViewById(R.id.btn_xyz_menu);
         _btn1.setOnClickListener(this::onClick);
         _btn2.setOnClickListener(this::onClick);
-        _btn4.setOnClickListener(this::onClick);
         _btn5.setOnClickListener(this::onClick);
         _btn7.setOnClickListener(this::onClick);
         _btn8.setOnClickListener(this::onClick);
