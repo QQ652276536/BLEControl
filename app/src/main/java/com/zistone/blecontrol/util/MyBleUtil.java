@@ -37,7 +37,8 @@ public final class MyBleUtil {
     //    //SCAN_MODE_BALANCED:平衡模式
     //    //SCAN_MODE_OPPORTUNISTIC:这是一个特殊的扫描模式（投机取巧的）,就是说程序本身不会使用BLE扫描功能,而是借助其他的扫描结果.比如:程序A用了这个模式,其实程序A没有使用到蓝牙功能,但是程序B在扫描的话,程序B的扫描结果会共享给程序A
     //    //时间:扫描到设置时间后执行onBatchScanResults的回调
-    //    private static ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
+    //    private static ScanSettings _scanSettings = new ScanSettings.Builder().setReportDelay(15 * 1000).setScanMode(ScanSettings
+    //    .SCAN_MODE_LOW_LATENCY).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
     private static UUID SERVICE_UUID, WRITE_UUID, READ_UUID, CONFIG_UUID;
     private static MyBleScanListener _scanListener;
     private static MyBleConnectListener _connectListener;
@@ -78,7 +79,7 @@ public final class MyBleUtil {
     };
 
     /**
-     * 连接结果的回调
+     * 连接状态以及读写状态的回调
      */
     public static BluetoothGattCallback _bluetoothGattCallback = new BluetoothGattCallback() {
         /**
