@@ -58,8 +58,8 @@ import java.util.UUID;
 
 import pl.droidsonroids.gif.GifImageView;
 
-public class ListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,
-        TextWatcher, SeekBar.OnSeekBarChangeListener {
+public class ListActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, TextWatcher,
+        SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = "ListActivity";
     private static final String ARG_PARAM1 = "param1";
@@ -68,23 +68,23 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private static final int MESSAGE_1 = 1;
     //客户端特征配置、已知服务、写入特征的UUID、读取特征的UUID
     private static UUID CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    //    //ZM301
-    //    private static UUID SERVICE_UUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
-    //    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
-    //    private static UUID READ_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    //ZM301
+    //        private static UUID SERVICE_UUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
+    //        private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+    //        private static UUID READ_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     //OTA
     private static UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1001");
     private static UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0001");
     private static UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0002");
-    //    //BlueNRG
-    //    private static UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
-    //    private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
-    //    private static UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
-    //    //Amdtp
-    //    private static UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
-    //    private static UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
-    //    private static UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
-    //    //Tag
+    //BlueNRG
+    //        private static UUID SERVICE_UUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    //        private static UUID WRITE_UUID = UUID.fromString("0000ff03-0000-1000-8000-00805f9b34fb");
+    //        private static UUID READ_UUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+    //Amdtp
+    //        private static UUID SERVICE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e1011");
+    //        private static UUID WRITE_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0011");
+    //        private static UUID READ_UUID = UUID.fromString("00002760-08c2-11e1-9073-0e8ac72e0012");
+    //Tag、iBeacon
     //    private static UUID SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
     //    private static UUID READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
     //    private static UUID WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
@@ -143,14 +143,11 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         if (Build.VERSION.SDK_INT >= 23 && !_isPermissionRequested) {
             _isPermissionRequested = true;
             ArrayList<String> permissionsList = new ArrayList<>();
-            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE,
-                                    Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE,
-                                    Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            String[] permissions = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH, Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET,
+                                    Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_WIFI_STATE,
-                                    Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_SETTINGS};
+                                    Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.CAMERA, Manifest.permission.WRITE_SETTINGS};
             for (String perm : permissions) {
                 //进入到这里代表没有权限
                 if (PackageManager.PERMISSION_GRANTED != checkSelfPermission(perm))
