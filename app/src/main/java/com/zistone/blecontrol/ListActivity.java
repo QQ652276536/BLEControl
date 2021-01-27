@@ -38,7 +38,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.zistone.blecontrol.controls.BluetoothListAdapter;
+import com.zistone.blecontrol.controls.BleListAdapter;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 import com.zistone.blecontrol.util.MyBleScanListener;
 import com.zistone.blecontrol.util.MyBleUtil;
@@ -88,7 +88,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     //    private static UUID SERVICE_UUID = UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb");
     //    private static UUID READ_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
     //    private static UUID WRITE_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
-    private BluetoothListAdapter _bleListAdapter;
+    private BleListAdapter _bleListAdapter;
     private Context _context;
     private Toolbar _toolbar;
     private ListView _listView;
@@ -218,7 +218,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                     //使用notifyDataSetChanged()会保存当前的刷新状态，比如ListView滑动的位置
                     //使用notifyDataSetInvalidated()会清空所有信息，重新布局
                     _bleListAdapter.notifyDataSetInvalidated();
-                    _listView.setAdapter(_bleListAdapter);
                     BeginScan();
                     //结束下拉刷新
                     materialRefreshLayout.finishRefresh();
@@ -572,7 +571,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         _filterAddress = MyDeviceFilterShared.GetFilterAddress(_context);
         _filterRssi = MyDeviceFilterShared.GetFilterRssi(_context);
         //BLE设备列表的适配器
-        _bleListAdapter = new BluetoothListAdapter(_context);
+        _bleListAdapter = new BleListAdapter(_context);
         //Toolbar
         _toolbar = findViewById(R.id.toolbar_bleList);
         _toolbar.setTitle("");
@@ -592,6 +591,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         //下拉刷新控件
         _materialRefreshLayout = findViewById(R.id.refresh_bleList);
         _listView = findViewById(R.id.lv_bleList);
+        _listView.setAdapter(_bleListAdapter);
         _btnFilterContent = findViewById(R.id.btnFilterContent_filter);
         _btnFilterContent.setOnClickListener(this::onClick);
         _drawableUp = getResources().getDrawable(R.drawable.up, null);

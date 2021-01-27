@@ -10,17 +10,23 @@ import android.widget.TextView;
 import com.zistone.blecontrol.R;
 import com.zistone.blecontrol.pojo.MyBluetoothDevice;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class BluetoothListAdapter extends BaseAdapter {
+public class BleListAdapter extends BaseAdapter {
 
-    private static final String TAG = "BluetoothListAdapter";
+    public final class ViewHolder {
+        public TextView _txt1;
+        public TextView _txt2;
+    }
+
+    private static final String TAG = "BleListAdapter";
     private Context _context;
     private LayoutInflater _layoutInflater;
-    private List<MyBluetoothDevice> _deviceList;
+    private List<MyBluetoothDevice> _deviceList = new ArrayList<>();
     private boolean _isClick = false;
 
-    public BluetoothListAdapter(Context context) {
+    public BleListAdapter(Context context) {
         _layoutInflater = LayoutInflater.from(context);
         _context = context;
     }
@@ -86,11 +92,6 @@ public class BluetoothListAdapter extends BaseAdapter {
         holder._txt1.setText(str);
         holder._txt2.setText("\r\n" + rssi + "dBm");
         return convertView;
-    }
-
-    public final class ViewHolder {
-        public TextView _txt1;
-        public TextView _txt2;
     }
 
 }
