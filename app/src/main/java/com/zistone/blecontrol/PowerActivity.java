@@ -30,6 +30,8 @@ import com.zistone.blecontrol.util.MyConvertUtil;
 import com.zistone.blecontrol.util.MyProgressDialogUtil;
 
 import java.lang.ref.WeakReference;
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,8 +56,11 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private static final String OPENDOORS_COMM = "680000000000006810000183E716";
     //开三号门锁
     private static final String OPENDOOR3_COMM = "680000000000006810000184E716";
+    //温度、湿度、烟感、水浸
+    private static final String CMD_39 = "680000000000006839000000E316";
     private static final int RECEIVE_BASEINFO = 21;
     private static final int RECEIVE_LOCATION = 22;
+    private static final int RECEIVE_TEMPERATURE = 39;
     private static final int RECEIVE_TESTA = 8002;
     private static final int RECEIVE_OPENDOORS1 = 8102;
     private static final int RECEIVE_OPENDOORS2 = 8202;
@@ -70,7 +75,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
     private TextView _debugView;
     private Button _btn2, _btn3, _btn4, _btn5;
-    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion, _txtHumidity, _txtSmoke, _txtWater;
     private StringBuffer _stringBuffer = new StringBuffer();
     private MyProgressDialogListener dialogListener;
     private MyHandler _myHandler;
@@ -91,7 +96,10 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 Log.i(TAG, "发送'GPS位置'指令：" + LOCATION_COMM);
                 Thread.sleep(100);
                 MyBleUtil.SendComm(TESTA);
-                Log.i(TAG, "发送'综合测试A'指令：" + LOCATION_COMM);
+                Log.i(TAG, "发送'综合测试A'指令：" + TESTA);
+                Thread.sleep(100);
+                MyBleUtil.SendComm(CMD_39);
+                Log.i(TAG, "发送'温/湿度'指令：" + CMD_39);
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -121,23 +129,20 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String[] strArray = result.split(" ");
                     String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
                     versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
-                    String voltageStr1 = String.valueOf(Integer.valueOf(strArray[14], 16));
-                    //不足两位补齐，比如0->0、1->01
-                    if (voltageStr1.length() == 1)
-                        voltageStr1 = "0" + voltageStr1;
-                    String voltageStr2 = String.valueOf(Integer.valueOf(strArray[15], 16));
-                    if (voltageStr2.length() == 1)
-                        voltageStr2 = "0" + voltageStr2;
-                    double voltage = Double.parseDouble(voltageStr1 + voltageStr2) / 1000;
-                    double temperature = 23.0;
-                    try {
-                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    double voltage = (double) Integer.valueOf(strArray[14] + strArray[15], 16) / 1000;
+                    //解析方式改为和39命令一样
+                    //                    double temperature = 23.0;
+                    //                    try {
+                    //                        temperature = 23 + Double.parseDouble(strArray[16]) / 2;
+                    //                    } catch (Exception e) {
+                    //                        e.printStackTrace();
+                    //                    }
+                    BigInteger bigInteger = new BigInteger(strArray[16], 16);
+                    double temperature = (double) bigInteger.intValue() / 10;
                     _powerActivity._txtVersion.setText(versionStr);
                     _powerActivity._txt5.setText(voltage + "V");
-                    _powerActivity._txt6.setText(temperature + "℃");
+                    //21命令里的温度是一个字节，39命令里的温度是两个字节，所以解析出来的不一样，这里温度改为使用39命令里的
+                    //                    _powerActivity._txt6.setText(temperature + "℃");
                 }
                 break;
                 //设备位置信息
@@ -161,6 +166,56 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String heightStr2 = strArray[3];
                     height += Integer.parseInt(heightStr2, 16);
                     _powerActivity._txt7.setText(latNum + "，" + lotNum + "，" + height);
+                }
+                break;
+                //温湿度
+                case RECEIVE_TEMPERATURE: {
+                    String[] strArray = result.split(" ");
+                    if (strArray.length < 14)
+                        return;
+                    //状态位，Bit0=1表示湿度数据有效，Bit1=1表示温度数据有效
+                    byte[] byteArray = MyConvertUtil.HexStrToByteArray(strArray[10]);
+                    String bitStr = MyConvertUtil.ByteToBit(byteArray[0]);
+                    String[] bitStrArray = MyConvertUtil.StrAddCharacter(bitStr, 1, " ").split(" ");
+                    String bit0 = bitStrArray[7];
+                    String bit1 = bitStrArray[6];
+                    //有符号16进制转10进制
+                    //                    int humidity = Integer.valueOf(strArray[11] + strArray[12], 16).shortValue() / 10;
+                    //                    int temperature = Integer.valueOf(strArray[13] + strArray[14], 16).shortValue() / 10;
+                    BigInteger bigInteger1 = new BigInteger(strArray[11] + strArray[12], 16);
+                    BigInteger bigInteger2 = new BigInteger(strArray[13] + strArray[14], 16);
+                    double humidity = (double) bigInteger1.intValue() / 10;
+                    double temperature = (double) bigInteger2.intValue() / 10;
+                    if ("1".equals(bit0)) {
+                        _powerActivity._txtHumidity.setText(humidity + "%");
+                    }
+                    if ("1".equals(bit1)) {
+                        //设备基本信息命令里也有温度字段
+                        _powerActivity._txt6.setText(temperature + "℃");
+                    }
+                    //烟感
+                    int smoke = Integer.valueOf(strArray[15], 16);
+                    //水浸
+                    int water = Integer.valueOf(strArray[16], 16);
+                    if (smoke == 0) {
+                        _powerActivity._txtSmoke.setText("正常");
+                        _powerActivity._txtSmoke.setTextColor(Color.GREEN);
+                    } else {
+                        _powerActivity._txtSmoke.setText("告警");
+                        _powerActivity._txtSmoke.setTextColor(Color.RED);
+                    }
+                    if (water == 0) {
+                        _powerActivity._txtWater.setText("正常");
+                        _powerActivity._txtWater.setTextColor(Color.GREEN);
+                    } else {
+                        _powerActivity._txtWater.setText("告警");
+                        _powerActivity._txtWater.setTextColor(Color.RED);
+                    }
+                    String cmdStr = Arrays.toString(strArray).replaceAll("[\\s|\\[|\\]|,]", "");
+                    cmdStr = MyConvertUtil.StrAddCharacter(cmdStr, 2, " ");
+                    String logStr =
+                            "温湿度\n" + cmdStr + "\nbitStr：" + bitStr + "，bit0：" + bit0 + "，bit1：" + bit1 + "，温度：" + temperature + "℃，湿度：" + humidity + "%，烟感：" + smoke + "，水浸：" + water + "\n\n";
+                    Log.i(TAG, logStr);
                 }
                 break;
                 //综合测试
@@ -246,18 +301,15 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String bitStr2 = String.valueOf(bitStr.charAt(1));
                     //门检测开关(关门开路)
                     String bitStr1 = String.valueOf(bitStr.charAt(0));
-                    Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
+                    Log.i(TAG, String.format("收到查询到的参数（Bit）：\n门检测开关（关门开路）%s\n锁检测开关（锁上开路）" + "%s\n正常开锁不告警%s\n有外电可以进入维护方式%s\n启用软关机%s\n不检测强磁%s\n" +
+                            "使用低磁检测阀值%s\n启用DEBUG软串口%s", bitStr1, bitStr2, bitStr3, bitStr4, bitStr5, bitStr6, bitStr7, bitStr8));
                     //打开控制参数修改界面的时候将查询结果传递过去，此时可以不输出调试信息
                     if (_powerActivity._isOpenParamSetting) {
                         if (_powerActivity._paramSetting == null) {
-                            _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1,
-                                                                                                               bitStr2,
-                                                                                                               bitStr3,
-                                                                                                               bitStr4,
-                                                                                                               bitStr5,
-                                                                                                               bitStr6,
-                                                                                                               bitStr7,
-                                                                                                               bitStr8}, _powerActivity.dialogListener);
+                            _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
+                                                                                                               bitStr5, bitStr6, bitStr7,
+                                                                                                               bitStr8},
+                                    _powerActivity.dialogListener);
                             _powerActivity._paramSetting.setCancelable(false);
                         }
                         _powerActivity._paramSetting.show(_powerActivity._fragmentManager, "ParamSettingDialogFragment");
@@ -339,6 +391,12 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
          * */
         else if (strArray[8].equals("A2")) {
             what = RECEIVE_LOCATION;
+        }
+        /*
+         * 温湿度
+         * */
+        else if (strArray[8].equals(("B9"))) {
+            what = RECEIVE_TEMPERATURE;
         }
         /*
          * 开关门协议
@@ -576,6 +634,9 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         _txt7 = findViewById(R.id.txt7_power);
         _txt8 = findViewById(R.id.txt8_power);
         _txtVersion = findViewById(R.id.txtVersion_power);
+        _txtHumidity = findViewById(R.id.txt9_power);
+        _txtSmoke = findViewById(R.id.txt10_power);
+        _txtWater = findViewById(R.id.txt11_power);
         _debugView = findViewById(R.id.debug_view_power);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         _btnReturn = findViewById(R.id.btnReturn_power);

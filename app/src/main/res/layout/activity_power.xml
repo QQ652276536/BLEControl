@@ -64,16 +64,11 @@
 
                 <TextView
                     android:id="@+id/txt2_power"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100sp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Null"
                     android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="80sp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
 
                 <TextView
                     android:layout_width="80dp"
@@ -100,22 +95,17 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="内部温度"
+                    android:text="位置信息"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/txt6_power"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txt7_power"
+                    android:layout_width="100sp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:singleLine="false"
                     android:text="Null"
                     android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="80sp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
 
                 <TextView
                     android:layout_width="80dp"
@@ -142,12 +132,12 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="位置信息"
+                    android:text="温度"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/txt7_power"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txt6_power"
+                    android:layout_width="100sp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:singleLine="false"
@@ -155,9 +145,58 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:layout_width="80sp"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:text="湿度"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt9_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="false"
+                    android:text="Null"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="烟雾报警"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt10_power"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="false"
+                    android:text="Null"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="水浸报警"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt11_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Null"
+                    android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>
 
