@@ -161,7 +161,6 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -196,6 +195,79 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Null"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="磁场1"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_magnetic1_power"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="false"
+                    android:text="Null"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="磁场2"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_magnetic2_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Null"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="磁场3"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_magnetic3_power"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="false"
+                    android:text="Null"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text=""
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text=""
                     android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>

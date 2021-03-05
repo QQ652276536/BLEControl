@@ -75,7 +75,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
     private TextView _debugView;
     private Button _btn2, _btn3, _btn4, _btn5;
-    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion, _txtHumidity, _txtSmoke, _txtWater;
+    private TextView _txt2, _txt5, _txt6, _txt7, _txt8, _txtVersion, _txtHumidity, _txtSmoke, _txtWater, _txtMagnetic1, _txtMagnetic2, _txtMagnetic3;
     private StringBuffer _stringBuffer = new StringBuffer();
     private MyProgressDialogListener dialogListener;
     private MyHandler _myHandler;
@@ -123,10 +123,13 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 return;
             _powerActivity = _weakReference.get();
             String result = (String) message.obj;
+            if (result == null)
+                return;
+            String[] strArray = result.split(" ");
+            String cmdStr = Arrays.toString(strArray).replaceAll("[\\s|\\[|\\]|,]", "");
             switch (message.what) {
                 //设备基本信息
                 case RECEIVE_BASEINFO: {
-                    String[] strArray = result.split(" ");
                     String versionStr = MyConvertUtil.HexStrToStr((strArray[10] + strArray[11] + strArray[12] + strArray[13]).trim());
                     versionStr = MyConvertUtil.StrAddCharacter(versionStr, 2, ".");
                     double voltage = (double) Integer.valueOf(strArray[14] + strArray[15], 16) / 1000;
@@ -147,7 +150,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 break;
                 //设备位置信息
                 case RECEIVE_LOCATION: {
-                    String[] strArray = result.split(" ");
                     int state = Integer.parseInt(strArray[10], 16);
                     if (state != 1) {
                         _powerActivity._txt7.setText("定位失败");
@@ -170,8 +172,7 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 break;
                 //温湿度
                 case RECEIVE_TEMPERATURE: {
-                    String[] strArray = result.split(" ");
-                    if (strArray.length < 14)
+                    if (strArray.length < 16)
                         return;
                     //状态位，Bit0=1表示湿度数据有效，Bit1=1表示温度数据有效
                     byte[] byteArray = MyConvertUtil.HexStrToByteArray(strArray[10]);
@@ -211,16 +212,26 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                         _powerActivity._txtWater.setText("告警");
                         _powerActivity._txtWater.setTextColor(Color.RED);
                     }
-                    String cmdStr = Arrays.toString(strArray).replaceAll("[\\s|\\[|\\]|,]", "");
+                    int magnetic1 = 0;
+                    int magnetic2 = 0;
+                    int magnetic3 = 0;
+                    if (strArray.length > 17) {
+                        //磁场
+                        magnetic1 = Integer.parseInt(strArray[17], 16);
+                        magnetic2 = Integer.parseInt(strArray[2], 16);
+                        magnetic3 = Integer.parseInt(strArray[3], 16);
+                        _powerActivity._txtMagnetic1.setText(magnetic1 + "");
+                        _powerActivity._txtMagnetic2.setText(magnetic2 + "");
+                        _powerActivity._txtMagnetic3.setText(magnetic3 + "");
+                    }
                     cmdStr = MyConvertUtil.StrAddCharacter(cmdStr, 2, " ");
                     String logStr =
-                            "温湿度\n" + cmdStr + "\nbitStr：" + bitStr + "，bit0：" + bit0 + "，bit1：" + bit1 + "，温度：" + temperature + "℃，湿度：" + humidity + "%，烟感：" + smoke + "，水浸：" + water + "\n\n";
+                            "温湿度\n" + cmdStr + "\nbitStr：" + bitStr + "，bit0：" + bit0 + "，bit1：" + bit1 + "，温度：" + temperature + "℃，湿度：" + humidity + "%，烟感：" + smoke + "，水浸：" + water + "，磁场1：" + magnetic1 + "，磁场2：" + magnetic2 + "，磁场3：" + magnetic3 + "\n";
                     Log.i(TAG, logStr);
                 }
                 break;
                 //综合测试
                 case RECEIVE_TESTA: {
-                    String[] strArray = result.split(" ");
                     byte[] bytes1 = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes1[0]);
                     String doorState1 = String.valueOf(bitStr.charAt(7));
@@ -263,7 +274,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 case RECEIVE_OPENDOORS2:
                     //开三号门锁
                 case RECEIVE_OPENDOORS3: {
-                    String[] strArray = result.split(" ");
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[13]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     String doorState = String.valueOf(bitStr.charAt(7));
@@ -282,7 +292,6 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                 break;
                 //查询到的内部控制参数
                 case RECEIVE_SEARCH_CONTROLPARAM: {
-                    String[] strArray = result.split(" ");
                     byte[] bytes = MyConvertUtil.HexStrToByteArray(strArray[16]);
                     String bitStr = MyConvertUtil.ByteToBit(bytes[0]);
                     //启用DEBUG软串口
@@ -637,6 +646,9 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
         _txtHumidity = findViewById(R.id.txt9_power);
         _txtSmoke = findViewById(R.id.txt10_power);
         _txtWater = findViewById(R.id.txt11_power);
+        _txtMagnetic1 = findViewById(R.id.txt_magnetic1_power);
+        _txtMagnetic2 = findViewById(R.id.txt_magnetic2_power);
+        _txtMagnetic3 = findViewById(R.id.txt_magnetic3_power);
         _debugView = findViewById(R.id.debug_view_power);
         _debugView.setMovementMethod(ScrollingMovementMethod.getInstance());
         _btnReturn = findViewById(R.id.btnReturn_power);
