@@ -260,7 +260,7 @@ public class CmdActivity extends AppCompatActivity implements View.OnClickListen
                     break;
             }
             int downloadPer = Integer.parseInt(strArray[4], 16);
-            receive += String.format("\r\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃] 连接状态[%s] 连接类型[%s] 远程下载百分比[%s%%]", versionStr, voltage, temperature, connectState, connectType, downloadPer);
+            receive += String.format("\n\n解析：版本号[%s] 电池电压[%sV] 内部温度[%s℃] 连接状态[%s] 连接类型[%s] 远程下载百分比[%s%%]", versionStr, voltage, temperature, connectState, connectType, downloadPer);
         }
         /*
          * 读取内部存储的事件记录的通信协议
