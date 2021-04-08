@@ -73,8 +73,7 @@ public class DeviceInfoActivity extends AppCompatActivity implements View.OnClic
     private static int TASK_TIME = 1 * 1000;
 
     private ImageButton _btnReturn, _btnTop, _btnBottom, _btnClear;
-    private TextView _txtAddress, _txtLat, _txtLot, _txtHeight, _txtName, _txtMac, _txtTemperature, _txtHumidity, _txtX, _txtY, _txtZ, _txtChannel1
-            , _txtChannel2, _txtDebug, _txtElec, _txtVol, _txtElecState, _txtConnectState;
+    private TextView _txtAddress, _txtLat, _txtLot, _txtHeight, _txtName, _txtMac, _txtTemperature, _txtHumidity, _txtX, _txtY, _txtZ, _txtChannel1, _txtChannel2, _txtDebug, _txtElec, _txtVol, _txtElecState, _txtConnectState;
     private BluetoothDevice _bluetoothDevice;
     private Map<String, UUID> _uuidMap;
     private Toolbar _toolbar;
@@ -469,9 +468,11 @@ public class DeviceInfoActivity extends AppCompatActivity implements View.OnClic
                 _isConnected = false;
                 Log.e(TAG, "连接已断开");
                 runOnUiThread(() -> MyProgressDialogUtil.ShowWarning(DeviceInfoActivity.this, "知道了", "警告", "连接已断开，请检查设备然后重新连接！", true, () -> {
-                    Intent intent = new Intent(DeviceInfoActivity.this, ListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+//                    //返回时重新刷新
+//                    Intent intent = new Intent(DeviceInfoActivity.this, ListActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(intent);
+                    finish();
                 }));
             }
         };

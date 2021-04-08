@@ -348,7 +348,7 @@
                 android:text="卫星信号强度"
                 android:textSize="18sp" />
 
-            <com.zistone.blelocation.controls.MyBarChartView
+            <com.zistone.libble.controls.MyBarChartView
                 android:id="@+id/mbcv_info"
                 android:layout_width="match_parent"
                 android:layout_height="150sp"

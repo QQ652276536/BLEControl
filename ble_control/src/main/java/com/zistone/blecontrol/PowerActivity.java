@@ -200,13 +200,13 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     String[] bitStrArray = MyConvertUtil.StrAddCharacter(bitStr, 1, " ").split(" ");
                     String bit0 = bitStrArray[7];
                     String bit1 = bitStrArray[6];
-                    //有符号16进制转10进制
-                    //                    int humidity = Integer.valueOf(strArray[11] + strArray[12], 16).shortValue() / 10;
-                    //                    int temperature = Integer.valueOf(strArray[13] + strArray[14], 16).shortValue() / 10;
-                    BigInteger bigInteger1 = new BigInteger(strArray[11] + strArray[12], 16);
-                    BigInteger bigInteger2 = new BigInteger(strArray[13] + strArray[14], 16);
-                    double humidity = (double) bigInteger1.intValue() / 10;
-                    double temperature = (double) bigInteger2.intValue() / 10;
+                    String humidityStr = strArray[11] + strArray[12];
+                    String temperatureStr = strArray[13] + strArray[14];
+                    short tempHumidity = (short) (Integer.valueOf(humidityStr, 16) & 0xffff);
+                    double humidity = tempHumidity / 10.0;
+                    //温度有正、负数
+                    short tempTemperature = (short) (Integer.valueOf(temperatureStr, 16) & 0xffff);
+                    double temperature = tempTemperature / 10.0;
                     if ("1".equals(bit0)) {
                         _powerActivity._txtHumidity.setText(humidity + "%");
                     }
@@ -421,8 +421,8 @@ public class PowerActivity extends AppCompatActivity implements View.OnClickList
                     if (_powerActivity._isOpenParamSetting) {
                         if (_powerActivity._paramSetting == null) {
                             _powerActivity._paramSetting = ParamSettingDialogFragment.NewInstance(new String[]{bitStr1, bitStr2, bitStr3, bitStr4,
-                                                                                                               bitStr5, bitStr6, bitStr7,
-                                                                                                               bitStr8},
+                                            bitStr5, bitStr6, bitStr7,
+                                            bitStr8},
                                     _powerActivity._confirmListener);
                             _powerActivity._paramSetting.setCancelable(false);
                         }

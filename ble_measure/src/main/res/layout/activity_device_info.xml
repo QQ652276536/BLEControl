@@ -252,7 +252,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
-            android:text="传感器数据"
+            android:text="外部传感器数据"
             android:textSize="18sp" />
 
         <LinearLayout
@@ -264,7 +264,7 @@
                 android:layout_width="70sp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="测量1："
+                android:text="通道1："
                 android:textSize="18sp" />
 
             <TextView
@@ -279,7 +279,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="测量2："
+                android:text="通道2："
                 android:textSize="18sp" />
 
             <TextView

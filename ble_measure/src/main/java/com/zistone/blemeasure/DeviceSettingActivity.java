@@ -718,6 +718,7 @@ public class DeviceSettingActivity extends AppCompatActivity implements View.OnC
         _bluetoothDevice = intent.getParcelableExtra(ARG_PARAM1);
         _uuidMap = (Map<String, UUID>) intent.getSerializableExtra(ARG_PARAM2);
         _llDebug = findViewById(R.id.ll_debug_setting);
+        _llDebug.setVisibility(View.INVISIBLE);
         _btnReturn = findViewById(R.id.btn_return_setting);
         _btnReturn.setOnClickListener(this::onClick);
         _btnTop = findViewById(R.id.btn_top_setting);
