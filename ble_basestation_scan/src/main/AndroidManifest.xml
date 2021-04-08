@@ -3,7 +3,7 @@
     package="com.zistone.basestationscan">
 
     <application
-        android:name="com.zistone.libble.BaseApplication"
+        android:name=".MyApplication"
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
