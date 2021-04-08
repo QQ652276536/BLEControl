@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">基站扫描</string>
+
+    <string-array name="locationArray">
+        <item>厘米</item>
+        <item>分米</item>
+        <item>米</item>
+    </string-array>
+</resources>

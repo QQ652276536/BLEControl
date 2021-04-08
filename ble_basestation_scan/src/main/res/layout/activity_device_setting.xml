@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorAccent">
+
+        <ImageButton
+            android:id="@+id/btn_return_setting"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitStart"
+            app:srcCompat="@drawable/btn_return" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="基站设置"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5sp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="相对坐标："
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/edt_x_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:inputType="number"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <EditText
+                android:id="@+id/edt_y_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:inputType="number"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <EditText
+                android:id="@+id/edt_z_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:inputType="number"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="单位："
+                android:textSize="18sp" />
+
+            <Spinner
+                android:id="@+id/spinner_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/locationArray" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_location_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:background="@color/springGreen"
+            android:text="设置"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5sp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IP地址："
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/edt_ip_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="7"
+                android:inputType="textEmailSubject"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="端口："
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/edt_port_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:inputType="number"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_ip_port_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:background="@color/springGreen"
+            android:text="设置"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5sp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WIFI名称："
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/edt_wifi_name_setting"
+                android:layout_width="150sp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <Button
+                android:id="@+id/btn_wifi_name_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="30sp"
+                android:background="@color/springGreen"
+                android:text="设置"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:layout_marginTop="10sp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WIFI密码："
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/edt_wifi_pwd_setting"
+                android:layout_width="150sp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="---"
+                android:textColor="@color/springGreen"
+                android:theme="@style/MyEditText" />
+
+            <Button
+                android:id="@+id/btn_wifi_pwd_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="30sp"
+                android:background="@color/springGreen"
+                android:text="设置"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5sp"
+        android:layout_marginTop="5sp"
+        android:text="上报设备MAC："
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_marginStart="5sp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edt_mac1_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="3"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/springGreen"
+            android:theme="@style/MyEditText" />
+
+        <EditText
+            android:id="@+id/edt_mac2_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:ems="3"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/springGreen"
+            android:theme="@style/MyEditText" />
+
+        <EditText
+            android:id="@+id/edt_mac3_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:ems="3"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/springGreen"
+            android:theme="@style/MyEditText" />
+
+        <EditText
+            android:id="@+id/edt_mac4_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:ems="3"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/springGreen"
+            android:theme="@style/MyEditText" />
+
+        <EditText
+            android:id="@+id/edt_mac5_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:ems="3"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/springGreen"
+            android:theme="@style/MyEditText" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_mac_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="30sp"
+        android:layout_marginStart="5sp"
+        android:background="@color/springGreen"
+        android:text="设置"
+        android:textColor="@color/white" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_off_setting"
+            android:layout_width="130sp"
+            android:layout_height="30sp"
+            android:layout_marginStart="5sp"
+            android:background="@color/springGreen"
+            android:text="设备关机"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_restart_setting"
+            android:layout_width="130sp"
+            android:layout_height="30sp"
+            android:layout_marginStart="40sp"
+            android:background="@color/springGreen"
+            android:text="设备重启"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_debug_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30sp"
+            android:background="@color/colorAccent"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_top_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/top" />
+
+            <ImageButton
+                android:id="@+id/btn_bottom_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/bottom" />
+
+            <ImageButton
+                android:id="@+id/btn_clear_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/clear" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_debug_setting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5sp"
+            android:fadeScrollbars="false"
+            android:scrollbars="vertical"
+            android:text=""
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

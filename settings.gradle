@@ -1,1 +1,31 @@
-include ':app'
+rootProject.name = 'BLE'
+
+/**
+ * 自己封装的BLE库
+ */
+include ':lib_ble'
+
+/**
+ * 基站扫描
+ */
+include ':ble_basestation_scan'
+
+/**
+ * 终端测量
+ */
+include ':ble_measure'
+
+/**
+ * 终端定位
+ */
+include ':ble_location'
+
+/**
+ * 门锁控制
+ */
+include ':ble_control'
+
+/**
+ * 电能测量
+ */
+include ':ble_elec_measure'

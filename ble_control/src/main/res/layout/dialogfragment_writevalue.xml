@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="写入参数"
+            android:textSize="22sp" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabitem1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NEW" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabitem2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LOAD" />
+
+        </android.support.design.widget.TabLayout>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/writevalue_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TableLayout
+                android:id="@+id/writevalue_table"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="0X" />
+
+                    <EditText
+                        android:id="@+id/editText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="5"
+                        android:hint="New value"
+                        android:inputType="textVisiblePassword" />
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="BYTE" />
+
+                    <ImageButton
+                        android:id="@+id/btn1_devlceFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:visibility="invisible"
+                        app:srcCompat="@drawable/close" />
+                </TableRow>
+
+            </TableLayout>
+
+            <ImageButton
+                android:id="@+id/writevalue_btn_addvalue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/add" />
+
+            <EditText
+                android:id="@+id/writevalue_edit_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:hint="Save as..."
+                android:inputType="text" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/writevalue_btn_save"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="SAVE" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/writevalue_btn_cancel"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="CANCEL" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/writevalue_btn_send"
+                    style="@style/ButtonStyleA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="SEND" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

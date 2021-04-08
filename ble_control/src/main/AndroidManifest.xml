@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.zistone.blecontrol">
+
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" /><!-- 允许装载卸载文件 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /><!-- 允许安装未知应用/请求安装第三方APK -->
+    <uses-permission android:name="android.permission.VIBRATE" /><!-- 震动提示 -->
+    <!--
+        以下权限用于开启摄像头
+        required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
+        required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front.autofocus"
+        android:required="false" />
+
+    <application
+        android:name="com.zistone.libble.BaseApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="stateAlwaysHidden">
+        <activity
+            android:name=".XYZActivity"
+            android:label="设备倾角" />
+        <activity
+            android:name=".MenuActivity"
+            android:label="功能菜单" />
+        <activity
+            android:name=".LocationActivity"
+            android:label="设备定位" />
+        <activity
+            android:name=".CmdActivity"
+            android:label="指令测试" />
+        <activity
+            android:name=".PowerActivity"
+            android:label="电力控制" />
+        <activity android:name=".ListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider> <!-- 7.0之后禁止在应用外部公开file://URI，这里使用FileProvider类临时访授权 -->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="ahC8ymAA5K3VojudS6hm7YBQq6CzKOhQ" />
+    </application>
+
+</manifest>

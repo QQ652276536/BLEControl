@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorAccent"
+        app:navigationIcon="@drawable/btn_return">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="电能测量V1.1"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="名称："
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="---"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="地址："
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txt_mac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="---"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="电压："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_voltage"
+                    android:layout_width="80sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="电流："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="功率："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="电能："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_electric"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="功率因数："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_factor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="频率："
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_frequency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="---"
+                    android:textSize="18sp" />
+            </TableRow>
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="182sp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Button
+                    style="@style/ButtonStyleA"
+                    android:id="@+id/btn_exit_measure"
+                    android:layout_width="55sp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="4sp"
+                    android:text="退\n\n出\n\n测\n\n量"
+                    android:textColor="@color/white" />
+
+                <com.zistone.libble.controls.MyRemoteControlButton
+                    android:id="@+id/mrcb_menu"
+                    android:layout_width="180sp"
+                    android:layout_height="180sp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="4sp"
+                    android:layout_toRightOf="@id/btn_exit_measure" />
+
+                <Button
+                    android:id="@+id/btn_continue_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4sp"
+                    android:layout_toRightOf="@id/mrcb_menu"
+                    style="@style/ButtonStyleA"
+                    android:text="连续测量"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_intermittent_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="4sp"
+                    android:layout_toRightOf="@id/mrcb_menu"
+                    style="@style/ButtonStyleA"
+                    android:text="断续测量"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_pause_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="4sp"
+                    android:layout_toRightOf="@id/mrcb_menu"
+                    style="@style/ButtonStyleA"
+                    android:text="暂停测量"
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp"
+            android:text=""
+            android:textAlignment="center"
+            android:textColor="@color/deepskyblue"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_debug"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="继续使用请先关闭调试模式"
+                android:textAlignment="center"
+                android:textColor="@color/read" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30sp"
+                android:background="@color/colorAccent"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btn_top"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="20sp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/top" />
+
+                <ImageButton
+                    android:id="@+id/btn_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="20sp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/bottom" />
+
+                <ImageButton
+                    android:id="@+id/btn_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="20sp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/clear" />
+
+                <Button
+                    android:id="@+id/btn_electric_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="4sp"
+                    android:background="@color/deepskyblue"
+                    android:text="电能调试"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:layout_width="20sp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text=""
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/btn_circuit_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="4sp"
+                    android:background="@color/deepskyblue"
+                    android:text="电路调试"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_debug"
+                android:layout_width="match_parent"
+                android:layout_height="500sp"
+                android:layout_margin="5sp"
+                android:fadeScrollbars="false"
+                android:scrollbars="vertical"
+                android:singleLine="false"
+                android:text=""
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

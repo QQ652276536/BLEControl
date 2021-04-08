@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zistone.blelocation">
+
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /><!-- 允许安装未知应用 -->
+    <uses-permission android:name="android.permission.VIBRATE" /><!-- 震动提示 -->
+    <!--
+    摄像头权限
+    required="false":如果用户设备上没有这个类库,不允许应用安装在这个设备上
+    required="true":如果这个类库存在,则应用程序能够使用这个类库,也可以设计成没有这个类库应用程序也可以工作
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front.autofocus"
+        android:required="false" />
+
+    <application
+        android:name="com.zistone.libble.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="stateAlwaysHidden">
+        <activity android:name="com.zistone.blelocation.DeviceInfoActivity" />
+        <activity android:name="com.zistone.blelocation.DeviceSettingActivity" />
+        <activity android:name="com.zistone.blelocation.ListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_bleList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/colorAccent"
+        app:navigationIcon="@drawable/start"
+        app:titleTextColor="@color/white">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/toolbar_gifView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="start"
+            android:src="@drawable/scaning" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <TableLayout
+        android:id="@+id/table_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/darkgray">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:src="@drawable/setting" />
+
+            <Button
+                android:id="@+id/btnFilterContent_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5"
+                android:background="@color/transparent"
+                android:drawableRight="@drawable/down"
+                android:gravity="center_vertical"
+                android:text=" No Filter"
+                android:textAllCaps="false"
+                android:textColor="@color/gray" />
+
+            <ImageButton
+                android:id="@+id/btnClearFilterContent_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/close" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row2_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:src="@drawable/device_name" />
+
+            <EditText
+                android:id="@+id/editName_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="10"
+                android:hint="Fileter by name"
+                android:inputType="textPostalAddress"
+                android:textSize="14dp" />
+
+            <ImageButton
+                android:id="@+id/btnClearName_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/close" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row3_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:src="@drawable/mac" />
+
+            <EditText
+                android:id="@+id/editAddress_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:ems="10"
+                android:hint="Filter by address"
+                android:inputType="textPostalAddress"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnClearAddress_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/close" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row4_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:src="@drawable/rssi" />
+
+            <SeekBar
+                android:id="@+id/seekBar_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5" />
+
+            <TextView
+                android:id="@+id/tvRssi_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:text="-100dBm" />
+        </TableRow>
+
+    </TableLayout>
+
+    <com.cjj.MaterialRefreshLayout
+        android:id="@+id/refresh_bleList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+
+        <ListView
+            android:id="@+id/lv_bleList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice" />
+    </com.cjj.MaterialRefreshLayout>
+</LinearLayout>

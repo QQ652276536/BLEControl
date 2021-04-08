@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:text="调试信息"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_debug_info"
+            android:layout_width="300sp"
+            android:layout_height="300sp"
+            android:background="@color/ghostWhite"
+            android:fadeScrollbars="false"
+            android:scrollbars="vertical"
+            android:text=""
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="300sp"
+            android:layout_height="30sp"
+            android:background="@color/colorAccent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_top_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/top" />
+
+            <ImageButton
+                android:id="@+id/btn_bottom_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/bottom" />
+
+            <ImageButton
+                android:id="@+id/btn_clear_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="40sp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/clear" />
+
+            <Button
+                android:id="@+id/btn_debug_info"
+                android:layout_width="wrap_content"
+                android:layout_height="26sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="2sp"
+                android:background="@color/white"
+                android:text="暂停"
+                android:textColor="@color/read" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

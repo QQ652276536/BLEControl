@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.zistone.basestationscan.com.zistone.basestationscan.MenuActivity">
+
+    <item
+        android:id="@+id/item1_menu"
+        android:orderInCategory="80"
+        android:title="打开调试"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item2_menu"
+        android:orderInCategory="80"
+        android:title="基站设置"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/item3_menu"
+        android:orderInCategory="80"
+        android:title="导出日志"
+        app:showAsAction="never" />
+</menu>

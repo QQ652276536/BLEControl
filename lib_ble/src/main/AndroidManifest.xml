@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zistone.libble">
+
+    <uses-permission android:name="android.permission.INTERNET" /><!-- 网络权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /><!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" /><!-- 位置权限 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!-- GPS定位权限 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="andriod.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /><!-- SDCard读写权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /><!-- 网络状态权限,主要用于监视网络连接 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- WIFI状态权限 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> <!-- 修改声音设置权限 -->
+
+</manifest>
